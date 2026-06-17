@@ -26,6 +26,20 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-16 — Remove stub LLM mode
+
+### Removed
+- **Step 1 — Deleted all stub LLM classes and flags.** Why: always running with real tokens;
+  stubs added dead code and confusing `--stub-llm` / `--no-llm` CLI flags. How: removed
+  `StubSpecLLM`, `StubDepLLM`, `StubPlanLLM`, `_PROMPT_REQ`, all hint/verb constants, and the
+  `--stub-llm` / `--no-llm` args from `run_pipeline.py`. `run()` no longer takes `use_llm`,
+  `spec_llm`, `plan_llm`, `dep_llm` params.
+- **Step 2 — Simplified `main()`.** Why: clean entry point — just check for API key and run.
+  How: `main()` now errors immediately if `OPENAI_API_KEY` is missing instead of silently
+  falling back to stubs. `run()` signature is `(srs_path, output_dir, certify, samples)`.
+
+---
+
 ## 2026-06-16 — Planning + Code Agent pipeline fixes
 
 ### Fixed
