@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SoftwareRequirementsSpecification>
+    <Header>
+        <ProjectName>DineOut</ProjectName>
+        <Version>1.0</Version>
+        <Date>23rd October 2018</Date>
+        <PreparedBy>
+            <Person>Hassaan Elahi 15L-4028</Person>
+            <Person>Shafaq Arshad 15L-4180</Person>
+            <Person>Marriam Sajid 15L-4062</Person>
+            <Person>Haris Muneer 15L-4149</Person>
+        </PreparedBy>
+    </Header>
+
+    <Introduction>
+        <Purpose>DineOut is an android application that aims to digitalize the process of various restaurant management operations including ordering and inventory management and POS. This document aims to capture the system requirements and features particularly related to ordering and inventory management to be implemented in DineOut version 1.0.</Purpose>
+        <DocumentConventions>
+            <PriorityConventions>Priorities are mentioned as "low" or "high" throughout the document.</PriorityConventions>
+            <FontsConventions>User entities are capitalized. Significant terms in the glossary are bold and italic.</FontsConventions>
+        </DocumentConventions>
+        <IntendedAudience>Customers for approval and further processing. Development team and testers for reference.</IntendedAudience>
+        <ProductScope>A restaurant management system developed to automate day-to-day tasks like order and inventory management, bill generation, and feedback, eradicating daily paperwork and improving performance.</ProductScope>
+        <References>
+            <Reference>Android User Interface Guidelines</Reference>
+            <Reference>IEEE Std 830-1998 Recommended Practice for Software Requirements Specifications</Reference>
+        </References>
+    </Introduction>
+
+    <OverallDescription>
+        <ProductPerspective>DineOut app replaces manual ordering. It consists of a mobile application (with interfaces for Customer, Manager, Head Chef, Admin, and Chef) and a Firebase database.</ProductPerspective>
+        <ProductFunctions>
+            <Function>Allow Customers to scroll menu, select dishes, cancel/edit order, provide feedback, request bill, and ask for help.</Function>
+            <Function>Assign Head Chef to distribute dishes to chefs.</Function>
+            <Function>Show dish queues for Chefs.</Function>
+            <Function>Allow admin CRUD operations on Staff, Menu, and Inventory.</Function>
+            <Function>Allow Head Chef to mark orders complete and approve cancellations.</Function>
+            <Function>Allow Hall Manager to mark bills paid, view table status, and receive notifications.</Function>
+        </ProductFunctions>
+        <UserClasses>
+            <UserClass name="Customer">Interacts directly to place/modify orders, get bills, and give feedback.</UserClass>
+            <UserClass name="Head Chef">Marks dishes prepared, approves cancellations, and assigns dishes to chefs.</UserClass>
+            <UserClass name="Chef">Views queues and prepares dishes.</UserClass>
+            <UserClass name="Admin">Manages inventory, menu, and staff.</UserClass>
+            <UserClass name="Hall Manager">Marks bills as paid, views table status, and receives help/order notifications.</UserClass>
+        </UserClasses>
+        <OperatingEnvironment>Android application running on tablets in a restaurant environment.</OperatingEnvironment>
+        <DesignAndImplementationConstraints>
+            <Constraint type="Operating System">Android version 6.0 or above.</Constraint>
+            <Constraint type="Device">Compatible with tablets, not necessary for small mobile devices.</Constraint>
+        </DesignAndImplementationConstraints>
+    </OverallDescription>
+
+    <ExternalInterfaceRequirements>
+        <UserInterfaces>
+            <Interface name="Customer Interface">Includes Place Order, Timer/Edit/Cancel, and Feedback screens.</Interface>
+            <Interface name="Head Chef Interface">Shows current orders and allows marking dishes as cooked or approving removal.</Interface>
+            <Interface name="Hall Manager Interface">Receives notifications, shows order list for billing, and table status.</Interface>
+            <Interface name="Admin Interface">Screens for CRUD operations on Staff, Menu, and Inventory.</Interface>
+        </UserInterfaces>
+        <HardwareInterfaces>Bill printer, optional credit card reader, central kitchen screen.</HardwareInterfaces>
+        <SoftwareInterfaces>Firebase database, Android 6.0+, v4 support library Print Helper.</SoftwareInterfaces>
+        <CommunicationsInterfaces>HTTP protocol to connect to Firebase.</CommunicationsInterfaces>
+    </ExternalInterfaceRequirements>
+
+    <SystemRequirements>
+        <Feature id="4.1" name="Place Order" priority="High">
+            <Description>System displays available dishes. Customers can select dishes and quantities.</Description>
+        </Feature>
+        <Feature id="4.2" name="Customer Help" priority="High">
+            <Description>Customers can ask for help from the Hall Manager via a help button.</Description>
+        </Feature>
+        <Feature id="4.3" name="Chef Order Queue" priority="High">
+            <Description>Dishes are classified and assigned to specific chefs' queues based on specialties.</Description>
+        </Feature>
+        <Feature id="4.4" name="Edit Order" priority="High">
+            <Description>Customers can change quantity, add, or remove dishes before serving (removal needs Head Chef approval).</Description>
+        </Feature>
+        <Feature id="4.5" name="Cancel Order" priority="High">
+            <Description>Customers can cancel the order before serving (needs Head Chef approval).</Description>
+        </Feature>
+        <Feature id="4.6" name="Mark Dish as Cooked" priority="High">
+            <Description>Head Chef marks dishes as cooked, triggering a notification to the Hall Manager when the full order is done.</Description>
+        </Feature>
+        <Feature id="4.7" name="Request Bill" priority="High">
+            <Description>Customers ask for the receipt, prompting the Hall Manager to print and mark it paid.</Description>
+        </Feature>
+        <Feature id="4.8" name="Customer Feedback" priority="High">
+            <Description>Customers provide feedback via multiple-choice questions.</Description>
+        </Feature>
+        <Feature id="4.9" name="Add/Edit/Delete Staff Members" priority="High">
+            <Description>Admin can manage staff records.</Description>
+        </Feature>
+        <Feature id="4.10" name="Add/Edit/Delete Menu Items" priority="High">
+            <Description>Admin can manage the restaurant's menu.</Description>
+        </Feature>
+    </SystemRequirements>
+
+    <NonFunctionalRequirements>
+        <Performance>Interactive with minimal delays (less than 2s for menu scrolling, less than 1s for order visibility).</Performance>
+        <Safety>Environmentally friendly, flexible font for visibility.</Safety>
+        <Security>Encrypted login for admin/head chef, secure transmission to Firebase.</Security>
+        <SoftwareQualityAttributes>
+            <Attribute name="Adaptability">Menu and employee/inventory database can be changed.</Attribute>
+            <Attribute name="Availability">High uptime.</Attribute>
+            <Attribute name="Correctness">Accurate billing and order tracking.</Attribute>
+            <Attribute name="Robustness">Input validation for menu items, emails, and phone numbers.</Attribute>
+        </SoftwareQualityAttributes>
+        <BusinessRules>
+            <Rule>Managers can view table status but not modify.</Rule>
+            <Rule>Only admins can perform CRUD on DB.</Rule>
+            <Rule>Only Head Chef can manage queues.</Rule>
+        </BusinessRules>
+    </NonFunctionalRequirements>
+
+    <Appendices>
+        <Glossary>
+            <Term name="CRUD">Create, Read, Update, and Delete.</Term>
+            <Term name="Print Helper">Android library to connect to remote printers.</Term>
+            <Term name="Marshmallow 6.0">Android OS version 6.0.</Term>
+        </Glossary>
+    </Appendices>
+</SoftwareRequirementsSpecification>

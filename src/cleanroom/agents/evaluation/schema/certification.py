@@ -18,6 +18,20 @@ class FeatureJudgement(BaseModel):
     verdicts: list[TestVerdict] = Field(default_factory=list)
 
 
+class FRCertification(BaseModel):
+    """pass@k results for a single functional requirement (HumanEval-style task unit)."""
+
+    fr_id: str
+    feature_id: str = ""
+    n_samples: int = 0
+    n_test_cases: int = 0
+    passing_samples: int = 0
+    pass_at: dict[str, float] = Field(default_factory=dict)
+    cases_passed: int = 0
+    cases_total: int = 0
+    case_pass_rate: float = 0.0
+
+
 class FeatureCertification(BaseModel):
     """pass@k results for a single feature."""
 
@@ -27,14 +41,22 @@ class FeatureCertification(BaseModel):
     n_test_cases: int = Field(description="number of spec-derived test cases used as the oracle")
     passing_samples: int = Field(description="c: samples that passed ALL of the feature's test cases")
     pass_at: dict[str, float] = Field(default_factory=dict, description="e.g. {'pass@1': 0.4, 'pass@5': 1.0}")
+    cases_passed: int = 0
+    cases_total: int = 0
+    case_pass_rate: float = 0.0
 
 
 class CertificationResult(BaseModel):
     model: str = ""
-    n: int = Field(description="samples generated per feature")
+    oracle: str = Field(default="executable", description="executable subprocess runner or llm_judge fallback")
+    n: int = Field(description="samples generated per FR")
     k_values: list[int] = Field(default_factory=list)
+    frs: list[FRCertification] = Field(default_factory=list)
     features: list[FeatureCertification] = Field(default_factory=list)
     aggregate_pass_at: dict[str, float] = Field(
         default_factory=dict, description="mean pass@k across features"
+    )
+    aggregate_case_pass_rate: float = Field(
+        default=0.0, description="fraction of individual test case executions that passed"
     )
     notes: list[str] = Field(default_factory=list)

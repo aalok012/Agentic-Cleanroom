@@ -1,79 +1,369 @@
-"""Turn generated MVC code into an importable, runnable Python package.
+"""Assemble generated MVC code into a runnable FastAPI application package.
 
-The Code Agent emits each increment in isolation, so intra-project imports don't
-agree on a layout (e.g. ``from models.health_event import X`` while the file lives
-at ``model/health_event.py``). This post-step assembles the files into one ``app``
-package, rewrites intra-project imports to match, adds ``__init__.py`` files, and
-writes a ``main.py`` that imports every module so you can verify the package wires
-up.
+The Code Agent emits one file per functional requirement (a flat ``GeneratedCode`` with
+``files``); for the FastAPI stack each file imports the shared handle
+``from app.extensions import Base, SessionLocal, get_db`` and (for controllers/views)
+DEFINES — but never registers — an ``APIRouter``. This step lays those files out as an
+importable ``app`` package, adds the shared SQLAlchemy base/session plus a ``create_app()``
+factory that initializes the database and registers every router it finds, and writes a
+``requirements.txt``.
 
-It is MECHANICAL only — it changes import statements and file layout, never program
-logic — so the no-feedback isolation of the pipeline is not affected.
+It is MECHANICAL only — it lays out files and writes fixed scaffolding, never program
+logic — so the no-feedback isolation of the pipeline is unaffected.
 """
 
 import ast
 from pathlib import Path
 
-_MAIN_TEMPLATE = '''"""Smoke driver: import every generated module and report what loaded.
+# Conventional layer directories (match the planner's deterministic file_path layout).
+_LAYER_DIRS = ("models", "controllers", "views")
+_SINGULAR_TO_DIR = {"model": "models", "view": "views", "controller": "controllers"}
 
-Run from this directory:  python -m app.main
-(Some View modules need third-party libs — see ../requirements.txt.)
+_EXTENSIONS_TEMPLATE = '''"""Shared SQLAlchemy base and session factory for generated models."""
+from collections.abc import Generator
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
+
+Base = declarative_base()
+
+engine = create_engine("sqlite:///./app.db", connect_args={"check_same_thread": False})
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
+def get_db() -> Generator[Session, None, None]:
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+'''
+
+_INIT_TEMPLATE = '''"""Application factory: build the FastAPI app, init the database, register routers.
+
+Generated mechanically by the pipeline's packager — no business logic lives here.
+Run with:  uvicorn app:create_app --factory   (or: python -m app)
 """
 import importlib
 import pkgutil
 
+from fastapi import APIRouter, FastAPI
 
-def main() -> None:
-    ok, failed = [], []
-    for layer in ("model", "controller", "view"):
+from app.extensions import Base, engine
+
+_LAYERS = ("models", "controllers", "views")
+
+
+def create_app() -> FastAPI:
+    app = FastAPI()
+
+    # Import every generated module so models register on the metadata and routers
+    # become importable, then register any APIRouter instances found. Each file is
+    # generated in isolation, so router tags collide; register every distinct router
+    # exactly once under a prefix made unique by its source module.
+    registered_ids: set[int] = set()
+    for layer in _LAYERS:
         try:
-            pkg = importlib.import_module(f"app.{layer}")
+            package = importlib.import_module(f"app.{layer}")
         except ModuleNotFoundError:
             continue
-        for info in pkgutil.iter_modules(pkg.__path__):
-            name = f"app.{layer}.{info.name}"
-            try:
-                module = importlib.import_module(name)
-                classes = [n for n in vars(module) if n[:1].isupper()]
-                ok.append((name, classes))
-            except Exception as exc:  # noqa: BLE001 - report, don't crash
-                failed.append((name, f"{type(exc).__name__}: {exc}"))
+        for info in pkgutil.iter_modules(package.__path__):
+            module = importlib.import_module(f"app.{layer}.{info.name}")
+            for value in vars(module).values():
+                if not isinstance(value, APIRouter) or id(value) in registered_ids:
+                    continue
+                registered_ids.add(id(value))
+                prefix = f"/{layer}/{info.name}"
+                app.include_router(value, prefix=prefix, tags=[info.name])
 
-    print(f"Imported {len(ok)} module(s):")
-    for name, classes in ok:
-        print(f"  {name}: {', '.join(classes) or '(no top-level classes)'}")
-    if failed:
-        print(f"\\n{len(failed)} module(s) need attention (often a missing dependency):")
-        for name, err in failed:
-            print(f"  {name}: {err}")
+    Base.metadata.create_all(bind=engine)
+    return app
+'''
 
+_MAIN_TEMPLATE = '''"""Run the assembled app:  python -m app"""
+import uvicorn
+
+from app import create_app
 
 if __name__ == "__main__":
-    main()
+    uvicorn.run(create_app(), host="0.0.0.0", port=8000)
 '''
 
 
+def _layer_dir(path: str, mvc_layer: str) -> str:
+    """The package subdirectory for a generated file: prefer the directory in its contract
+    path (e.g. 'controllers/foo.py' -> 'controllers'), else the pluralized mvc_layer."""
+    parts = Path(path).parts
+    if len(parts) > 1 and parts[0] in _LAYER_DIRS:
+        return parts[0]
+    return _SINGULAR_TO_DIR.get((mvc_layer or "").strip().lower(), "controllers")
+
+
 def _collect(generated_code: dict) -> list[tuple[str, str, str]]:
-    """[(layer, filename, content)], de-duplicating same-named files within a layer."""
+    """[(layer_dir, filename, content)] from the flat GeneratedCode ``files`` schema.
+
+    Same-named files within a layer are disambiguated by fr_id rather than overwritten.
+    Tolerates the legacy ``increments`` shape so older IRs still package.
+    """
+    files = generated_code.get("files") or [
+        f for inc in generated_code.get("increments", []) for f in inc.get("files", [])
+    ]
     out: list[tuple[str, str, str]] = []
     seen: set[tuple[str, str]] = set()
-    for inc in generated_code.get("increments", []):
-        for f in inc.get("files", []):
-            layer = (f.get("mvc_layer") or "unknown").strip().lower() or "unknown"
-            name = Path(f["path"]).name
-            if (layer, name) in seen:
-                name = f"{Path(name).stem}_inc{inc.get('increment_id', 'x')}{Path(name).suffix}"
-            seen.add((layer, name))
-            out.append((layer, name, f.get("content", "")))
+    for f in files:
+        path = f.get("path", "")
+        layer_dir = _layer_dir(path, f.get("mvc_layer", ""))
+        name = Path(path).name or "module.py"
+        if (layer_dir, name) in seen:
+            stem, suffix = Path(name).stem, Path(name).suffix
+            name = f"{stem}_{str(f.get('fr_id', 'x')).replace('.', '_')}{suffix}"
+        seen.add((layer_dir, name))
+        out.append((layer_dir, name, f.get("content", "")))
     return out
 
 
-def _rewrite_imports(content: str, stem_to_layer: dict[str, str]) -> str:
-    """Rewrite intra-project imports to absolute ``app.<layer>.<module>`` paths."""
+def _model_class_defs(content: str) -> list[ast.ClassDef]:
+    """Top-level classes that subclass Base (SQLAlchemy declarative) in a generated file."""
     try:
         tree = ast.parse(content)
     except SyntaxError:
-        return content  # leave unparseable generated files untouched
+        return []
+    out: list[ast.ClassDef] = []
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef) and any(
+            (isinstance(b, ast.Name) and b.id in ("Base", "Model"))
+            or (isinstance(b, ast.Attribute) and b.attr in ("Base", "Model"))
+            for b in node.bases
+        ):
+            out.append(node)
+    return out
+
+
+def _model_score(node: ast.ClassDef) -> tuple[int, int]:
+    """Rank a model definition by (has_primary_key, column_count) so the most complete wins."""
+    has_pk = False
+    columns = 0
+    for sub in ast.walk(node):
+        if isinstance(sub, ast.Call) and (
+            (isinstance(sub.func, ast.Attribute) and sub.func.attr == "Column")
+            or (isinstance(sub.func, ast.Name) and sub.func.id == "Column")
+        ):
+            columns += 1
+            for kw in sub.keywords:
+                if kw.arg == "primary_key" and isinstance(kw.value, ast.Constant) and kw.value.value is True:
+                    has_pk = True
+    return (1 if has_pk else 0, columns)
+
+
+def _dedupe_models(files: list[tuple[str, str, str]]) -> list[tuple[str, str, str]]:
+    """Collapse model classes redefined across files (an isolated-generation artifact).
+
+    Each functional requirement is generated independently, so the same SQLAlchemy model
+    (e.g. ``SearchResult``) is often declared in several files — sometimes as an empty
+    stub with no primary key, which makes the shared declarative base unmappable. Keep the
+    single most complete definition of each model and rewrite every other declaration into
+    an import of the canonical one, so the assembled app imports cleanly.
+    """
+    canonical: dict[str, tuple[tuple[int, int], str, str]] = {}
+    for layer_dir, name, content in files:
+        stem = Path(name).stem
+        for node in _model_class_defs(content):
+            score = _model_score(node)
+            current = canonical.get(node.name)
+            better = current is None or score > current[0] or (
+                score == current[0] and (layer_dir == "models") and current[1] != "models"
+            )
+            if better:
+                canonical[node.name] = (score, layer_dir, stem)
+
+    rewritten: list[tuple[str, str, str]] = []
+    for layer_dir, name, content in files:
+        stem = Path(name).stem
+        removals = [
+            (node, canonical[node.name])
+            for node in _model_class_defs(content)
+            if canonical.get(node.name) and canonical[node.name][1:] != (layer_dir, stem)
+        ]
+        if removals:
+            lines = content.splitlines()
+            for node, (_, canon_layer, canon_stem) in sorted(
+                removals, key=lambda r: r[0].lineno, reverse=True
+            ):
+                import_line = f"from app.{canon_layer}.{canon_stem} import {node.name}"
+                lines[node.lineno - 1: node.end_lineno] = [import_line]
+            content = "\n".join(lines) + ("\n" if content.endswith("\n") else "")
+        content = _redirect_model_imports(content, stem, canonical)
+        rewritten.append((layer_dir, name, content))
+    return rewritten
+
+
+def _redirect_model_imports(content: str, stem: str, canonical: dict) -> str:
+    """Point every ``from ... import <Model>`` at the canonical module that defines it."""
+    try:
+        tree = ast.parse(content)
+    except SyntaxError:
+        return content
+
+    edits = []
+    for node in tree.body:
+        if not isinstance(node, ast.ImportFrom):
+            continue
+        model_aliases = [a for a in node.names if a.name in canonical]
+        if not model_aliases:
+            continue
+        other = [a for a in node.names if a.name not in canonical]
+        new_lines: list[str] = []
+        if other and node.module:
+            names = ", ".join(a.asname and f"{a.name} as {a.asname}" or a.name for a in other)
+            new_lines.append(f"from {'.' * node.level}{node.module} import {names}")
+        for alias in model_aliases:
+            _, canon_layer, canon_stem = canonical[alias.name]
+            if canon_stem == stem:
+                continue
+            new_lines.append(f"from app.{canon_layer}.{canon_stem} import {alias.name}")
+        edits.append((node.lineno, node.end_lineno, new_lines))
+
+    if not edits:
+        return content
+    lines = content.splitlines()
+    for lineno, end_lineno, new_lines in sorted(edits, key=lambda e: e[0], reverse=True):
+        lines[lineno - 1: end_lineno] = new_lines
+    return "\n".join(lines) + ("\n" if content.endswith("\n") else "")
+
+
+# The names a generated FastAPI-stack file references but, because each file is generated
+# in isolation and the Code Agent trims its import list to "what it uses" (and miscounts),
+# frequently forgets to import — leaving the module unimportable and taking the whole
+# assembled app down at boot. Each maps to the module it is canonically imported from.
+# Repairing the import is mechanical (imports only, never program logic) so isolation holds.
+_KNOWN_IMPORTS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("app.extensions", ("Base", "SessionLocal", "engine", "get_db")),
+    ("fastapi", ("APIRouter", "Body", "HTTPException", "Depends", "status",
+                 "Query", "Path", "Header", "Form")),
+    ("sqlalchemy", ("Column", "Integer", "BigInteger", "SmallInteger", "String", "Text",
+                    "Float", "Numeric", "Boolean", "Date", "DateTime", "Time", "ForeignKey",
+                    "LargeBinary", "Enum", "JSON", "Table", "UniqueConstraint", "Index")),
+    ("sqlalchemy.orm", ("Session", "relationship", "sessionmaker", "declarative_base")),
+)
+
+
+def _ensure_known_imports(content: str) -> str:
+    """Add any well-known FastAPI/SQLAlchemy/app name a file references but never imports.
+
+    Deterministic repair of the Code Agent's most frequent FastAPI-stack boot failures
+    (``Column(Integer, ...)`` with ``Integer`` unimported, ``class X(Base)`` with ``Base``
+    unimported, etc.). Merges into an existing ``from <module> import ...`` line when present,
+    else inserts a new one after the last import. Touches imports only — never logic.
+    """
+    try:
+        tree = ast.parse(content)
+    except SyntaxError:
+        return content
+
+    available: set[str] = set()           # names already importable/bound in the file
+    module_nodes: dict[str, ast.ImportFrom] = {}
+    last_import_line = 0
+    for node in tree.body:
+        if isinstance(node, ast.ImportFrom):
+            last_import_line = node.end_lineno or node.lineno
+            for a in node.names:
+                available.add(a.asname or a.name)
+            key = ("." * node.level) + (node.module or "")
+            module_nodes.setdefault(key, node)
+        elif isinstance(node, ast.Import):
+            last_import_line = node.end_lineno or node.lineno
+            for a in node.names:
+                available.add((a.asname or a.name).split(".")[0])
+        elif isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+            available.add(node.name)       # locally defined — don't re-import
+        elif isinstance(node, ast.Assign):
+            for t in node.targets:
+                if isinstance(t, ast.Name):
+                    available.add(t.id)
+
+    used = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
+    lines = content.splitlines()
+    new_lines: list[str] = []             # (module, names) to append at the end as fresh imports
+    edits: list[tuple[int, int, str]] = []  # (start, end, replacement) for existing import lines
+
+    for module, names in _KNOWN_IMPORTS:
+        missing = [n for n in names if n in used and n not in available]
+        if not missing:
+            continue
+        node = module_nodes.get(module)
+        if node is not None:
+            existing = [a.asname or a.name for a in node.names]
+            edits.append((node.lineno, node.end_lineno or node.lineno,
+                          f"from {module} import " + ", ".join(existing + missing)))
+        else:
+            new_lines.append(f"from {module} import " + ", ".join(missing))
+
+    if not edits and not new_lines:
+        return content
+    for start, end, text in sorted(edits, key=lambda e: e[0], reverse=True):
+        lines[start - 1: end] = [text]
+    for offset, text in enumerate(new_lines):
+        lines.insert(last_import_line + offset, text)
+    return "\n".join(lines) + ("\n" if content.endswith("\n") else "")
+
+
+def _allow_table_redefinition(content: str) -> str:
+    """Let same-named tables declared across isolated files coexist on the shared metadata.
+
+    Each FR is generated independently, so the same entity (e.g. ``orders``) is often
+    declared in several files under DIFFERENT class names (``Order``, ``OrderModel``) but
+    the SAME ``__tablename__``. On one declarative ``Base`` that raises
+    ``InvalidRequestError: Table 'orders' is already defined``. Adding
+    ``__table_args__ = {"extend_existing": True}`` to each model that declares a tablename
+    (and lacks table_args) lets SQLAlchemy merge them so the app boots. Mechanical — adds a
+    fixed class attribute, never business logic — so isolation is unaffected.
+    """
+    try:
+        tree = ast.parse(content)
+    except SyntaxError:
+        return content
+
+    inserts: list[tuple[int, str]] = []  # (after_line, text)
+    for node in tree.body:
+        if not (isinstance(node, ast.ClassDef) and any(
+            (isinstance(b, ast.Name) and b.id in ("Base", "Model"))
+            or (isinstance(b, ast.Attribute) and b.attr in ("Base", "Model"))
+            for b in node.bases
+        )):
+            continue
+        tablename_stmt = None
+        has_table_args = False
+        for stmt in node.body:
+            targets = stmt.targets if isinstance(stmt, ast.Assign) else (
+                [stmt.target] if isinstance(stmt, ast.AnnAssign) else [])
+            for t in targets:
+                if isinstance(t, ast.Name) and t.id == "__tablename__":
+                    tablename_stmt = stmt
+                if isinstance(t, ast.Name) and t.id == "__table_args__":
+                    has_table_args = True
+        if tablename_stmt is not None and not has_table_args:
+            indent = " " * tablename_stmt.col_offset
+            inserts.append((tablename_stmt.end_lineno or tablename_stmt.lineno,
+                            f'{indent}__table_args__ = {{"extend_existing": True}}'))
+
+    if not inserts:
+        return content
+    lines = content.splitlines()
+    for after_line, text in sorted(inserts, key=lambda x: x[0], reverse=True):
+        lines.insert(after_line, text)
+    return "\n".join(lines) + ("\n" if content.endswith("\n") else "")
+
+
+def _rewrite_imports(content: str, stem_to_layer: dict[str, str]) -> str:
+    """Rewrite intra-project imports to absolute ``app.<layer_dir>.<module>`` paths.
+
+    Only touches modules that correspond to a generated file stem, so the shared
+    ``from app.extensions import ...`` and any third-party imports are left untouched.
+    """
+    try:
+        tree = ast.parse(content)
+    except SyntaxError:
+        return content
 
     lines = content.splitlines()
     for node in ast.walk(tree):
@@ -87,7 +377,7 @@ def _rewrite_imports(content: str, stem_to_layer: dict[str, str]) -> str:
             for alias in node.names:
                 last = alias.name.split(".")[-1]
                 layer = stem_to_layer.get(last)
-                if layer and alias.name != last:  # only dotted intra-project imports
+                if layer and alias.name != last:
                     i = node.lineno - 1
                     lines[i] = lines[i].replace(f"import {alias.name}", f"import app.{layer}.{last} as {last}", 1)
 
@@ -96,29 +386,34 @@ def _rewrite_imports(content: str, stem_to_layer: dict[str, str]) -> str:
 
 
 def build_runnable_package(generated_code: dict, out_dir: Path) -> Path:
-    """Assemble generated_code into out_dir/app/ as an importable package. Returns the app dir."""
+    """Assemble generated_code into out_dir/app/ as a runnable FastAPI package. Returns the app dir."""
     from src.cleanroom.utils.code_stats import code_stats
 
-    files = _collect(generated_code)
-    stem_to_layer = {Path(name).stem: layer for layer, name, _ in files}
+    files = _dedupe_models(_collect(generated_code))
+    stem_to_layer = {Path(name).stem: layer_dir for layer_dir, name, _ in files}
 
     app = out_dir / "app"
     app.mkdir(parents=True, exist_ok=True)
-    (app / "__init__.py").write_text("")
+    (app / "__init__.py").write_text(_INIT_TEMPLATE)
+    (app / "extensions.py").write_text(_EXTENSIONS_TEMPLATE)
+    (app / "__main__.py").write_text(_MAIN_TEMPLATE)
 
     layers: set[str] = set()
-    for layer, name, content in files:
-        layers.add(layer)
-        dest = app / layer / name
+    for layer_dir, name, content in files:
+        layers.add(layer_dir)
+        dest = app / layer_dir / name
         dest.parent.mkdir(parents=True, exist_ok=True)
-        dest.write_text(_rewrite_imports(content, stem_to_layer))
-    for layer in layers:
-        (app / layer / "__init__.py").write_text("")
+        content = _rewrite_imports(content, stem_to_layer)
+        content = _ensure_sqlalchemy_imports(content)
+        content = _allow_table_redefinition(content)
+        dest.write_text(content)
+    for layer_dir in layers:
+        (app / layer_dir / "__init__.py").write_text("")
 
-    (app / "main.py").write_text(_MAIN_TEMPLATE)
-
+    ignore = {"app", "fastapi", "uvicorn", "sqlalchemy", "pydantic"}
     third_party = code_stats(generated_code)["third_party_libraries"]
-    (out_dir / "requirements.txt").write_text("\n".join(third_party) + ("\n" if third_party else ""))
+    deps = sorted({d for d in third_party if d not in ignore} | {"fastapi", "uvicorn", "sqlalchemy"})
+    (out_dir / "requirements.txt").write_text("\n".join(deps) + "\n")
     return app
 
 
@@ -138,7 +433,7 @@ if __name__ == "__main__":
 
     out = Path("outputs/generated") / ir.get("project_name", "project") / "runnable"
     app_dir = build_runnable_package(ir["generated_code"], out)
-    print(f"Runnable package written to: {app_dir}")
+    print(f"Runnable FastAPI package written to: {app_dir}")
     print("Run it with:")
     print(f'  cd "{out}"')
-    print("  python -m app.main")
+    print("  python -m app")

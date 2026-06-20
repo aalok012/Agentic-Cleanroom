@@ -26,6 +26,62 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-20 — Auto stack selection + FastAPI HTTP path + slimmer contract
+
+### Removed
+- **Step 1 — Dropped `current_state`, `new_state`, `state_invariant` from the behavioral contract.**
+  Why: the state/invariant fields bloated the contract and the LLM filled them with vague
+  prose that added little over precondition/postcondition. How: removed the fields from
+  `BehavioralContract` and `FRContract` in
+  [src/cleanroom/agents/spec_agent/schema/ir.py](src/cleanroom/agents/spec_agent/schema/ir.py),
+  the matching bullets in [write_contract.j2](src/cleanroom/agents/spec_agent/prompts/write_contract.j2),
+  both contract constructions in [spec_agent/agent.py](src/cleanroom/agents/spec_agent/agent.py),
+  and the "State transition"/"Invariant" Notes blocks in `_compose_docstring`
+  ([planning/agent.py](src/cleanroom/agents/planning/agent.py)). Updated `tests/test_planning_contracts.py`.
+
+### Added
+- **Step 2 — Deterministic target-stack classifier.** Why: stateless SRSs (video search) want
+  pure functions; stateful CRUD SRSs (DineOut) need a real DB-backed web app — picking the
+  wrong one produced fake in-memory state and hardcoded data. How: new
+  [src/cleanroom/utils/stack_select.py](src/cleanroom/utils/stack_select.py) votes over
+  spec-derived requirement text + preconditions and returns `(stack, reason)`. Verified:
+  video search → python (29% stateful), DineOut → fastapi (80%).
+- **Step 3 — `--stack auto` (now the default).** Why: select per SRS unless pinned. How:
+  `run_pipeline.py` resolves the stack right after contract synthesis, stores `ir["stack"]`,
+  and prints the decision; explicit `--stack python|fastapi` overrides.
+- **Step 4 — FastAPI HTTP certification oracle.** Why: certifying web-stack code with the
+  pure-function oracle was impossible (the original DineOut failure). How: `run_case_http` +
+  `route_from_file_path` in [evaluation/runner.py](src/cleanroom/agents/evaluation/runner.py)
+  assemble the runnable app and drive it via `TestClient` in a subprocess (200 JSON body for
+  `eq`, 4xx for `raises`); `CertificationAgent` selects the oracle by stack and lays samples
+  out via `build_runnable_package` for fastapi. New `tests/test_fastapi_oracle.py`.
+
+### Changed
+- **Step 5 — FastAPI codegen now emits real HTTP responses + errors.** Why: produce
+  app-usable code with no hardcoding/fake state. How: the fastapi branch of
+  [generate_code.j2](src/cleanroom/agents/code/prompts/generate_code.j2) (and the revision
+  prompt) mandates DB-backed reads/writes, `@router.post("")` with `Body(...)` params,
+  JSON return on success, and `HTTPException(4xx)` on failure; `_compose_docstring` emits
+  `Raises: HTTPException` for the fastapi stack.
+
+### Fixed
+- **Step 6 — FastAPI/SQLAlchemy now installed (root cause #1).** Why: the cert subprocess
+  raised `ModuleNotFoundError: fastapi`. How: `uv add fastapi sqlalchemy uvicorn httpx`.
+- **Step 7 — Test Agent is now stack-aware (was emitting "vanilla" Python tests for FastAPI).**
+  Why: the generated `pytest_source` imported routes flat and called them directly with
+  `pytest.raises(ValueError)` — uncallable against the assembled FastAPI app. How: `TestAgent`
+  takes `stack`; [generate_tests.j2](src/cleanroom/agents/test/prompts/generate_tests.j2) now
+  emits a `TestClient` module that POSTs to the route and asserts `status_code`/`json()`
+  (4xx for failures) on fastapi, plain function calls on python; threaded `stack` from
+  run_pipeline stage 5 and the `CertificationAgent` fallback.
+- **Step 8 — `requirement_for_prompt` now supplies the behavioral-contract fields.** Why: the
+  test prompt referenced `r.stimulus`/`precondition`/`response`/`postcondition` and the route,
+  none of which were provided — a latent `StrictUndefined` crash in the test stage. How: pulled
+  them from `plan['contract']` and added a deterministic `route` (`route_for`) in
+  [contracts.py](src/cleanroom/utils/contracts.py), mirroring `evaluation.runner.route_from_file_path`.
+
+---
+
 ## 2026-06-16 — Remove stub LLM mode
 
 ### Removed

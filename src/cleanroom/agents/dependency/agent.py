@@ -4,18 +4,14 @@ Produces a NESTED dependency graph, purely deterministically (no LLM unless the 
 semantic pass is enabled):
 
   OUTER (feature level): a DAG over features plus a build order, detected from explicit
-  cross-references in requirement text (e.g. "see section 2.2"). Cross-references in BOTH
-  functional and non-functional requirements are considered, but only FEATURES THAT HAVE
-  FUNCTIONAL REQUIREMENTS are nodes — a feature made of NFRs only is a pure constraint, not
-  a buildable node.
+  cross-references in functional-requirement text (e.g. "see section 2.2"). Only FEATURES
+  THAT HAVE FUNCTIONAL REQUIREMENTS are nodes.
 
   INNER (FR level): within each feature, a DAG over its FUNCTIONAL requirements, detected
   the same way (an FR whose text references another requirement in the same feature). Each
   feature carries its own `fr_order`, `fr_edges`, and `fr_cycles`.
 
-NFRs are NEVER nodes in either graph. They ride along on their feature as constraints so
-downstream agents (planning) can read them; here they only ever contribute edges at the
-outer level when their text references another feature.
+The pipeline is FR-only: every requirement reaching this agent is a functional requirement.
 
 Not every cross-reference is a dependency. A pointer like "more information is found in
 section 2.5" tells the reader where to look; it is NOT a build prerequisite. Such
@@ -30,6 +26,7 @@ Edge direction convention (easy to get backwards):
 import json
 import re
 import sys
+import time
 from collections import defaultdict
 
 from src.cleanroom.agents.dependency.schema.graph import (
@@ -37,6 +34,7 @@ from src.cleanroom.agents.dependency.schema.graph import (
     DependencyGraph,
     FeatureFRDeps,
 )
+from src.cleanroom.utils.ir import feature_id_of, normalize_ir_features, requirement_text
 from src.cleanroom.utils.prompt_renderer import PromptRenderer
 
 # Matches explicit cross-references like "section 2.2.2" or "Section 2.5".
@@ -84,9 +82,8 @@ def _strip_informational_refs(text: str) -> str:
 
 
 def _req_text(req: dict) -> str:
-    """Requirement text. Phase 1 renamed the field to `text`; fall back to the legacy
-    `description` so older/raw-parser IRs still work."""
-    return req.get("text") or req.get("description", "") or ""
+    """Requirement text — delegates to canonical IR helper."""
+    return requirement_text(req)
 
 
 def _norm_id(raw: str) -> str:
@@ -122,15 +119,12 @@ class DependencyAnalyzer:
     # OUTER: feature-level graph
     # ------------------------------------------------------------------
     def analyze(self, ir: dict) -> DependencyGraph:
-        # (a) Nodes come from FUNCTIONAL requirements only; edges may also be sourced from
-        #     NFR text (a constraint can still reference another feature).
+        # (a) Nodes and edge sources both come from FUNCTIONAL requirements (FR-only pipeline).
         fr_features: set[str] = set()
         scan: list[tuple[str, str, str]] = []  # (req_id, feature_id_of_source, text)
         for feature in ir.get("features", []):
             for req in feature.get("functional_requirements", []):
                 fr_features.add(feature_of(req["id"]))
-                scan.append((req["id"], feature_of(req["id"]), _req_text(req)))
-            for req in feature.get("non_functional_requirements", []):
                 scan.append((req["id"], feature_of(req["id"]), _req_text(req)))
 
         nodes = sorted(fr_features, key=_numeric_key)
@@ -141,7 +135,7 @@ class DependencyAnalyzer:
         seen: set[tuple[str, str]] = set()
         for req_id, source_feature, text in scan:
             if source_feature not in known:
-                continue  # NFR-only feature is not a buildable node, so not an edge source
+                continue  # not a buildable node, so not an edge source
             for match in SECTION_REF.finditer(text):
                 target_feature = feature_of(match.group(1))
                 if target_feature == source_feature:
@@ -180,7 +174,7 @@ class DependencyAnalyzer:
         nodes = sorted(fr_ids, key=_numeric_key)
         within = set(fr_ids)
         # The feature id, so we can ignore "section <feature>" whole-feature self-references.
-        feature_id = feature.get("id") or (feature_of(fr_ids[0]) if fr_ids else "")
+        feature_id = feature_id_of(feature) or (feature_of(fr_ids[0]) if fr_ids else "")
 
         edges: list[DependencyEdge] = []
         seen: set[tuple[str, str]] = set()
@@ -248,9 +242,12 @@ class DependencyAnalyzer:
         requirements = [{"id": r["id"], "text": _strip_informational_refs(_req_text(r))} for r in frs]
         prompt = self.renderer.render(
             "infer_fr_deps.j2",
-            {"feature_name": feature.get("name", feature.get("id", "")), "requirements": requirements},
+            {"feature_name": feature.get("name", feature_id_of(feature)), "requirements": requirements},
         )
-        result: FeatureFRDeps = self.llm.with_structured_output(FeatureFRDeps).invoke(prompt)
+        try:
+            result: FeatureFRDeps = self.llm.with_structured_output(FeatureFRDeps).invoke(prompt)
+        except Exception as _exc:
+            raise
 
         pairs: list[tuple[str, str]] = []
         for dep in result.dependencies:
@@ -272,6 +269,7 @@ class DependencyAnalyzer:
           - inner graph on each feature as 'fr_order' / 'fr_edges' / 'fr_cycles'
         Optionally writes the result to <output_dir>/<project>_dependency.json.
         """
+        normalize_ir_features(ir)
         graph = self.analyze(ir)
 
         new_features: list[dict] = []

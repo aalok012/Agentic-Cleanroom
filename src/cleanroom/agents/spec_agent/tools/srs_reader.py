@@ -6,15 +6,21 @@ Responsibilities (all deterministic — no LLM involved):
   - Assign every node a stable ID: the real `id` attribute if present,
     otherwise a position-based fallback.
   - Tag each node as "section" (grouping header) or "requirement".
-  - Group requirements under their feature by ID prefix.
-  - Give every feature its own description so childless features
-    (e.g. Security, Privacy) are never left empty.
+  - Extract functional requirements ONLY from:
+      * "Functional Requirements" sections (legacy req_document, e.g. video search),
+      * ``SystemRequirements`` / ``<Feature>`` blocks (e.g. DineOut, Gemini),
+      * PEPPOL/VCD ``req_document`` subsections with MUST/SHOULD/SHALL itemize bullets.
+
+`<itemize>` handling is section-aware: everywhere else an itemize is an OVERVIEW list
+and is skipped (so it never produces phantom requirements), but inside a
+"Functional Requirements" section the itemize items ARE the requirements.
 
 The LLM is intentionally kept OUT of IDs, structure, and grouping so that
 those can never drift or hallucinate. The LLM's job downstream is only
 interpretation (e.g. inferring inputs/outputs for feature-style SRS).
 """
 
+import re
 from pathlib import Path
 
 from lxml import etree
@@ -55,6 +61,21 @@ def _extract_text_body(tb) -> str:
     return " ".join(p for p in parts if p)
 
 
+def _extract_itemize_items(tb) -> list[str]:
+    """Return the text of every <item> inside any <itemize> under a <text_body>.
+
+    Used ONLY for "Functional Requirements" sections, where each item (e.g.
+    "REQ-1: ...") is a real requirement. Elsewhere itemize is skipped as overview.
+    """
+    items: list[str] = []
+    for el in tb.iter():
+        if _strip_ns(el.tag) == "item":
+            text = _clean("".join(el.itertext()))
+            if text:
+                items.append(text)
+    return items
+
+
 # --------------------------------------------------------------------------
 # parsing
 # --------------------------------------------------------------------------
@@ -68,6 +89,7 @@ def _parse_node(node, fallback_id: str) -> dict | None:
 
     title = ""
     body = ""
+    items: list[str] = []
     children = []
     child_index = 0
 
@@ -77,90 +99,200 @@ def _parse_node(node, fallback_id: str) -> dict | None:
             title = _clean("".join(child.itertext()))
         elif ctag == "text_body":
             body = _extract_text_body(child)
+            items = _extract_itemize_items(child)
         elif ctag == "p":
             child_index += 1
             parsed = _parse_node(child, f"{node_id}.{child_index}")
             if parsed:
                 children.append(parsed)
 
-    return {"id": node_id, "title": title, "body": body, "children": children}
-
-
-def _classify(node: dict) -> str:
-    """
-    Deterministic tag:
-      section     = grouping header (has children, no requirement text of its own)
-      requirement = carries an actual statement
-    Errs toward 'requirement' (safe direction — better to over-include).
-    """
-    has_children = len(node["children"]) > 0
-    has_text = bool(node["body"])
-    if has_children and not has_text:
-        return "section"
-    return "requirement"
-
-
-def _flatten(node: dict, out: list) -> None:
-    out.append(
-        {
-            "id": node["id"],
-            "type": _classify(node),
-            "title": node["title"],
-            "text": node["body"],
-        }
-    )
-    for child in node["children"]:
-        _flatten(child, out)
+    return {"id": node_id, "title": title, "body": body, "items": items, "children": children}
 
 
 # --------------------------------------------------------------------------
-# grouping
+# FR-only, section-aware feature building
 # --------------------------------------------------------------------------
-def feature_key(node_id: str) -> str:
-    """
-    The feature an ID belongs to = its first two dot-segments.
-    '2.2.6.9' -> '2.2'   '2.2.1.1a' -> '2.2'   '2.5' -> '2.5'
-    """
-    parts = node_id.split(".")
-    if len(parts) <= 2:
-        return node_id
-    return ".".join(parts[:2])
+FR_SECTION_TITLE = "functional requirements"  # the ONLY section title we extract from
+
+# A leading "REQ-<n>:" label inside an <item>, e.g. "REQ-1: Torrent search will ...".
+_REQ_LABEL = re.compile(r"^\s*REQ[-_\s]?(\d+)\s*[:.)\-]?\s*(.*)$", re.IGNORECASE | re.DOTALL)
+
+# Normative RFC 2119 language in PEPPOL-style ``req_document`` itemize bullets.
+_NORMATIVE = re.compile(
+    r"\b(MUST NOT|SHALL NOT|SHOULD NOT|MUST|SHALL|SHOULD)\b",
+    re.IGNORECASE,
+)
 
 
-def group_into_features(reqs: list[dict]) -> list[dict]:
-    """
-    Group requirements under their feature using ID prefixes.
-    Each feature carries its own description (from its node's text), so
-    childless features are never empty.
-    """
-    by_id = {r["id"]: r for r in reqs}
+def _is_fr_section(node: dict) -> bool:
+    """True iff this node's title is exactly 'Functional Requirements' (case-insensitive)."""
+    return _clean(node.get("title", "")).lower() == FR_SECTION_TITLE
 
+
+def _parse_req_item(item_text: str) -> tuple[str | None, str]:
+    """Split an itemize entry into ('REQ-<n>', body); label is None if no REQ prefix."""
+    m = _REQ_LABEL.match(item_text)
+    if m:
+        return f"REQ-{int(m.group(1))}", _clean(m.group(2))
+    return None, _clean(item_text)
+
+
+def _feature_description(parent: dict) -> str:
+    """A feature's blurb: its own text, else its 'Description and Priority' child's text."""
+    if parent.get("body"):
+        return parent["body"]
+    for child in parent.get("children", []):
+        if "description" in _clean(child.get("title", "")).lower():
+            return child.get("body", "")
+    return ""
+
+
+def build_fr_features(tree: list[dict]) -> list[dict]:
+    """Build features from FUNCTIONAL-REQUIREMENT sections only.
+
+    Walk the parsed tree; whenever a node's title is "Functional Requirements", its
+    PARENT is the feature and the section's <itemize> items (REQ-N) are that feature's
+    requirements. IDs are derived purely from structure: '<feature_id>.REQ-<n>'.
+    Narrative and non-functional sections are never visited for extraction.
+    """
     features: dict[str, dict] = {}
     order: list[str] = []
 
-    for r in reqs:
-        if "." not in r["id"]:
-            continue  # skip top-level document prose (intro / preamble)
-
-        key = feature_key(r["id"])
-        if key not in features:
-            header = by_id.get(key, {})
-            features[key] = {
-                "feature_id": key,
-                "name": header.get("title") or key,
-                "description": header.get("text", ""),
+    def add_feature(parent: dict, fr_node: dict) -> None:
+        feature_id = parent["id"]
+        if feature_id not in features:
+            features[feature_id] = {
+                "id": feature_id,
+                "name": parent.get("title") or feature_id,
+                "description": _feature_description(parent),
                 "functional_requirements": [],
             }
-            order.append(key)
+            order.append(feature_id)
+        reqs = features[feature_id]["functional_requirements"]
 
-        if r["id"] == key:
-            continue  # the feature header itself isn't its own sub-requirement
-        if r["type"] == "requirement":
-            features[key]["functional_requirements"].append(
-                {"id": r["id"], "description": r["text"] or r["title"]}
-            )
+        items = fr_node.get("items", [])
+        if items:
+            for idx, item in enumerate(items, start=1):
+                label, text = _parse_req_item(item)
+                req_id = f"{feature_id}.{label or f'REQ-{idx}'}"
+                reqs.append({"id": req_id, "text": text})
+        else:
+            # Fallback for SRS variants that nest FR sub-<p> nodes instead of itemize.
+            for child in fr_node.get("children", []):
+                text = child.get("body") or child.get("title")
+                if text:
+                    reqs.append({"id": child["id"], "text": text})
+            # Gemini-style: prose requirement(s) directly in the FR section body (no itemize).
+            body = _clean(fr_node.get("body", ""))
+            if body and not any(r.get("text") == body for r in reqs):
+                reqs.append({"id": f"{feature_id}.REQ-{len(reqs) + 1}", "text": body})
+
+    def walk(node: dict) -> None:
+        for child in node.get("children", []):
+            if _is_fr_section(child):
+                add_feature(node, child)
+            walk(child)
+
+    for root in tree:
+        walk(root)
 
     return [features[k] for k in order]
+
+
+def _is_nfr_section_title(title: str) -> bool:
+    """Skip sections that are explicitly non-functional requirement lists."""
+    t = _clean(title).lower()
+    return "non-functional" in t or "non functional" in t
+
+
+def _normative_items(node: dict) -> list[str]:
+    """Itemize entries that contain RFC 2119 normative keywords."""
+    return [item for item in node.get("items", []) if _NORMATIVE.search(item)]
+
+
+def build_peppol_normative_features(tree: list[dict]) -> list[dict]:
+    """Build features from PEPPOL / VCD ``req_document`` SRS variants.
+
+    Each ``<p>`` subsection whose itemize list contains MUST/SHOULD/SHALL bullets
+    becomes one feature; each normative bullet becomes ``<feature_id>.REQ-<n>``.
+    Used when the document has no explicit "Functional Requirements" sections.
+    """
+    features: dict[str, dict] = {}
+    order: list[str] = []
+
+    def add_feature(node: dict, items: list[str]) -> None:
+        feature_id = node["id"]
+        if feature_id not in features:
+            features[feature_id] = {
+                "id": feature_id,
+                "name": node.get("title") or feature_id,
+                "description": node.get("body", ""),
+                "functional_requirements": [],
+            }
+            order.append(feature_id)
+        reqs = features[feature_id]["functional_requirements"]
+        for idx, item in enumerate(items, start=len(reqs) + 1):
+            label, text = _parse_req_item(item)
+            req_id = f"{feature_id}.{label or f'REQ-{idx}'}"
+            reqs.append({"id": req_id, "text": text})
+
+    def walk(node: dict) -> None:
+        if _is_nfr_section_title(node.get("title", "")):
+            for child in node.get("children", []):
+                walk(child)
+            return
+        items = _normative_items(node)
+        if items:
+            add_feature(node, items)
+        for child in node.get("children", []):
+            walk(child)
+
+    for root in tree:
+        walk(root)
+
+    return [features[k] for k in order if features[k]["functional_requirements"]]
+
+
+def build_system_requirements_features(root) -> list[dict]:
+    """Parse SRS variants that declare features directly under ``SystemRequirements``.
+
+    Example (DineOut): ``<Feature id="4.1" name="Place Order"><Description>...</Description></Feature>``.
+    Each feature's ``Description`` becomes a single functional requirement (``<id>.REQ-1``).
+    Non-functional sections elsewhere in the document are ignored.
+    """
+    sr = root.find(".//SystemRequirements")
+    if sr is None:
+        return []
+
+    features: list[dict] = []
+    for feat in sr:
+        if _strip_ns(feat.tag) != "Feature":
+            continue
+        feature_id = feat.get("id") or str(len(features) + 1)
+        name = feat.get("name") or feature_id
+        desc_el = feat.find("Description")
+        if desc_el is not None:
+            description = _clean("".join(desc_el.itertext()))
+        else:
+            # Gemini-style: requirement text directly inside <Feature> with no <Description>.
+            description = _clean(feat.text or "")
+
+        frs: list[dict] = []
+        if description:
+            frs.append({"id": f"{feature_id}.REQ-1", "text": description})
+        # Nested itemize under the feature (if present) adds further REQ-N entries.
+        for idx, item in enumerate(_extract_itemize_items(feat), start=2 if description else 1):
+            label, text = _parse_req_item(item)
+            frs.append({"id": f"{feature_id}.{label or f'REQ-{idx}'}", "text": text})
+
+        if frs:
+            features.append({
+                "id": feature_id,
+                "name": name,
+                "description": description,
+                "functional_requirements": frs,
+            })
+    return features
 
 
 # --------------------------------------------------------------------------
@@ -184,43 +316,30 @@ class SRSReader:
                     sections.append(parsed)
         return sections
 
-    def read_requirements(self, path: Path) -> list[dict]:
-        """Flat, de-duplicated list of every node: {id, type, title, text}.
-        IDs are 100% from the parser — the LLM never assigns them."""
-        flat: list[dict] = []
-        for s in self.read_tree(path):
-            _flatten(s, flat)
-
-        seen = set()
-        deduped = []
-        for r in flat:
-            if r["id"] in seen:
-                continue
-            seen.add(r["id"])
-            deduped.append(r)
-        return deduped
-
     def read_features(self, path: Path) -> list[dict]:
-        """Requirements grouped into features. This is the structural IR."""
-        return group_into_features(self.read_requirements(path))
+        """Functional requirements grouped into features (FR-only, section-aware).
 
-    def read(self, path: Path) -> str:
+        Supports three deterministic SRS shapes:
+          1. Legacy ``req_document`` with nested ``<p>`` nodes and a "Functional Requirements"
+             section per feature (itemize items become REQ-N).
+          2. ``SystemRequirements`` / ``<Feature>`` lists (e.g. DineOut) where each feature's
+             ``Description`` (or inline body text) becomes ``<feature_id>.REQ-1``.
+          3. PEPPOL / VCD ``req_document`` with normative MUST/SHOULD/SHALL itemize bullets
+             under requirement subsections (each subsection becomes a feature).
         """
-        Human/LLM-facing text view. Every requirement on its own line with
-        its ID bracketed at the front, so ID<->text binding is unambiguous.
-        Use this only if you want the LLM to add interpretation on top.
-        """
-        lines = []
-        for r in self.read_requirements(path):
-            label = f"[{r['id']}]"
-            tag = "" if r["type"] == "requirement" else " (section)"
-            if r["title"] and r["text"]:
-                lines.append(f"{label}{tag} {r['title']}: {r['text']}")
-            elif r["title"]:
-                lines.append(f"{label}{tag} {r['title']}")
-            elif r["text"]:
-                lines.append(f"{label}{tag} {r['text']}")
-        return "\n".join(lines)
+        if not path.exists():
+            raise FileNotFoundError(f"SRS file not found: {path}")
+        doc = etree.parse(str(path))
+        root = doc.getroot()
+        tree = self.read_tree(path)
+
+        features = build_fr_features(tree)
+        if features:
+            return features
+        features = build_system_requirements_features(root)
+        if features:
+            return features
+        return build_peppol_normative_features(tree)
 
 
 if __name__ == "__main__":
@@ -232,4 +351,4 @@ if __name__ == "__main__":
     total = sum(len(f["functional_requirements"]) for f in feats)
     print(f"{path.name}: {len(feats)} features, {total} requirements\n")
     for f in feats:
-        print(f"[{f['feature_id']}] {f['name']} -> {len(f['functional_requirements'])} reqs")
+        print(f"[{f['id']}] {f['name']} -> {len(f['functional_requirements'])} reqs")

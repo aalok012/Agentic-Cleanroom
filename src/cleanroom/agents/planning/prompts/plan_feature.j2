@@ -1,38 +1,70 @@
 You are a software design agent. Below are the functional requirements of ONE feature,
-listed in build order, plus that feature's non-functional constraints for context. For
-EACH functional requirement, design an implementation CONTRACT.
+listed in build order. Each requirement comes with a BEHAVIORAL CONTRACT (its stimulus,
+precondition, state, response, postcondition, and invariant). For EACH requirement, design
+the implementation surface that realizes its contract.
 
 The requirement IDs are FIXED — echo each id back exactly as given; never change, merge,
 drop, or invent ids.
 
 For each requirement produce:
 - signature: ONE concrete Python function signature — a name, typed parameters, and a
-  return type. Infer meaningful, domain-specific parameter names and types from the
-  requirement (e.g. a "Person", "Case", "Specimen", or a typed dataclass), NOT a generic
-  "data: dict". Choose a return type that reflects the outcome (an id, an object, a list,
-  a bool). One line, no body.
-  Example: "def capture_person_demographics(person: PersonRecord) -> SubjectID:"
-- summary: 1-3 sentences describing WHAT the function does, grounded in the requirement.
+  return type. Use JSON-serializable types ONLY (str, int, float, bool, list, dict).
+  Do NOT use custom classes, Pydantic models, or ORM types. One line, no body.
+  Example: "def search_videos(query: str) -> dict[str, list[dict[str, str]]]:"
 - args: one entry PER PARAMETER in the signature. Each entry has a `name` (matching the
   signature parameter EXACTLY) and a `description` of what it is and any constraints. If
   the signature takes no parameters, return an empty list.
-- returns: a short phrase describing what the function returns. Leave empty for a None return.
+- returns: a short phrase describing what the function returns (grounded in the contract's
+  response). Leave empty for a None return.
 - mvc_layer: EXACTLY one of "model", "view", "controller":
     model      = data, entities, persistence, storage;
     view       = presentation, reports, visualization, UI output;
     controller = behavior, orchestration, services, integration, workflow.
+- example_inputs_json: a JSON OBJECT string of keyword arguments for the happy path.
+  The function is always invoked as fn(**inputs), so EVERY top-level key MUST match a
+  parameter name in the signature exactly — no extra keys, no missing keys.
+  Example: '{"query": "pizza"}' or '{"request": {"update": true}}' when the sole parameter
+  is `request: dict`. Use '{}' only for a no-arg function.
+- expected_return_json: JSON value string returned on the happy path.
+  Use "null" for None returns. Example: '{"status": "ok"}'
+- error_mode: EXACTLY "raise" or "return". Default "raise".
+- failure_inputs_json: a JSON OBJECT string for ONE precondition-violation call that must
+  raise ValueError, OR the empty string "" if ANY of these apply:
+    * precondition is "none" / empty / n/a;
+    * the function takes no parameters (signature ends with "()");
+    * no clear, testable violation exists.
+  When non-empty, it MUST use the same parameter names as the signature and violate the
+  stated precondition (e.g. empty required string, false when true required, invalid enum).
 
-Do NOT write a "Constraints" or "Notes"/"Prerequisite" section yourself — those are added
-deterministically from the non-functional requirements and the dependency graph.
+SEMANTICS for common patterns (use in examples when applicable):
+- edit_order(current_dishes, changes, head_chef_approved): each change is
+  {"dish": "<name>", "quantity": <int>}. Positive quantity = TARGET absolute quantity for
+  that dish after the edit. quantity == -1 = remove that dish. Removal requires
+  head_chef_approved true. Example:
+  inputs: {"current_dishes": [{"dish": "pasta", "quantity": 2}, {"dish": "salad", "quantity": 1}],
+           "changes": [{"dish": "pasta", "quantity": 3}, {"dish": "salad", "quantity": -1}],
+           "head_chef_approved": true}
+  expected: [{"dish": "pasta", "quantity": 3}]
+  failure: {"current_dishes": [...], "changes": [{"dish": "salad", "quantity": -1}],
+            "head_chef_approved": false}
+- assign_dishes_to_chefs(dishes, chefs): dishes have "name" and "classification"; chefs have
+  "name" and "specialty". Return dict mapping dish name -> chef name. failure: a dish
+  classification matching no chef specialty.
+- mark_dish_as_cooked(is_order_complete): returns null on success when true; failure when false.
+- manage_staff_member(name, role, contact_info): failure when name is "".
 
-- If a requirement's text is empty or is only a section heading (no actual behavior),
-  produce a minimal stub signature, no args, and state in the summary that the requirement
-  carries no implementable behavior. Do NOT invent functionality.
+TARGET STACK: {% if stack == 'fastapi' %}FastAPI + SQLAlchemy — use APIRouter for controllers/views, SQLAlchemy models for the model layer; keep signatures JSON-serializable{% else %}plain Python — signatures are directly callable as fn(**json.loads(inputs)){% endif %}.
+
+Use DISTINCT function names when two requirements implement different behavior — do not
+reuse the same name (e.g. prefer sort_torrent_results vs sort_video_results over both being
+sort_search_results). Prefer explicit scalar parameters (update: bool, criteria: str) over a
+single opaque request: dict when the stimulus names one clear input.
 
 Feature: {{ feature_name }}
-{% if nfrs %}Non-functional constraints on this feature (the implementation must satisfy these):
-{% for n in nfrs %}- ({{ n.category }}) {{ n.text }}
-{% endfor %}{% endif %}
 Functional requirements (in build order):
 {% for r in requirements %}- [{{ r.id }}] {{ r.text }}
-{% endfor %}
+{% if r.contract %}    stimulus: {{ r.contract.stimulus }}
+    response: {{ r.contract.response }}
+    precondition: {{ r.contract.precondition }}
+    postcondition: {{ r.contract.postcondition }}
+{% endif %}{% endfor %}

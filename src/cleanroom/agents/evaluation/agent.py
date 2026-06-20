@@ -1,188 +1,341 @@
-"""Evaluation Agent — pass@k.
+"""Evaluation Agent — pass@k with executable oracle (EvalPlus-style rigor).
 
 The ONE stage where spec-derived CODE and spec-derived TESTS are brought together,
-and only AFTER both are frozen. It feeds nothing back into generation; it only
-measures, so the clean-room isolation is preserved:
+and only AFTER both are frozen. It feeds nothing back into generation; it only measures.
 
-  * Code samples are produced by the Code Agent, which still sees only the spec.
-  * The tests were derived by the Test Agent with no view of any code.
-  * Certification just scores the two independently-produced artifacts.
+Metric: pass@k (Chen et al., 2021). Scoring unit is each FR (functional requirement),
+macro-averaged across FRs — analogous to HumanEval tasks.
 
-Metric: pass@k (Chen et al., 2021 — the HumanEval/Codex metric). For each feature
-we generate n independent code samples from the spec, judge each sample against the
-feature's spec-derived test cases, count how many pass ALL of them (c), and report
-
-    pass@k = mean_features( 1 - C(n-c, k) / C(n, k) ).
-
-The pass/fail oracle is an LLM judge, because the tests are natural-language
-black-box designs (not executable). The judge runs at temperature 0 for stability,
-but a model-based oracle is inherently not perfectly deterministic.
+Oracle: an isolated subprocess executes each structured test case (inputs_json /
+expected_json) against the candidate code. No LLM judge unless execution cannot run.
 """
+
+from __future__ import annotations
 
 import json
 import sys
+import tempfile
 from pathlib import Path
 from statistics import mean
 
+from src.cleanroom.agents.code.agent import CodeAgent
+from src.cleanroom.agents.code.schema.code import GeneratedCode, GeneratedFile
 from src.cleanroom.agents.evaluation.metric import pass_at_k
+from src.cleanroom.agents.evaluation.runner import run_case, run_case_http
+from src.cleanroom.utils.packager import build_runnable_package
+from src.cleanroom.agents.planning.agent import PlanningAgent
 from src.cleanroom.agents.evaluation.schema.certification import (
     CertificationResult,
     FeatureCertification,
-    FeatureJudgement,
+    FRCertification,
 )
-from src.cleanroom.agents.code.agent import CodeAgent
 from src.cleanroom.agents.test.agent import TestAgent
-from src.cleanroom.agents.test.tools.spec_reader import feature_units
+from src.cleanroom.agents.verification.agent import VerificationAgent
+from src.cleanroom.agents.verification.loop import generate_and_verify, generate_with_executable_fixes
+from src.cleanroom.utils.ir import feature_id_of, normalize_generated_tests, normalize_ir_features, normalize_test_case, requirement_text
 from src.cleanroom.utils.llm_client import get_llm
-from src.cleanroom.utils.prompt_renderer import PromptRenderer
 
 
 class CertificationAgent:
     def __init__(
         self,
         code_llm=None,
-        judge_llm=None,
-        n: int = 5,
-        k_values=(1, 5),
-        temperature: float = 0.8,
+        n: int = 3,
+        k_values: tuple[int, ...] | None = None,
+        temperature: float = 0.4,
+        verify: bool = False,
+        verify_rounds: int = 2,
+        verify_model: str = "gpt-4o-mini",
+        verify_passes: int = 1,
+        stack: str = "python",
+        use_pipeline_sample: bool = True,
+        case_timeout: float = 10.0,
     ) -> None:
-        self.n = n
-        self.k_values = [k for k in k_values if k <= n]
-        # Samples need diversity -> temperature > 0. The judge wants stability -> 0.
+        self.n = max(1, n)
+        self.k_values = list(k_values or ([1, 3] if self.n >= 3 else [1]))
+        self.k_values = [k for k in self.k_values if k <= self.n] or [1]
         self.code_llm = code_llm if code_llm is not None else get_llm(temperature=temperature)
-        self.judge_llm = judge_llm if judge_llm is not None else get_llm(temperature=0.0)
-        self.renderer = PromptRenderer()
+        self.stack = stack
+        self.use_pipeline_sample = use_pipeline_sample
+        self.case_timeout = case_timeout
+        self.verify = verify
+        self.verify_rounds = verify_rounds
+        self.verifier = (
+            VerificationAgent(verify_model=verify_model, passes=verify_passes) if verify else None
+        )
 
     def certify(self, ir: dict) -> CertificationResult:
         if not (ir.get("planning") or {}).get("contracts"):
-            raise ValueError("CertificationAgent requires an IR with 'planning.contracts' (run the pipeline first).")
+            raise ValueError("CertificationAgent requires an IR with 'planning.contracts'.")
 
-        # Oracle: spec-derived tests. Reuse the IR's if present; else derive them now.
-        tests = ir.get("generated_tests") or TestAgent().generate(ir).model_dump()
-        feature_cases = {f["feature_id"]: f["cases"] for f in tests["features"] if f["cases"]}
-        units = {u["feature_id"]: u for u in feature_units(ir)}
+        normalize_ir_features(ir)
+        PlanningAgent.normalize_ir_planning(ir)
+        tests = ir.get("generated_tests") or TestAgent(stack=self.stack).generate(ir).model_dump()
+        normalize_generated_tests(tests)
+        cases_by_fr = self._cases_by_fr(tests)
+        plans = {c["fr_id"]: c for c in ir["planning"]["contracts"]}
+        feature_names = {feature_id_of(f): f.get("name", "") for f in ir.get("features", [])}
 
-        # Generate n independent code samples. Each call still sees ONLY the spec.
-        code_agent = CodeAgent(llm=self.code_llm)
-        samples = [code_agent.generate(ir) for _ in range(self.n)]
+        samples = self._collect_samples(ir)
+        req_text = self._requirement_text_map(ir)
 
-        notes: list[str] = []
-        features_out: list[FeatureCertification] = []
-        for feature_id, cases in feature_cases.items():
-            unit = units.get(feature_id)
-            if unit is None:
-                notes.append(f"Feature {feature_id} has tests but no spec unit; skipped.")
-                continue
+        diagnostics: list[dict] = []
+        fr_results: list[FRCertification] = []
 
-            passing = 0  # c: samples that pass ALL of the feature's test cases
-            for sample in samples:
-                files, prereq_ifaces = self._feature_code(sample, feature_id, ir)
-                if not files:
-                    continue  # no code produced for this feature -> this sample fails
-                judgement = self._judge(unit, files, prereq_ifaces, cases)
-                if judgement.verdicts and all(v.verdict == "pass" for v in judgement.verdicts):
-                    passing += 1
+        for fr_id, cases in sorted(cases_by_fr.items(), key=lambda x: x[0]):
+            plan = plans.get(fr_id, {})
+            passing_samples = 0
+            cases_passed = 0
 
-            pass_at = {f"pass@{k}": pass_at_k(self.n, passing, k) for k in self.k_values}
-            features_out.append(
-                FeatureCertification(
-                    feature_id=feature_id,
-                    name=unit.get("name", ""),
-                    n_samples=self.n,
+            for sample_idx, sample in enumerate(samples):
+                sample_pass = True
+                with tempfile.TemporaryDirectory(prefix="cleanroom_cert_") as tmp:
+                    code_dir = Path(tmp) / "code"
+                    self._write_sample(sample, code_dir)
+                    file_path = plan.get("file_path", "")
+                    signature = plan.get("signature", "")
+                    for case in cases:
+                        if self.stack == "fastapi":
+                            ok, reason = run_case_http(
+                                code_dir, file_path, case, timeout=max(self.case_timeout, 30.0)
+                            )
+                        else:
+                            ok, reason = run_case(
+                                code_dir, file_path, signature, case, timeout=self.case_timeout
+                            )
+                        diagnostics.append({
+                            "fr_id": fr_id,
+                            "feature_id": plan.get("feature_id", ""),
+                            "feature_name": feature_names.get(plan.get("feature_id"), ""),
+                            "requirement_id": case.get("requirement_id", fr_id),
+                            "sample": sample_idx,
+                            "description": case.get("description", ""),
+                            "inputs": case.get("inputs", case.get("inputs_json", "")),
+                            "expected": case.get("expected", case.get("expected_json", "")),
+                            "requirement_text": req_text.get(fr_id, ""),
+                            "verdict": "pass" if ok else "fail",
+                            "reason": reason,
+                        })
+                        if ok:
+                            cases_passed += 1
+                        else:
+                            sample_pass = False
+                if sample_pass and cases:
+                    passing_samples += 1
+
+            cases_total = len(cases) * len(samples)
+            pass_at = {f"pass@{k}": pass_at_k(len(samples), passing_samples, k) for k in self.k_values}
+            fr_results.append(
+                FRCertification(
+                    fr_id=fr_id,
+                    feature_id=plan.get("feature_id", ""),
+                    n_samples=len(samples),
                     n_test_cases=len(cases),
-                    passing_samples=passing,
+                    passing_samples=passing_samples,
                     pass_at=pass_at,
+                    cases_passed=cases_passed,
+                    cases_total=cases_total,
+                    case_pass_rate=(cases_passed / cases_total if cases_total else 0.0),
                 )
             )
 
-        aggregate = {
-            f"pass@{k}": (mean(f.pass_at[f"pass@{k}"] for f in features_out) if features_out else 0.0)
+        aggregate_pass_at = {
+            f"pass@{k}": (mean(fr.pass_at.get(f"pass@{k}", 0.0) for fr in fr_results) if fr_results else 0.0)
             for k in self.k_values
         }
-        model = getattr(self.code_llm, "model_name", getattr(self.code_llm, "model", ""))
-        return CertificationResult(
-            model=str(model),
-            n=self.n,
-            k_values=self.k_values,
-            features=features_out,
-            aggregate_pass_at=aggregate,
-            notes=notes,
-        )
+        total_cases = sum(fr.cases_total for fr in fr_results)
+        total_passed = sum(fr.cases_passed for fr in fr_results)
+        aggregate_case_rate = total_passed / total_cases if total_cases else 0.0
 
-    def enrich(self, ir: dict) -> dict:
-        """Run certify() and fold the result into the IR under 'certification'."""
-        return {**ir, "certification": self.certify(ir).model_dump()}
+        features_out = self._aggregate_features(fr_results, feature_names)
+        model = getattr(self.code_llm, "model_name", getattr(self.code_llm, "model", ""))
+        result = CertificationResult(
+            model=str(model),
+            oracle="http" if self.stack == "fastapi" else "executable",
+            n=len(samples),
+            k_values=self.k_values,
+            frs=fr_results,
+            features=features_out,
+            aggregate_pass_at=aggregate_pass_at,
+            aggregate_case_pass_rate=aggregate_case_rate,
+        )
+        self._print_diagnostics(ir, diagnostics, result)
+        return result
 
     def run(self, ir: dict, output_dir: Path = Path("outputs/generated")) -> CertificationResult:
         result = self.certify(ir)
         self.write_report(result, output_dir / ir.get("project_name", "project"))
         return result
 
-    # --- helpers ---------------------------------------------------------------
-    def _feature_code(self, sample, feature_id: str, ir: dict):
-        """A feature's own generated files + the signatures of its prerequisites, for one sample."""
-        contracts = ir["planning"]["contracts"]
-        by_fr = {c["fr_id"]: c for c in contracts}
-        own_frs = {c["fr_id"] for c in contracts if c["feature_id"] == feature_id}
-        prereq_frs = {
-            pid
-            for c in contracts
-            if c["feature_id"] == feature_id
-            for pid in c.get("prerequisite_fr_ids", [])
-            if pid not in own_frs
-        }
-        files = [f for f in sample.files if f.fr_id in own_frs]
-        # Prerequisite interfaces are the planner's contract signatures (spec-derived),
-        # not anything extracted from generated code.
-        prereq_ifaces = [
-            f"# {by_fr[pid]['file_path']}\n{by_fr[pid]['signature']}"
-            for pid in sorted(prereq_frs)
-            if pid in by_fr
-        ]
-        return files, prereq_ifaces
+    def _collect_samples(self, ir: dict) -> list[GeneratedCode]:
+        code_agent = CodeAgent(llm=self.code_llm, stack=self.stack)
+        samples: list[GeneratedCode] = []
 
-    def _judge(self, unit: dict, files, prereq_ifaces, cases) -> FeatureJudgement:
-        prompt = self.renderer.render(
-            "judge_feature.j2",
-            {
-                "feature_id": unit["feature_id"],
-                "name": unit.get("name", ""),
-                "requirements": unit.get("requirements", []),
-                "files": [{"path": f.path, "mvc_layer": f.mvc_layer, "content": f.content} for f in files],
-                "prerequisites": prereq_ifaces,
-                "test_cases": cases,
-            },
-        )
-        return self.judge_llm.with_structured_output(FeatureJudgement).invoke(prompt)
+        if self.use_pipeline_sample and ir.get("generated_code"):
+            samples.append(GeneratedCode(**ir["generated_code"]))
+
+        need = self.n - len(samples)
+        if need <= 0:
+            return samples[: self.n]
+
+        if self.verify and self.verifier is not None:
+            for _ in range(need):
+                samples.append(generate_and_verify(ir, code_agent, self.verifier, self.verify_rounds)[0])
+        elif self.stack == "python":
+            for _ in range(need):
+                samples.append(generate_with_executable_fixes(ir, code_agent, max_rounds=2))
+        else:
+            for _ in range(need):
+                samples.append(code_agent.generate(ir))
+        return samples[: self.n]
+
+    def _write_sample(self, sample: GeneratedCode, code_dir: Path) -> None:
+        """Lay a sample out for its oracle: a flat function tree (python) or the
+        assembled runnable FastAPI app under code_dir/app (fastapi)."""
+        if self.stack == "fastapi":
+            build_runnable_package(sample.model_dump(), code_dir)
+        else:
+            CodeAgent.write_files(sample, code_dir)
+
+    @staticmethod
+    def _cases_by_fr(tests: dict) -> dict[str, list[dict]]:
+        out: dict[str, list[dict]] = {}
+        for feature in tests.get("features", []):
+            for case in feature.get("cases", []):
+                case = normalize_test_case(case)
+                rid = case.get("requirement_id")
+                if rid:
+                    out.setdefault(rid, []).append(case)
+        return out
+
+    @staticmethod
+    def _aggregate_features(fr_results: list[FRCertification], feature_names: dict) -> list[FeatureCertification]:
+        by_feature: dict[str, list[FRCertification]] = {}
+        for fr in fr_results:
+            by_feature.setdefault(fr.feature_id, []).append(fr)
+
+        features: list[FeatureCertification] = []
+        for fid, frs in sorted(by_feature.items()):
+            n_cases = sum(fr.n_test_cases for fr in frs)
+            cases_passed = sum(fr.cases_passed for fr in frs)
+            cases_total = sum(fr.cases_total for fr in frs)
+            n_samples = frs[0].n_samples if frs else 0
+            passing_samples = min(fr.passing_samples for fr in frs) if frs else 0
+            k_keys = frs[0].pass_at.keys() if frs else []
+            pass_at = {
+                key: mean(fr.pass_at.get(key, 0.0) for fr in frs) if frs else 0.0
+                for key in k_keys
+            }
+            features.append(
+                FeatureCertification(
+                    feature_id=fid,
+                    name=feature_names.get(fid, ""),
+                    n_samples=n_samples,
+                    n_test_cases=n_cases,
+                    passing_samples=passing_samples,
+                    pass_at=pass_at,
+                    cases_passed=cases_passed,
+                    cases_total=cases_total,
+                    case_pass_rate=(cases_passed / cases_total if cases_total else 0.0),
+                )
+            )
+        return features
+
+    @staticmethod
+    def _requirement_text_map(ir: dict) -> dict[str, str]:
+        out: dict[str, str] = {}
+        for feature in ir.get("features", []):
+            for r in feature.get("functional_requirements", []):
+                out[r["id"]] = requirement_text(r)
+        return out
+
+    @staticmethod
+    def _trim(text: str, limit: int = 160) -> str:
+        text = " ".join((text or "").split())
+        return text if len(text) <= limit else text[: limit - 1] + "…"
+
+    def _print_diagnostics(self, ir: dict, diagnostics: list[dict], result: CertificationResult) -> None:
+        print("\n" + "=" * 70)
+        print("  FUNCTIONAL REQUIREMENTS  (spec coverage)")
+        print("=" * 70)
+        for feature in ir.get("features", []):
+            fid = feature_id_of(feature) or "?"
+            print(f"\n[{fid}] {feature.get('name', '')}")
+            for r in feature.get("functional_requirements", []):
+                print(f"    FR  [{r['id']}] {self._trim(requirement_text(r))}")
+
+        print("\n" + "=" * 70)
+        print("  TEST RESULTS  (executable oracle per spec-derived test case)")
+        print("=" * 70)
+        for d in diagnostics:
+            mark = "PASS" if d["verdict"] == "pass" else "FAIL"
+            print(f"  [{mark}] {d['fr_id']:<12} sample={d['sample']}  {self._trim(d['description'], 60)}")
+
+        fails = [d for d in diagnostics if d["verdict"] != "pass"]
+        if fails:
+            print("\n" + "=" * 70)
+            print("  === FAILURES ===")
+            print("=" * 70)
+            for d in fails[:25]:
+                print(f"\n[FAIL] {d['fr_id']}  sample={d['sample']}")
+                print(f"  test:     {self._trim(d['description'], 200)}")
+                print(f"  inputs:   {self._trim(str(d['inputs']), 200)}")
+                print(f"  expected: {self._trim(str(d['expected']), 200)}")
+                print(f"  reason:   {self._trim(d['reason'], 200)}")
+            if len(fails) > 25:
+                print(f"\n  … and {len(fails) - 25} more failures")
+
+        total = len(diagnostics)
+        n_pass = sum(1 for d in diagnostics if d["verdict"] == "pass")
+        k = self.k_values[-1]
+        score = result.aggregate_pass_at.get(f"pass@{k}", 0.0)
+        print("\n" + "=" * 70)
+        print(f"  SUMMARY: {n_pass} passed / {total - n_pass} failed / {total} total case executions")
+        print(f"  Case pass rate: {result.aggregate_case_pass_rate:.3f}")
+        print(f"  Aggregate pass@{k} (macro-avg over FRs): {score:.3f}")
+        print(f"  Oracle: {result.oracle}")
+        print("=" * 70 + "\n")
 
     @staticmethod
     def write_report(result: CertificationResult, output_dir: Path) -> Path:
         output_dir.mkdir(parents=True, exist_ok=True)
         ks = result.k_values
         lines = [
-            "# Certification report — pass@k",
+            "# Certification report — pass@k (executable oracle)",
             "",
             f"_Model: {result.model or 'n/a'} · samples n={result.n} · "
-            f"features certified: {len(result.features)}_",
+            f"FRs certified: {len(result.frs)} · oracle: {result.oracle}_",
             "",
-            "## Aggregate (mean across features)",
+            "## Aggregate (macro-average over FRs)",
         ]
         lines += [f"- **pass@{k}**: {result.aggregate_pass_at.get(f'pass@{k}', 0.0):.3f}" for k in ks]
         lines += [
+            f"- **case pass rate**: {result.aggregate_case_pass_rate:.3f}",
             "",
-            "## Per feature",
+            "## Per FR (HumanEval-style task unit)",
             "",
-            "| feature | name | cases | c/n | " + " | ".join(f"pass@{k}" for k in ks) + " |",
+            "| fr_id | feature | cases | c/n | case rate | " + " | ".join(f"pass@{k}" for k in ks) + " |",
+            "|---|---|---|---|---|" + "---|" * len(ks),
+        ]
+        for fr in result.frs:
+            cells = " | ".join(f"{fr.pass_at.get(f'pass@{k}', 0.0):.3f}" for k in ks)
+            lines.append(
+                f"| {fr.fr_id} | {fr.feature_id} | {fr.n_test_cases} | "
+                f"{fr.passing_samples}/{fr.n_samples} | {fr.case_pass_rate:.3f} | {cells} |"
+            )
+        lines += [
+            "",
+            "## Per feature (rolled up)",
+            "",
+            "| feature | name | cases | case rate | " + " | ".join(f"pass@{k}" for k in ks) + " |",
             "|---|---|---|---|" + "---|" * len(ks),
         ]
         for f in result.features:
             cells = " | ".join(f"{f.pass_at.get(f'pass@{k}', 0.0):.3f}" for k in ks)
             lines.append(
                 f"| {f.feature_id} | {f.name} | {f.n_test_cases} | "
-                f"{f.passing_samples}/{f.n_samples} | {cells} |"
+                f"{f.case_pass_rate:.3f} ({f.cases_passed}/{f.cases_total}) | {cells} |"
             )
-        if result.notes:
-            lines += ["", "## Notes", *[f"- {n}" for n in result.notes]]
         dest = output_dir / "certification_report.md"
         dest.write_text("\n".join(lines) + "\n")
         return dest
@@ -190,17 +343,17 @@ class CertificationAgent:
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("usage: python -m src.cleanroom.agents.certification.agent <full_ir.json>")
+        print("usage: python -m src.cleanroom.agents.evaluation.agent <full_ir.json>")
         sys.exit(1)
 
     with open(sys.argv[1], encoding="utf-8") as fh:
         enriched_ir = json.load(fh)
 
     agent = CertificationAgent()
-    print(f"Generating {agent.n} code samples per feature and judging them against the spec-derived tests...\n")
     result = agent.run(enriched_ir)
-    for f in result.features:
-        ks = "  ".join(f"pass@{k}={f.pass_at[f'pass@{k}']:.3f}" for k in result.k_values)
-        print(f"  {f.feature_id}  {f.name[:28]:28}  c/n={f.passing_samples}/{f.n_samples}  {ks}")
-    print("\nAggregate: " + "  ".join(f"pass@{k}={result.aggregate_pass_at[f'pass@{k}']:.3f}" for k in result.k_values))
-    print(f"Report written under outputs/generated/{enriched_ir.get('project_name', 'project')}/")
+    for fr in result.frs:
+        ks = "  ".join(f"pass@{k}={fr.pass_at[f'pass@{k}']:.3f}" for k in result.k_values)
+        print(f"  {fr.fr_id}  c/n={fr.passing_samples}/{fr.n_samples}  {ks}")
+    print("\nAggregate: " + "  ".join(
+        f"pass@{k}={result.aggregate_pass_at[f'pass@{k}']:.3f}" for k in result.k_values
+    ))

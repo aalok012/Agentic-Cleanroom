@@ -25,16 +25,22 @@ import sys
 from pathlib import Path
 
 from src.cleanroom.agents.code.schema.code import FileImplementation, GeneratedCode, GeneratedFile
+from src.cleanroom.agents.planning.agent import PlanningAgent, _slug
+from src.cleanroom.utils.contracts import prereq_ifaces, requirement_text
+from src.cleanroom.utils.ir import normalize_ir_features
 from src.cleanroom.utils.llm_client import get_llm
 from src.cleanroom.utils.prompt_renderer import PromptRenderer
 
 
 class CodeAgent:
-    def __init__(self, llm=None) -> None:
+    def __init__(self, llm=None, stack: str = "python") -> None:
         # `llm` is injectable purely so tests can avoid network calls; it is NOT a
         # channel for test data. Defaults to the shared gpt-4o-mini client.
         self.llm = llm if llm is not None else get_llm()
         self.renderer = PromptRenderer()
+        # Target stack for the run (e.g. "fastapi"). Threaded into the code prompt as
+        # STRUCTURAL conventions only — never test-derived — so isolation/pass@k hold.
+        self.stack = stack
 
     def generate(self, ir: dict) -> GeneratedCode:
         """Generate code for every contract, in planning (dependency) order.
@@ -46,6 +52,9 @@ class CodeAgent:
         contracts = (ir.get("planning") or {}).get("contracts")
         if not contracts:
             raise ValueError("CodeAgent requires an IR enriched with 'planning.contracts'.")
+        PlanningAgent.normalize_ir_planning(ir)
+        normalize_ir_features(ir)
+        contracts = ir["planning"]["contracts"]
 
         req_text = self._requirement_index(ir)        # fr_id -> spec requirement text
         by_fr = {c["fr_id"]: c for c in contracts}     # fr_id -> contract (for prereq signatures)
@@ -58,15 +67,7 @@ class CodeAgent:
             # (b) ONLY the signatures of prerequisite contracts — never their bodies,
             #     and they are taken from the planner's contracts, not from any generated
             #     code, so the input here is purely spec-derived.
-            prerequisites = [
-                {
-                    "fr_id": pid,
-                    "layer": by_fr[pid]["mvc_layer"],
-                    "signature": by_fr[pid]["signature"],
-                }
-                for pid in contract.get("prerequisite_fr_ids", [])
-                if pid in by_fr
-            ]
+            prerequisites = prereq_ifaces(contract, by_fr)
 
             prompt = self.renderer.render(
                 "generate_code.j2",
@@ -78,6 +79,11 @@ class CodeAgent:
                     "docstring": contract["docstring"],
                     "requirement": req_text.get(fr_id, ""),
                     "prerequisites": prerequisites,
+                    "stack": self.stack,
+                    "example_inputs_json": contract.get("example_inputs_json", "{}"),
+                    "expected_return_json": contract.get("expected_return_json", "null"),
+                    "error_mode": contract.get("error_mode", "raise"),
+                    "failure_inputs_json": contract.get("failure_inputs_json", ""),
                 },
             )
 
@@ -98,9 +104,40 @@ class CodeAgent:
 
         return GeneratedCode(files=files)
 
-    def enrich(self, ir: dict) -> dict:
-        """Run generate() and fold the result into the IR under 'generated_code'."""
-        return {**ir, "generated_code": self.generate(ir).model_dump()}
+    def revise(self, ir: dict, contract: dict, prior_content: str, violations: list) -> str:
+        """Revise ONE file given spec-level contract violations (from verification)."""
+        contracts = (ir.get("planning") or {}).get("contracts")
+        if not contracts:
+            raise ValueError("CodeAgent.revise requires an IR enriched with 'planning.contracts'.")
+        PlanningAgent.normalize_ir_planning(ir)
+        by_fr = {c["fr_id"]: c for c in ir["planning"]["contracts"]}
+        req_text = self._requirement_index(ir)
+        fr_id = contract["fr_id"]
+        violation_dicts = [
+            v if isinstance(v, dict) else {"contract_clause": v.contract_clause, "observation": v.observation}
+            for v in violations
+        ]
+        prompt = self.renderer.render(
+            "generate_code_revision.j2",
+            {
+                "fr_id": fr_id,
+                "feature_id": contract["feature_id"],
+                "mvc_layer": contract["mvc_layer"],
+                "signature": contract["signature"],
+                "docstring": contract["docstring"],
+                "requirement": req_text.get(fr_id, ""),
+                "prerequisites": prereq_ifaces(contract, by_fr),
+                "prior_content": prior_content,
+                "violations": violation_dicts,
+                "stack": self.stack,
+                "example_inputs_json": contract.get("example_inputs_json", "{}"),
+                "expected_return_json": contract.get("expected_return_json", "null"),
+                "error_mode": contract.get("error_mode", "raise"),
+                "failure_inputs_json": contract.get("failure_inputs_json", ""),
+            },
+        )
+        impl: FileImplementation = self.llm.with_structured_output(FileImplementation).invoke(prompt)
+        return impl.content
 
     def run(self, ir: dict, output_dir: Path = Path("outputs/generated")) -> GeneratedCode:
         """Generate code and write it out, organized by MVC layer."""
@@ -120,7 +157,8 @@ class CodeAgent:
         for f in code.files:
             dest = output_dir / f.path
             if dest in used:  # avoid clobbering a same-named file from another contract
-                dest = dest.with_name(f"{dest.stem}_{f.fr_id.replace('.', '_')}{dest.suffix}")
+                dest = dest.with_name(f"{dest.stem}_{_slug(f.fr_id)}{dest.suffix}")
+                f.path = str(dest.relative_to(output_dir))
             used.add(dest)
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(f.content)
@@ -134,7 +172,7 @@ class CodeAgent:
         index: dict[str, str] = {}
         for feature in ir.get("features", []):
             for req in feature.get("functional_requirements", []):
-                index[req["id"]] = req.get("text", req.get("description", ""))
+                index[req["id"]] = requirement_text(req)
         return index
 
 

@@ -28,6 +28,8 @@ from pathlib import Path
 
 from src.cleanroom.agents.test.schema.tests import FeatureTests, GeneratedTests
 from src.cleanroom.agents.test.tools.spec_reader import feature_units
+from src.cleanroom.agents.planning.agent import PlanningAgent
+from src.cleanroom.utils.ir import normalize_ir_features
 from src.cleanroom.utils.llm_client import get_llm
 from src.cleanroom.utils.prompt_renderer import PromptRenderer
 
@@ -36,14 +38,21 @@ class TestAgent:
     # Keep pytest from collecting this class as a test (its name starts with "Test").
     __test__ = False
 
-    def __init__(self, llm=None) -> None:
+    def __init__(self, llm=None, stack: str = "python") -> None:
         # `llm` is injectable only so tests can avoid network calls; it is NOT a
         # channel for implementation data. Defaults to the shared gpt-4o-mini client.
         self.llm = llm if llm is not None else get_llm()
         self.renderer = PromptRenderer()
+        # Target stack (spec/run-level, NOT implementation): shapes the emitted pytest
+        # module — plain function calls (python) vs TestClient HTTP requests (fastapi) —
+        # and the failure oracle (ValueError vs HTTPException). Knowing the stack is not
+        # seeing code, so isolation is preserved, exactly as in the Code/Planning agents.
+        self.stack = stack
 
     def generate(self, ir: dict) -> GeneratedTests:
         """Generate tests for every feature from the spec only. Input is the spec."""
+        normalize_ir_features(ir)
+        PlanningAgent.normalize_ir_planning(ir)
         features: list[FeatureTests] = []
 
         for unit in feature_units(ir):  # the ONLY IR read: features/requirements
@@ -54,56 +63,67 @@ class TestAgent:
                     "name": unit["name"],
                     "description": unit["description"],
                     "requirements": unit["requirements"],
+                    "stack": self.stack,
                 },
             )
 
             # One structured call per feature. Schema via with_structured_output —
-            # no JSON schema in the prompt.
+            # no JSON schema in the prompt. The model returns both the structured
+            # `cases` (the certification oracle) and a runnable `pytest_source` module.
             result = self.llm.with_structured_output(FeatureTests).invoke(prompt)
 
             # The spec owns feature_id; don't trust the LLM to echo it correctly.
-            features.append(FeatureTests(feature_id=unit["feature_id"], cases=list(result.cases)))
+            features.append(
+                FeatureTests(
+                    feature_id=unit["feature_id"],
+                    cases=list(result.cases),
+                    pytest_source=result.pytest_source,
+                )
+            )
 
         return GeneratedTests(features=features)
 
-    def enrich(self, ir: dict) -> dict:
-        """Run generate() and fold the result into the IR under 'generated_tests'."""
-        return {**ir, "generated_tests": self.generate(ir).model_dump()}
-
     def run(self, ir: dict, output_dir: Path = Path("outputs/generated")) -> GeneratedTests:
-        """Generate tests from the spec and write them out as browsable files."""
+        """Generate tests from the spec and write them out as runnable pytest modules."""
         tests = self.generate(ir)
         self.write_files(tests, output_dir / ir.get("project_name", "project") / "tests")
         return tests
 
     @staticmethod
     def write_files(tests: GeneratedTests, output_dir: Path) -> list[Path]:
-        """Write one human-readable Markdown file per feature under output_dir.
+        """Write one runnable-style pytest module per feature under output_dir.
 
-        Pure persistence of the cases the agent already produced — this writer reads
-        only the spec-derived `tests`, never any implementation. The cases are
-        black-box test *designs* (natural-language inputs/expected), so Markdown is a
-        truer representation than a runnable .py stub would be.
+        Pure persistence of what the agent already produced — this writer reads only
+        the spec-derived `tests`, never any implementation. Each file is the feature's
+        `pytest_source`: a pytest module (fixture + test_* functions exercising the
+        planned functions) derived purely from the spec. Because the agent cannot see
+        the generated code, import paths follow sensible module conventions and may
+        need later adjustment to bind to a specific app — the structured `cases`
+        remain the canonical, code-independent oracle (see schema/tests.py).
         """
         output_dir.mkdir(parents=True, exist_ok=True)
         written: list[Path] = []
         for feature in tests.features:
-            lines = [
-                f"# Generated tests — feature {feature.feature_id}",
-                "",
-                f"_Black-box test cases derived from the specification. {len(feature.cases)} case(s)._",
-                "",
-            ]
-            for i, case in enumerate(feature.cases, 1):
-                lines += [
-                    f"## Case {i} — requirement {case.requirement_id}",
-                    f"- **Verifies:** {case.description}",
-                    f"- **Inputs:** {case.inputs}",
-                    f"- **Expected:** {case.expected}",
-                    "",
-                ]
-            dest = output_dir / f"feature_{feature.feature_id}.md"
-            dest.write_text("\n".join(lines))
+            # Sanitize the dotted feature id so the filename is a valid module name
+            # (e.g. feature '2.2' -> test_feature_2_2.py).
+            slug = feature.feature_id.replace(".", "_")
+            source = feature.pytest_source.strip()
+            if not source:
+                source = (
+                    f"# No pytest source was generated for feature {feature.feature_id}.\n"
+                    f"# {len(feature.cases)} black-box case(s) are recorded in the IR "
+                    f"under generated_tests.\n"
+                )
+            header = (
+                f'"""Spec-derived pytest module for feature {feature.feature_id}.\n\n'
+                f"Generated black-box from the specification ({len(feature.cases)} case(s)); "
+                "the Test Agent never sees the implementation, so import paths follow\n"
+                "sensible module conventions and may need adjustment to bind to the concrete\n"
+                "generated package.\n"
+                '"""\n'
+            )
+            dest = output_dir / f"test_feature_{slug}.py"
+            dest.write_text(header + "\n" + source + "\n")
             written.append(dest)
         return written
 
@@ -122,4 +142,5 @@ if __name__ == "__main__":
         print(f"Feature {feature.feature_id}: {len(feature.cases)} test case(s)")
         total += len(feature.cases)
     print(f"\n{len(generated_tests.features)} features, {total} test cases total.")
-    print(f"Test files written under outputs/generated/{enriched_ir.get('project_name', 'project')}/tests/")
+    print(f"pytest modules (test_feature_*.py) written under "
+          f"outputs/generated/{enriched_ir.get('project_name', 'project')}/tests/")

@@ -1,26 +1,26 @@
 """Planning Agent.
 
 Walks the functional requirements in dependency order (outer feature order, then inner
-FR order from the nested dependency graph) and produces a CONTRACT per FR:
+FR order from the nested dependency graph) and attaches IMPLEMENTATION metadata to each
+FR's spec-derived behavioral contract, producing a CONTRACT per FR:
 
   - signature : a concrete function signature (name, typed params, return type)   [LLM]
-  - docstring : Google-style — summary + Args + Returns + Notes (edge cases) [LLM], then
-                Constraints (from the feature's NFRs) + Prerequisites (from fr_edges) [deterministic]
+  - docstring : Google-style (Napoleon) — summary + Args + Returns + Raises + Notes,
+                composed DETERMINISTICALLY from the behavioral contract + fr_edges
   - mvc_layer : model | view | controller                                          [LLM, deterministic fallback]
   - file_path : derived DETERMINISTICALLY from the layer
   - prerequisite_fr_ids : the FR's prerequisites, taken from the inner fr_edges     [deterministic]
+  - contract  : the spec-derived behavioral contract this implementation realizes
 
-DETERMINISTIC-FIRST: ordering, ids, prerequisites, the layer->path mapping, and embedding
-the NFR constraints into the docstring are all plain code. The LLM is used only for
-interpretation (signature naming, behavioral docstring, layer choice). The LLM never
-assigns or invents ids. Token discipline: ONE structured call per feature (never the whole
-IR); gpt-4o-mini via with_structured_output().
+DETERMINISTIC-FIRST: ordering, ids, prerequisites, the layer->path mapping, and the whole
+docstring assembly are plain code. The LLM is used only for interpretation (signature
+naming, per-arg/return docs, layer choice). The LLM never assigns or invents ids. Token
+discipline: ONE structured call per feature (never the whole IR); via with_structured_output().
 
-The planner runs ONCE globally and produces ALL contracts from the SPEC only — no code,
+The planner runs ONCE globally and consumes the SPEC + behavioral contracts only — no code,
 no tests — preserving the isolation the later code/test agents depend on.
 """
 
-import ast
 import json
 import re
 import sys
@@ -28,6 +28,8 @@ from collections import defaultdict
 from pathlib import Path
 
 from src.cleanroom.agents.planning.schema.plan import Contract, FeaturePlan, PlanningOutput
+from src.cleanroom.agents.spec_agent.schema.ir import BehavioralContract
+from src.cleanroom.utils.ir import feature_id_of, normalize_ir_features, requirement_text
 from src.cleanroom.utils.llm_client import get_llm
 from src.cleanroom.utils.prompt_renderer import PromptRenderer
 
@@ -80,6 +82,15 @@ def _slug(fr_id: str) -> str:
     return re.sub(r"\W", "_", fr_id)
 
 
+def _contract_field(contract, field: str) -> str:
+    """Read a behavioral-contract field (object or dict), treating empty/'none' as absent."""
+    if contract is None:
+        return ""
+    value = getattr(contract, field, None) if not isinstance(contract, dict) else contract.get(field)
+    text = (value or "").strip()
+    return "" if text.lower() in ("", "none", "n/a", "na") else text
+
+
 def _func_name(signature: str, fr_id: str) -> str:
     """Deterministic file stem: the function name from the signature, else a slug of the id."""
     match = re.search(r"def\s+([A-Za-z_]\w*)", signature or "")
@@ -107,13 +118,91 @@ def _file_path(layer: str, signature: str, fr_id: str) -> str:
     return f"{_LAYER_DIR[layer]}/{_func_name(signature, fr_id)}.py"
 
 
-# A default/placeholder signature the planner emits when the LLM returned no design,
-# e.g. "def fr_2_2_6_6() -> None:" — used to flag stub-fallback files for follow-up.
-_STUB_FALLBACK_RE = re.compile(r"^def\s+fr_\w+\(\s*\)\s*->\s*None\s*:\s*$")
+def _parse_signature_params(signature: str) -> list[str]:
+    """Extract parameter names from a one-line function signature."""
+    if not signature:
+        return []
+    match = re.search(r"def\s+\w+\s*\((.*?)\)\s*->", signature, re.DOTALL)
+    if not match:
+        return []
+    inner = match.group(1).strip()
+    if not inner:
+        return []
+    params: list[str] = []
+    for part in inner.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        name = part.split(":")[0].split("=")[0].strip()
+        if name and name != "self":
+            params.append(name)
+    return params
 
 
-def _is_stub_fallback(signature: str) -> bool:
-    return bool(_STUB_FALLBACK_RE.match((signature or "").strip()))
+def _align_kwargs_json(signature: str, json_str: str) -> str:
+    """Normalize kwargs JSON so fn(**inputs) matches the signature.
+
+    Certification and verification call functions with spread kwargs. When the LLM
+    returns a single ``request: dict`` parameter but puts payload keys at the top level,
+    wrap them under ``request``. When there is exactly one parameter and keys do not
+    match its name, wrap the whole object as that parameter's value.
+    """
+    params = _parse_signature_params(signature)
+    raw = (json_str or "").strip()
+    if not raw:
+        return "{}"
+    try:
+        inputs = json.loads(raw)
+    except json.JSONDecodeError:
+        return raw
+    if not isinstance(inputs, dict):
+        return raw
+    if not params:
+        return "{}"
+    keys = set(inputs.keys())
+    param_set = set(params)
+    if keys == param_set:
+        return json.dumps(inputs, separators=(",", ":"))
+    if len(params) == 1:
+        sole = params[0]
+        if sole not in keys:
+            return json.dumps({sole: inputs}, separators=(",", ":"))
+    return json.dumps(inputs, separators=(",", ":"))
+
+
+def normalize_planning_contracts(planning: dict) -> dict:
+    """Apply deterministic I/O alignment and unique file paths to planning contracts."""
+    raw = planning.get("contracts") or []
+    if not raw:
+        return planning
+    contracts = [Contract(**c) if isinstance(c, dict) else c for c in raw]
+    for contract in contracts:
+        contract.example_inputs_json = _align_kwargs_json(
+            contract.signature, contract.example_inputs_json
+        )
+        if contract.failure_inputs_json:
+            contract.failure_inputs_json = _align_kwargs_json(
+                contract.signature, contract.failure_inputs_json
+            )
+    _dedupe_file_paths(contracts)
+    return {**planning, "contracts": [c.model_dump() for c in contracts]}
+
+
+def _dedupe_file_paths(contracts: list[Contract]) -> None:
+    """Ensure every contract has a unique file_path (same func name across FRs is common)."""
+    assigned: set[str] = set()
+    for contract in contracts:
+        candidate = contract.file_path
+        if candidate not in assigned:
+            assigned.add(candidate)
+            continue
+        layer_dir = _LAYER_DIR[contract.mvc_layer]
+        stem = _func_name(contract.signature, contract.fr_id)
+        candidate = f"{layer_dir}/{stem}_{_slug(contract.fr_id)}.py"
+        while candidate in assigned:
+            candidate = f"{layer_dir}/{stem}_{_slug(contract.fr_id)}_{len(assigned)}.py"
+        contract.file_path = candidate
+        assigned.add(candidate)
 
 
 def _infer_return_type(signature: str) -> str | None:
@@ -130,83 +219,72 @@ def _infer_return_type(signature: str) -> str | None:
     return None
 
 
-def _render_stub(contract) -> str:
-    """Render a deterministic, valid-Python skeleton from a contract — no LLM.
-
-    Writes the contract's signature and docstring VERBATIM, a NotImplementedError body, a
-    provenance header, and (for stub-fallback signatures) a TODO marker.
-    """
-    lines = [
-        f"# Auto-generated stub from contract {contract.fr_id} "
-        f"(feature {contract.feature_id}). Do not edit by hand."
-    ]
-    if _is_stub_fallback(contract.signature):
-        lines.append("# TODO: planner produced no real design for this requirement")
-
-    signature = contract.signature.rstrip()
-    if not signature.endswith(":"):
-        signature += ":"
-    lines.append(signature)
-
-    # Inline triple-quoted docstring keeps contract.docstring a verbatim substring. Guard
-    # the rare case where the text ends in a quote (would merge into the closing delimiter).
-    doc = contract.docstring or ""
-    if doc.endswith('"'):
-        doc += "\n"
-    lines.append(f'    """{doc}"""')
-    lines.append("    raise NotImplementedError")
-    return "\n".join(lines) + "\n"
-
-
 class PlanningAgent:
-    def __init__(self, llm=None) -> None:
+    def __init__(self, llm=None, stack: str = "python") -> None:
         # `llm` is injectable so tests/stubs avoid network calls.
         self.llm = llm if llm is not None else get_llm()
         self.renderer = PromptRenderer()
+        # Target stack for the run (e.g. "fastapi"). Threaded into the design prompt so
+        # signatures/layers come out shaped for that stack. The stack lives in the run,
+        # not hardcoded in the prompt prose, so other profiles can be added later.
+        self.stack = stack
 
     def plan(self, ir: dict) -> PlanningOutput:
+        normalize_ir_features(ir)
         graph = ir.get("dependency_graph")
         if graph is None:
             raise ValueError("PlanningAgent requires an IR enriched with 'dependency_graph'.")
 
-        by_id = {f.get("id"): f for f in ir.get("features", [])}
+        by_id = {feature_id_of(f): f for f in ir.get("features", []) if feature_id_of(f)}
+        behavioral_by_fr = {c.get("fr_id"): c for c in ir.get("contracts", [])}
         contracts: list[Contract] = []
         notes: list[str] = []
 
         for fid in self._feature_order(ir, graph):
             feature = by_id.get(fid)
             if not feature or not feature.get("functional_requirements"):
-                continue  # NFR-only / empty features yield no contracts
+                continue  # empty features yield no contracts
 
             frs = feature["functional_requirements"]
             fr_order = feature.get("fr_order") or [r["id"] for r in frs]
-            text_by_id = {r["id"]: (r.get("text") or r.get("description", "")) for r in frs}
-            nfrs = feature.get("non_functional_requirements", [])
+            text_by_id = {r["id"]: requirement_text(r) for r in frs}
             name = feature.get("name", "")
+            feature_contracts = {rid: behavioral_by_fr.get(rid) for rid in fr_order}
 
             prereqs: dict[str, list[str]] = defaultdict(list)
             for edge in feature.get("fr_edges", []):
                 prereqs[edge["source"]].append(edge["target"])
 
-            designs = self._design_feature(name, fr_order, text_by_id, nfrs)
+            designs = self._design_feature(name, fr_order, text_by_id, feature_contracts)
 
             for rid in fr_order:
                 design = designs.get(rid)
                 prereq_ids = prereqs.get(rid, [])
                 prereq_notes = self._prereq_notes(prereq_ids, designs)
+                bc_dict = behavioral_by_fr.get(rid)
+                bc = BehavioralContract(**bc_dict) if bc_dict else None
 
                 if design is None:
                     notes.append(f"FR {rid}: no LLM design returned; used a default contract.")
                     signature = f"def fr_{_slug(rid)}() -> None:"
-                    summary = f"Implements requirement {rid}."
-                    args, returns, design_notes = [], "", ""
+                    args, returns = [], ""
                     layer = _normalize_layer("", name)
+                    example_inputs = "{}"
+                    expected_return = "null"
+                    error_mode = "raise"
+                    failure_inputs = ""
                 else:
                     signature = design.signature
-                    summary = design.summary
                     args, returns = design.args, design.returns
-                    design_notes = design.notes
                     layer = _normalize_layer(design.mvc_layer, name)
+                    example_inputs = design.example_inputs_json
+                    expected_return = design.expected_return_json
+                    error_mode = design.error_mode
+                    failure_inputs = design.failure_inputs_json or ""
+
+                example_inputs = _align_kwargs_json(signature, example_inputs)
+                if failure_inputs:
+                    failure_inputs = _align_kwargs_json(signature, failure_inputs)
 
                 contracts.append(
                     Contract(
@@ -214,15 +292,31 @@ class PlanningAgent:
                         feature_id=fid,
                         signature=signature,
                         docstring=self._compose_docstring(
-                            summary, args, returns, design_notes, nfrs, prereq_notes, signature
+                            bc, args, returns, prereq_notes, signature, fallback_id=rid,
+                            stack=self.stack,
                         ),
                         mvc_layer=layer,
                         file_path=_file_path(layer, signature, rid),
                         prerequisite_fr_ids=prereq_ids,
+                        contract=bc,
+                        example_inputs_json=example_inputs,
+                        expected_return_json=expected_return,
+                        error_mode=error_mode,
+                        failure_inputs_json=failure_inputs,
                     )
                 )
 
+        _dedupe_file_paths(contracts)
         return PlanningOutput(contracts=contracts, notes=notes)
+
+    @staticmethod
+    def normalize_ir_planning(ir: dict) -> dict:
+        """Normalize planning contracts in an IR dict in place and return the IR."""
+        planning = ir.get("planning")
+        if not planning:
+            return ir
+        ir["planning"] = normalize_planning_contracts(planning)
+        return ir
 
     def enrich(self, ir: dict, output_dir=None) -> dict:
         """Run plan() and fold the result into the IR under 'planning'. Optionally save."""
@@ -236,88 +330,24 @@ class PlanningAgent:
             )
         return enriched
 
-    # --- stub materialization (deterministic; no LLM) --------------------------
-    @staticmethod
-    def _as_contracts(planning_output) -> list[Contract]:
-        """Accept a PlanningOutput, a dict (full IR or just the planning block), or a list
-        of contracts, and normalize to a list of Contract objects."""
-        if isinstance(planning_output, PlanningOutput):
-            return planning_output.contracts
-        if isinstance(planning_output, dict):
-            block = planning_output.get("planning", planning_output)
-            raw = block.get("contracts", [])
-        elif isinstance(planning_output, list):
-            raw = planning_output
-        else:
-            raise TypeError(f"Cannot read contracts from {type(planning_output).__name__}")
-        return [c if isinstance(c, Contract) else Contract(**c) for c in raw]
-
-    @staticmethod
-    def materialize_stubs(planning_output, base_dir) -> dict:
-        """Write a deterministic .py skeleton for every contract to its file_path.
-
-        Pure file-writing from contracts already produced by plan() — NO LLM, no network.
-        Each file gets the contract's signature + docstring verbatim and a
-        NotImplementedError body. `file_path` is treated as relative to `base_dir`; parent
-        directories are created as needed.
-
-        Returns a summary dict: written paths, collisions (same file_path, disambiguated
-        rather than overwritten), stub_fallbacks (placeholder signatures), and any
-        parse_failures (files that did not ast.parse).
-        """
-        base = Path(base_dir)
-        written: list[str] = []
-        collisions: list[dict] = []
-        stub_fallbacks: list[dict] = []
-        parse_failures: list[dict] = []
-        used: dict[Path, str] = {}  # resolved target -> fr_id that owns it
-
-        for contract in PlanningAgent._as_contracts(planning_output):
-            target = base / contract.file_path
-
-            # Collision guard: never silently overwrite a path another contract claimed.
-            if target in used:
-                conflict_with = used[target]
-                target = target.with_name(f"{target.stem}_{_slug(contract.fr_id)}{target.suffix}")
-                counter = 2
-                while target in used:  # extremely unlikely 3-way clash
-                    target = target.with_name(f"{target.stem}_{counter}{target.suffix}")
-                    counter += 1
-                collisions.append({
-                    "fr_id": contract.fr_id,
-                    "intended": str(base / contract.file_path),
-                    "written": str(target),
-                    "conflict_with": conflict_with,
-                })
-
-            used[target] = contract.fr_id
-            content = _render_stub(contract)
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(content, encoding="utf-8")
-            written.append(str(target))
-
-            if _is_stub_fallback(contract.signature):
-                stub_fallbacks.append({"fr_id": contract.fr_id, "path": str(target)})
-
-            try:
-                ast.parse(content)
-            except SyntaxError as exc:
-                parse_failures.append({"path": str(target), "error": str(exc)})
-
-        return {
-            "written": written,
-            "collisions": collisions,
-            "stub_fallbacks": stub_fallbacks,
-            "parse_failures": parse_failures,
-        }
-
     # --- helpers ---------------------------------------------------------------
-    def _design_feature(self, feature_name, fr_order, text_by_id, nfrs) -> dict:
-        """One structured LLM call for a single feature's FRs. Returns {fr_id: FRPlan}."""
-        requirements = [{"id": rid, "text": text_by_id.get(rid, "")} for rid in fr_order]
+    def _design_feature(self, feature_name, fr_order, text_by_id, contracts_by_fr) -> dict:
+        """One structured LLM call for a single feature's FRs. Returns {fr_id: FRPlan}.
+
+        Each requirement is presented with its spec text and its behavioral contract so the
+        LLM can shape a faithful signature, layer, and per-arg/return docs.
+        """
+        requirements = []
+        for rid in fr_order:
+            bc = contracts_by_fr.get(rid)
+            requirements.append({
+                "id": rid,
+                "text": text_by_id.get(rid, ""),
+                "contract": bc,
+            })
         prompt = self.renderer.render(
             "plan_feature.j2",
-            {"feature_name": feature_name, "requirements": requirements, "nfrs": nfrs},
+            {"feature_name": feature_name, "requirements": requirements, "stack": self.stack},
         )
         result: FeaturePlan = self.llm.with_structured_output(FeaturePlan).invoke(prompt)
         return {_norm_id(p.id): p for p in result.plans}
@@ -341,18 +371,21 @@ class PlanningAgent:
 
     @staticmethod
     def _compose_docstring(
-        summary: str, args, returns: str, design_notes: str, nfrs: list[dict], prereq_notes: list[str],
-        signature: str = ""
+        contract, args, returns: str, prereq_notes: list[str],
+        signature: str = "", fallback_id: str = "", stack: str = "python"
     ) -> str:
-        """Assemble a Google-style docstring deterministically.
+        """Assemble an explicit Google-style (Napoleon) docstring deterministically.
 
-        The LLM supplies the summary, the per-arg/return descriptions, and any edge-case
-        Notes; the section structure, the NFR Constraints block, and the prerequisite
-        Notes are plain code. Returns section is always included (inferred from signature
-        if the LLM did not provide one). Edge-case notes (from the LLM) and prerequisite
-        notes (from fr_edges) are merged under a single Notes section.
+        Reference: https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html
+
+        The summary and behavioral guarantees come from the spec-derived behavioral
+        contract; the LLM supplies only the per-arg/return descriptions that bind to the
+        signature it authored. The whole section structure is plain code. Only recognized
+        Napoleon section headers are used (Args, Returns, Raises, Notes) so it renders cleanly;
+        the contract's pre/post/invariant guarantees live as labeled lines under Notes.
         """
-        lines = [(summary or "").strip()]
+        summary = PlanningAgent._contract_summary(contract, fallback_id)
+        lines = [summary]
 
         if args:
             lines += ["", "Args:"]
@@ -364,26 +397,41 @@ class PlanningAgent:
             return_type = _infer_return_type(signature)
             if return_type:
                 return_text = return_type + "."
-
         if return_text:
             lines += ["", "Returns:", f"    {return_text}"]
 
-        if nfrs:
-            lines += ["", "Constraints:"]
-            for nfr in nfrs:
-                lines.append(f"    - {nfr.get('category', '')}: {nfr.get('text', '')}")
+        precondition = _contract_field(contract, "precondition")
+        if precondition:
+            exc = "HTTPException" if stack == "fastapi" else "ValueError"
+            lines += ["", "Raises:",
+                      f"    {exc}: If the precondition is violated ({precondition})."]
 
-        # Merge LLM edge-case notes and deterministic prerequisite notes under one section.
-        merged_notes: list[str] = []
-        if (design_notes or "").strip():
-            merged_notes.append(design_notes.strip())
-        merged_notes += prereq_notes
-        if merged_notes:
+        notes: list[str] = []
+        if precondition:
+            notes.append(f"Precondition: {precondition}")
+        postcondition = _contract_field(contract, "postcondition")
+        if postcondition:
+            notes.append(f"Postcondition: {postcondition}")
+        notes += prereq_notes
+
+        if notes:
             lines += ["", "Notes:"]
-            for note in merged_notes:
+            for note in notes:
                 lines.append(f"    {note}")
 
         return "\n".join(lines).strip()
+
+    @staticmethod
+    def _contract_summary(contract, fallback_id: str) -> str:
+        """One-line summary grounded in the contract's response (else stimulus)."""
+        response = _contract_field(contract, "response")
+        if response:
+            return response if response.endswith(".") else response + "."
+        stimulus = _contract_field(contract, "stimulus")
+        if stimulus:
+            summary = f"Handle {stimulus[0].lower() + stimulus[1:]}"
+            return summary if summary.endswith(".") else summary + "."
+        return f"Implements requirement {fallback_id}." if fallback_id else "Implements the requirement."
 
     @staticmethod
     def _feature_order(ir: dict, graph: dict) -> list[str]:
@@ -394,7 +442,7 @@ class PlanningAgent:
             ordered += sorted(cycle, key=_numeric_key)
         seen = set(ordered)
         for feature in ir.get("features", []):
-            fid = feature.get("id")
+            fid = feature_id_of(feature)
             if feature.get("functional_requirements") and fid not in seen:
                 ordered.append(fid)
                 seen.add(fid)

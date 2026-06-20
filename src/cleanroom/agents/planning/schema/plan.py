@@ -2,23 +2,45 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+from src.cleanroom.agents.spec_agent.schema.ir import BehavioralContract
+
 
 class Contract(BaseModel):
     """An implementation contract for ONE functional requirement.
 
-    Produced from the SPEC only (no code, no tests). Signature, docstring, and the
-    MVC layer come from LLM interpretation; file_path is derived deterministically
+    Built by attaching implementation metadata to the spec-derived behavioral contract.
+    Signature and the MVC layer come from LLM interpretation; the docstring is composed
+    deterministically (Google style) from the behavioral contract; file_path is derived
     from the layer, and prerequisite_fr_ids come from the FR-level dependency edges.
     """
 
     fr_id: str = Field(description="Functional requirement id, from the parser — never invented")
     feature_id: str = Field(description="Owning feature id")
     signature: str = Field(description="Concrete function signature: name, typed params, return type")
-    docstring: str = Field(description="What the function does + the feature's NFR constraints to satisfy")
+    docstring: str = Field(description="Google-style docstring composed from the behavioral contract")
     mvc_layer: Literal["model", "view", "controller"] = Field(description="'model' | 'view' | 'controller'")
     file_path: str = Field(description="Deterministic path derived from the MVC layer")
     prerequisite_fr_ids: list[str] = Field(
         default_factory=list, description="FRs (same feature) that must be built first — from fr_edges"
+    )
+    contract: BehavioralContract | None = Field(
+        default=None, description="The spec-derived behavioral contract this implementation realizes"
+    )
+    example_inputs_json: str = Field(
+        default="{}",
+        description="JSON object of keyword arguments for a canonical happy-path call",
+    )
+    expected_return_json: str = Field(
+        default="null",
+        description="JSON value the function should return on the happy path",
+    )
+    error_mode: Literal["raise", "return"] = Field(
+        default="raise",
+        description="How precondition violations are signaled: raise ValueError or return an error dict",
+    )
+    failure_inputs_json: str = Field(
+        default="",
+        description="JSON kwargs for a precondition-violation call, or empty if none",
     )
 
 
@@ -29,7 +51,8 @@ class PlanningOutput(BaseModel):
 
 # ---------------------------------------------------------------------------
 # Per-feature LLM design result (used with with_structured_output()).
-# The LLM only designs; ids always come from the parser/dependency stages.
+# The LLM designs the implementation surface (signature, layer, per-arg/return
+# docs) from the behavioral contract; ids always come from the parser/spec stages.
 # ---------------------------------------------------------------------------
 class ArgDoc(BaseModel):
     """One parameter's documentation, for the docstring's Args section."""
@@ -41,19 +64,25 @@ class ArgDoc(BaseModel):
 class FRPlan(BaseModel):
     id: str = Field(description="The requirement id, echoed VERBATIM from the input — never changed or invented")
     signature: str = Field(description="One-line Python function signature: name, typed params, return type")
-    summary: str = Field(description="1-3 sentences describing what the function does, grounded in the requirement")
     args: list[ArgDoc] = Field(
         default_factory=list, description="One entry per signature parameter (omit if the signature takes none)"
     )
     returns: str = Field(default="", description="What the function returns (leave empty for a None return)")
-    notes: str = Field(
-        default="",
-        description=(
-            "Edge cases, preconditions, or prerequisite behavior stated in the requirement "
-            "(e.g. 'if no specimen record exists, link by Subject ID'). Empty if none."
-        ),
-    )
     mvc_layer: Literal["model", "view", "controller"] = Field(description="EXACTLY one of: model, view, controller")
+    example_inputs_json: str = Field(
+        description='JSON object mapping parameter names to JSON-serializable values, e.g. {"query": "pizza"}'
+    )
+    expected_return_json: str = Field(
+        description='JSON value returned on the happy path, e.g. {"status": "ok"} or a JSON list'
+    )
+    error_mode: Literal["raise", "return"] = Field(
+        default="raise",
+        description='Precondition failure style: "raise" (ValueError) or "return" (error dict)',
+    )
+    failure_inputs_json: str = Field(
+        default="",
+        description='Empty if no failure test; else JSON kwargs that must raise ValueError',
+    )
 
 
 class FeaturePlan(BaseModel):
