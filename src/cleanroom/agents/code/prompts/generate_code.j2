@@ -48,8 +48,10 @@ for the {{ mvc_layer }} layer — derive all behavior ONLY from the contract/spe
   contract function with `@router.post("")` (EMPTY path — the app registers it under a
   unique prefix). DEFINE the router only; do NOT register it on an app.
 - HTTP shape: keep the exact function name and return type from the signature. Make every
-  parameter a JSON body field by giving it a `= Body(...)` default (e.g.
-  `action: str = Body(...)`, `item: dict = Body(...)`), and open `db = SessionLocal()`
+  parameter a JSON body field keyed by its own name by giving it a `= Body(..., embed=True)`
+  default (e.g. `action: str = Body(..., embed=True)`, `item: dict = Body(..., embed=True)`)
+  — `embed=True` is REQUIRED on EVERY parameter so the request body is always the JSON object
+  `{"<param>": <value>, ...}` even when there is only one parameter — and open `db = SessionLocal()`
   inside the function. On success RETURN the JSON-serializable response (it becomes the
   HTTP 200 body). On a precondition/validation failure, `raise HTTPException(status_code=400,
   detail="...")` (use 404 for a missing record, 403 for an unauthenticated/forbidden actor)

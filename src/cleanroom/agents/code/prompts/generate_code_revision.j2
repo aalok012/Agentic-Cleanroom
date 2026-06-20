@@ -41,7 +41,8 @@ Contract violations the reviewer found (fix every one):
 TARGET STACK: FastAPI + SQLAlchemy. Keep the same structural conventions as generate_code.j2:
 shared `from app.extensions import Base, SessionLocal`; controllers/views define ONE
 `router = APIRouter()` and decorate the function `@router.post("")`; every parameter is a
-`= Body(...)` field; read/write real data via `db = SessionLocal()` (NEVER fake state or
+`= Body(..., embed=True)` field (so the body is `{"<param>": <value>, ...}` for any param
+count); read/write real data via `db = SessionLocal()` (NEVER fake state or
 hardcode returns). On success return the JSON body; on failure `raise HTTPException(status_code=4xx, ...)`.
 {% if failure_inputs_json and failure_inputs_json.strip() and failure_inputs_json != '{}' -%}
 The precondition failure call must raise HTTPException with a 4xx status, not ValueError.

@@ -8,11 +8,11 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | metric | value |
 |---|---:|
 | runs logged | 1 |
-| LLM calls | 30 |
-| input tokens | 31,143 |
-| output tokens | 6,172 |
-| total tokens | 37,315 |
-| estimated cost (USD) | $0.0084 |
+| LLM calls | 40 |
+| input tokens | 43,186 |
+| output tokens | 13,688 |
+| total tokens | 56,874 |
+| estimated cost (USD) | $0.0147 |
 
 ## Run history
 
@@ -32,6 +32,8 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | 2026-06-20 21:49:49 | `20260620-214949-dineout-srs` | failed | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 30 | 28,711 | 5,630 | 34,341 | $0.0077 | 0.0 | [detail](outputs/runs/20260620-214949-dineout-srs.md) |
 | 2026-06-20 22:02:27 | `20260620-220227-dineout-srs` | complete | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 40 | 42,803 | 13,703 | 56,506 | $0.0146 | 230.9 | [detail](outputs/runs/20260620-220227-dineout-srs.md) |
 | 2026-06-20 22:17:15 | `20260620-221715-dineout-srs` | failed | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 30 | 31,143 | 6,172 | 37,315 | $0.0084 | 0.0 | [detail](outputs/runs/20260620-221715-dineout-srs.md) |
+| 2026-06-20 23:15:04 | `20260620-231504-dineout-srs` | complete | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 40 | 43,067 | 13,319 | 56,386 | $0.0145 | 200.5 | [detail](outputs/runs/20260620-231504-dineout-srs.md) |
+| 2026-06-20 23:51:32 | `20260620-235132-dineout-srs` | complete | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 40 | 43,186 | 13,688 | 56,874 | $0.0147 | 204.0 | [detail](outputs/runs/20260620-235132-dineout-srs.md) |
 
 ## Notes
 

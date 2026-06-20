@@ -385,11 +385,116 @@ def _rewrite_imports(content: str, stem_to_layer: dict[str, str]) -> str:
     return "\n".join(lines) + trailing
 
 
+def _defined_model_names(files: list[tuple[str, str, str]]) -> set[str]:
+    """Every Base-subclass class name defined anywhere in the assembled package."""
+    names: set[str] = set()
+    for _, _, content in files:
+        for node in _model_class_defs(content):
+            names.add(node.name)
+    return names
+
+
+_STUBS_MODULE = "app.models._stubs"
+
+# Shared handles exported by app.extensions — never mistake these for a missing model.
+_EXTENSIONS_EXPORTS = frozenset({"Base", "SessionLocal", "engine", "get_db"})
+
+
+def _stub_undefined_model_imports(
+    files: list[tuple[str, str, str]],
+) -> tuple[list[tuple[str, str, str]], str | None]:
+    """Synthesize stub models for ``from app...`` imports of names defined in no file.
+
+    Each FR is generated in isolation, so a controller frequently imports a persistence
+    model (e.g. ``from app.models import Transaction``) that NO other FR was ever tasked
+    with defining. That unresolved import raises ``ImportError`` at module load and takes
+    the WHOLE assembled app down at boot — so a single missing model fails every endpoint,
+    not just its own. For each such name we generate a minimal SQLAlchemy model (a primary
+    key plus one nullable column per attribute the code reads off it) in
+    ``app/models/_stubs.py`` and repoint the import there, so the app boots and every
+    endpoint is judged on its own merits. Mechanical scaffolding only — fixed columns
+    inferred from usage, never business logic — so isolation holds.
+    """
+    defined = _defined_model_names(files)
+    attrs: dict[str, set[str]] = {}            # missing model -> attribute names accessed
+    rewritten: list[tuple[str, str, str]] = []
+
+    for layer_dir, name, content in files:
+        try:
+            tree = ast.parse(content)
+        except SyntaxError:
+            rewritten.append((layer_dir, name, content))
+            continue
+
+        edits: list[tuple[int, int, list[str]]] = []
+        file_missing: set[str] = set()
+        for node in tree.body:
+            if not (isinstance(node, ast.ImportFrom) and node.module
+                    and node.module.split(".")[0] == "app" and node.level == 0
+                    and node.module != "app.extensions"):
+                continue
+            bad = [a for a in node.names if a.name not in defined
+                   and a.name not in _EXTENSIONS_EXPORTS and a.name[:1].isupper()]
+            if not bad:
+                continue
+            file_missing.update(a.name for a in bad)
+            good = [a for a in node.names if a not in bad]
+            new_lines: list[str] = []
+            if good:
+                names_str = ", ".join(a.asname and f"{a.name} as {a.asname}" or a.name for a in good)
+                new_lines.append(f"from {node.module} import {names_str}")
+            stub_names = ", ".join(a.asname and f"{a.name} as {a.asname}" or a.name for a in bad)
+            new_lines.append(f"from {_STUBS_MODULE} import {stub_names}")
+            edits.append((node.lineno, node.end_lineno or node.lineno, new_lines))
+
+        if file_missing:
+            for sub in ast.walk(tree):
+                if (isinstance(sub, ast.Attribute) and isinstance(sub.value, ast.Name)
+                        and sub.value.id in file_missing):
+                    attrs.setdefault(sub.value.id, set()).add(sub.attr)
+            for m in file_missing:
+                attrs.setdefault(m, set())
+
+        if edits:
+            lines = content.splitlines()
+            for start, end, new in sorted(edits, key=lambda e: e[0], reverse=True):
+                lines[start - 1: end] = new
+            content = "\n".join(lines) + ("\n" if content.endswith("\n") else "")
+        rewritten.append((layer_dir, name, content))
+
+    if not attrs:
+        return rewritten, None
+
+    blocks: list[str] = []
+    for model, used in sorted(attrs.items()):
+        cols = ["    id = Column(Integer, primary_key=True)"]
+        for col in sorted(used):
+            if col in ("id", "metadata", "query") or col.startswith("_"):
+                continue
+            cols.append(f"    {col} = Column(String, nullable=True)")
+        blocks.append(
+            f"class {model}(Base):\n"
+            f'    __tablename__ = "{model.lower()}"\n'
+            f'    __table_args__ = {{"extend_existing": True}}\n'
+            + "\n".join(cols) + "\n"
+        )
+    stub_module = (
+        '"""Stub models for entities imported across isolated FRs but defined in no file.\n\n'
+        "Generated mechanically by the packager so the assembled app boots; columns are\n"
+        'inferred from attribute usage, never from business logic."""\n'
+        "from sqlalchemy import Column, Integer, String\n\n"
+        "from app.extensions import Base\n\n\n"
+        + "\n\n".join(blocks)
+    )
+    return rewritten, stub_module
+
+
 def build_runnable_package(generated_code: dict, out_dir: Path) -> Path:
     """Assemble generated_code into out_dir/app/ as a runnable FastAPI package. Returns the app dir."""
     from src.cleanroom.utils.code_stats import code_stats
 
     files = _dedupe_models(_collect(generated_code))
+    files, stub_module = _stub_undefined_model_imports(files)
     stem_to_layer = {Path(name).stem: layer_dir for layer_dir, name, _ in files}
 
     app = out_dir / "app"
@@ -404,9 +509,13 @@ def build_runnable_package(generated_code: dict, out_dir: Path) -> Path:
         dest = app / layer_dir / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         content = _rewrite_imports(content, stem_to_layer)
-        content = _ensure_sqlalchemy_imports(content)
+        content = _ensure_known_imports(content)
         content = _allow_table_redefinition(content)
         dest.write_text(content)
+    if stub_module is not None:
+        layers.add("models")
+        (app / "models").mkdir(parents=True, exist_ok=True)
+        (app / "models" / "_stubs.py").write_text(stub_module)
     for layer_dir in layers:
         (app / layer_dir / "__init__.py").write_text("")
 

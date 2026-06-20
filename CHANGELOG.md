@@ -79,6 +79,25 @@ Keep each step small and concrete so anyone can follow the change after the fact
   none of which were provided — a latent `StrictUndefined` crash in the test stage. How: pulled
   them from `plan['contract']` and added a deterministic `route` (`route_for`) in
   [contracts.py](src/cleanroom/utils/contracts.py), mirroring `evaluation.runner.route_from_file_path`.
+- **Step 9 — Packager repairs the two most common FastAPI boot failures.** Why: the assembled
+  DineOut app crashed at boot — `NameError: Integer` (Code Agent used a SQLAlchemy/FastAPI name
+  it forgot to import) and `InvalidRequestError: Table 'orders' is already defined` (isolated FRs
+  declare the same table under different class names). How: added `_ensure_known_imports` (adds/merges
+  any referenced-but-unimported well-known fastapi/sqlalchemy/app symbol) and
+  `_allow_table_redefinition` (injects `__table_args__ = {"extend_existing": True}` into each model
+  declaring a `__tablename__`) to [packager.py](src/cleanroom/utils/packager.py); both are mechanical
+  (imports/fixed attribute only, never logic), so isolation holds.
+- **Step 10 — Fixed `_ensure_sqlalchemy_imports` NameError in the packager write loop.** Why: the
+  build loop called the old name `_ensure_sqlalchemy_imports`, which no longer exists — every
+  `build_runnable_package` (and the second boot test) crashed before writing a file. How: renamed
+  the call to `_ensure_known_imports` at [packager.py](src/cleanroom/utils/packager.py).
+- **Step 11 — FastAPI codegen now uses `Body(..., embed=True)` on every parameter.** Why: with a
+  single plain `Body(...)` param FastAPI treats the whole request body as that value, so the HTTP
+  oracle's dict-keyed POST (`{"param": value}`) returned 422 for single-parameter endpoints. How:
+  changed both [generate_code.j2](src/cleanroom/agents/code/prompts/generate_code.j2) and
+  [generate_code_revision.j2](src/cleanroom/agents/code/prompts/generate_code_revision.j2) to mandate
+  `embed=True`, making the body `{"<param>": <value>, ...}` for any parameter count. Verified by a
+  synthetic single-param endpoint returning `200` through `build_runnable_package` + `TestClient`.
 
 ---
 
