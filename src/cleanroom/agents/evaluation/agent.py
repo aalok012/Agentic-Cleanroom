@@ -31,7 +31,7 @@ from src.cleanroom.agents.evaluation.schema.certification import (
 )
 from src.cleanroom.agents.test.agent import TestAgent
 from src.cleanroom.agents.verification.agent import VerificationAgent
-from src.cleanroom.agents.verification.loop import generate_and_verify, generate_with_executable_fixes
+from src.cleanroom.agents.verification.loop import generate_and_verify
 from src.cleanroom.utils.ir import feature_id_of, normalize_generated_tests, normalize_ir_features, normalize_test_case, requirement_text
 from src.cleanroom.utils.llm_client import get_llm
 
@@ -183,7 +183,7 @@ class CertificationAgent:
                 samples.append(generate_and_verify(ir, code_agent, self.verifier, self.verify_rounds)[0])
         elif self.stack == "python":
             for _ in range(need):
-                samples.append(generate_with_executable_fixes(ir, code_agent, max_rounds=2))
+                samples.append(generate_and_verify(ir, code_agent, max_rounds=2)[0])
         else:
             for _ in range(need):
                 samples.append(code_agent.generate(ir))

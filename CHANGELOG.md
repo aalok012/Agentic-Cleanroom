@@ -57,6 +57,14 @@ Keep each step small and concrete so anyone can follow the change after the fact
   stack (DB/HTTP code it cannot analyze) and when the `crosshair`/z3 tool is unavailable, so the
   pipeline never blocks on it. `_z3_env()` auto-discovers a libz3 matching the interpreter (e.g. a
   Homebrew build) when the bundled wheel's architecture differs.
+- **Step 6 — Unified the two verify loops into one.** Why: after CrossHair, `generate_and_verify`
+  and `generate_with_executable_fixes` shared the same deterministic core and revise loop, differing
+  only by the LLM reviewer — duplicated logic that had to be edited twice (e.g. to add CrossHair).
+  How: deleted `generate_with_executable_fixes`; `generate_and_verify(ir, code_agent, verifier=None,
+  max_rounds=2)` now takes an optional `verifier` (`None` ⇒ token-free deterministic path:
+  executable + crosshair only). Updated callers in `run_pipeline.py` and
+  [evaluation/agent.py](src/cleanroom/agents/evaluation/agent.py) to call it with `verifier=None`
+  and take `[0]`. No behavior change; full suite 35 passing.
 
 ### Dependencies
 - **Step 5 — Added `crosshair-tool`** (`uv add crosshair-tool`), which pulls `z3-solver`. On this

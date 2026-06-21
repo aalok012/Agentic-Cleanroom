@@ -25,10 +25,15 @@ from src.cleanroom.agents.verification.schema.verification import VerificationRe
 def generate_and_verify(
     ir: dict,
     code_agent: CodeAgent,
-    verifier: VerificationAgent,
+    verifier: VerificationAgent | None = None,
     max_rounds: int = 2,
 ):
     """Generate code, then verify/revise up to `max_rounds` times.
+
+    The two deterministic sources — the executable canonical-I/O oracle and the CrossHair
+    symbolic verifier — ALWAYS run. The LLM reviewer runs only when a `verifier` is supplied;
+    pass ``verifier=None`` for the token-free deterministic path (the default for ``--certify``
+    on the python stack and the CertificationAgent per-sample loop).
 
     Returns (GeneratedCode, VerificationResult). The GeneratedCode is the (possibly still
     imperfect) revised artifact; the VerificationResult records the final per-contract
@@ -41,18 +46,20 @@ def generate_and_verify(
     by_fr = {c["fr_id"]: c for c in contracts}
     files_by_fr = {f.fr_id: f for f in code.files}
 
-    def _combined_verdicts(only_fr_ids=None):
+    def _verdicts(only_fr_ids=None):
         ids = set(only_fr_ids) if only_fr_ids else None
-        llm = {
-            v.fr_id: v
-            for v in verifier.verify_code(ir, code, only_fr_ids=only_fr_ids)
-        }
-        executable = executable_verdicts(ir, code, only_fr_ids=ids)
-        symbolic = crosshair_verdicts(ir, code, only_fr_ids=ids)
-        return merge_verdicts(llm, executable, symbolic)
+        groups = [
+            executable_verdicts(ir, code, only_fr_ids=ids),
+            crosshair_verdicts(ir, code, only_fr_ids=ids),
+        ]
+        if verifier is not None:
+            groups.insert(0, {
+                v.fr_id: v for v in verifier.verify_code(ir, code, only_fr_ids=only_fr_ids)
+            })
+        return merge_verdicts(*groups)
 
     # verdict per fr_id, kept current as we revise
-    verdicts = _combined_verdicts()
+    verdicts = _verdicts()
 
     rounds_used = 0
     for _ in range(max_rounds):
@@ -71,57 +78,11 @@ def generate_and_verify(
             changed.append(fr_id)
         if not changed:
             break
-        verdicts.update(_combined_verdicts(only_fr_ids=changed))
+        verdicts.update(_verdicts(only_fr_ids=changed))
 
     final = list(verdicts.values())
     result = VerificationAgent._aggregate(
-        final, max_rounds=max_rounds, rounds_used=rounds_used, model=verifier.verify_model
+        final, max_rounds=max_rounds, rounds_used=rounds_used,
+        model=verifier.verify_model if verifier is not None else "deterministic",
     )
     return code, result
-
-
-def generate_with_executable_fixes(
-    ir: dict,
-    code_agent: CodeAgent,
-    max_rounds: int = 2,
-):
-    """Generate code, then revise using deterministic canonical I/O checks only.
-
-    No LLM reviewer — cheaper than full ``generate_and_verify``. Uses the same
-    subprocess oracle as certification, driven only by planning-contract I/O.
-    """
-    PlanningAgent.normalize_ir_planning(ir)
-    code = code_agent.generate(ir)
-
-    contracts = (ir.get("planning") or {}).get("contracts") or []
-    by_fr = {c["fr_id"]: c for c in contracts}
-    files_by_fr = {f.fr_id: f for f in code.files}
-
-    def _deterministic(only_fr_ids=None):
-        ids = set(only_fr_ids) if only_fr_ids else None
-        return merge_verdicts(
-            executable_verdicts(ir, code, only_fr_ids=ids),
-            crosshair_verdicts(ir, code, only_fr_ids=ids),
-        )
-
-    verdicts = _deterministic()
-    rounds_used = 0
-    for _ in range(max_rounds):
-        failed = [v for v in verdicts.values() if v.verdict == "fail"]
-        if not failed:
-            break
-        rounds_used += 1
-        changed: list[str] = []
-        for verdict in failed:
-            fr_id = verdict.fr_id
-            file = files_by_fr.get(fr_id)
-            contract = by_fr.get(fr_id)
-            if file is None or contract is None:
-                continue
-            file.content = code_agent.revise(ir, contract, file.content, verdict.violations)
-            changed.append(fr_id)
-        if not changed:
-            break
-        verdicts.update(_deterministic(only_fr_ids=changed))
-
-    return code

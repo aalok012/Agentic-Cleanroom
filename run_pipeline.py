@@ -38,7 +38,7 @@ from src.cleanroom.agents.planning.agent import PlanningAgent
 from src.cleanroom.agents.spec_agent.agent import SpecAgent
 from src.cleanroom.agents.test.agent import TestAgent
 from src.cleanroom.agents.verification.agent import VerificationAgent
-from src.cleanroom.agents.verification.loop import generate_and_verify, generate_with_executable_fixes
+from src.cleanroom.agents.verification.loop import generate_and_verify
 from src.cleanroom.llms.callbacks.metric import GLOBAL_METRICS
 from src.cleanroom.utils.code_stats import code_stats
 from src.cleanroom.utils.cost import estimate_cost
@@ -173,7 +173,7 @@ def run(
                  else "  (CrossHair unavailable — z3 not found, skipping symbolic step)"))
         generated_code = _timed(
             "code_exec_fix", stages,
-            lambda: generate_with_executable_fixes(ir, code_agent, max_rounds=2),
+            lambda: generate_and_verify(ir, code_agent, max_rounds=2)[0],
         )
     else:
         generated_code = _timed("code", stages, lambda: code_agent.generate(ir))
