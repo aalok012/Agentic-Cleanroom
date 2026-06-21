@@ -4,6 +4,8 @@ Paper-friendly index of every `run_pipeline.py` invocation. Each run has a dedic
 
 | run_id | date (UTC) | status | SRS | stack | certify | pass@1 | case rate | tokens | cost (USD) | seconds | detail |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| `20260621-191352-dineout-srs` | 2026-06-21 19:13:52 | complete | dineout_srs.xml | lemmafit | yes | - | - | 207,784 | $0.6040 | 223.8 | [20260621-191352-dineout-srs.md](outputs/runs/20260621-191352-dineout-srs.md) |
+| `20260621-081422-dineout-srs` | 2026-06-21 08:14:22 | complete | dineout_srs.xml | lemmafit | yes | - | - | 276,647 | $0.8119 | 273.0 | [20260621-081422-dineout-srs.md](outputs/runs/20260621-081422-dineout-srs.md) |
 | `20260621-054749-dineout-srs` | 2026-06-21 05:47:49 | complete | dineout_srs.xml | python | yes | 0.100 | 0.542 | 98,282 | $0.0259 | 422.7 | [20260621-054749-dineout-srs.md](outputs/runs/20260621-054749-dineout-srs.md) |
 | `20260621-053736-dineout-srs` | 2026-06-21 05:37:36 | complete | dineout_srs.xml | fastapi | yes | 0.100 | 0.525 | 64,442 | $0.0159 | 194.0 | [20260621-053736-dineout-srs.md](outputs/runs/20260621-053736-dineout-srs.md) |
 | `20260621-015058-dineout-srs` | 2026-06-21 01:50:58 | complete | dineout_srs.xml | fastapi | yes | 0.000 | 0.000 | 61,219 | $0.0155 | 202.7 | [20260621-015058-dineout-srs.md](outputs/runs/20260621-015058-dineout-srs.md) |

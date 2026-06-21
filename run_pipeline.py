@@ -33,6 +33,7 @@ load_dotenv()
 
 from src.cleanroom.agents.evaluation.agent import CertificationAgent
 from src.cleanroom.agents.code.agent import CodeAgent
+from src.cleanroom.agents.dafny.agent import DafnyAgent
 from src.cleanroom.agents.dependency.agent import DependencyAnalyzer
 from src.cleanroom.agents.planning.agent import PlanningAgent
 from src.cleanroom.agents.spec_agent.agent import SpecAgent
@@ -43,11 +44,16 @@ from src.cleanroom.llms.callbacks.metric import GLOBAL_METRICS
 from src.cleanroom.utils.code_stats import code_stats
 from src.cleanroom.utils.cost import estimate_cost
 from src.cleanroom.utils.llm_client import get_llm
+from src.cleanroom.utils.lemmafit_project import compile_dafny_to_ts, scaffold_lemmafit_project
 from src.cleanroom.utils.packager import build_runnable_package
 from src.cleanroom.utils.stack_select import select_stack
 from src.cleanroom.utils.ir import normalize_ir
 from src.cleanroom.utils.run_record import make_run_id, record_run
 from src.cleanroom.utils.usage_log import append_usage_log, metrics_from_globals
+
+# The LemmaFit/Dafny stack needs a strong model — the spikes showed gpt-4o-mini/gpt-4o cannot
+# discharge map-comprehension proofs, while gpt-4.1 verifies mutating CRUD features in a few rounds.
+_DAFNY_MODEL = "gpt-4.1"
 
 
 def _banner(step: str, title: str) -> None:
@@ -154,6 +160,43 @@ def run(
         print(f"        -> {c['file_path']}   prereqs={c['prerequisite_fr_ids']}")
     if len(contracts) > 12:
         print(f"  … and {len(contracts) - 12} more (see {ir['project_name']}_planning.json)")
+
+    # --- LemmaFit/TypeScript stack: generate VERIFIED Dafny, then compile to TS -----
+    # This stack replaces stages 4-6: the Dafny Agent casts each feature into a Dafny state
+    # machine and PROVES it against the spec (formal verification is the certification);
+    # certify additionally compiles the verified Dafny to a TypeScript client.
+    if stack == "lemmafit":
+        _banner("[4]", "Dafny Agent — generating VERIFIED Dafny (LemmaFit) from the spec")
+        project_dir = output_dir / "generated" / ir["project_name"] / "lemmafit"
+        # Skip npm install: verification + Dafny→TS compile use the global toolchain, not
+        # node_modules (which is only needed to RUN the app). Run `npm install` in the project
+        # manually if you later want `npm run dev`.
+        proj = _timed("scaffold", stages,
+                      lambda: scaffold_lemmafit_project(project_dir, install_deps=False))
+        agent = DafnyAgent(proj, model=_DAFNY_MODEL)
+        gen = _timed("dafny", stages, lambda: agent.generate(ir))
+        (proj / "SPEC.yaml").write_text(gen.spec_yaml)
+        ir = {**ir, "generated_dafny": gen.model_dump()}
+        ntot, nver = len(gen.features), gen.n_verified
+        print(f"Project   : {proj}")
+        print(f"Verified  : {nver}/{ntot} features")
+        for f in gen.features:
+            print(f"  [{f.feature_id}] {'OK' if f.verified else 'XX'}  {f.module}  ({f.rounds} round(s))")
+        metrics["dafny"] = {
+            "model": _DAFNY_MODEL, "n_features": ntot, "n_verified": nver,
+            "verification_rate": round(nver / ntot, 3) if ntot else 0.0,
+            "features": [{"feature_id": f.feature_id, "module": f.module,
+                          "verified": f.verified, "rounds": f.rounds} for f in gen.features],
+        }
+        if certify:
+            _banner("[5]", "Compile — Dafny → TypeScript (dafny2js, best effort)")
+            comp = _timed("compile", stages, lambda: compile_dafny_to_ts(proj, gen))
+            metrics["compile"] = comp
+            print(f"Compiled  : {len(comp['compiled'])}/{ntot} features to TypeScript")
+            for c in comp.get("failed", []):
+                print(f"  [{c['feature_id']}] not compiled: {c['reason'][:80]}")
+        _finalize_metrics(metrics, stages)
+        return ir, metrics
 
     # --- Stage 4: Code (LLM) + optional verification / executable fix ---------------
     _banner("[4]", "Code Agent — generating MVC code from the spec")
@@ -308,6 +351,26 @@ def write_run_report(metrics: dict, dest: Path) -> None:
         lines += [f"- {k}: {v:.3f}" for k, v in cert["aggregate_pass_at"].items()]
         if "aggregate_case_pass_rate" in cert:
             lines.append(f"- case pass rate: {cert['aggregate_case_pass_rate']:.3f}")
+    if metrics.get("dafny"):
+        d = metrics["dafny"]
+        lines += [
+            "",
+            "## Dafny verification (LemmaFit)",
+            "",
+            f"- model: {d.get('model', 'n/a')}",
+            f"- features: {d['n_features']} · verified: {d['n_verified']} · rate: {d['verification_rate']:.3f}",
+        ]
+        for f in d["features"]:
+            mark = "verified" if f["verified"] else "UNVERIFIED"
+            lines.append(f"  - {f['feature_id']} ({f['module']}): {mark} ({f['rounds']}r)")
+    if metrics.get("compile"):
+        c = metrics["compile"]
+        lines += [
+            "",
+            "## TypeScript compile (dafny2js)",
+            "",
+            f"- compiled: {len(c.get('compiled', []))} · failed: {len(c.get('failed', []))}",
+        ]
     dest.write_text("\n".join(lines) + "\n")
 
 
@@ -340,7 +403,8 @@ def main() -> None:
     parser.add_argument("--certify", action="store_true", help="Also run the pass@k certification stage.")
     parser.add_argument("--samples", type=int, default=3, help="Code samples per FR for pass@k (default: 3).")
     parser.add_argument("--stack", default="auto",
-                        help="Target stack: 'auto' (default, selected from the SRS), 'python', or 'fastapi'.")
+                        help="Target stack: 'auto' (default, from the SRS), 'python', 'fastapi', or "
+                             "'lemmafit' (verified Dafny → TypeScript; needs the lemmafit CLI + gpt-4.1).")
     parser.add_argument("--verify", action="store_true",
                         help="Run the independent verification agent after code generation (spec-level review + bounded revise loop).")
     parser.add_argument("--verify-rounds", type=int, default=2,

@@ -26,6 +26,138 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-21 — LemmaFit/TypeScript stack: Phase 0 (discovery) + SPEC.yaml generator
+
+Goal (user decision): move code generation from Python to a TypeScript stack verified by
+**LemmaFit** (formal verification via Dafny, compiled to TS), replacing the CrossHair/executable
+verification on that track.
+
+### Changed (extended the Dafny syntax cheat-sheet — recovers syntax-failing features)
+- **Added the Dafny forms the LLM kept getting wrong** to `DAFNY_REF` in both
+  [dafny/agent.py](src/cleanroom/agents/dafny/agent.py) and
+  [scripts/lemmafit_dafny_spike.py](scripts/lemmafit_dafny_spike.py): quantifiers/comprehensions use
+  `|` for the range and `::` for the body (never `::` twice); functions are pure (no reassignment;
+  `var x := e; <expr>` let-bindings only); every `if` needs an `else`; empty literals are `map[]` /
+  `{}` / `[]` (not `set {}`/`map []`). Targeted spike re-runs (gpt-4.1) on the three syntax-failing
+  features: **4.4 → VERIFIED** (5 rounds); **4.3** cleared its syntax error and advanced to the
+  proof stage (7 verified, residual postcondition obligations); **4.6** cleared the syntax classes
+  but then cascaded into deeper type/modeling errors — genuinely hard, like 4.10. So the cheat-sheet
+  converts the simple syntax failures; the remaining failures (4.3 proof, 4.6 modeling, 4.10 proof)
+  are real difficulty, not syntax. Expected full-run rate ≈ 7/10.
+
+### Fixed (verification false-negatives — true rate is 6/10, not 4/10)
+- **Dafny warnings were failing verified code.** `dafny verify`/`dafny translate` exit non-zero on
+  STYLE warnings (e.g. `==>` indentation) even when every proof obligation is discharged. The verify
+  adapter required `returncode == 0`, so it false-negatived two fully-verified DineOut features
+  (4.7, 4.8). Fix: pass `--allow-warnings` and judge by the verification summary, not the exit code,
+  in [dafny_verify.py](src/cleanroom/utils/dafny_verify.py); same `--allow-warnings` on the
+  `dafny translate js` step in [lemmafit_project.py](src/cleanroom/utils/lemmafit_project.py).
+  Corrected the DineOut run to its true result: **6/10 features verified** (4.1, 4.2, 4.5, 4.7, 4.8,
+  4.9) and **6/6 compiled to runnable TS**. The 4 real failures are 3 Dafny **syntax** errors
+  (4.3 closeparen, 4.4 else-branch, 4.6 set-comprehension — promptable) and 1 genuine **proof**
+  failure (4.10, map-lookup precondition).
+
+### Completed (Phases 1-6 — full LemmaFit/TypeScript pipeline, end to end)
+- **`--stack lemmafit` wired through `run_pipeline`.** After Planning, a dedicated branch replaces
+  the Python stages 4-6: scaffold a LemmaFit project, generate VERIFIED Dafny per feature, then
+  compile to TypeScript. New constant `_DAFNY_MODEL = "gpt-4.1"` (the spikes proved weaker models
+  can't discharge the proofs). `--stack` help updated.
+- **Packager for the stack.** [lemmafit_project.py](src/cleanroom/utils/lemmafit_project.py):
+  `scaffold_lemmafit_project` runs `lemmafit init` (lays down Replay.dfy + skills the DafnyAgent
+  reads/verifies against); `compile_dafny_to_ts` appends a standard `AppCore` wrapper to each
+  verified module and runs the bundled `dafny2js` to emit a TS client (best-effort). Fixed a
+  path bug — dafny2js needs absolute paths when run with `cwd` set.
+- **Certification = formal verification rate.** For this stack the Dafny proof IS the
+  certification: `metrics['dafny']` reports verified/total + per-feature rounds; `--certify` adds
+  the Dafny→TS compile stage. `write_run_report` gained Dafny-verification + TS-compile sections.
+- **Runnable output completed.** The compile step now does LemmaFit's full 3-step chain so the
+  output is genuinely runnable, not just an adapter: `dafny translate js` → copy to
+  `src/dafny/<mod>.cjs` (the compiled verified logic) → `dafny2js --client` → `src/dafny/<mod>.ts`
+  (typed adapter importing the .cjs). `scaffold_lemmafit_project` also runs `npm install`
+  (best-effort) so a `--certify` run leaves a project you can `npm run dev` directly. Verified the
+  4 DineOut features' `.cjs` load cleanly in Node.
+- **End-to-end run (DineOut, `--stack lemmafit --certify`, gpt-4.1):** ran the full pipeline —
+  **4/10 features formally verified** (4.1, 4.2, 4.5, 4.9) and **4/4 verified → compiled to
+  TypeScript** clients via dafny2js; 276k tokens, $0.81, auto-logged to API_USAGE.md (gpt-4.1
+  priced correctly). The mutating features that fail (4.3/4.4/4.6/4.7/4.8/4.10) need more
+  proof-tactic scaffolding or rounds — the known map-comprehension proof difficulty.
+
+### Added (Phase 3 — Dafny agent + token logging)
+- **Stage-3 `DafnyAgent`.** Productionizes the validated spike into a reusable agent:
+  [dafny/agent.py](src/cleanroom/agents/dafny/agent.py) `DafnyAgent.generate(ir)` casts each feature's
+  FRs into a Dafny `Domain` state machine (one `Action` per FR; BehavioralContract → Inv / guards /
+  postcondition lemmas) and runs the generate→`verify_dafny`→revise loop (system prompt = LemmaFit's
+  shipped skills + abstract Domain interface + Dafny syntax cheat-sheet; default gpt-4.1). Spec-derived
+  only (never reads tests). Schema [dafny/schema/dafny.py](src/cleanroom/agents/dafny/schema/dafny.py).
+  Offline tests (fake LLM + real Dafny verifier) [tests/test_dafny_agent.py](tests/test_dafny_agent.py):
+  verifies round 1; revises to round 2; reports unverified after budget. Full suite 47 passing.
+- **Token logging.** Instrumented `scripts/lemmafit_dafny_spike.py` to auto-append usage to
+  API_USAGE.md; added gpt-4o/gpt-4.1 prices + prefix matching to
+  [cost.py](src/cleanroom/utils/cost.py); logged the five earlier spikes as `spike-estimate` rows
+  (~100k tokens; cost caveat noted in API_USAGE.md).
+
+### Discovery (Phase 0)
+- **Installed and inspected LemmaFit** (`npm install -g lemmafit`; `lemmafit init`). Findings that
+  shape the build: it is a **Dafny Replay/Redux state machine** (`type Model`, `datatype Action`,
+  `predicate Inv`, `Init`/`Apply`/`Normalize`, lemmas `InitSatisfiesInv`/`StepPreservesInv`),
+  driven **SPEC.yaml-first** (structured entries: id/req_id/title/group/layer/type/property/module/
+  verifiable/guarantee_type/state), compiled to a TS API via `lemmafit add <Name> --target ...`, and
+  verified by a daemon. React+TypeScript **greenfield only**, **effect-free only**, Claude-Code-
+  oriented. Implication: each FR becomes an `Action`; the BehavioralContract maps to SPEC.yaml
+  (precondition→precondition entry, response/postcondition→postcondition entry + ensures lemma).
+
+### Verified (Stage-3 LLM feasibility spike)
+- **An LLM can author verifying Dafny via the verify-loop — with a capable model.** Built
+  [scripts/lemmafit_dafny_spike.py](scripts/lemmafit_dafny_spike.py): seeds the model with
+  LemmaFit's shipped skills + the abstract `Domain` interface, generates a state machine for one
+  feature from its spec contracts only (cleanroom), runs `verify_dafny`, and feeds proof errors
+  back ≤5 rounds. Results on DineOut FR 4.1: **gpt-4o-mini FAILED** (stuck on a Dafny syntax error,
+  0 rounds of progress — too weak); **gpt-4o VERIFIED in 4 rounds** (errors shrank 1→1→1→0 as it
+  used the real Dafny feedback). Conclusion: the TypeScript/LemmaFit track is feasible but
+  **requires a strong model (gpt-4o class)** — the pipeline's gpt-4o-mini default cannot author
+  Dafny. (Caveat: FR 4.1 is a read-only action so its `Apply` is trivial; a mutating feature is the
+  next, harder signal.)
+- **Mutating-feature spike (FR 4.10 manage-menu, gpt-4o) — graded result.** First run looped on a
+  Dafny map-syntax parse error (`gets expected`); adding a **Dafny syntax cheat-sheet** to the prompt
+  (map update `m[k:=v]`, removal `m-{k}`, comprehension `map k | k in m && P :: m[k]`, datatype
+  records) **fixed all syntax errors** → `5 verified`. But it then stalled on **proof** obligations
+  (`function precondition could not be proved` ×8, oscillating across 6 rounds): proving how a
+  map-comprehension `Normalize` interacts with map updates needs helper lemmas gpt-4o doesn't write.
+  Conclusion: feasibility is **graded by feature complexity** — read-only/simple `Apply` verifies;
+  **mutating + map-state features exceed gpt-4o within 6 rounds** and need a stronger reasoning model,
+  proof-tactic/helper-lemma scaffolding in the prompt, or an `assumed`-axiom fallback. Syntax issues
+  are promptable; map-comprehension proofs are the real wall.
+- **Same mutating feature with gpt-4.1 — VERIFIED in 2 rounds.** The proof wall is a model-capability
+  issue: gpt-4.1 authored a genuine CRUD state machine for FR 4.10 (`Model = map<string, MenuItem>`,
+  Add/Edit/Delete actions with real map updates, an invariant tying keys to item names + non-negative
+  prices, a map-comprehension `Normalize`, and a **biconditional postcondition lemma**
+  `AddItem_Postcondition`) that Dafny accepts. Verdict for the LemmaFit/TS pivot: **feasible end to
+  end with gpt-4.1** — the chain (LemmaFit skills + Domain interface + Dafny syntax cheat-sheet +
+  `verify_dafny` revise loop) produces verifying Dafny for both read-only and mutating CRUD features.
+  Model requirement is firm: gpt-4o-mini (pipeline default) and gpt-4o are insufficient for mutating
+  features; **Stage 3 needs gpt-4.1-class**.
+
+### Added
+- **Feasibility spike + Dafny verify adapter (Phase 1/4 de-risk, token-free).** Why: the whole
+  pivot hinges on producing Dafny that actually verifies — validate that before building the LLM
+  agent. How: scaffolded a real project (`lemmafit init outputs/lemmafit_dineout` + `npm install`,
+  which downloads Dafny 4.11 to `~/.lemmafit/.dafny`); confirmed synchronous verification works;
+  **hand-authored `PlaceOrder.dfy`** mapping DineOut FR 4.1 to a state machine (`Model`/`Action`/
+  `Apply`/`Inv` + `InitSatisfiesInv`/`StepPreservesInv` + a domain postcondition lemma
+  `AddDishGrowsOrder`) — **verifies, 10 verified / 0 errors**. Built the reusable Stage-4 core
+  [dafny_verify.py](src/cleanroom/utils/dafny_verify.py) (`verify_dafny()` locates the binary, runs
+  `dafny verify`, parses pass/fail + error locations to feed the revise loop). Tests:
+  [tests/test_dafny_verify.py](tests/test_dafny_verify.py). Confirms the FR→Action→Apply→ensures-lemma
+  mapping yields verifiable Dafny; the open risk is now only whether the LLM can author it (Stage 3).
+- **SPEC.yaml generator (Phase 1 start).** Why: LemmaFit's first step is SPEC.yaml; our spec stage
+  already extracts the needed pre/post/response per FR. How: new
+  [lemmafit_spec.py](src/cleanroom/utils/lemmafit_spec.py) `build_spec_yaml(ir)` /
+  `build_spec_entries(ir)` emit one `precondition` + one `postcondition` entry per FR (postcondition
+  falls back to the response), with a per-feature Dafny `module` name, `depends_on` linked from
+  prerequisite FRs, and `state: DRAFT` (the Dafny stage formalizes `property` and flips to
+  ADDRESSED). Deterministic, spec-derived (never reads tests/code) → isolation holds. Tests:
+  [tests/test_lemmafit_spec.py](tests/test_lemmafit_spec.py). Full suite 42 passing.
+
 ## 2026-06-21 — Pin the entity identifier in the contract (Code/Test agree on the key)
 
 ### Added
