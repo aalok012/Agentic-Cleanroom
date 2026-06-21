@@ -167,6 +167,10 @@ def run(
             lambda: generate_and_verify(ir, code_agent, verifier, max_rounds=verify_rounds),
         )
     elif certify and stack == "python":
+        from src.cleanroom.agents.verification.crosshair_verify import crosshair_available
+        print("Deterministic fix loop: executable canonical I/O"
+              + (" + CrossHair symbolic verification" if crosshair_available()
+                 else "  (CrossHair unavailable — z3 not found, skipping symbolic step)"))
         generated_code = _timed(
             "code_exec_fix", stages,
             lambda: generate_with_executable_fixes(ir, code_agent, max_rounds=2),

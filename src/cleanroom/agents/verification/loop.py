@@ -17,6 +17,7 @@ the LLM reviewer so signature/import/return-value bugs are caught without test a
 from src.cleanroom.agents.code.agent import CodeAgent
 from src.cleanroom.agents.planning.agent import PlanningAgent
 from src.cleanroom.agents.verification.agent import VerificationAgent
+from src.cleanroom.agents.verification.crosshair_verify import crosshair_verdicts
 from src.cleanroom.agents.verification.executable import executable_verdicts, merge_verdicts
 from src.cleanroom.agents.verification.schema.verification import VerificationResult
 
@@ -41,12 +42,14 @@ def generate_and_verify(
     files_by_fr = {f.fr_id: f for f in code.files}
 
     def _combined_verdicts(only_fr_ids=None):
+        ids = set(only_fr_ids) if only_fr_ids else None
         llm = {
             v.fr_id: v
             for v in verifier.verify_code(ir, code, only_fr_ids=only_fr_ids)
         }
-        executable = executable_verdicts(ir, code, only_fr_ids=set(only_fr_ids) if only_fr_ids else None)
-        return merge_verdicts(llm, executable)
+        executable = executable_verdicts(ir, code, only_fr_ids=ids)
+        symbolic = crosshair_verdicts(ir, code, only_fr_ids=ids)
+        return merge_verdicts(llm, executable, symbolic)
 
     # verdict per fr_id, kept current as we revise
     verdicts = _combined_verdicts()
@@ -94,7 +97,14 @@ def generate_with_executable_fixes(
     by_fr = {c["fr_id"]: c for c in contracts}
     files_by_fr = {f.fr_id: f for f in code.files}
 
-    verdicts = executable_verdicts(ir, code)
+    def _deterministic(only_fr_ids=None):
+        ids = set(only_fr_ids) if only_fr_ids else None
+        return merge_verdicts(
+            executable_verdicts(ir, code, only_fr_ids=ids),
+            crosshair_verdicts(ir, code, only_fr_ids=ids),
+        )
+
+    verdicts = _deterministic()
     rounds_used = 0
     for _ in range(max_rounds):
         failed = [v for v in verdicts.values() if v.verdict == "fail"]
@@ -112,7 +122,6 @@ def generate_with_executable_fixes(
             changed.append(fr_id)
         if not changed:
             break
-        for fr_id, verdict in executable_verdicts(ir, code, only_fr_ids=set(changed)).items():
-            verdicts[fr_id] = verdict
+        verdicts.update(_deterministic(only_fr_ids=changed))
 
     return code

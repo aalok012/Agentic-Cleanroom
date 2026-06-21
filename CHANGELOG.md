@@ -26,6 +26,43 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-20 — Deterministic CrossHair verification (python stack)
+
+### Added
+- **Step 1 — CrossHair symbolic verifier as a deterministic verdict source.** Why: the
+  verification step should not depend on an LLM — CrossHair checks generated code against a
+  spec-derived contract by symbolic execution (Z3), with no tests and no model in the loop.
+  How: new [crosshair_verify.py](src/cleanroom/agents/verification/crosshair_verify.py) exposes
+  `crosshair_verdicts(ir, code, only_fr_ids)` returning the same `ContractVerdict` shape as the
+  executable verifier. For each `python`-stack FR it synthesizes a PEP 316 contract from the
+  planning signature (a `post:` asserting the declared return type + `raises: ValueError` when
+  `error_mode == 'raise'`), injects it into the function's docstring, and runs `crosshair check
+  --analysis_kind=PEP316`. It reports two failure kinds: a return of the wrong type, and any
+  UNDECLARED crash (KeyError/TypeError/IndexError/…) on some input.
+- **Step 2 — Counterexamples abstracted to spec level (isolation-preserving).** Why: a CrossHair
+  counterexample carries concrete failing inputs, which must never reach the Code Agent. How:
+  `_abstract()` maps each counterexample to a `ContractViolation` describing only the violated
+  property and failure kind (exception type / wrong return type), discarding the concrete
+  argument values — so the revise loop stays spec-level like the LLM/executable verifiers.
+
+### Changed
+- **Step 3 — Wired CrossHair into both verify loops.** Why: every place code is generated and
+  revised should get the symbolic check. How: [loop.py](src/cleanroom/agents/verification/loop.py)
+  merges `crosshair_verdicts` via `merge_verdicts` in `generate_and_verify` (alongside the LLM +
+  executable verdicts) and in `generate_with_executable_fixes` (the no-LLM deterministic path used
+  by default for `--certify` on the python stack and by the CertificationAgent per-sample loop).
+  `run_pipeline.py` prints whether CrossHair is active for the deterministic fix loop.
+- **Step 4 — Gating + graceful degradation.** Why: CrossHair can only symbolically execute pure
+  Python, and the solver may be missing. How: `crosshair_verdicts` returns `{}` on the `fastapi`
+  stack (DB/HTTP code it cannot analyze) and when the `crosshair`/z3 tool is unavailable, so the
+  pipeline never blocks on it. `_z3_env()` auto-discovers a libz3 matching the interpreter (e.g. a
+  Homebrew build) when the bundled wheel's architecture differs.
+
+### Dependencies
+- **Step 5 — Added `crosshair-tool`** (`uv add crosshair-tool`), which pulls `z3-solver`. On this
+  x86_64 (Rosetta) interpreter the bundled arm64 z3 wheel mismatches; the verifier falls back to
+  the Homebrew x86_64 `libz3` at `/usr/local/opt/z3/lib` via `Z3_LIBRARY_PATH` auto-discovery.
+
 ## 2026-06-20 — Auto stack selection + FastAPI HTTP path + slimmer contract
 
 ### Removed
