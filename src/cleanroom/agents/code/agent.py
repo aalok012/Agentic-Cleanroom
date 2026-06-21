@@ -84,6 +84,7 @@ class CodeAgent:
                     "expected_return_json": contract.get("expected_return_json", "null"),
                     "error_mode": contract.get("error_mode", "raise"),
                     "failure_inputs_json": contract.get("failure_inputs_json", ""),
+                    "entity_identifier": contract.get("entity_identifier", ""),
                 },
             )
 
@@ -134,6 +135,7 @@ class CodeAgent:
                 "expected_return_json": contract.get("expected_return_json", "null"),
                 "error_mode": contract.get("error_mode", "raise"),
                 "failure_inputs_json": contract.get("failure_inputs_json", ""),
+                "entity_identifier": contract.get("entity_identifier", ""),
             },
         )
         impl: FileImplementation = self.llm.with_structured_output(FileImplementation).invoke(prompt)

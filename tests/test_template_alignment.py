@@ -58,9 +58,11 @@ def test_generate_code_j2_fastapi(renderer):
             "expected_return_json": "{}",
             "error_mode": "raise",
             "failure_inputs_json": "",
+            "entity_identifier": "id",
         },
     )
     assert "FastAPI" in out
+    assert "look up the entity by its `id` field" in out
 
 
 def test_generate_code_revision_j2(renderer):

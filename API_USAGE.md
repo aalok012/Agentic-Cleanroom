@@ -8,11 +8,11 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | metric | value |
 |---|---:|
 | runs logged | 1 |
-| LLM calls | 40 |
-| input tokens | 43,186 |
-| output tokens | 13,688 |
-| total tokens | 56,874 |
-| estimated cost (USD) | $0.0147 |
+| LLM calls | 72 |
+| input tokens | 73,495 |
+| output tokens | 24,787 |
+| total tokens | 98,282 |
+| estimated cost (USD) | $0.0259 |
 
 ## Run history
 
@@ -34,6 +34,10 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | 2026-06-20 22:17:15 | `20260620-221715-dineout-srs` | failed | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 30 | 31,143 | 6,172 | 37,315 | $0.0084 | 0.0 | [detail](outputs/runs/20260620-221715-dineout-srs.md) |
 | 2026-06-20 23:15:04 | `20260620-231504-dineout-srs` | complete | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 40 | 43,067 | 13,319 | 56,386 | $0.0145 | 200.5 | [detail](outputs/runs/20260620-231504-dineout-srs.md) |
 | 2026-06-20 23:51:32 | `20260620-235132-dineout-srs` | complete | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 40 | 43,186 | 13,688 | 56,874 | $0.0147 | 204.0 | [detail](outputs/runs/20260620-235132-dineout-srs.md) |
+| 2026-06-21 00:35:56 | `20260621-003556-dineout-srs` | complete | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 40 | 43,042 | 13,024 | 56,066 | $0.0143 | 209.9 | [detail](outputs/runs/20260621-003556-dineout-srs.md) |
+| 2026-06-21 01:50:58 | `20260621-015058-dineout-srs` | complete | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 40 | 47,260 | 13,959 | 61,219 | $0.0155 | 202.7 | [detail](outputs/runs/20260621-015058-dineout-srs.md) |
+| 2026-06-21 05:37:36 | `20260621-053736-dineout-srs` | complete | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 40 | 50,527 | 13,915 | 64,442 | $0.0159 | 194.0 | [detail](outputs/runs/20260621-053736-dineout-srs.md) |
+| 2026-06-21 05:47:49 | `20260621-054749-dineout-srs` | complete | dineout_srs.xml | gpt-4o-mini-2024-07-18 | 72 | 73,495 | 24,787 | 98,282 | $0.0259 | 422.7 | [detail](outputs/runs/20260621-054749-dineout-srs.md) |
 
 ## Notes
 

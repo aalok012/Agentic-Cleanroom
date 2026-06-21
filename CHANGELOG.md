@@ -26,6 +26,77 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-21 — Pin the entity identifier in the contract (Code/Test agree on the key)
+
+### Added
+- **Step 1 — `entity_identifier` on the planning contract.** Why: with the two-phase oracle, the
+  Test Agent seeded staff by `name` while the Code Agent looked them up by `id`, so edit/delete
+  still failed ("ID required" / "not found") — the contract never pinned the entity's key, so the
+  two agents diverged (same family as the 4.4 type mismatch). How: added `entity_identifier` to
+  `FRPlan` and `Contract` ([planning/schema/plan.py](src/cleanroom/agents/planning/schema/plan.py)):
+  the single field that uniquely keys a persisted entity for lookup (e.g. `id`/`name`), empty for
+  stateless FRs. The planner LLM produces it
+  ([plan_feature.j2](src/cleanroom/agents/planning/prompts/plan_feature.j2) — "pick a key the
+  stimulus actually provides on edit/delete"); the agent threads it into every `Contract`.
+
+### Changed
+- **Step 2 — Both agents key off it.** Why: code and tests must use the same field. How: the Code
+  Agent passes `entity_identifier` into [generate_code.j2](src/cleanroom/agents/code/prompts/generate_code.j2)
+  and the revision prompt (fastapi: "look up/store the entity by its `<field>`; don't require an
+  identifier the caller doesn't send"); `requirement_for_prompt`
+  ([contracts.py](src/cleanroom/utils/contracts.py)) surfaces it to
+  [generate_tests.j2](src/cleanroom/agents/test/prompts/generate_tests.j2), whose SETUP rule now
+  says the seed call and the main call MUST share the same identifier value. Template tests updated;
+  full suite 38 passing.
+
+## 2026-06-21 — Fix FastAPI boot crash: unify same-table models
+
+### Fixed
+- **Step 1 — Collapse differently-named models that map to the same table.** Why: a regenerated
+  DineOut run crashed every case at boot with `ArgumentError: Trying to redefine primary-key column
+  'name' as a non-primary-key column` (pass@1 0.2 → 0.0). Two isolated FRs modeled the `dishes`
+  table incompatibly — `DishModel(id PK, name, quantity)` vs `Dish(name PK, classification)` — and
+  `extend_existing=True` tried to merge them. `_dedupe_models` only collapses same-CLASS-NAME
+  redefinitions, so this slipped through. How: new `_unify_models_by_table` in
+  [packager.py](src/cleanroom/utils/packager.py) picks one canonical class per table (prefer the
+  `models` layer, then the richest definition), gives it the UNION of all columns with a single
+  primary key (`id` if any def has one, else the first declared PK; others demoted), and rewrites
+  every other same-table class into an import alias of the canonical. Wired in after
+  `_dedupe_models`. Re-certifying the existing code: boot restored, case rate 0.0 → **0.625**.
+  Regression test: [tests/test_packager_models.py](tests/test_packager_models.py). Full suite 38 passing.
+
+## 2026-06-20 — Two-phase (seed-then-act) FastAPI certification oracle
+
+### Added
+- **Step 1 — Spec-level `setup` on each test case.** Why: the FastAPI cert oracle did a single
+  POST against a freshly-created EMPTY database, so stateful happy-paths (edit/delete/cancel/read an
+  existing entity) were unpassable and error-cases passed spuriously (everything 404'd before the
+  real check ran). How: added `setup_json` to `TestCase`
+  ([test/schema/tests.py](src/cleanroom/agents/test/schema/tests.py)) — a JSON array of Arrange
+  calls, each `{"inputs": <body>, "route"?: <route>}`, that create the precondition state through
+  the API. It is spec-level (API calls with spec-derived inputs), so the cleanroom holds — no table
+  or column names ever appear.
+- **Step 2 — Two-phase HTTP oracle.** Why: replay the Arrange calls before the Act call against the
+  same persistent sqlite file. How: `_HTTP_RUNNER_SCRIPT`/`run_case_http`
+  ([evaluation/runner.py](src/cleanroom/agents/evaluation/runner.py)) take a 6th `setup_json` arg,
+  POST each setup step in order (default route = the FR's own endpoint), and fail the case at Arrange
+  if any setup step returns ≥400; then do the Act POST and assert as before. Verified on the REAL
+  generated `manage_staff_records`: "edit existing staff" goes 404→pass, and "delete missing id"
+  now 404s for the right reason (data exists, id absent) instead of spuriously.
+
+### Changed
+- **Step 3 — Test Agent emits setup.** Why: the agent (spec-only) must declare the Arrange calls.
+  How: [generate_tests.j2](src/cleanroom/agents/test/prompts/generate_tests.j2) instructs (fastapi
+  only) to populate `setup_json` with create/add calls using the SAME identifiers the main inputs
+  reference, to leave it empty for pure-create / state-as-input cases, and to NOT seed an entity a
+  "not found" case looks up; the fastapi `pytest_source` replays setup before the main POST.
+
+### Tests
+- **Step 4 — Two-phase oracle tests.** New cases in
+  [tests/test_fastapi_oracle.py](tests/test_fastapi_oracle.py): a CRUD endpoint's stateful happy-path
+  fails without setup and passes with it, and a failing Arrange step is reported as `setup step 0`.
+  Full suite 37 passing.
+
 ## 2026-06-20 — Deterministic CrossHair verification (python stack)
 
 ### Added

@@ -48,6 +48,7 @@ def requirement_for_prompt(fr: dict, plan: dict | None = None) -> dict:
         "expected_return_json": plan.get("expected_return_json", "null"),
         "failure_inputs_json": plan.get("failure_inputs_json", ""),
         "error_mode": plan.get("error_mode", "raise"),
+        "entity_identifier": plan.get("entity_identifier", ""),
         "stimulus": bc.get("stimulus", ""),
         "precondition": bc.get("precondition", ""),
         "response": bc.get("response", ""),

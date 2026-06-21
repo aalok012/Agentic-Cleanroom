@@ -84,6 +84,7 @@ _HTTP_RUNNER_SCRIPT = textwrap.dedent(
     inputs_json = sys.argv[3]
     expected_json = sys.argv[4]
     oracle = sys.argv[5]
+    setup_json = sys.argv[6] if len(sys.argv) > 6 else "[]"
 
     # cwd = the package dir so the app's sqlite:///./app.db is private to this sample.
     os.chdir(out_dir)
@@ -102,8 +103,20 @@ _HTTP_RUNNER_SCRIPT = textwrap.dedent(
         from app import create_app
         from fastapi.testclient import TestClient
         client = TestClient(create_app())
+        # Arrange: replay the spec-derived setup calls so the precondition state exists
+        # (the shared sqlite file persists across these calls and the main call below).
+        for i, step in enumerate(json.loads(setup_json or "[]")):
+            step_route = step.get("route") or route
+            step_resp = client.post(step_route, json=step.get("inputs", {}))
+            if step_resp.status_code >= 400:
+                print(json.dumps({"pass": False, "reason":
+                    f"setup step {i} ({step_route}) failed: HTTP {step_resp.status_code}: {step_resp.text[:120]}"}))
+                raise SystemExit(0)
+        # Act: the call under test.
         inputs = json.loads(inputs_json)
         resp = client.post(route, json=inputs)
+    except SystemExit:
+        raise
     except Exception as exc:
         print(json.dumps({"pass": False, "reason": f"app boot/request error: {type(exc).__name__}: {exc}"}))
         raise SystemExit(0)
@@ -149,15 +162,18 @@ def run_case_http(out_dir: Path, file_path: str, case: dict, timeout: float = 30
     inputs_json = case.get("inputs_json") or "{}"
     expected_json = case.get("expected_json") or "null"
     oracle = case.get("oracle") or "eq"
+    setup_json = (case.get("setup_json") or "").strip() or "[]"
 
     try:
         json.loads(inputs_json)
         json.loads(expected_json)
+        json.loads(setup_json)
     except json.JSONDecodeError as exc:
         return False, f"invalid test JSON: {exc}"
 
     proc = subprocess.run(
-        [sys.executable, "-c", _HTTP_RUNNER_SCRIPT, str(out_dir), route, inputs_json, expected_json, oracle],
+        [sys.executable, "-c", _HTTP_RUNNER_SCRIPT,
+         str(out_dir), route, inputs_json, expected_json, oracle, setup_json],
         capture_output=True,
         text=True,
         timeout=timeout,

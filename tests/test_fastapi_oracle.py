@@ -87,3 +87,69 @@ def test_fastapi_oracle_detects_wrong_body(tmp_path: Path):
          "expected_json": '{"name": "pasta", "qty": 99}', "oracle": "eq"},
     )
     assert not ok and "expected" in reason
+
+
+# A CRUD endpoint whose edit/delete need a row to already exist — the stateful shape that
+# the single-shot oracle can't pass and the two-phase (setup -> act) oracle can.
+_CRUD = '''
+from fastapi import APIRouter, Body, HTTPException
+from sqlalchemy import Column, Integer, String
+
+from app.extensions import Base, SessionLocal
+
+
+class Item(Base):
+    __tablename__ = "items"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+
+router = APIRouter()
+
+
+@router.post("")
+def manage_item(action: str = Body(..., embed=True), item: dict = Body(..., embed=True)) -> dict:
+    db = SessionLocal()
+    try:
+        if action == "add":
+            db.add(Item(**item)); db.commit(); return {"status": "added"}
+        row = db.query(Item).filter(Item.id == item.get("id")).first()
+        if row is None:
+            raise HTTPException(status_code=404, detail="not found")
+        if action == "edit":
+            row.name = item.get("name", row.name); db.commit(); return {"status": "edited"}
+        db.delete(row); db.commit(); return {"status": "deleted"}
+    finally:
+        db.close()
+'''
+
+
+def _crud_sample() -> dict:
+    return {"files": [{"fr_id": "2.1", "feature_id": "2", "path": "controllers/manage_item.py",
+                       "mvc_layer": "controller", "content": _CRUD}]}
+
+
+def test_two_phase_setup_makes_stateful_happy_path_pass(tmp_path: Path):
+    build_runnable_package(_crud_sample(), tmp_path / "a")
+    edit = {"inputs_json": '{"action": "edit", "item": {"id": 1, "name": "new"}}',
+            "expected_json": '{"status": "edited"}', "oracle": "eq"}
+
+    # Without setup the row does not exist -> 404, unpassable.
+    ok, reason = run_case_http(tmp_path / "a", "controllers/manage_item.py", edit)
+    assert not ok and "404" in reason
+
+    # With a setup (Arrange) call that adds the row first, the happy path passes.
+    build_runnable_package(_crud_sample(), tmp_path / "b")
+    edit_seeded = dict(edit, setup_json='[{"inputs": {"action": "add", "item": {"id": 1, "name": "old"}}}]')
+    ok, reason = run_case_http(tmp_path / "b", "controllers/manage_item.py", edit_seeded)
+    assert ok, reason
+
+
+def test_setup_failure_is_reported(tmp_path: Path):
+    build_runnable_package(_crud_sample(), tmp_path / "c")
+    # A setup step that errors (editing a row that was never added) fails the case at Arrange.
+    bad = {"inputs_json": '{"action": "delete", "item": {"id": 1}}',
+           "expected_json": '{"status": "deleted"}', "oracle": "eq",
+           "setup_json": '[{"inputs": {"action": "edit", "item": {"id": 1}}}]'}
+    ok, reason = run_case_http(tmp_path / "c", "controllers/manage_item.py", bad)
+    assert not ok and "setup step 0" in reason

@@ -13,6 +13,7 @@ logic — so the no-feedback isolation of the pipeline is unaffected.
 """
 
 import ast
+import re
 from pathlib import Path
 
 # Conventional layer directories (match the planner's deterministic file_path layout).
@@ -385,6 +386,133 @@ def _rewrite_imports(content: str, stem_to_layer: dict[str, str]) -> str:
     return "\n".join(lines) + trailing
 
 
+def _table_name(node: ast.ClassDef) -> str | None:
+    """The ``__tablename__`` string literal of a model class, if it declares one."""
+    for stmt in node.body:
+        if isinstance(stmt, ast.Assign):
+            for t in stmt.targets:
+                if (isinstance(t, ast.Name) and t.id == "__tablename__"
+                        and isinstance(stmt.value, ast.Constant) and isinstance(stmt.value.value, str)):
+                    return stmt.value.value
+    return None
+
+
+def _columns_of(node: ast.ClassDef, content: str) -> list[tuple[str, str, bool]]:
+    """(name, ``Column(...)`` source, is_primary_key) for each column assignment in a model."""
+    out: list[tuple[str, str, bool]] = []
+    for stmt in node.body:
+        if (isinstance(stmt, ast.Assign) and len(stmt.targets) == 1
+                and isinstance(stmt.targets[0], ast.Name) and isinstance(stmt.value, ast.Call)):
+            fn = stmt.value.func
+            if (isinstance(fn, ast.Name) and fn.id == "Column") or (
+                    isinstance(fn, ast.Attribute) and fn.attr == "Column"):
+                name = stmt.targets[0].id
+                rhs = ast.get_source_segment(content, stmt.value) or "Column(String)"
+                is_pk = any(
+                    kw.arg == "primary_key" and isinstance(kw.value, ast.Constant) and kw.value.value is True
+                    for kw in stmt.value.keywords
+                )
+                out.append((name, rhs, is_pk))
+    return out
+
+
+def _strip_primary_key(rhs: str) -> str:
+    """Remove a ``primary_key=True`` keyword from a ``Column(...)`` source, tidying commas."""
+    rhs = re.sub(r"primary_key\s*=\s*True", "", rhs)
+    rhs = re.sub(r"\(\s*,", "(", rhs)
+    rhs = re.sub(r",\s*,", ",", rhs)
+    rhs = re.sub(r",\s*\)", ")", rhs)
+    return rhs
+
+
+def _unify_models_by_table(files: list[tuple[str, str, str]]) -> list[tuple[str, str, str]]:
+    """Collapse DIFFERENTLY-NAMED model classes that map to the SAME table into one class.
+
+    Each FR is generated in isolation, so the same table is often modeled by classes with
+    different names AND incompatible schemas — e.g. ``dishes`` declared once as
+    ``DishModel(id PK, name, quantity)`` and once as ``Dish(name PK, classification)``. With
+    ``extend_existing=True`` SQLAlchemy tries to merge them and dies ("Trying to redefine
+    primary-key column 'name' as a non-primary-key column"), taking the whole app down at boot.
+    ``_dedupe_models`` only collapses same-CLASS-NAME redefinitions, so this slips through.
+
+    Here we pick one canonical class per table (prefer the ``models`` layer, then the richest
+    definition), give it the UNION of all columns with a single primary key (``id`` if any
+    definition has one, else the first declared PK; every other PK is demoted), and rewrite
+    every other class for that table into an import alias of the canonical one. Mechanical —
+    union of declared columns, no business logic — so isolation holds.
+    """
+    groups: dict[str, list[dict]] = {}
+    for idx, (layer, name, content) in enumerate(files):
+        stem = Path(name).stem
+        for node in _model_class_defs(content):
+            table = _table_name(node)
+            if table:
+                groups.setdefault(table, []).append(
+                    {"idx": idx, "layer": layer, "stem": stem,
+                     "class_name": node.name, "node": node, "content": content})
+
+    edits_by_idx: dict[int, list[tuple[int, int, list[str]]]] = {}
+    for table, group in groups.items():
+        if len(group) < 2:
+            continue
+
+        union: dict[str, str] = {}            # column name -> Column(...) source (first definition wins)
+        order: list[str] = []
+        pk_candidates: list[str] = []
+        for d in group:
+            for cname, rhs, is_pk in _columns_of(d["node"], d["content"]):
+                if cname not in union:
+                    union[cname] = rhs
+                    order.append(cname)
+                if is_pk and cname not in pk_candidates:
+                    pk_candidates.append(cname)
+        pk_col = "id" if "id" in union else (pk_candidates[0] if pk_candidates else (order[0] if order else None))
+
+        col_lines: list[str] = []
+        for cname in order:
+            rhs = union[cname]
+            if cname == pk_col:
+                if cname == "id":
+                    rhs = "Column(Integer, primary_key=True)"
+                elif "primary_key" not in rhs and rhs.endswith(")"):
+                    rhs = rhs[:-1].rstrip() + ", primary_key=True)"
+            else:
+                rhs = _strip_primary_key(rhs)
+            col_lines.append(f"    {cname} = {rhs}")
+
+        canon = sorted(
+            group,
+            key=lambda d: (d["layer"] != "models", -len(_columns_of(d["node"], d["content"]))),
+        )[0]
+        cc, cl, cs = canon["class_name"], canon["layer"], canon["stem"]
+        canon_text = [
+            f"class {cc}(Base):",
+            f'    __tablename__ = "{table}"',
+            '    __table_args__ = {"extend_existing": True}',
+        ] + (col_lines or ["    pass"])
+
+        for d in group:
+            node = d["node"]
+            if d is canon:
+                new = canon_text
+            elif d["class_name"] == cc:
+                new = [f"from app.{cl}.{cs} import {cc}"]
+            else:
+                new = [f"from app.{cl}.{cs} import {cc} as {d['class_name']}"]
+            edits_by_idx.setdefault(d["idx"], []).append((node.lineno, node.end_lineno or node.lineno, new))
+
+    if not edits_by_idx:
+        return files
+    out = list(files)
+    for idx, edits in edits_by_idx.items():
+        layer, name, content = files[idx]
+        lines = content.splitlines()
+        for start, end, new in sorted(edits, key=lambda e: e[0], reverse=True):
+            lines[start - 1: end] = new
+        out[idx] = (layer, name, "\n".join(lines) + ("\n" if content.endswith("\n") else ""))
+    return out
+
+
 def _defined_model_names(files: list[tuple[str, str, str]]) -> set[str]:
     """Every Base-subclass class name defined anywhere in the assembled package."""
     names: set[str] = set()
@@ -494,6 +622,7 @@ def build_runnable_package(generated_code: dict, out_dir: Path) -> Path:
     from src.cleanroom.utils.code_stats import code_stats
 
     files = _dedupe_models(_collect(generated_code))
+    files = _unify_models_by_table(files)
     files, stub_module = _stub_undefined_model_imports(files)
     stem_to_layer = {Path(name).stem: layer_dir for layer_dir, name, _ in files}
 

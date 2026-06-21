@@ -35,6 +35,12 @@ For each requirement produce:
     * no clear, testable violation exists.
   When non-empty, it MUST use the same parameter names as the signature and violate the
   stated precondition (e.g. empty required string, false when true required, invalid enum).
+- entity_identifier: for a STATEFUL CRUD requirement (creating/editing/deleting/looking up a
+  PERSISTED entity), the ONE field that uniquely keys that entity for lookup — e.g. "id" or
+  "name". It MUST be a key present in example_inputs_json (possibly nested inside an entity
+  object, e.g. "id" inside a `staff_member` dict). Pick a key the stimulus actually provides on
+  edit/delete — if records are referenced by name, use "name", not an "id" the caller never
+  supplies. Use "" for stateless requirements and pure computations with no persisted entity.
 
 SEMANTICS for common patterns (use in examples when applicable):
 - edit_order(current_dishes, changes, head_chef_approved): each change is

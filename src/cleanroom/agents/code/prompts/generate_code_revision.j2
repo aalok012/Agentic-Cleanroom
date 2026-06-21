@@ -44,6 +44,8 @@ shared `from app.extensions import Base, SessionLocal`; controllers/views define
 `= Body(..., embed=True)` field (so the body is `{"<param>": <value>, ...}` for any param
 count); read/write real data via `db = SessionLocal()` (NEVER fake state or
 hardcode returns). On success return the JSON body; on failure `raise HTTPException(status_code=4xx, ...)`.
+{% if entity_identifier %}Key the entity by its `{{ entity_identifier }}` field for lookup and storage; do not require an identifier the caller does not send.
+{% endif -%}
 {% if failure_inputs_json and failure_inputs_json.strip() and failure_inputs_json != '{}' -%}
 The precondition failure call must raise HTTPException with a 4xx status, not ValueError.
 {% endif -%}

@@ -42,6 +42,15 @@ class Contract(BaseModel):
         default="",
         description="JSON kwargs for a precondition-violation call, or empty if none",
     )
+    entity_identifier: str = Field(
+        default="",
+        description=(
+            "For a stateful CRUD requirement (create/edit/delete/look up a PERSISTED entity), "
+            "the single field that uniquely keys that entity for lookup — e.g. 'id' or 'name'. "
+            "Both the code (lookup key) and the tests (seed-then-reference) use it, so they agree. "
+            "Empty for stateless requirements or pure computations with no persisted entity."
+        ),
+    )
 
 
 class PlanningOutput(BaseModel):
@@ -82,6 +91,15 @@ class FRPlan(BaseModel):
     failure_inputs_json: str = Field(
         default="",
         description='Empty if no failure test; else JSON kwargs that must raise ValueError',
+    )
+    entity_identifier: str = Field(
+        default="",
+        description=(
+            "For a stateful CRUD requirement (create/edit/delete/look up a PERSISTED entity), the "
+            "ONE field that uniquely keys that entity for lookup — e.g. 'id' or 'name'. It MUST be "
+            "a key present in example_inputs_json (possibly nested inside an entity object). Use "
+            '"" for stateless requirements or pure computations with no persisted entity.'
+        ),
     )
 
 

@@ -273,6 +273,7 @@ class PlanningAgent:
                     expected_return = "null"
                     error_mode = "raise"
                     failure_inputs = ""
+                    entity_identifier = ""
                 else:
                     signature = design.signature
                     args, returns = design.args, design.returns
@@ -281,6 +282,7 @@ class PlanningAgent:
                     expected_return = design.expected_return_json
                     error_mode = design.error_mode
                     failure_inputs = design.failure_inputs_json or ""
+                    entity_identifier = getattr(design, "entity_identifier", "") or ""
 
                 example_inputs = _align_kwargs_json(signature, example_inputs)
                 if failure_inputs:
@@ -303,6 +305,7 @@ class PlanningAgent:
                         expected_return_json=expected_return,
                         error_mode=error_mode,
                         failure_inputs_json=failure_inputs,
+                        entity_identifier=entity_identifier,
                     )
                 )
 
