@@ -1,16 +1,15 @@
-"""Map the cleanroom IR's behavioral contracts onto a LemmaFit ``SPEC.yaml``.
+"""Map the cleanroom IR's behavioral contracts onto a ``SPEC.yaml`` for the Dafny track.
 
-LemmaFit's workflow is "SPEC.yaml first": every verifiable behavior is a structured entry
-(precondition / postcondition / invariant) that a Dafny module must then formalize and prove.
-Our spec stage already extracts exactly that information per FR — stimulus, precondition,
-response, postcondition — so this converts it deterministically into SPEC.yaml entries, one
-``precondition`` and one ``postcondition`` entry per FR that declares them.
+"SPEC.yaml first": every verifiable behavior is a structured entry (precondition / postcondition
+/ invariant) that a Dafny module must then formalize and prove. Our spec stage already extracts
+exactly that information per FR — stimulus, precondition, response, postcondition — so this
+converts it deterministically into SPEC.yaml entries, one ``precondition`` and one
+``postcondition`` entry per FR that declares them.
 
 The formal ``property`` expression is left as the contract's prose with ``state: DRAFT`` — the
 Dafny stage (LLM) formalizes it into a Dafny predicate/ensures clause and flips it to
 ``ADDRESSED`` once it verifies. This step is mechanical and spec-derived (never reads tests or
-generated code), so the cleanroom isolation holds. See the LemmaFit ``lemmafit-spec`` skill for
-the schema this targets.
+generated code), so the cleanroom isolation holds.
 """
 
 from __future__ import annotations

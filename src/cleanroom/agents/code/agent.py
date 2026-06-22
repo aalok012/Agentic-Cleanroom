@@ -42,12 +42,15 @@ class CodeAgent:
         # STRUCTURAL conventions only — never test-derived — so isolation/pass@k hold.
         self.stack = stack
 
-    def generate(self, ir: dict) -> GeneratedCode:
+    def generate(self, ir: dict, skip_feature_ids: set[str] | None = None) -> GeneratedCode:
         """Generate code for every contract, in planning (dependency) order.
 
         Input is the spec + the spec-derived contracts only. The planner already owns
         the signature, docstring, mvc_layer, file_path and prerequisite ids of each FR;
         this agent only turns each contract into a concrete file body.
+
+        ``skip_feature_ids`` omits whole features whose logic ships from elsewhere (the Dafny
+        proof tier): those features get an adapter via :meth:`generate_adapter` instead.
         """
         contracts = (ir.get("planning") or {}).get("contracts")
         if not contracts:
@@ -56,11 +59,14 @@ class CodeAgent:
         normalize_ir_features(ir)
         contracts = ir["planning"]["contracts"]
 
+        skip = set(skip_feature_ids or ())
         req_text = self._requirement_index(ir)        # fr_id -> spec requirement text
         by_fr = {c["fr_id"]: c for c in contracts}     # fr_id -> contract (for prereq signatures)
         files: list[GeneratedFile] = []
 
         for contract in contracts:                     # already in dependency order
+            if contract["feature_id"] in skip:
+                continue
             fr_id = contract["fr_id"]
 
             # (a) ONLY this FR's contract + its spec text.
@@ -104,6 +110,60 @@ class CodeAgent:
             )
 
         return GeneratedCode(files=files)
+
+    def generate_adapter(self, ir: dict, feature_id: str, module: str,
+                         dafny_source: str) -> GeneratedFile:
+        """Write the thin FastAPI glue over a PROVED Dafny core (no business logic here).
+
+        For a feature the proof tier verified, the logic ships as the compiled Dafny module; this
+        emits ONE controller file with a route per FR that imports the compiled core, loads/saves
+        the state in the DB, marshals request<->Dafny via ``dafny_marshal``, and calls the proved
+        ``Normalize(Apply(state, action))``. Still spec-only + the agent's own proved Dafny — it
+        never reads tests, so isolation holds.
+
+        ``module`` is the Dafny module base (e.g. ``F4_1``): the compiled core dir is
+        ``<module>-py`` and the importable core module is ``<module>Domain``.
+        """
+        PlanningAgent.normalize_ir_planning(ir)
+        normalize_ir_features(ir)
+        contracts = [c for c in ir["planning"]["contracts"] if c["feature_id"] == feature_id]
+        if not contracts:
+            raise ValueError(f"no contracts for feature {feature_id}")
+        req_text = self._requirement_index(ir)
+        feat = next((f for f in ir.get("features", []) if str(f.get("id")) == str(feature_id)), {})
+
+        prompt = self.renderer.render(
+            "generate_adapter.j2",
+            {
+                "feature_id": feature_id,
+                "feature_name": feat.get("name", ""),
+                # Dafny's Python backend mangles `_` -> `__` in module names, so the Dafny module
+                # `F4_1Domain` compiles to the importable Python module `F4__1Domain`.
+                "core_module": f"{module}Domain".replace("_", "__"),
+                "core_dir": f"{module}-py",              # compiled core directory (on sys.path, NOT mangled)
+                "dafny_source": dafny_source,
+                "contracts": [
+                    {
+                        "fr_id": c["fr_id"],
+                        "signature": c.get("signature", ""),
+                        "file_path": c.get("file_path", ""),
+                        "requirement": req_text.get(c["fr_id"], ""),
+                        "contract": c.get("contract", {}),
+                        "entity_identifier": c.get("entity_identifier", ""),
+                    }
+                    for c in contracts
+                ],
+            },
+        )
+        impl: FileImplementation = self.llm.with_structured_output(FileImplementation).invoke(prompt)
+        path = f"controllers/f{feature_id.replace('.', '_')}_adapter.py"
+        return GeneratedFile(
+            fr_id=contracts[0]["fr_id"],
+            feature_id=feature_id,
+            path=path,
+            mvc_layer="controller",
+            content=impl.content,
+        )
 
     def revise(self, ir: dict, contract: dict, prior_content: str, violations: list) -> str:
         """Revise ONE file given spec-level contract violations (from verification)."""

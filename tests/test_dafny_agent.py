@@ -1,6 +1,7 @@
 """DafnyAgent generate/verify/revise loop, offline (fake LLM + real Dafny verifier).
 
-Skipped unless both the scaffolded LemmaFit project and the Dafny toolchain are present."""
+Skipped unless the Dafny toolchain is present. The scaffold is now dependency-free (just the
+vendored Replay.dfy kernel), so no LemmaFit CLI is needed."""
 
 from types import SimpleNamespace
 
@@ -8,20 +9,20 @@ import pytest
 
 from src.cleanroom.agents.dafny.agent import DafnyAgent
 from src.cleanroom.utils.dafny_verify import dafny_available
-from src.cleanroom.utils.lemmafit_project import lemmafit_available, scaffold_lemmafit_project
+from src.cleanroom.utils.dafny_project import scaffold_dafny_project
 
 requires_env = pytest.mark.skipif(
-    not (dafny_available() and lemmafit_available()),
-    reason="needs the lemmafit CLI + dafny toolchain",
+    not dafny_available(),
+    reason="needs the dafny toolchain",
 )
 
 
 @pytest.fixture(scope="module")
 def project(tmp_path_factory):
-    """A throwaway scaffolded LemmaFit project (no npm install — only the verifier is needed)."""
-    if not (dafny_available() and lemmafit_available()):
-        pytest.skip("needs the lemmafit CLI + dafny toolchain")
-    return scaffold_lemmafit_project(tmp_path_factory.mktemp("lf") / "proj", install_deps=False)
+    """A throwaway scaffolded Dafny project (just the vendored kernel; only the verifier is needed)."""
+    if not dafny_available():
+        pytest.skip("needs the dafny toolchain")
+    return scaffold_dafny_project(tmp_path_factory.mktemp("lf") / "proj")
 
 # A minimal module that refines the abstract Domain and verifies.
 _GOOD = '''include "Replay.dfy"

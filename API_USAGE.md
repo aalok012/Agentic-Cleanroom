@@ -8,11 +8,11 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | metric | value |
 |---|---:|
 | runs logged | 1 |
-| LLM calls | 57 |
-| input tokens | 176,377 |
-| output tokens | 31,407 |
-| total tokens | 207,784 |
-| estimated cost (USD) | $0.6040 |
+| LLM calls | 30 |
+| input tokens | 31,638 |
+| output tokens | 9,796 |
+| total tokens | 41,434 |
+| estimated cost (USD) | $0.0106 |
 
 ## Run history
 
@@ -29,6 +29,9 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | 2026-06-21 18:31:33 | `spike-4.6-gpt-4.1-20260621-183133` | spike-unverified (6r) | spike:4.6 | gpt-4.1-2025-04-14 | 6 | 29,890 | 5,588 | 35,478 | $0.1045 | 0.0 | - |
 | 2026-06-21 18:33:10 | `spike-4.6-gpt-4.1-20260621-183310` | spike-unverified (7r) | spike:4.6 | gpt-4.1-2025-04-14 | 7 | 41,664 | 7,462 | 49,126 | $0.1430 | 0.0 | - |
 | 2026-06-21 19:13:52 | `20260621-191352-dineout-srs` | complete | dineout_srs.xml | gpt-4.1-2025-04-14 | 57 | 176,377 | 31,407 | 207,784 | $0.6040 | 223.8 | [detail](outputs/runs/20260621-191352-dineout-srs.md) |
+| 2026-06-22 05:06:38 | `20260622-050638-dineout-srs` | complete | dineout_srs.xml | gpt-4.1-2025-04-14+gpt-4o-mini-2024-07-18 | 84 | 203,160 | 54,172 | 257,332 | $0.6249 | 659.3 | [detail](outputs/runs/20260622-050638-dineout-srs.md) |
+| 2026-06-22 05:45:39 | `recertify-dineout_srs_full_ir` | recertify | dineout_srs_full_ir.json | none (free re-cert) | 0 | 0 | 0 | 0 | $0.0000 | 0.0 | - |
+| 2026-06-22 05:52:24 | `recertify-dineout_srs_full_ir-n4` | recertify@4 | dineout_srs_full_ir.json | gpt-4o-mini-2024-07-18 | 30 | 31,638 | 9,796 | 41,434 | $0.0106 | 0.0 | - |
 
 ## Notes
 

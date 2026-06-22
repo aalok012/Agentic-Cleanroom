@@ -1,8 +1,8 @@
-"""SPEC.yaml generation from IR behavioral contracts (LemmaFit TypeScript stack)."""
+"""SPEC.yaml generation from IR behavioral contracts (Dafny proof track)."""
 
 import yaml
 
-from src.cleanroom.utils.lemmafit_spec import build_spec_entries, build_spec_yaml
+from src.cleanroom.utils.dafny_spec import build_spec_entries, build_spec_yaml
 
 
 def _ir() -> dict:

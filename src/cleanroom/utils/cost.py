@@ -24,3 +24,25 @@ def _rates(model: str) -> dict[str, float]:
 def estimate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
     rates = _rates(model)
     return input_tokens / 1_000_000 * rates["input"] + output_tokens / 1_000_000 * rates["output"]
+
+
+def estimate_cost_by_model(calls) -> tuple[float, dict[str, dict]]:
+    """Accurate cost for a MIXED-model run (e.g. --prove: gpt-4o-mini + gpt-4.1).
+
+    Groups per-call records (``{model, input_tokens, output_tokens}`` from GLOBAL_METRICS.calls)
+    by model and prices each group at its own rate. Returns (total_usd, {model: {input, output,
+    calls, cost_usd}}). Pricing each model separately avoids the under/over-billing you get from
+    applying one model's rate to every token.
+    """
+    by_model: dict[str, dict] = {}
+    for c in calls or []:
+        m = c.get("model") or "gpt-4o-mini"
+        agg = by_model.setdefault(m, {"input": 0, "output": 0, "calls": 0, "cost_usd": 0.0})
+        agg["input"] += int(c.get("input_tokens", 0))
+        agg["output"] += int(c.get("output_tokens", 0))
+        agg["calls"] += 1
+    total = 0.0
+    for m, agg in by_model.items():
+        agg["cost_usd"] = round(estimate_cost(m, agg["input"], agg["output"]), 6)
+        total += agg["cost_usd"]
+    return round(total, 6), by_model

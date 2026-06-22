@@ -42,3 +42,7 @@ dev = [
     "pytest>=9.0.3",
 ]
 
+
+[tool.pytest.ini_options]
+# Only collect the repo's own tests — never the generated test artifacts under outputs/.
+testpaths = ["tests"]

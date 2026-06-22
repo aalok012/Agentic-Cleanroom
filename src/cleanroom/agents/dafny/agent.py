@@ -1,10 +1,13 @@
-"""Stage 3 for the LemmaFit/TypeScript stack: generate VERIFIED Dafny per feature.
+"""The Dafny proof track: generate VERIFIED Dafny per feature (no LemmaFit dependency).
 
-Replaces the Python Code Agent on this stack. For each feature it casts the FRs into a Dafny
-``Domain`` state machine (one ``Action`` per FR; BehavioralContract -> Inv / precondition guards /
-postcondition lemmas), then runs the real Dafny verifier and feeds proof errors back for up to
+For each feature it casts the FRs into a Dafny ``Domain`` state machine (one ``Action`` per FR;
+BehavioralContract -> Inv / precondition guards / postcondition lemmas) that refines our vendored
+``Replay.dfy`` kernel, then runs the real Dafny verifier and feeds proof errors back for up to
 ``max_rounds`` rounds — the generate->verify->revise loop validated by the feasibility spikes
 (needs a gpt-4.1-class model; gpt-4o-mini/gpt-4o cannot discharge map-comprehension proofs).
+
+Prompt knowledge is OWNED here (DAFNY_REF syntax + PROOF_REF tactics), folded in from the former
+LemmaFit skills — no ``.claude/skills`` files are read.
 
 Isolation: the agent derives everything ONLY from the spec (FR text + behavioral contracts +
 SPEC.yaml entries) and never reads tests or any generated test artifact — the same clean-room
@@ -20,11 +23,11 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from src.cleanroom.agents.dafny.schema.dafny import FeatureDafny, GeneratedDafny
 from src.cleanroom.utils.dafny_verify import verify_dafny
-from src.cleanroom.utils.lemmafit_spec import build_spec_entries, build_spec_yaml
+from src.cleanroom.utils.dafny_spec import build_spec_entries, build_spec_yaml
 from src.cleanroom.utils.llm_client import get_llm
 
 # Dafny constructs models routinely get wrong; priming these turned an infinite syntax loop
-# into actual progress in the spike. (Kept in sync with scripts/lemmafit_dafny_spike.py.)
+# into actual progress in the feasibility spikes.
 DAFNY_REF = """=== DAFNY SYNTAX REFERENCE (use these EXACT forms; wrong forms cause "gets expected"/"closeparen expected") ===
 - Record type: use a datatype, NOT a named tuple:  datatype Item = Item(name: string, price: int)
 - Map type:        map<string, int>
@@ -47,23 +50,33 @@ DAFNY_REF = """=== DAFNY SYNTAX REFERENCE (use these EXACT forms; wrong forms ca
 - Every `if ... then ...` in a function MUST have an `else` (functions are total).
 - Empty literals: empty map is `map[]`, empty set is `{}`, empty seq is `[]` — NEVER `set {}` or `map []`."""
 
-_SYSTEM = """You are a Dafny author for LemmaFit. Produce ONE Dafny file that refines the abstract
-`Domain` below into a verified state machine for a single feature. Output ONLY Dafny source — no
-markdown, no prose, no code fences.
+# Proof tactics, folded in from the former LemmaFit `lemmafit-proofs` skill (now owned in-repo).
+PROOF_REF = """=== DAFNY PROOF TACTICS ===
+- Postconditions first: write the `ensures` (the guarantee) before the body.
+- For a map lookup `m[k]`, you MUST first establish `k in m` (assert it, or add it as a
+  precondition / guard) — otherwise Dafny reports "function precondition could not be proved".
+- For "if X then Y", also reason about "if not X" — one-directional claims leave gaps.
+- Tighten `Inv`: every clamp/guard in code (e.g. `if x > MAX then MAX else x`) should have a
+  matching bound in `Inv` (e.g. `0 <= x <= MAX`).
+- Prove a domain-specific postcondition lemma per Action (something stronger than the generic
+  StepPreservesInv), with an `ensures` matching a SPEC property.
+- LAST RESORT only: if an obligation is genuinely infeasible to prove, you may write
+  `assume {:axiom} <expr>;` with a one-line comment justifying why — this passes the proof as an
+  explicit, auditable ASSUMPTION rather than a discharged lemma. Prefer a real proof."""
+
+_SYSTEM = """You are a Dafny author. Produce ONE Dafny file that refines the abstract `Domain`
+below into a verified state machine for a single feature. Output ONLY Dafny source — no markdown,
+no prose, no code fences.
 
 CRITICAL GOTCHA: a refining `Apply` function and the refining `StepPreservesInv` lemma must NOT
 repeat `requires Inv(m)` — it is inherited from the abstract Domain and repeating it is an error.
 
 {ref}
 
+{proofs}
+
 === ABSTRACT DOMAIN INTERFACE (refine this; do not redefine it) ===
 {domain}
-
-=== SKILL: lemmafit-dafny ===
-{dafny}
-
-=== SKILL: lemmafit-proofs ===
-{proofs}
 """
 
 
@@ -78,22 +91,16 @@ class DafnyAgent:
     def __init__(self, project_dir: Path | str, llm=None, model: str = "gpt-4.1",
                  max_rounds: int = 6) -> None:
         self.project_dir = Path(project_dir)
-        self.dafny_dir = self.project_dir / "lemmafit" / "dafny"
+        self.dafny_dir = self.project_dir / "dafny"
         self.model = model
         self.max_rounds = max_rounds
         self.llm = llm or get_llm(model=model, temperature=0.0)
         self._system = self._build_system()
 
     def _build_system(self) -> str:
-        skills = self.project_dir / ".claude" / "skills"
         domain = (self.dafny_dir / "Replay.dfy").read_text().split(
             "abstract module {:compile false} Kernel")[0]
-        return _SYSTEM.format(
-            ref=DAFNY_REF,
-            domain=domain,
-            dafny=(skills / "lemmafit-dafny" / "SKILL.md").read_text(),
-            proofs=(skills / "lemmafit-proofs" / "SKILL.md").read_text(),
-        )
+        return _SYSTEM.format(ref=DAFNY_REF, proofs=PROOF_REF, domain=domain)
 
     def _feature_prompt(self, ir: dict, feature_id: str, mod: str) -> str:
         feat = next((f for f in ir.get("features", []) if f.get("id") == feature_id), {})
@@ -138,7 +145,8 @@ class DafnyAgent:
             target.write_text(code)
             res = verify_dafny(target)
             last = FeatureDafny(feature_id=feature_id, module=mod, dafny_source=code,
-                                verified=res.ok, rounds=rnd, residual_errors=res.messages)
+                                verified=res.ok, rounds=rnd, residual_errors=res.messages,
+                                axioms=res.axioms)
             if res.ok:
                 return last
             errs = "\n".join(f"  line {m['line']}: {m['message']}" for m in res.messages[:12])

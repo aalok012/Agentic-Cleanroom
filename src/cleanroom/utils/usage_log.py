@@ -217,10 +217,11 @@ def append_usage_log(
 def metrics_from_globals(*, srs: str, stack: str, stages: list, config: dict | None = None) -> dict:
     """Build a metrics dict from GLOBAL_METRICS when a run aborts mid-pipeline."""
     from src.cleanroom.llms.callbacks.metric import GLOBAL_METRICS
-    from src.cleanroom.utils.cost import estimate_cost
+    from src.cleanroom.utils.cost import estimate_cost_by_model
 
     in_tot, out_tot, calls = GLOBAL_METRICS.snapshot()
-    model = GLOBAL_METRICS.model or "gpt-4o-mini"
+    cost, by_model = estimate_cost_by_model(GLOBAL_METRICS.calls)
+    model = "+".join(sorted(by_model)) if len(by_model) > 1 else (GLOBAL_METRICS.model or "gpt-4o-mini")
     return {
         "srs": srs,
         "stack": stack,
@@ -234,5 +235,6 @@ def metrics_from_globals(*, srs: str, stack: str, stages: list, config: dict | N
             "total": in_tot + out_tot,
             "calls": calls,
         },
-        "cost_usd": round(estimate_cost(model, in_tot, out_tot), 6),
+        "cost_usd": cost,
+        "cost_by_model": by_model,
     }

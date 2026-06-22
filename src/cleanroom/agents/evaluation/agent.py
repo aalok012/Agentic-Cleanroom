@@ -23,6 +23,7 @@ from src.cleanroom.agents.code.schema.code import GeneratedCode, GeneratedFile
 from src.cleanroom.agents.evaluation.metric import pass_at_k
 from src.cleanroom.agents.evaluation.runner import run_case, run_case_http
 from src.cleanroom.utils.packager import build_runnable_package
+from src.cleanroom.utils.dafny_project import stage_dafny_cores
 from src.cleanroom.agents.planning.agent import PlanningAgent
 from src.cleanroom.agents.evaluation.schema.certification import (
     CertificationResult,
@@ -50,8 +51,17 @@ class CertificationAgent:
         stack: str = "python",
         use_pipeline_sample: bool = True,
         case_timeout: float = 10.0,
+        skip_feature_ids: set[str] | None = None,
+        dafny_proj: "Path | None" = None,
+        dafny_modules: list[str] | None = None,
     ) -> None:
         self.n = max(1, n)
+        # Features already PROVED by the Dafny tier — certified by proof, so excluded from pass@k.
+        self.skip_feature_ids = set(skip_feature_ids or ())
+        # When proved features ship as Dafny-core adapters, every sample app the oracle boots needs
+        # the compiled cores + shim staged or the adapters' `import dafny_marshal` fails at boot.
+        self.dafny_proj = Path(dafny_proj) if dafny_proj else None
+        self.dafny_modules = list(dafny_modules or [])
         self.k_values = list(k_values or ([1, 3] if self.n >= 3 else [1]))
         self.k_values = [k for k in self.k_values if k <= self.n] or [1]
         self.code_llm = code_llm if code_llm is not None else get_llm(temperature=temperature)
@@ -75,6 +85,14 @@ class CertificationAgent:
         cases_by_fr = self._cases_by_fr(tests)
         plans = {c["fr_id"]: c for c in ir["planning"]["contracts"]}
         feature_names = {feature_id_of(f): f.get("name", "") for f in ir.get("features", [])}
+
+        # Drop FRs whose feature was already PROVED by the Dafny tier — they're certified by
+        # proof and need no statistical testing (the prove-or-test fallback).
+        if self.skip_feature_ids:
+            cases_by_fr = {
+                fr_id: cases for fr_id, cases in cases_by_fr.items()
+                if plans.get(fr_id, {}).get("feature_id") not in self.skip_feature_ids
+            }
 
         samples = self._collect_samples(ir)
         req_text = self._requirement_text_map(ir)
@@ -181,9 +199,6 @@ class CertificationAgent:
         if self.verify and self.verifier is not None:
             for _ in range(need):
                 samples.append(generate_and_verify(ir, code_agent, self.verifier, self.verify_rounds)[0])
-        elif self.stack == "python":
-            for _ in range(need):
-                samples.append(generate_and_verify(ir, code_agent, max_rounds=2)[0])
         else:
             for _ in range(need):
                 samples.append(code_agent.generate(ir))
@@ -191,9 +206,14 @@ class CertificationAgent:
 
     def _write_sample(self, sample: GeneratedCode, code_dir: Path) -> None:
         """Lay a sample out for its oracle: a flat function tree (python) or the
-        assembled runnable FastAPI app under code_dir/app (fastapi)."""
+        assembled runnable FastAPI app under code_dir/app (fastapi).
+
+        For a fastapi sample that contains Dafny-core adapters, also stage the compiled cores +
+        the marshalling shim so the app boots (otherwise `import dafny_marshal` fails)."""
         if self.stack == "fastapi":
-            build_runnable_package(sample.model_dump(), code_dir)
+            app_dir = build_runnable_package(sample.model_dump(), code_dir)
+            if self.dafny_proj and self.dafny_modules:
+                stage_dafny_cores(Path(app_dir), self.dafny_proj, self.dafny_modules)
         else:
             CodeAgent.write_files(sample, code_dir)
 

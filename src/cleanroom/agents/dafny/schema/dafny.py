@@ -1,4 +1,4 @@
-"""Schemas for the Dafny stage (LemmaFit/TypeScript stack)."""
+"""Schemas for the Dafny proof tier."""
 
 from pydantic import BaseModel, Field
 
@@ -14,6 +14,15 @@ class FeatureDafny(BaseModel):
     residual_errors: list[dict] = Field(
         default_factory=list, description="Remaining proof errors if not verified (line/message)"
     )
+    axioms: list[dict] = Field(
+        default_factory=list,
+        description="`assume {:axiom}` escape hatches — obligations ASSUMED, not proved (line/content)",
+    )
+
+    @property
+    def proved_clean(self) -> bool:
+        """Verified with NO assumed axioms — a fully discharged proof."""
+        return self.verified and not self.axioms
 
 
 class GeneratedDafny(BaseModel):

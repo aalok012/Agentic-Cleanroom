@@ -26,6 +26,187 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-22 — Fix adapter app-boot failures found by the first real --prove run
+
+The first paid `--prove --certify` FastAPI run (6/10 proved, $0.62, logged correctly with the new
+mixed-model cost) failed every pass@k test with `ModuleNotFoundError: No module named
+'dafny_marshal'`. Two bugs, both diagnosed + fixed + validated for $0 (n=1 pipeline sample, no LLM):
+
+### Fixed
+- **Cert oracle didn't stage the Dafny cores.** `CertificationAgent._write_sample` re-packages each
+  sample into a temp app but never copied `dafny_cores/` → proved-feature adapters' `import
+  dafny_marshal` crashed at boot → ALL tests failed (even unproved features). Fix: `_write_sample`
+  now calls `stage_dafny_cores`; `__init__` takes `dafny_proj`/`dafny_modules`; `run_pipeline` passes
+  them when `adapter_mode`.
+- **Dafny mangles `_`→`__` in compiled module names.** Adapter imported `F4_1Domain` but Dafny emits
+  `F4__1Domain.py` — earlier tests missed it (underscore-free names `Menu`/`Fm`). Fix:
+  `generate_adapter` mangles `core_module = f"{module}Domain".replace("_","__")` (the core DIR keeps
+  the single underscore). Regression test now uses an underscored module.
+- **pytest scoped to `tests/`** (`pyproject.toml [tool.pytest.ini_options] testpaths`) so generated
+  test artifacts under `outputs/` no longer pollute the suite.
+
+### Validated (free, n=1 local re-cert with both fixes)
+- App boots; all 6 proved adapters import (no `module_`/`_dafny` multi-core collision). Unproved
+  features now test for real: 4.3=1.00 (4/4), 4.10=2/4, 4.6=2/4, 4.7=1/3 → aggregate pass@1 **0.25**,
+  case rate **0.60** (was 0.00 / all-boot-crash). Remaining failures are genuine code issues
+  (empty-DB seeding, validation) — what pass@k should catch. Suite **50 passed**.
+
+---
+
+## 2026-06-21 — Accurate per-model API-usage cost (mixed-model --prove runs)
+
+Goal: a `--prove` run mixes models (gpt-4o-mini for most stages + gpt-4.1 for the proof tier), but
+the usage log priced ALL tokens at the last model's rate — under-billing the expensive gpt-4.1
+tokens ~9× (a real $0.37 run logged as $0.04). Token COUNTS were always accurate; only the dollar
+figure was wrong.
+
+### Added / Changed
+- **`estimate_cost_by_model(calls)`** in `cost.py` — groups the per-call records (model already
+  recorded in `GLOBAL_METRICS.calls`) by model and prices each at its own rate. Tests: `test_cost.py`.
+- **`_finalize_metrics` + `metrics_from_globals`** now use it: `cost_usd` is the exact per-model sum,
+  `model` shows all models used (e.g. `gpt-4.1+gpt-4o-mini`), and `cost_by_model` is stored.
+- **Run report** prints a per-model cost breakdown for mixed runs.
+- Logging path unchanged and confirmed: `append_usage_log` writes to `API_USAGE.md` on BOTH success
+  and failure (partial runs still counted), with cumulative totals + per-run history. Suite **50**.
+
+---
+
+## 2026-06-21 — Ship the PROVED logic from Dafny (FastAPI core + thin adapter)
+
+Goal (user decision): for a FastAPI feature that the proof tier verifies, **ship the logic as the
+compiled Dafny core** rather than CodeAgent-generated code — the Code Agent writes only the thin
+DB/HTTP adapter that calls the proved core. Unproved features fall back to full CodeAgent code +
+pass@k (prove-or-test). Reorders the pipeline so the proof tier runs BEFORE codegen.
+
+### De-risked first (free, no LLM)
+- Confirmed `dafny translate py` output is callable: `MenuDomain.default__.Apply/Normalize`,
+  `Action_*` constructors, `_dafny` runtime bundled in `<module>-py/`. Inputs/outputs are Dafny
+  runtime types (`_dafny.Seq` strings via `VerbatimString(False)`, `_dafny.Map` state). Validated a
+  full JSON round-trip through a compiled core.
+
+### Added
+- **`src/cleanroom/utils/dafny_marshal.py`** — JSON/DB ↔ Dafny-runtime shim (`to_str/from_str`,
+  `to_seq/from_seq`, `to_map/from_map`), shipped INTO the app so adapters import it. Lazy `_dafny`
+  import so it loads anywhere. Tests: `tests/test_dafny_marshal.py` (incl. a real compile+roundtrip).
+- **`CodeAgent.generate_adapter`** + **`generate_adapter.j2`** — writes one FastAPI controller per
+  proved feature that imports the compiled core, persists the Dafny Model as serialized state,
+  marshals via `dafny_marshal`, and calls `Normalize(Apply(state, action))` — NO business logic.
+  Prompt bakes in the validated calling convention + an upward `dafny_cores` discovery header.
+- **`CodeAgent.generate(skip_feature_ids=…)`** — omit whole features (those shipping from Dafny).
+- **`stage_dafny_cores`** (`dafny_project.py`) — copy each proved `out/<mod>-py/` + the shim into
+  `app/dafny_cores/`. Tests: `tests/test_adapter_mode.py`.
+
+### Changed
+- **`run_pipeline.py` reorder**: proof tier is now **Stage 4a (before codegen)**. `adapter_mode =
+  prove and stack==fastapi and proved>0`: proved features → `generate_adapter` over the compiled
+  core; the rest → `generate(skip_feature_ids=proved)`; app packaging stages the cores+shim. pass@k
+  skips proved features only in adapter_mode (`cert_skip`). On the python stack `--prove` stays
+  proof-only (code/test proceed for all). `--verify` applies only on the non-adapter path.
+
+### Verified
+- Full suite **46 passed**. Offline-validated: adapter file placement + prompt conventions, feature
+  skipping, core/shim staging, and (with real dafny) the compiled-core round-trip. NOTE: adapter
+  *quality* (does the LLM write correct glue for arbitrary Model shapes) is unproven until a real
+  `--prove --certify` FastAPI run — that's the paid validation step.
+
+---
+
+## 2026-06-21 — De-LemmaFit + prove-or-test certification tiering
+
+Goal (user decision): drop the LemmaFit runtime dependency (it's a wrapper of Dafny + workflow +
+prompts — we already call `dafny verify` directly), and restructure the pipeline so `lemmafit` is
+no longer a stack. New shape: generate the MVC app in the best stack, then per feature **prove**
+its logic in Dafny where possible (compile proved features to native code) and **test** the rest
+with the Testing Agent (pass@k) — a prove-or-test fallback.
+
+### Removed
+- **LemmaFit runtime dependency.** Why: the verifier was always just `dafny verify` + a parse; the
+  CLI/daemon/dafny2js/npm/`.claude/skills` were workflow, not verification. How: deleted
+  `src/cleanroom/utils/lemmafit_project.py` (lemmafit init + npm + dafny2js compile) and the stale
+  `scripts/lemmafit_dafny_spike.py`; dropped `--stack lemmafit`.
+
+### Added
+- **Vendored kernel** `src/cleanroom/agents/dafny/kernel/Replay.dfy`. Why: own the abstract
+  Domain/Kernel features refine, instead of getting it from `lemmafit init`.
+- **`src/cleanroom/utils/dafny_project.py`** — `scaffold_dafny_project` (mkdir + copy vendored
+  kernel, no CLI/npm) and `compile_dafny` (`dafny translate <target>`, default `py`, replaces
+  dafny2js).
+- **`extract_axioms`** in `dafny_verify.py` — surfaces `assume {:axiom}` escape hatches
+  (`DafnyResult.axioms`), so an unprovable obligation can pass as an explicit, auditable assumption.
+- **Proof tier (`--prove`)** + **`--prove-target`** in `run_pipeline.py`: Stage 5b authors+proves a
+  Dafny state machine per feature (gpt-4.1), compiles proved features to native code, degrades
+  gracefully (no dafny binary → 0 proved → everything tested).
+- **`skip_feature_ids`** on `CertificationAgent`: pass@k skips features already PROVED by the tier
+  (the test-fallback half of prove-or-test).
+
+### Changed
+- **`DafnyAgent`** (`agents/dafny/agent.py`): reads the vendored kernel from `<proj>/dafny/`; prompt
+  knowledge owned in-repo (`DAFNY_REF` syntax + new `PROOF_REF` tactics folded in from the former
+  LemmaFit skills); no `.claude/skills` reads. System prompt de-branded from "LemmaFit".
+- **Renamed** `utils/lemmafit_spec.py` → `utils/dafny_spec.py`; `tests/test_lemmafit_spec.py` →
+  `tests/test_dafny_spec.py`.
+- **`dafny_verify.py`** binary probe: $DAFNY → PATH → `~/.lemmafit` download (now just a fallback,
+  not a requirement).
+- **`run_pipeline.py`** flow: removed the `if stack == "lemmafit": … return` branch; `--stack`
+  restricted to `auto|python|fastapi`; run-report headings de-branded (proof tier / native compile).
+
+### Verified
+- Imports resolve; offline scaffold copies the 155-line kernel; CLI exposes `--prove`/`--prove-target`
+  and `--stack {auto,python,fastapi}`. Full suite **41 passed**.
+
+### Fixed (two-pass review against the agreed pipeline)
+- **Axiom audit trail propagated.** Why: `extract_axioms` existed but nothing carried `assume {:axiom}`
+  through, so a feature passing via an assumed axiom was silently labeled PROVED. How: added
+  `FeatureDafny.axioms` (+ `proved_clean` property); `DafnyAgent` populates it from `res.axioms`;
+  run output / `metrics['dafny']` / run-report now show "PROVED [N assumed axiom(s)]" and a
+  `n_proved_with_axioms` count.
+- **All-proved certification reporting.** Why: when every feature was proved, pass@k had nothing to
+  test and printed a misleading `pass@1: 0.000`. How: print "(no features to test — all certified by
+  the proof tier)" when `cert.frs` is empty; otherwise annotate pass@k with the un-proved FR count;
+  added `n_tested_frs`/`n_proved_features` to metrics.
+- **Validated against a real Dafny binary** (Homebrew dafny 4.11 on PATH, after removing the LemmaFit
+  toolchain): end-to-end scaffold(vendored kernel)+`verify_dafny` of a refining module (3 verified, 0
+  errors); `compile_dafny` real `dafny translate py` → `out/<mod>-py`; axiom escape-hatch verifies and
+  is recorded. Full suite **41 passed**.
+
+### Ops (LemmaFit removal from the machine)
+- Removed `~/lemmafit` scratch project (stale daemon status panel), the global `lemmafit` npm package
+  (+bin symlink), and `~/.lemmafit/.dafny2js`. Installed `dafny` independently (`brew install dafny`,
+  4.11 on PATH) and removed `~/.lemmafit` entirely. Cleared the stale LemmaFit block from
+  `~/.claude/CLAUDE.md`. The pipeline's verifier now finds dafny on PATH.
+
+---
+
+## 2026-06-21 — Remove the python-stack deterministic verification layers
+
+Goal (user decision): with verification moving to the LemmaFit/Dafny track, strip the two
+deterministic verdict sources from the python-stack generate→verify→revise loop. Verdicts now
+come solely from the LLM `VerificationAgent`; the `verifier=None` path is a no-op pass-through.
+
+### Removed
+- **CrossHair symbolic verifier.** Why: deterministic layer no longer wanted on the python
+  track. How: `git rm src/cleanroom/agents/verification/crosshair_verify.py` +
+  `tests/test_crosshair_verify.py`.
+- **Executable canonical-I/O oracle.** Why: the other deterministic source, removed together.
+  How: `git rm src/cleanroom/agents/verification/executable.py` (`executable_verdicts`,
+  `merge_verdicts`).
+
+### Changed
+- **`loop.py` `generate_and_verify`.** Why: drop the two deterministic groups. How: `_verdicts`
+  now returns `{}` when `verifier is None`, else the LLM verdicts only; removed crosshair/
+  executable imports; aggregate model label `deterministic`→`none`; updated docstrings.
+- **`run_pipeline.py`.** Why: the `elif certify and stack == "python"` deterministic-fix branch
+  had no verdict source left. How: removed it (and the `crosshair_available` print) so python
+  `--certify` falls through to plain `code_agent.generate`.
+- **`evaluation/agent.py`.** Why: same — the python per-sample `generate_and_verify(max_rounds=2)`
+  branch is now equivalent to plain generate. How: collapsed it into the `else` branch.
+
+### Verified
+- Imports resolve (`run_pipeline`, loop, `CertificationAgent`); no dangling refs to removed
+  symbols. Full suite **41 passed** (down from 47 — the 6 removed crosshair tests).
+
+---
+
 ## 2026-06-21 — LemmaFit/TypeScript stack: Phase 0 (discovery) + SPEC.yaml generator
 
 Goal (user decision): move code generation from Python to a TypeScript stack verified by
