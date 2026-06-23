@@ -33,35 +33,9 @@ from src.cleanroom.utils.ir import feature_id_of, normalize_ir_features, require
 from src.cleanroom.utils.llm_client import get_llm
 from src.cleanroom.utils.prompt_renderer import PromptRenderer
 
-# --- MVC layer keyword fallback (used only when the LLM's layer is unusable) ----
-MVC_KEYWORDS: dict[str, tuple[str, ...]] = {
-    "model": ("data", "database", "storage", "schema", "model", "entity", "repository",
-              "persistence", "record", "vocabulary", "terminology", "standard", "code"),
-    "controller": ("function", "behavior", "operation", "integration", "exchange", "process",
-                   "service", "controller", "logic", "workflow", "transaction"),
-    "view": ("visualization", "report", "display", "ui", "interface", "presentation", "view",
-             "dashboard", "render", "screen", "chart", "graph"),
-}
+# Directory each MVC layer's files live under. The plan_feature.j2 prompt is the classifier
+# (Literal-typed `mvc_layer`); there is no keyword fallback — invalid output defaults to controller.
 _LAYER_DIR = {"model": "models", "view": "views", "controller": "controllers"}
-
-
-def classify_layer(feature_name: str) -> str | None:
-    """Infer the MVC layer of a feature from its name, or None if ambiguous.
-
-    Kept as the deterministic fallback for the planner's layer choice. Matches a keyword
-    when a word in the name *starts with* it. This is a LAST RESORT only — with the
-    Literal-typed mvc_layer in the schema, the LLM almost always returns a valid layer.
-    """
-    words = re.findall(r"[a-z]+", (feature_name or "").lower())
-    scores = {
-        layer: sum(1 for kw in keywords if any(word.startswith(kw) for word in words))
-        for layer, keywords in MVC_KEYWORDS.items()
-    }
-    best = max(scores.values())
-    if best == 0:
-        return None
-    winners = [layer for layer, score in scores.items() if score == best]
-    return winners[0] if len(winners) == 1 else None
 
 
 def feature_of(req_id: str) -> str:
@@ -99,14 +73,11 @@ def _func_name(signature: str, fr_id: str) -> str:
     return "fr_" + _slug(fr_id)
 
 
-def _normalize_layer(raw: str, feature_name: str) -> str:
-    """Coerce the LLM's layer to model|view|controller, falling back to the name-keyword
-    classifier, then to 'controller'."""
+def _normalize_layer(raw: str) -> str:
+    """Coerce the LLM's layer to model|view|controller; default to 'controller' if invalid.
+    The plan_feature.j2 prompt is the classifier — this only guards malformed output."""
     layer = (raw or "").strip().lower()
-    if layer in _LAYER_DIR:
-        return layer
-    fallback = classify_layer(feature_name)
-    return fallback if fallback in _LAYER_DIR else "controller"
+    return layer if layer in _LAYER_DIR else "controller"
 
 
 def _file_path(layer: str, signature: str, fr_id: str) -> str:
@@ -268,7 +239,7 @@ class PlanningAgent:
                     notes.append(f"FR {rid}: no LLM design returned; used a default contract.")
                     signature = f"def fr_{_slug(rid)}() -> None:"
                     args, returns = [], ""
-                    layer = _normalize_layer("", name)
+                    layer = _normalize_layer("")
                     example_inputs = "{}"
                     expected_return = "null"
                     error_mode = "raise"
@@ -277,7 +248,7 @@ class PlanningAgent:
                 else:
                     signature = design.signature
                     args, returns = design.args, design.returns
-                    layer = _normalize_layer(design.mvc_layer, name)
+                    layer = _normalize_layer(design.mvc_layer)
                     example_inputs = design.example_inputs_json
                     expected_return = design.expected_return_json
                     error_mode = design.error_mode

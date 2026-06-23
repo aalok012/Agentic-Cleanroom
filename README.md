@@ -26,8 +26,7 @@ In a typical "agentic coding" setup, failing tests are fed back into the code ge
 pass — so the code overfits to the tests and the score means little. Here the two sides are kept
 apart by construction:
 
-- **Code** is a pure function of the **specification** (plus, optionally, *spec-level* contract
-  violations from an independent reviewer — never test data).
+- **Code** is a pure function of the **specification** — never of test data.
 - **Tests** are a pure function of the **specification**.
 - They meet exactly once, at **certification**, and only **after both are frozen**. Certification
   scores; it never writes back into generation.
@@ -63,9 +62,6 @@ progresses (`outputs/{project}_full_ir.json` is the complete record).
     ▼
   [4]  Code Agent       PROVED features → a thin FastAPI adapter over the compiled Dafny core
     │                   UN-proved features → full generated code
-    ▼  (optional, --verify)
-  [4b] Verification     reasoning-only contract review + bounded revise loop (LLM, no execution)
-    │
     ▼
   [5] Test Agent        spec-derived black-box test cases (LLM)
     │
@@ -83,7 +79,6 @@ from Dafny. The full prove-or-test flow is `--prove --certify`.
 | 3 Planning | yes (1 call/feature) | `planning.contracts` |
 | 4a Proof tier | **gpt-4.1** (1+ calls/feature, opt-in `--prove`) | `generated_dafny`, `proved_feature_ids` |
 | 4 Code | yes (1 call/FR or adapter) | `generated_code` |
-| 4b Verification | yes (opt-in `--verify`) | `verification` |
 | 5 Test | yes (1 call/feature) | `generated_tests` |
 | 6 Certification | executable oracle (opt-in `--certify`) | `certification` |
 
@@ -158,9 +153,6 @@ uv run python run_pipeline.py "data/srs/dineout_srs.xml" --certify --samples 3
 
 # 3. The full prove-or-test flow (needs dafny + gpt-4.1; spends ~$0.6 on DineOut)
 uv run python run_pipeline.py "data/srs/dineout_srs.xml" --stack fastapi --prove --certify --samples 1
-
-# 4. LLM contract review + revise loop (independent of prove/test)
-uv run python run_pipeline.py "data/srs/dineout_srs.xml" --verify --verify-rounds 2
 ```
 
 ### Flags
@@ -172,10 +164,6 @@ uv run python run_pipeline.py "data/srs/dineout_srs.xml" --verify --verify-round
 | `--prove-target` | `py` | `dafny translate` target for proved features (`py`/`cs`/`js`/`go`/`java`/`cpp`/`rs`) |
 | `--certify` | off | Run pass@k certification (for the un-proved features when `--prove` is on) |
 | `--samples` | 3 | Code samples per FR for pass@k |
-| `--verify` | off | LLM contract reviewer + bounded revise loop after code generation |
-| `--verify-rounds` | 2 | Max revise rounds (`0` = review only) |
-| `--verify-model` | gpt-4o-mini | Model for the reviewer |
-| `--verify-passes` | 1 | Reviewer passes per contract; `>1` requires a unanimous fail before revising |
 | `--output-dir` | `outputs` | Artifact directory |
 
 ### Re-score for free (no re-proving)
@@ -220,15 +208,8 @@ Compiles proved features via `utils/dafny_project.py` (`compile_dafny`).
 (`generate(ir, skip_feature_ids=…)`), or, for a proved feature on FastAPI, a thin adapter over the
 compiled core (`generate_adapter`, prompt `generate_adapter.j2`). The adapter imports the compiled
 Dafny module + the marshalling shim (`utils/dafny_marshal.py`), persists the Dafny `Model` as state,
-and calls `Normalize(Apply(state, action))`. Structurally cannot read tests; the only feedback
-channel is `revise()` from the Verification Agent's spec-level violations.
-
-**4b. Verification Agent** (`verification/`) — an independent, **reasoning-only** reviewer (no
-execution) that checks a generated file against its contract and returns clause-level violations
-(precondition / response / postcondition / …). The bounded `generate_and_verify` loop in `loop.py`
-revises failing files and re-verifies. (This is now the *only* verifier on the code side — the
-earlier deterministic layers, CrossHair and an executable oracle, were removed; deterministic
-verification moved entirely to the Dafny track.)
+and calls `Normalize(Apply(state, action))`. Structurally cannot read tests. Verification of code is
+done by the Dafny proof track — there is no LLM "review" stage.
 
 **5. Test Agent** (`test/`) — derives black-box test cases from the spec only (features + contracts +
 planned signatures), one call per feature. Writes `test_feature_*.py`. Never reads generated code.
@@ -247,24 +228,23 @@ results are macro-averaged over FRs. Skips features already proved by the Dafny 
                         │     SPEC    │
                         │ (SRS + IR)  │
                         └──────┬──────┘
-        ┌──────────────┬───────┼───────┬──────────────┐
-        ▼              ▼       ▼       ▼              ▼
-   Dafny Agent    Code Agent  Test   Verification   (stack select)
-   (spec only)    (spec only) Agent  (spec + code under review,
-        │              │      (spec   spec-level feedback only)
-   proved core    full code    only)
-        └──────┬───────┘         │
-               ▼                 │
-         Certification ◄─────────┘
+        ┌──────────────┬───────┼──────────────┐
+        ▼              ▼       ▼              ▼
+   Dafny Agent    Code Agent  Test Agent   (stack select)
+   (spec only)    (spec only) (spec only)
+        │              │       │
+   proved core    full code    │
+        └──────┬───────┘       │
+               ▼               │
+         Certification ◄───────┘
        (executable oracle, no feedback to generation)
 ```
 
 | Agent | May read | Must never read |
 |-------|----------|-----------------|
 | Dafny | spec, planning contracts | tests, generated code |
-| Code | spec, planning contracts, the proved Dafny it wraps, contract violations | `generated_tests` |
+| Code | spec, planning contracts, the proved Dafny it wraps | `generated_tests` |
 | Test | features, contracts, planning | `generated_code` |
-| Verification | spec, planning, the code under review | `generated_tests`; no execution |
 | Certification | frozen tests + code samples | (scores only; never writes back) |
 
 ---
@@ -346,10 +326,10 @@ agentic-cleanroom/
     │   ├── dependency/                 # [2] nested dependency graph
     │   ├── planning/                   # [3] implementation contracts
     │   ├── dafny/                      # [4a] Dafny proof author
-    │   │   ├── agent.py                #      generate→verify→revise (DAFNY_REF + PROOF_REF)
-    │   │   └── kernel/Replay.dfy       #      vendored Redux/Replay kernel (no LemmaFit dep)
+    │   │   ├── agent.py                #      generate→verify→revise loop (DAFNY_REF + skills/)
+    │   │   ├── skills/                 #      vendored Dafny guidance (patterns + proofs)
+    │   │   └── kernel/Replay.dfy       #      Redux/Replay kernel features refine (no external dep)
     │   ├── code/                       # [4]  full code + generate_adapter + generate_adapter.j2
-    │   ├── verification/               # [4b] LLM contract reviewer + revise loop
     │   ├── test/                       # [5]  black-box tests
     │   └── evaluation/                 # [6]  pass@k certification (executable/HTTP oracle)
     ├── llms/callbacks/metric.py        # Per-call token/model tracking (all LLM calls)
@@ -357,7 +337,6 @@ agentic-cleanroom/
         ├── dafny_verify.py             # run `dafny verify`, parse result, extract axioms
         ├── dafny_project.py            # scaffold project, compile_dafny, stage_dafny_cores
         ├── dafny_marshal.py            # JSON/DB ↔ Dafny runtime types (shipped into the app)
-        ├── dafny_spec.py               # IR contracts → SPEC.yaml entries
         ├── packager.py                 # FastAPI app assembly
         ├── stack_select.py             # deterministic python/fastapi choice
         └── cost.py                     # per-model cost (estimate_cost_by_model)

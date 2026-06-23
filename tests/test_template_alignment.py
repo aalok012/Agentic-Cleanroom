@@ -118,27 +118,6 @@ def test_generate_tests_j2(renderer):
     assert "pytest.raises(ValueError)" not in api
 
 
-def test_verify_contract_j2(renderer):
-    out = renderer.render(
-        "verify_contract.j2",
-        {
-            "fr_id": "3.1.REQ-1",
-            "feature_id": "3.1",
-            "mvc_layer": "controller",
-            "requirement": "Req text.",
-            "signature": "def foo() -> None:",
-            "docstring": "Doc.",
-            "stimulus": "User searches.",
-            "precondition": "none",
-            "response": "Results shown.",
-            "postcondition": "none",
-            "prerequisites": _prereq(),
-            "code": "def foo(): pass",
-        },
-    )
-    assert "models/update_db.py" in out
-
-
 def test_plan_feature_j2(renderer):
     out = renderer.render(
         "plan_feature.j2",

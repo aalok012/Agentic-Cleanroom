@@ -26,6 +26,92 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-23 — Stronger MVC-classification prompt; drop the keyword fallback
+
+### Changed — `plan_feature.j2` MVC classifier
+Rewrote the `mvc_layer` instruction with a Role/Definitions/Data-flow/Example structure: classify
+from the behavioral **contract** (stimulus + response), not name keywords; strict separation-of-
+concerns definitions for model/view/controller; a data-flow line (Controller → Model → View);
+a primary-effect tie-breaker (state change → controller even if it also reads; pure read → view;
+bare entity store → model); and three worked examples. Made the FastAPI `TARGET STACK` block map
+each layer to a concrete artifact (model=SQLAlchemy, controller=APIRouter handler, view=read
+endpoint/serializer). This fixes mis-tags like 4.1 ("Place Order" — a create) being labelled `view`.
+
+### Removed — the deterministic keyword classifier
+`MVC_KEYWORDS` + `classify_layer` deleted (the prompt is now the sole classifier; the Literal-typed
+`mvc_layer` field already constrains output). `_normalize_layer` now just defaults invalid output to
+`controller`. Restored `_LAYER_DIR` (the model→models/ directory map — not a classifier, still used
+for file paths). Fixed the resulting `NameError`. Suite **45 passed**.
+
+---
+
+## 2026-06-23 — Remove the LLM Verification Agent entirely
+
+The LLM "Verification Agent" was a reasoning-only reviewer (not a real verifier). Removed it so the
+pipeline has one honest verification story: the Dafny proof track. Code is now generated and either
+proved (Dafny) or tested (pass@k) — no LLM "review" middle layer.
+
+### Removed
+- Deleted `src/cleanroom/agents/verification/` (agent.py, loop.py, schema, `verify_contract.j2`).
+- `run_pipeline.py`: dropped `--verify`/`--verify-rounds`/`--verify-model`/`--verify-passes`, the
+  Stage 4b block, the `verification` metrics + report section, and the `generate_and_verify` path
+  (code is now just `code_agent.generate` or the adapter split).
+- `CertificationAgent`: dropped `verify*` params, the `VerificationAgent`/`generate_and_verify`
+  imports, and the verify branch in `_collect_samples`.
+- Removed the stale `test_verify_contract_j2` template test.
+- README/diagrams/flags + `run_record.py` de-referenced the agent; `run_record` now persists the
+  `dafny`/`compile` metrics (and a Dafny proof-tier section) instead of `verification`.
+
+Suite **45 passed**. Pipeline stages are now: Spec → Dependency → Planning → [4a Prove] → Code →
+Test → [6 Certify].
+
+---
+
+## 2026-06-23 — De-brand: remove the "lemmafit" name from submitted artifacts
+
+For the research submission: strip the literal name "lemmafit" from `src/`, `README.md`, `docs/`
+(dev logs CHANGELOG/RUN_RESULTS kept as honest history). **Labels/comments/filenames only — no
+technical content changed**, so the proof pipeline behaves identically (system prompt 6931→6891
+chars: only headings differ; the Dafny examples, proof tactics, kernel code, and contracts are
+byte-identical). Renamed `skills/lemmafit-{dafny,proofs}.md` → `skills/dafny-{patterns,proofs}.md`
+(updated `_load_skill` args + the `=== DAFNY PATTERNS/PROOFS ===` prompt headers); de-branded
+docstrings/comments in `agent.py`, `dafny_verify.py`, `dafny_project.py`, `kernel/Replay.dfy`,
+tests, docs, README; removed the dead `~/.lemmafit` binary-probe fallback (PATH is checked first, so
+behaviour is unchanged). Suite 46.
+
+NOTE (provenance): the `Replay.dfy` kernel and the two `skills/` guidance docs are *adapted from
+LemmaFit (MIT)*. The in-code attribution was removed per request, but the derivation should be
+acknowledged in the paper — renaming does not make the work original.
+
+---
+
+## 2026-06-23 — Real (vendored) LemmaFit prompts, drop SPEC.yaml, verification-workflow doc
+
+### Fixed — proof-prompt regression
+- A previous edit had bloated the global proof prompt (`PROOF_REF`), which **regressed the proof
+  count 6→4** in a full run (broke 4.4/4.5/4.8/4.9, several into syntax errors). Root cause:
+  wall-specific tactics in the *system* prompt hurt the easy cases.
+- Now use the **actual LemmaFit skill prompts verbatim**, vendored in-repo at
+  `src/cleanroom/agents/dafny/skills/{lemmafit-dafny,lemmafit-proofs}.md` (the tuned originals that
+  achieved 6/10), instead of a hand-condensed paraphrase. `DafnyAgent._build_system` loads them;
+  `DAFNY_REF` syntax guardrails kept; wall-specific tactics live ONLY in `_targeted_hint` (fired on
+  the matching error during revise). No runtime LemmaFit dependency — the skill text is owned in-repo.
+
+### Removed — SPEC.yaml conversion (vestigial)
+- Verification reads the `.dfy` directly; nothing consumed `SPEC.yaml` (no LemmaFit daemon/claimcheck).
+  Deleted `utils/dafny_spec.py` + `tests/test_dafny_spec.py`; dropped `GeneratedDafny.spec_yaml`, the
+  `proj/SPEC.yaml` write, and the redundant spec-entries section in the Dafny prompt (postconditions
+  still flow via the behavioral contracts).
+
+### Added
+- `docs/dafny-verification-workflow.md` — full workflow: the inner mechanism (Dafny→Boogie→VCs→Z3,
+  proof by refutation, inductive invariant safety), the proof walls, and the DafnyAgent
+  generate→verify→revise→compile loop, with diagrams.
+
+Suite **46 passed** (−4 = the removed SPEC.yaml tests).
+
+---
+
 ## 2026-06-22 — Fix adapter app-boot failures found by the first real --prove run
 
 The first paid `--prove --certify` FastAPI run (6/10 proved, $0.62, logged correctly with the new

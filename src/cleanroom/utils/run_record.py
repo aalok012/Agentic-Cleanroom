@@ -52,8 +52,8 @@ def _config_lines(metrics: dict) -> list[str]:
         lines.append(
             f"- **flags**: certify={cfg.get('certify', False)} "
             f"(n={cfg.get('samples', 'n/a')}), "
-            f"verify={cfg.get('verify', False)} "
-            f"(rounds={cfg.get('verify_rounds', 'n/a')})"
+            f"prove={cfg.get('prove', False)} "
+            f"(target={cfg.get('prove_target', 'n/a')})"
         )
     return lines
 
@@ -85,7 +85,8 @@ def write_run_record(
         "stages": metrics.get("stages", []),
         "code": metrics.get("code"),
         "tests": metrics.get("tests"),
-        "verification": metrics.get("verification"),
+        "dafny": metrics.get("dafny"),
+        "compile": metrics.get("compile"),
         "certification": metrics.get("certification"),
     }
 
@@ -124,17 +125,14 @@ def write_run_record(
         t = metrics["tests"]
         lines += ["", "## Generated tests", "", f"- features: {t.get('features', 0)} · cases: {t.get('cases', 0)}"]
 
-    if metrics.get("verification"):
-        v = metrics["verification"]
+    if metrics.get("dafny"):
+        d = metrics["dafny"]
         lines += [
             "",
-            "## Verification",
+            "## Dafny proof tier",
             "",
-            f"- passing: {v.get('n_passing', 0)} · failing: {v.get('n_failing', 0)}",
-            f"- rounds used: {v.get('rounds_used', 0)}/{v.get('max_rounds', 0)}",
+            f"- proved: {d.get('n_verified', 0)}/{d.get('n_features', 0)} · rate: {d.get('verification_rate', 0):.3f}",
         ]
-        if v.get("residual_failures"):
-            lines.append(f"- residual: {', '.join(v['residual_failures'])}")
 
     if metrics.get("certification"):
         cert = metrics["certification"]

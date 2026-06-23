@@ -1,10 +1,9 @@
-"""Drive the Dafny verifier synchronously — our own, no LemmaFit dependency.
+"""Drive the Dafny verifier synchronously.
 
 This is the heart of the Dafny verification track: locate a ``dafny`` binary, run ``dafny verify``
 on a ``.dfy`` file, and return a structured pass/fail + the proof errors (fed back to the agent's
 revise loop) + any ``assume {:axiom}`` escape hatches (so an unprovable obligation can pass as an
-explicit, auditable *assumption* rather than silently). The binary is found via ``$DAFNY``, then
-PATH, then — only as a convenience fallback — a LemmaFit-style download under ``~/.lemmafit``.
+explicit, auditable *assumption* rather than silently). The binary is found via ``$DAFNY`` or PATH.
 """
 
 from __future__ import annotations
@@ -20,11 +19,6 @@ from pathlib import Path
 _SUMMARY = re.compile(r"finished with (\d+) verified, (\d+) error", re.IGNORECASE)
 # "path.dfy(30,16): Error: a refining function is not allowed to add preconditions"
 _ERROR_LINE = re.compile(r"\((\d+),(\d+)\):\s*(?:Error|.*?error)\b[:]?\s*(.*)", re.IGNORECASE)
-
-# Convenience fallback locations for the Dafny launcher (e.g. a prior LemmaFit download).
-_DAFNY_PROBES = (
-    Path.home() / ".lemmafit" / ".dafny" / "dafny" / "dafny",
-)
 
 # `assume {:axiom} <expr>;` — an explicit, auditable escape hatch: the obligation is ASSUMED,
 # not proved. We surface these so a feature can pass with documented assumptions.
@@ -42,17 +36,11 @@ class DafnyResult:
 
 
 def dafny_binary() -> str | None:
-    """Path to a runnable ``dafny`` launcher: $DAFNY, PATH, or a LemmaFit-style download."""
+    """Path to a runnable ``dafny`` launcher: ``$DAFNY`` or the first ``dafny`` on PATH."""
     env = os.environ.get("DAFNY")
     if env and Path(env).exists():
         return env
-    on_path = shutil.which("dafny")
-    if on_path:
-        return on_path
-    for p in _DAFNY_PROBES:
-        if p.exists():
-            return str(p)
-    return None
+    return shutil.which("dafny")
 
 
 def dafny_available() -> bool:

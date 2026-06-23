@@ -1,4 +1,4 @@
-"""The Dafny proof track: generate VERIFIED Dafny per feature (no LemmaFit dependency).
+"""The Dafny proof track: generate VERIFIED Dafny per feature .
 
 For each feature it casts the FRs into a Dafny ``Domain`` state machine (one ``Action`` per FR;
 BehavioralContract -> Inv / precondition guards / postcondition lemmas) that refines our vendored
@@ -6,12 +6,12 @@ BehavioralContract -> Inv / precondition guards / postcondition lemmas) that ref
 ``max_rounds`` rounds — the generate->verify->revise loop validated by the feasibility spikes
 (needs a gpt-4.1-class model; gpt-4o-mini/gpt-4o cannot discharge map-comprehension proofs).
 
-Prompt knowledge is OWNED here (DAFNY_REF syntax + PROOF_REF tactics), folded in from the former
-LemmaFit skills — no ``.claude/skills`` files are read.
+Prompt knowledge is OWNED here: a DAFNY_REF syntax cheat-sheet plus two Dafny guidance docs
+(``skills/dafny-patterns.md`` and ``skills/dafny-proofs.md``) vendored in this repo.
 
-Isolation: the agent derives everything ONLY from the spec (FR text + behavioral contracts +
-SPEC.yaml entries) and never reads tests or any generated test artifact — the same clean-room
-guarantee as the Python Code Agent, just targeting Dafny.
+Isolation: the agent derives everything ONLY from the spec (FR text + behavioral contracts) and
+never reads tests or any generated test artifact — the same clean-room guarantee as the Python
+Code Agent, just targeting Dafny.
 """
 
 from __future__ import annotations
@@ -23,7 +23,6 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from src.cleanroom.agents.dafny.schema.dafny import FeatureDafny, GeneratedDafny
 from src.cleanroom.utils.dafny_verify import verify_dafny
-from src.cleanroom.utils.dafny_spec import build_spec_entries, build_spec_yaml
 from src.cleanroom.utils.llm_client import get_llm
 
 # Dafny constructs models routinely get wrong; priming these turned an infinite syntax loop
@@ -50,30 +49,31 @@ DAFNY_REF = """=== DAFNY SYNTAX REFERENCE (use these EXACT forms; wrong forms ca
 - Every `if ... then ...` in a function MUST have an `else` (functions are total).
 - Empty literals: empty map is `map[]`, empty set is `{}`, empty seq is `[]` — NEVER `set {}` or `map []`."""
 
-# Proof tactics, folded in from the former LemmaFit `lemmafit-proofs` skill (now owned in-repo).
-PROOF_REF = """=== DAFNY PROOF TACTICS ===
-- Postconditions first: write the `ensures` (the guarantee) before the body.
-- For a map lookup `m[k]`, you MUST first establish `k in m` (assert it, or add it as a
-  precondition / guard) — otherwise Dafny reports "function precondition could not be proved".
-- For "if X then Y", also reason about "if not X" — one-directional claims leave gaps.
-- Tighten `Inv`: every clamp/guard in code (e.g. `if x > MAX then MAX else x`) should have a
-  matching bound in `Inv` (e.g. `0 <= x <= MAX`).
-- Prove a domain-specific postcondition lemma per Action (something stronger than the generic
-  StepPreservesInv), with an `ensures` matching a SPEC property.
-- LAST RESORT only: if an obligation is genuinely infeasible to prove, you may write
-  `assume {:axiom} <expr>;` with a one-line comment justifying why — this passes the proof as an
-  explicit, auditable ASSUMPTION rather than a discharged lemma. Prefer a real proof."""
+# Dafny authoring guidance, vendored in-repo (src/cleanroom/agents/dafny/skills/). Tuned reference
+# text that achieved 6/10 — used instead of a hand-condensed paraphrase so the prompt isn't degraded
+# by our edits. Wall-specific tactics live in `_targeted_hint`, fired only on the matching error.
+_SKILLS_DIR = Path(__file__).resolve().parent / "skills"
+
+
+def _load_skill(name: str) -> str:
+    return (_SKILLS_DIR / f"{name}.md").read_text()
+
 
 _SYSTEM = """You are a Dafny author. Produce ONE Dafny file that refines the abstract `Domain`
 below into a verified state machine for a single feature. Output ONLY Dafny source — no markdown,
-no prose, no code fences.
+no prose, no code fences. (Ignore skill mentions of SPEC.yaml / AppCore / Claims panel / TypeScript —
+those are UI context; your job is only the verified Dafny module.)
 
 CRITICAL GOTCHA: a refining `Apply` function and the refining `StepPreservesInv` lemma must NOT
 repeat `requires Inv(m)` — it is inherited from the abstract Domain and repeating it is an error.
 
 {ref}
 
-{proofs}
+=== DAFNY PATTERNS (state-machine pattern + common mistakes) ===
+{dafny_skill}
+
+=== DAFNY PROOFS (proof-maximizing workflow) ===
+{proofs_skill}
 
 === ABSTRACT DOMAIN INTERFACE (refine this; do not redefine it) ===
 {domain}
@@ -83,6 +83,29 @@ repeat `requires Inv(m)` — it is inherited from the abstract Domain and repeat
 def _strip_fences(text: str) -> str:
     m = re.search(r"```(?:dafny)?\s*(.*?)```", text, re.DOTALL)
     return (m.group(1) if m else text).strip()
+
+
+def _targeted_hint(messages: list[dict]) -> str:
+    """Map the concrete Dafny errors to a specific fix tactic (not just 'try again')."""
+    blob = " ".join(m.get("message", "") for m in messages).lower()
+    hints: list[str] = []
+    if "postcondition could not be proved" in blob:
+        hints.append(
+            "A POSTCONDITION failed. If the function returns a map/set comprehension, bind it "
+            "(`var result := ...;`) and add `assert forall k | k in result :: <predicate>;` before "
+            "returning, so Z3 sees the property. Otherwise add the missing `assert`/helper lemma that "
+            "proves the `ensures` on this return path.")
+    if "precondition could not be proved" in blob:
+        hints.append(
+            "A PRECONDITION failed — almost always a map/seq lookup `m[k]`/`s[i]` without first "
+            "establishing `k in m` / `0 <= i < |s|`. Add that `assert` (or a guard) immediately before "
+            "the lookup.")
+    if "rbrace expected" in blob or "expected" in blob:
+        hints.append(
+            "A SYNTAX/parse error. Do NOT use `let ... in` inside `ensures`/`requires`; inline the "
+            "expression or define a `predicate`/`function` and call it. Each spec clause is ONE boolean "
+            "expression.")
+    return ("\n\nTARGETED FIX:\n- " + "\n- ".join(hints)) if hints else ""
 
 
 class DafnyAgent:
@@ -100,14 +123,17 @@ class DafnyAgent:
     def _build_system(self) -> str:
         domain = (self.dafny_dir / "Replay.dfy").read_text().split(
             "abstract module {:compile false} Kernel")[0]
-        return _SYSTEM.format(ref=DAFNY_REF, proofs=PROOF_REF, domain=domain)
+        return _SYSTEM.format(
+            ref=DAFNY_REF,
+            dafny_skill=_load_skill("dafny-patterns"),
+            proofs_skill=_load_skill("dafny-proofs"),
+            domain=domain,
+        )
 
     def _feature_prompt(self, ir: dict, feature_id: str, mod: str) -> str:
         feat = next((f for f in ir.get("features", []) if f.get("id") == feature_id), {})
         contracts = [c for c in (ir.get("planning") or {}).get("contracts", [])
                      if c.get("feature_id") == feature_id]
-        fr_ids = {c["fr_id"] for c in contracts}
-        spec = [e for e in build_spec_entries(ir) if e["req_id"] in fr_ids]
 
         clines = []
         for c in contracts:
@@ -116,20 +142,18 @@ class DafnyAgent:
                 f"- FR {c['fr_id']}: stimulus={bc.get('stimulus','')!r}; "
                 f"precondition={bc.get('precondition','')!r}; response={bc.get('response','')!r}; "
                 f"postcondition={bc.get('postcondition','')!r}")
-        slines = [f"- [{e['type']}] {e['property']}" for e in spec]
 
         return (
             f"Feature {feature_id}: {feat.get('name','')}\n\n"
-            f"Functional requirements (each becomes an Action variant):\n" + "\n".join(clines) +
-            "\n\nSPEC.yaml properties to back with lemmas (postconditions need a matching `ensures`):\n"
-            + "\n".join(slines) + "\n\n"
+            f"Functional requirements (each becomes an Action variant; back each postcondition with a "
+            f"matching `ensures` lemma):\n" + "\n".join(clines) + "\n\n"
             'Write a file that: starts with `include "Replay.dfy"`; defines '
             f"`module {mod}Domain refines Domain {{ ... }}` with a concrete `type Model`, a "
             "`datatype Action` (ONE variant per FR), `ghost predicate Inv`, `function Init`, "
             "`function Apply` (one match case per Action — NO `requires`), `function Normalize` "
             "(repair to satisfy Inv), lemmas `InitSatisfiesInv` and `StepPreservesInv` (NO "
             "`requires`), and at least one domain-specific postcondition lemma with an `ensures` "
-            f"matching a SPEC property above; and defines `module {mod}Kernel refines Kernel "
+            f"matching a postcondition above; and defines `module {mod}Kernel refines Kernel "
             f"{{ import D = {mod}Domain }}`. Derive everything ONLY from the spec above. "
             "Output ONLY the Dafny source.")
 
@@ -152,12 +176,12 @@ class DafnyAgent:
             errs = "\n".join(f"  line {m['line']}: {m['message']}" for m in res.messages[:12])
             messages.append(resp)
             messages.append(HumanMessage(
-                f"`dafny verify` failed with these errors:\n{errs}\n\nOutput the FULL corrected "
-                "Dafny module (only Dafny source). Do not repeat `requires Inv(m)` on refining "
-                "Apply/StepPreservesInv."))
+                f"`dafny verify` failed with these errors:\n{errs}{_targeted_hint(res.messages)}\n\n"
+                "Output the FULL corrected Dafny module (only Dafny source). Do not repeat "
+                "`requires Inv(m)` on refining Apply/StepPreservesInv."))
         return last
 
     def generate(self, ir: dict) -> GeneratedDafny:
         feature_ids = sorted({c["feature_id"] for c in (ir.get("planning") or {}).get("contracts", [])})
         features = [self.generate_feature(ir, fid) for fid in feature_ids]
-        return GeneratedDafny(features=features, spec_yaml=build_spec_yaml(ir))
+        return GeneratedDafny(features=features)

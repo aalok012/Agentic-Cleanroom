@@ -1,8 +1,8 @@
 """Scaffold a Dafny verification project and compile verified Dafny to native code.
 
-No LemmaFit / npm / dafny2js dependency: ``scaffold_dafny_project`` just makes a directory and
-drops in our vendored ``Replay.dfy`` kernel (the abstract Domain/Kernel that feature modules
-refine). ``compile_dafny`` turns each VERIFIED feature module into native source via the stock
+No npm / external toolchain dependency: ``scaffold_dafny_project`` just makes a directory and drops
+in our vendored ``Replay.dfy`` kernel (the abstract Domain/Kernel that feature modules refine).
+``compile_dafny`` turns each VERIFIED feature module into native source via the stock
 ``dafny translate <target>`` backend (default Python). Compilation is best-effort — the verified
 Dafny is the primary, formally-guaranteed artifact; native emission is a convenience on top.
 
@@ -28,8 +28,7 @@ KERNEL_SRC = Path(__file__).resolve().parents[1] / "agents" / "dafny" / "kernel"
 def scaffold_dafny_project(project_dir: Path) -> Path:
     """Create a fresh Dafny project at ``project_dir``: a ``dafny/`` dir + the vendored kernel.
 
-    Replaces the old ``lemmafit init`` + ``npm install`` — verification and ``dafny translate``
-    use only the ``dafny`` binary, so no node project is needed.
+    Verification and ``dafny translate`` use only the ``dafny`` binary, so no node project is needed.
     """
     project_dir = Path(project_dir)
     if project_dir.exists():

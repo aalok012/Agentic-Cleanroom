@@ -8,7 +8,6 @@ Runs the full pipeline on a single SRS document and saves the enriched IR:
       -> [3] Planning    impl metadata per FR contract      [LLM: signature/layer; docstring deterministic]
       -> [4a] Proof tier   prove feature logic in Dafny     [Dafny verifier + gpt-4.1, opt-in via --prove]
       -> [4] Code        adapters over proved cores + full code for the rest  [LLM: one call per contract]
-      -> [4b] Verification  contract conformance + revise   [LLM, opt-in via --verify]
       -> [5] Test        black-box test cases               [LLM: one call per feature]
       -> [6] Certification  pass@k for UN-proved features   [executable oracle, opt-in via --certify]
 
@@ -43,8 +42,6 @@ from src.cleanroom.agents.dependency.agent import DependencyAnalyzer
 from src.cleanroom.agents.planning.agent import PlanningAgent
 from src.cleanroom.agents.spec_agent.agent import SpecAgent
 from src.cleanroom.agents.test.agent import TestAgent
-from src.cleanroom.agents.verification.agent import VerificationAgent
-from src.cleanroom.agents.verification.loop import generate_and_verify
 from src.cleanroom.llms.callbacks.metric import GLOBAL_METRICS
 from src.cleanroom.utils.code_stats import code_stats
 from src.cleanroom.utils.cost import estimate_cost, estimate_cost_by_model
@@ -104,10 +101,6 @@ def run(
     certify: bool = False,
     samples: int = 5,
     stack: str = "python",
-    verify: bool = False,
-    verify_rounds: int = 2,
-    verify_model: str = "gpt-4o-mini",
-    verify_passes: int = 1,
     prove: bool = False,
     prove_target: str = "py",
 ) -> tuple[dict, dict]:
@@ -115,10 +108,6 @@ def run(
     run_config = {
         "certify": certify,
         "samples": samples,
-        "verify": verify,
-        "verify_rounds": verify_rounds,
-        "verify_model": verify_model,
-        "verify_passes": verify_passes,
         "prove": prove,
         "prove_target": prove_target,
     }
@@ -190,7 +179,6 @@ def run(
             project_dir = output_dir / "generated" / ir["project_name"] / "dafny_proof"
             proj = _timed("scaffold", stages, lambda: scaffold_dafny_project(project_dir))
             gen = _timed("dafny", stages, lambda: DafnyAgent(proj, model=_DAFNY_MODEL).generate(ir))
-            (proj / "SPEC.yaml").write_text(gen.spec_yaml)
             proved_feature_ids = {f.feature_id for f in gen.features if f.verified}
             proved_modules = {f.feature_id: f.module for f in gen.features if f.verified}
             proved_sources = {f.feature_id: f.dafny_source for f in gen.features if f.verified}
@@ -226,7 +214,6 @@ def run(
     _banner("[4]", "Code Agent — generating MVC code from the spec")
     code_agent = CodeAgent(llm=llm, stack=stack)
     code_dir = output_dir / "generated" / ir["project_name"]
-    verification = None
     if adapter_mode:
         from src.cleanroom.agents.code.schema.code import GeneratedCode
         adapters = []
@@ -240,12 +227,6 @@ def run(
         generated_code = GeneratedCode(files=adapters + full.files)
         print(f"  {len(adapters)} proved feature(s) shipped as Dafny-core adapters; "
               f"{len(full.files)} file(s) generated for the rest.")
-    elif verify:
-        verifier = VerificationAgent(verify_model=verify_model, passes=verify_passes)
-        generated_code, verification = _timed(
-            "code_verify", stages,
-            lambda: generate_and_verify(ir, code_agent, verifier, max_rounds=verify_rounds),
-        )
     else:
         generated_code = _timed("code", stages, lambda: code_agent.generate(ir))
     ir = {**ir, "generated_code": generated_code.model_dump()}
@@ -267,22 +248,6 @@ def run(
         print(f"Wrote {len(written)} file(s); {stat['lines_of_code']} LOC "
               f"({stat['language']}); layers={stat['files_per_layer']}")
 
-    if verification is not None:
-        ir = {**ir, "verification": verification.model_dump()}
-        metrics["verification"] = {
-            "max_rounds": verification.max_rounds,
-            "rounds_used": verification.rounds_used,
-            "n_passing": verification.n_passing,
-            "n_failing": verification.n_failing,
-            "residual_failures": verification.residual_failures,
-        }
-        report_path = VerificationAgent.write_report(verification, code_dir)
-        print(f"Verification: {verification.n_passing}/{verification.n_contracts} contracts pass "
-              f"({verification.rounds_used}/{verification.max_rounds} revise rounds)")
-        if verification.residual_failures:
-            print(f"  Residual failures: {', '.join(verification.residual_failures)}")
-        print(f"  Report: {report_path}")
-
     # --- Stage 5: Test (LLM) -------------------------------------------------
     # The Test Agent reads only ir['features']; the generated_code in the IR is
     # structurally ignored — isolation is preserved.
@@ -298,9 +263,8 @@ def run(
 
     # --- Stage 6: Certification (optional) — pass@k for the UN-proved (test fallback) --
     if certify:
-        verify_note = " (samples verified)" if verify else ""
         skip_note = f" · skipping {len(cert_skip)} proved" if cert_skip else ""
-        _banner("[6]", f"Certification Agent — pass@k (n={samples} samples){verify_note}{skip_note}")
+        _banner("[6]", f"Certification Agent — pass@k (n={samples} samples){skip_note}")
         cert = _timed(
             "certification",
             stages,
@@ -308,10 +272,6 @@ def run(
                 code_llm=llm,
                 n=samples,
                 stack=stack,
-                verify=verify,
-                verify_rounds=verify_rounds,
-                verify_model=verify_model,
-                verify_passes=verify_passes,
                 skip_feature_ids=cert_skip,
                 dafny_proj=proj if adapter_mode else None,
                 dafny_modules=[proved_modules[fid] for fid in sorted(proved_feature_ids)] if adapter_mode else None,
@@ -380,19 +340,6 @@ def write_run_report(metrics: dict, dest: Path) -> None:
     if metrics.get("tests"):
         t = metrics["tests"]
         lines += ["", "## Generated tests", "", f"- features: {t['features']} · test cases: {t['cases']}"]
-    if metrics.get("verification"):
-        v = metrics["verification"]
-        lines += [
-            "",
-            "## Verification (contract conformance)",
-            "",
-            f"- max rounds: {v['max_rounds']}",
-            f"- rounds used: {v['rounds_used']}",
-            f"- passing: {v['n_passing']}",
-            f"- failing: {v['n_failing']}",
-        ]
-        if v.get("residual_failures"):
-            lines += [f"- residual failures: {', '.join(v['residual_failures'])}"]
     if metrics.get("certification"):
         cert = metrics["certification"]
         lines += ["", "## Certification (pass@k)", "", f"- samples n={cert['n']}"]
@@ -462,14 +409,6 @@ def main() -> None:
     parser.add_argument("--prove-target", default="py",
                         choices=["py", "cs", "js", "go", "java", "cpp", "rs"],
                         help="dafny translate target for proved features (default: py).")
-    parser.add_argument("--verify", action="store_true",
-                        help="Run the independent verification agent after code generation (spec-level review + bounded revise loop).")
-    parser.add_argument("--verify-rounds", type=int, default=2,
-                        help="Max verify->revise rounds per contract (default: 2). Use 0 for one generate + one verify, no revise.")
-    parser.add_argument("--verify-model", default="gpt-4o-mini",
-                        help="Model for the verification agent (default: gpt-4o-mini).")
-    parser.add_argument("--verify-passes", type=int, default=1,
-                        help="Independent reviewer passes per contract; >1 requires unanimous fail (default: 1).")
     args = parser.parse_args()
 
     if not args.srs_path.exists():
@@ -483,10 +422,6 @@ def main() -> None:
     run_config = {
         "certify": args.certify,
         "samples": args.samples,
-        "verify": args.verify,
-        "verify_rounds": args.verify_rounds,
-        "verify_model": args.verify_model,
-        "verify_passes": args.verify_passes,
         "prove": args.prove,
         "prove_target": args.prove_target,
     }
@@ -494,8 +429,6 @@ def main() -> None:
         ir, metrics = run(
             args.srs_path, args.output_dir,
             certify=args.certify, samples=args.samples, stack=args.stack,
-            verify=args.verify, verify_rounds=args.verify_rounds,
-            verify_model=args.verify_model, verify_passes=args.verify_passes,
             prove=args.prove, prove_target=args.prove_target,
         )
         ir = {**ir, "metrics": metrics}

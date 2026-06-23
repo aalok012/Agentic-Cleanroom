@@ -1,6 +1,6 @@
 """Stage-4 Dafny verify adapter: parse a clean verification and a proof failure.
 
-Skipped unless a Dafny toolchain is present (LemmaFit's `npm install` provides it)."""
+Skipped unless a Dafny toolchain (the `dafny` binary) is present."""
 
 import textwrap
 from pathlib import Path

@@ -26,10 +26,9 @@ class FeatureDafny(BaseModel):
 
 
 class GeneratedDafny(BaseModel):
-    """All per-feature Dafny modules plus the shared SPEC.yaml."""
+    """All per-feature Dafny modules."""
 
     features: list[FeatureDafny] = Field(default_factory=list)
-    spec_yaml: str = ""
 
     @property
     def n_verified(self) -> int:

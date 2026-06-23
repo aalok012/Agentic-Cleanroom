@@ -8,11 +8,11 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | metric | value |
 |---|---:|
 | runs logged | 1 |
-| LLM calls | 30 |
-| input tokens | 31,638 |
-| output tokens | 9,796 |
-| total tokens | 41,434 |
-| estimated cost (USD) | $0.0106 |
+| LLM calls | 17 |
+| input tokens | 78,228 |
+| output tokens | 23,551 |
+| total tokens | 101,779 |
+| estimated cost (USD) | $0.2862 |
 
 ## Run history
 
@@ -32,6 +32,10 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | 2026-06-22 05:06:38 | `20260622-050638-dineout-srs` | complete | dineout_srs.xml | gpt-4.1-2025-04-14+gpt-4o-mini-2024-07-18 | 84 | 203,160 | 54,172 | 257,332 | $0.6249 | 659.3 | [detail](outputs/runs/20260622-050638-dineout-srs.md) |
 | 2026-06-22 05:45:39 | `recertify-dineout_srs_full_ir` | recertify | dineout_srs_full_ir.json | none (free re-cert) | 0 | 0 | 0 | 0 | $0.0000 | 0.0 | - |
 | 2026-06-22 05:52:24 | `recertify-dineout_srs_full_ir-n4` | recertify@4 | dineout_srs_full_ir.json | gpt-4o-mini-2024-07-18 | 30 | 31,638 | 9,796 | 41,434 | $0.0106 | 0.0 | - |
+| 2026-06-23 03:50:15 | `reprove-dineout_srs_full_ir` | reprove | dineout_srs_full_ir.json | gpt-4.1-2025-04-14 | 21 | 111,123 | 23,343 | 134,466 | $0.4090 | 0.0 | - |
+| 2026-06-23 04:08:51 | `20260623-040851-dineout-srs` | complete | dineout_srs.xml | gpt-4.1-2025-04-14+gpt-4o-mini-2024-07-18 | 86 | 248,201 | 59,416 | 307,617 | $0.7630 | 900.2 | [detail](outputs/runs/20260623-040851-dineout-srs.md) |
+| 2026-06-23 23:22:34 | `20260623-232234-gemini-code-1781976236207` | complete | gemini-code-1781976236207.xml | gpt-4.1-2025-04-14+gpt-4o-mini-2024-07-18 | 20 | 58,970 | 10,008 | 68,978 | $0.1568 | 144.5 | [detail](outputs/runs/20260623-232234-gemini-code-1781976236207.md) |
+| 2026-06-23 23:27:20 | `20260623-232720-2009-video-search` | complete | 2009 - video search.xml | gpt-4.1-2025-04-14+gpt-4o-mini-2024-07-18 | 17 | 78,228 | 23,551 | 101,779 | $0.2862 | 208.8 | [detail](outputs/runs/20260623-232720-2009-video-search.md) |
 
 ## Notes
 

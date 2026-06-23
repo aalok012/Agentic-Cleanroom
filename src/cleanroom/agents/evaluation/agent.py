@@ -31,8 +31,6 @@ from src.cleanroom.agents.evaluation.schema.certification import (
     FRCertification,
 )
 from src.cleanroom.agents.test.agent import TestAgent
-from src.cleanroom.agents.verification.agent import VerificationAgent
-from src.cleanroom.agents.verification.loop import generate_and_verify
 from src.cleanroom.utils.ir import feature_id_of, normalize_generated_tests, normalize_ir_features, normalize_test_case, requirement_text
 from src.cleanroom.utils.llm_client import get_llm
 
@@ -44,10 +42,6 @@ class CertificationAgent:
         n: int = 3,
         k_values: tuple[int, ...] | None = None,
         temperature: float = 0.4,
-        verify: bool = False,
-        verify_rounds: int = 2,
-        verify_model: str = "gpt-4o-mini",
-        verify_passes: int = 1,
         stack: str = "python",
         use_pipeline_sample: bool = True,
         case_timeout: float = 10.0,
@@ -68,11 +62,6 @@ class CertificationAgent:
         self.stack = stack
         self.use_pipeline_sample = use_pipeline_sample
         self.case_timeout = case_timeout
-        self.verify = verify
-        self.verify_rounds = verify_rounds
-        self.verifier = (
-            VerificationAgent(verify_model=verify_model, passes=verify_passes) if verify else None
-        )
 
     def certify(self, ir: dict) -> CertificationResult:
         if not (ir.get("planning") or {}).get("contracts"):
@@ -196,12 +185,8 @@ class CertificationAgent:
         if need <= 0:
             return samples[: self.n]
 
-        if self.verify and self.verifier is not None:
-            for _ in range(need):
-                samples.append(generate_and_verify(ir, code_agent, self.verifier, self.verify_rounds)[0])
-        else:
-            for _ in range(need):
-                samples.append(code_agent.generate(ir))
+        for _ in range(need):
+            samples.append(code_agent.generate(ir))
         return samples[: self.n]
 
     def _write_sample(self, sample: GeneratedCode, code_dir: Path) -> None:

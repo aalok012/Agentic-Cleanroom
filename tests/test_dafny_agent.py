@@ -1,7 +1,7 @@
 """DafnyAgent generate/verify/revise loop, offline (fake LLM + real Dafny verifier).
 
-Skipped unless the Dafny toolchain is present. The scaffold is now dependency-free (just the
-vendored Replay.dfy kernel), so no LemmaFit CLI is needed."""
+Skipped unless the Dafny toolchain is present. The scaffold is dependency-free — just the
+vendored Replay.dfy kernel."""
 
 from types import SimpleNamespace
 

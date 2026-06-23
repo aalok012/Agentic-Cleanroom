@@ -1,6 +1,5 @@
-// Vendored Replay/Redux kernel (originally from LemmaFit, MIT). Owned by this repo so the
-// Dafny verification track has NO external LemmaFit/npm dependency. Generated feature modules
-// `include "Replay.dfy"` and `refines Domain`/`Kernel`.
+// Replay/Redux kernel for the Dafny verification track — owned in this repo, no external
+// dependency. Generated feature modules `include "Replay.dfy"` and `refines Domain`/`Kernel`.
 //
 // Domain  = the abstract state machine a feature refines: Model / Action / Inv / Init / Apply /
 //           Normalize, with the two proof obligations InitSatisfiesInv and StepPreservesInv.

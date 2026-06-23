@@ -1,3 +1,4 @@
+
 You are a software design agent. Below are the functional requirements of ONE feature,
 listed in build order. Each requirement comes with a BEHAVIORAL CONTRACT (its stimulus,
 precondition, state, response, postcondition, and invariant). For EACH requirement, design
@@ -16,10 +17,28 @@ For each requirement produce:
   the signature takes no parameters, return an empty list.
 - returns: a short phrase describing what the function returns (grounded in the contract's
   response). Leave empty for a None return.
-- mvc_layer: EXACTLY one of "model", "view", "controller":
-    model      = data, entities, persistence, storage;
-    view       = presentation, reports, visualization, UI output;
-    controller = behavior, orchestration, services, integration, workflow.
+- mvc_layer: classify this requirement into the ONE layer that owns its PRIMARY responsibility,
+  judged from its behavioral contract (stimulus + response) — NOT from keywords in its name.
+  Separation of concerns (strict MVC):
+    • model      — owns DATA. Defines, persists, queries, or updates a stored entity/schema.
+                   No request handling, no presentation. Signals: store / record / register /
+                   a CRUD entity definition / a read of persisted data.
+    • view       — owns PRESENTATION. Shapes or serializes data for output to the caller (the
+                   JSON response body or a rendered list). It only formats what it is GIVEN and
+                   never mutates state. Signals: stimulus "display/show/list/return ... to the
+                   user" where the response IS a read-only formatted payload.
+    • controller — owns BEHAVIOR. Orchestrates a state change / workflow: receives input, invokes
+                   the model, applies business rules, returns the result. Signals: create / edit /
+                   cancel / assign / mark / approve / process; a mutation with pre/postconditions.
+  Data flow: Controller receives input → calls the Model → returns data the View serializes.
+  Tie-breaker (a requirement may touch several layers — pick its PRIMARY EFFECT):
+    – it CHANGES persisted state → controller (even if it also reads);
+    – it is a pure READ whose response is a formatted payload → view;
+    – it only DEFINES/STORES an entity with no orchestration → model.
+  Examples (requirement → layer, because):
+    "Customers can cancel an order before serving (needs approval)" → controller (mutates order state)
+    "System displays the list of available dishes"                  → view       (read-only payload)
+    "Admin can add/edit/delete staff records"                       → model      (persisted entity CRUD)
 - example_inputs_json: a JSON OBJECT string of keyword arguments for the happy path.
   The function is always invoked as fn(**inputs), so EVERY top-level key MUST match a
   parameter name in the signature exactly — no extra keys, no missing keys.
@@ -59,7 +78,11 @@ SEMANTICS for common patterns (use in examples when applicable):
 - mark_dish_as_cooked(is_order_complete): returns null on success when true; failure when false.
 - manage_staff_member(name, role, contact_info): failure when name is "".
 
-TARGET STACK: {% if stack == 'fastapi' %}FastAPI + SQLAlchemy — use APIRouter for controllers/views, SQLAlchemy models for the model layer; keep signatures JSON-serializable{% else %}plain Python — signatures are directly callable as fn(**json.loads(inputs)){% endif %}.
+TARGET STACK: {% if stack == 'fastapi' %}FastAPI + SQLAlchemy, mapped per layer:
+  model      → SQLAlchemy model + the function that persists/queries it (DB access lives here);
+  controller → an APIRouter handler that validates input, calls the model, and returns JSON;
+  view       → an APIRouter read endpoint / serializer that returns the formatted response shape.
+Keep every signature JSON-serializable.{% else %}plain Python — signatures are directly callable as fn(**json.loads(inputs)). model = data/state functions; controller = behavior/orchestration; view = functions that format/return a payload.{% endif %}
 
 Use DISTINCT function names when two requirements implement different behavior — do not
 reuse the same name (e.g. prefer sort_torrent_results vs sort_video_results over both being
