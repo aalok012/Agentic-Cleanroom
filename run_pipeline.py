@@ -46,7 +46,8 @@ from src.cleanroom.agents.test.agent import TestAgent
 from src.cleanroom.llms.callbacks.metric import GLOBAL_METRICS
 from src.cleanroom.utils.code_stats import code_stats
 from src.cleanroom.utils.cost import estimate_cost, estimate_cost_by_model
-from src.cleanroom.utils.llm_client import DAFNY_MODEL, get_llm, llm_api_key_configured
+from src.cleanroom.config import LANGUAGES, RunConfig
+from src.cleanroom.utils.llm_client import DAFNY_MODEL, DEFAULT_MODEL, get_llm, llm_api_key_configured
 from src.cleanroom.utils.dafny_project import compile_dafny, scaffold_dafny_project, stage_dafny_cores
 from src.cleanroom.utils.packager import build_runnable_package
 from src.cleanroom.utils.stack_select import select_stack
@@ -91,32 +92,87 @@ def _finalize_metrics(metrics: dict, stages: list) -> None:
     metrics["cost_by_model"] = by_model
 
 
-def run(
-    srs_path: Path,
-    output_dir: Path,
-    certify: bool = False,
-    samples: int = 1,
-    stack: str = "python",
-    prove: bool = False,
-    prove_target: str = "py",
-    max_cert_loops: int = 0,
-) -> tuple[dict, dict]:
-    stages: list = []
-    run_config = {
-        "certify": certify,
-        "samples": samples,
-        "prove": prove,
-        "prove_target": prove_target,
-        "max_cert_loops": max_cert_loops,
+def _compute_summary(metrics: dict, ir: dict) -> dict:
+    """Roll the per-stage metrics up into the headline research metrics."""
+    d = metrics.get("dafny") or {}
+    cert = metrics.get("certification") or {}
+    rec = metrics.get("recovery") or {}
+    tok = metrics.get("tokens") or {}
+    calls = tok.get("calls", 0) or 0
+
+    n_feat_total = len(ir.get("features", []))
+    n_proved = d.get("n_verified", 0)
+    n_feat_dafny = d.get("n_features", 0)
+    rounds = [f.get("rounds", 0) for f in d.get("features", [])]
+
+    n_tested = cert.get("n_total_tested_features", 0)
+    loops_run = rec.get("loops_run", 0)
+
+    # PassVer@1 = | proved ∪ pass@1 | / total features — a UNION (not a sum) so a feature that is
+    # both proved and passes pass@1 (possible when proved features aren't skipped from the test
+    # track) is counted once.
+    proved_ids = set(metrics.get("proved_feature_ids") or [])
+    pass1_ids = set(cert.get("pass_at_1_feature_ids") or [])
+    n_certified = len(proved_ids | pass1_ids)
+
+    return {
+        # verification (Dafny): proved / attempted
+        "verification_pass_ratio": round(n_proved / n_feat_dafny, 4) if n_feat_dafny else 0.0,
+        # certification (pass@k oracle): fraction of test-case executions that passed
+        "test_case_pass_ratio": round(cert.get("aggregate_case_pass_rate", 0.0), 4),
+        # composite: feature certified by PROOF or by passing pass@1, over all features
+        "PassVer@1": round(n_certified / n_feat_total, 4) if n_feat_total else 0.0,
+        # avg generate->verify->revise rounds per feature in the proof tier
+        "avg_verification_iteration": round(sum(rounds) / len(rounds), 2) if rounds else 0.0,
+        # avg test-track iterations = initial pass + recovery passes (Python recovery loop)
+        "avg_test_iteration": round(1 + loops_run, 2) if (cert and n_tested) else 0.0,
+        "avg_input_token": round(tok.get("input", 0) / calls, 1) if calls else 0.0,
+        "avg_output_token": round(tok.get("output", 0) / calls, 1) if calls else 0.0,
+        "total_time": round(metrics.get("total_seconds", 0.0), 2),
     }
-    metrics: dict = {"srs": srs_path.name, "stack": stack, "stages": stages, "config": run_config}
-    llm = get_llm()
+
+
+def _print_summary(s: dict) -> None:
+    print("\n" + "=" * 70)
+    print("  RUN METRICS")
+    print("=" * 70)
+    rows = [
+        ("verification_pass_ratio", f"{s['verification_pass_ratio']:.4f}"),
+        ("test_case_pass_ratio", f"{s['test_case_pass_ratio']:.4f}"),
+        ("PassVer@1", f"{s['PassVer@1']:.4f}"),
+        ("avg_verification_iteration", f"{s['avg_verification_iteration']:.2f}"),
+        ("avg_test_iteration", f"{s['avg_test_iteration']:.2f}"),
+        ("avg_input_token", f"{s['avg_input_token']:.1f}"),
+        ("avg_output_token", f"{s['avg_output_token']:.1f}"),
+        ("total_time", f"{s['total_time']:.2f}s"),
+    ]
+    for name, val in rows:
+        print(f"  {name:<28}: {val:>12}")
+    print("=" * 70)
+
+
+def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
+    stages: list = []
+    language = cfg.language
+    stack = cfg.stack
+    certify, samples, prove = cfg.certify, cfg.samples, cfg.prove
+    prove_target, max_cert_loops = cfg.prove_target, cfg.max_cert_loops
+    metrics: dict = {"srs": srs_path.name, "stack": stack, "language": language,
+                     "stages": stages, "config": cfg.as_dict()}
+    # Per-stage models: each agent gets its OWN client so a mixed-model run prices correctly
+    # (estimate_cost_by_model reads the per-call model recorded on GLOBAL_METRICS).
+    spec_llm = get_llm(model=cfg.spec_model)
+    dep_llm = get_llm(model=cfg.dependency_model)
+    plan_llm = get_llm(model=cfg.planning_model)
+    code_llm = get_llm(model=cfg.code_model)
+    test_llm = get_llm(model=cfg.test_model)
+    cert_llm = get_llm(model=cfg.cert_model)
 
     # --- Stage 1: Spec (deterministic FR parse, then LLM behavioral contracts) -
     # The SRSReader extracts functional requirements only (section-aware, no LLM); the
     # contract phase then writes a design-by-contract spec per FR (one LLM call/feature).
     _banner("[1]", "Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts")
-    spec = SpecAgent(llm=llm)
+    spec = SpecAgent(llm=spec_llm)
     ir_obj = _timed("spec_parse", stages, lambda: spec.run(srs_path, output_dir=output_dir))
     ir = ir_obj.model_dump()
     ir = _timed("spec_contracts", stages,
@@ -129,17 +185,22 @@ def run(
     # --- Resolve the target stack (auto-select from the spec unless pinned) -----
     # Done here, after contracts exist, so the classifier can read preconditions. The
     # chosen stack drives planning signatures, codegen shape, packaging and certification.
-    if stack == "auto":
+    if language == "java":
+        stack = "java"
+        print(f"Language  : java   (stack: java, tests: JUnit)")
+    elif stack == "auto":
         stack, reason = select_stack(ir)
         print(f"Stack     : {stack}  (auto-selected — {reason})")
     else:
         print(f"Stack     : {stack}  (pinned via --stack)")
     metrics["stack"] = stack
+    metrics["language"] = language
     ir["stack"] = stack
+    ir["language"] = language
 
     # --- Stage 2: Dependency (nested; LLM infers semantic FR->FR edges) -------
     _banner("[2]", "Dependency Agent — building the nested dependency graph")
-    ir = _timed("dependency", stages, lambda: DependencyAnalyzer(llm=llm).enrich(ir, output_dir=output_dir))
+    ir = _timed("dependency", stages, lambda: DependencyAnalyzer(llm=dep_llm).enrich(ir, output_dir=output_dir))
     graph = ir["dependency_graph"]
     print(f"Outer nodes : {len(graph['nodes'])}  edges: {len(graph['edges'])}")
     print(f"Build order : {' -> '.join(graph['build_order']) or '(none)'}")
@@ -150,7 +211,7 @@ def run(
 
     # --- Stage 3: Planning (per-FR contracts) --------------------------------
     _banner("[3]", "Planning Agent — generating per-FR contracts (signature + docstring + path)")
-    ir = _timed("planning", stages, lambda: PlanningAgent(llm=llm, stack=stack).enrich(ir, output_dir=output_dir))
+    ir = _timed("planning", stages, lambda: PlanningAgent(llm=plan_llm, stack=stack).enrich(ir, output_dir=output_dir))
     contracts = ir["planning"]["contracts"]
     print(f"Contracts   : {len(contracts)}  (in dependency order)")
     for c in contracts[:12]:
@@ -176,7 +237,7 @@ def run(
         else:
             project_dir = output_dir / "generated" / ir["project_name"] / "dafny_proof"
             proj = _timed("scaffold", stages, lambda: scaffold_dafny_project(project_dir))
-            gen = _timed("dafny", stages, lambda: DafnyAgent(proj, model=DAFNY_MODEL).generate(ir))
+            gen = _timed("dafny", stages, lambda: DafnyAgent(proj, model=cfg.proof_model).generate(ir))
             proved_feature_ids = {f.feature_id for f in gen.features if f.verified}
             proved_modules = {f.feature_id: f.module for f in gen.features if f.verified}
             proved_sources = {f.feature_id: f.dafny_source for f in gen.features if f.verified}
@@ -189,7 +250,7 @@ def run(
                 axt = f"  [{len(f.axioms)} assumed axiom(s)]" if f.verified and f.axioms else ""
                 print(f"  [{f.feature_id}] {label}  {f.module}  ({f.rounds}r){axt}")
             metrics["dafny"] = {
-                "model": DAFNY_MODEL, "n_features": ntot, "n_verified": nver,
+                "model": cfg.proof_model, "n_features": ntot, "n_verified": nver,
                 "n_proved_with_axioms": n_axiom,
                 "verification_rate": round(nver / ntot, 3) if ntot else 0.0,
                 "features": [{"feature_id": f.feature_id, "module": f.module,
@@ -210,7 +271,7 @@ def run(
 
     # --- Stage 4: Code (LLM) — adapters over proved cores + full code for the rest ----
     _banner("[4]", "Code Agent — generating MVC code from the spec")
-    code_agent = CodeAgent(llm=llm, stack=stack)
+    code_agent = CodeAgent(llm=code_llm, stack=stack, language=language)
     code_dir = output_dir / "generated" / ir["project_name"]
     if adapter_mode:
         from src.cleanroom.agents.code.schema.code import GeneratedCode
@@ -230,6 +291,8 @@ def run(
     ir = {**ir, "generated_code": generated_code.model_dump()}
     metrics["code"] = code_stats(ir["generated_code"])
     stat = metrics["code"]
+    if language == "java":
+        metrics["code"]["language"] = "Java"   # code_stats labels by Python AST; override
     if stack == "fastapi":
         app_dir = build_runnable_package(ir["generated_code"], code_dir)
         metrics["code"]["runnable_app"] = str(app_dir)
@@ -242,34 +305,43 @@ def run(
               f"layers={stat['files_per_layer']}")
         print(f"Assembled runnable FastAPI app: {app_dir}  (cd \"{code_dir}\" && python -m app)")
     else:
-        written = CodeAgent.write_files(generated_code, code_dir)
-        print(f"Wrote {len(written)} file(s); {stat['lines_of_code']} LOC "
+        # python (flat functions) or java (src/*.java) — the target picks the layout.
+        code_agent.target.package_sample(ir["generated_code"], code_dir, stack)
+        print(f"Wrote {stat['files']} file(s); {stat['lines_of_code']} LOC "
               f"({stat['language']}); layers={stat['files_per_layer']}")
 
     # --- Stage 5: Test (LLM) -------------------------------------------------
     # The Test Agent reads only ir['features']; the generated_code in the IR is
     # structurally ignored — isolation is preserved.
     _banner("[5]", "Test Agent — deriving black-box tests from the spec")
-    generated_tests = _timed("test", stages, lambda: TestAgent(llm=llm, stack=stack).generate(ir))
+    generated_tests = _timed("test", stages, lambda: TestAgent(llm=test_llm, stack=stack, language=language).generate(ir))
     ir = {**ir, "generated_tests": generated_tests.model_dump()}
     tests_dir = output_dir / "generated" / ir["project_name"] / "tests"
-    written_tests = TestAgent.write_files(generated_tests, tests_dir)
+    written_tests = TestAgent.write_files(generated_tests, tests_dir, language=language)
     total_cases = sum(len(f.cases) for f in generated_tests.features)
     metrics["tests"] = {"features": len(generated_tests.features), "cases": total_cases}
+    _fw = "JUnit" if language == "java" else "pytest"
     print(f"{len(generated_tests.features)} feature(s), {total_cases} test case(s).")
-    print(f"Wrote {len(written_tests)} pytest module(s) (test_feature_*.py) to {tests_dir}")
+    print(f"Wrote {len(written_tests)} {_fw} module(s) to {tests_dir}")
 
     # --- Stage 6: Certification (optional) — pass@k for the UN-proved (test fallback) --
-    if certify:
+    from src.cleanroom.targets import get_target as _get_target
+    if certify and not _get_target(language).oracle_available():
+        _banner("[6]", "Certification — SKIPPED (no executable oracle for this target)")
+        print(f"  No executable oracle for language='{language}' (e.g. javac/JDK missing) — "
+              f"code + tests were generated, but pass@k is unavailable.")
+    elif certify:
         skip_note = f" · skipping {len(cert_skip)} proved" if cert_skip else ""
         _banner("[6]", f"Certification Agent — pass@k (n={samples} samples){skip_note}")
         cert = _timed(
             "certification",
             stages,
             lambda: CertificationAgent(
-                code_llm=llm,
+                code_llm=cert_llm,
                 n=samples,
+                k_values=cfg.k_values,
                 stack=stack,
+                language=language,
                 skip_feature_ids=cert_skip,
                 dafny_proj=proj if adapter_mode else None,
                 dafny_modules=[proved_modules[fid] for fid in sorted(proved_feature_ids)] if adapter_mode else None,
@@ -283,6 +355,12 @@ def run(
             "aggregate_case_pass_rate": cert.aggregate_case_pass_rate,
             "n_tested_frs": len(cert.frs),
             "n_proved_features": len(proved_feature_ids),
+            "n_pass_at_1_features": sum(1 for f in cert.features if f.pass_at.get("pass@1", 0.0) >= 1.0),
+            "n_total_tested_features": len(cert.features),
+            # feature ids passing pass@1 — unioned with proved ids for PassVer@1 (dedupes overlap
+            # on stacks where proved features still go through the test track).
+            "pass_at_1_feature_ids": sorted(
+                f.feature_id for f in cert.features if f.pass_at.get("pass@1", 0.0) >= 1.0),
         }
         if not cert.frs:
             print("  (no features to test — all were certified by the proof tier)")
@@ -295,7 +373,8 @@ def run(
         # unproved, regenerate its code WITH the failing test cases (the contained, user-approved
         # clean-room break), then re-certify — up to `max_cert_loops` times.
         from src.cleanroom.agents.recovery.loop import RecoveryLoop, failing_feature_ids
-        if max_cert_loops > 0 and cert.features and failing_feature_ids(cert):
+        # Recovery's re-prove + test-informed regen path is Python-specific in v1.
+        if max_cert_loops > 0 and language == "python" and cert.features and failing_feature_ids(cert):
             _banner("[6b]", f"Recovery loop — re-prove + test-informed regen (≤ {max_cert_loops} passes)")
             loop = RecoveryLoop(
                 ir,
@@ -317,6 +396,11 @@ def run(
             metrics["certification"]["aggregate_pass_at"] = cert.aggregate_pass_at
             metrics["certification"]["aggregate_case_pass_rate"] = cert.aggregate_case_pass_rate
             metrics["certification"]["n_proved_features"] = len(proved_feature_ids)
+            metrics["certification"]["n_pass_at_1_features"] = sum(
+                1 for f in cert.features if f.pass_at.get("pass@1", 0.0) >= 1.0)
+            metrics["certification"]["n_total_tested_features"] = len(cert.features)
+            metrics["certification"]["pass_at_1_feature_ids"] = sorted(
+                f.feature_id for f in cert.features if f.pass_at.get("pass@1", 0.0) >= 1.0)
             metrics["recovery"] = {
                 "max_loops": max_cert_loops,
                 "loops_run": len(recovery["loops"]),
@@ -334,6 +418,9 @@ def run(
                 print(f"    [{fid}] {lab}")
 
     _finalize_metrics(metrics, stages)
+    metrics["proved_feature_ids"] = sorted(proved_feature_ids)   # final set (incl. recovery)
+    metrics["summary"] = _compute_summary(metrics, ir)
+    _print_summary(metrics["summary"])
     return ir, metrics
 
 
@@ -341,8 +428,19 @@ def write_run_report(metrics: dict, dest: Path) -> None:
     lines = [
         "# Run report",
         "",
-        f"_SRS: {metrics['srs']} · model: {metrics.get('model', 'n/a')}_",
+        f"_SRS: {metrics['srs']} · language: {metrics.get('language', 'python')} · "
+        f"model: {metrics.get('model', 'n/a')}_",
         "",
+    ]
+    s = metrics.get("summary") or {}
+    if s:
+        lines += ["## Run metrics", ""]
+        for k in ("verification_pass_ratio", "test_case_pass_ratio", "PassVer@1",
+                  "avg_verification_iteration", "avg_test_iteration",
+                  "avg_input_token", "avg_output_token", "total_time"):
+            lines.append(f"- **{k}**: {s.get(k)}")
+        lines.append("")
+    lines += [
         "## Timing & tokens (per stage)",
         "",
         "| stage | seconds | input tok | output tok | calls |",
@@ -454,19 +552,35 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run the full Agentic Cleanroom pipeline on an SRS document.")
     parser.add_argument("srs_path", type=Path, help="Path to the SRS XML document")
     parser.add_argument("--output-dir", type=Path, default=Path("outputs"), help="Where to write artifacts")
+    parser.add_argument("--language", default="python", choices=list(LANGUAGES),
+                        help="Target language for code + tests (default: python). "
+                             "'java' → Java code + JUnit tests (stack fixed to java).")
     parser.add_argument("--certify", action="store_true", help="Also run the pass@k certification stage.")
     parser.add_argument("--samples", type=int, default=1,
                         help="Code samples per FR for certification (default: 1 → pass@1 only). "
-                             "Pass a higher N with explicit k_values for a multi-sample estimate.")
+                             "Pass a higher N with explicit --k for a multi-sample estimate.")
+    parser.add_argument("--k", type=int, nargs="+", default=None, metavar="K",
+                        help="pass@k values to report (default: 1). e.g. --k 1 3")
     parser.add_argument("--stack", default="auto", choices=["auto", "python", "fastapi"],
-                        help="MVC app stack: 'auto' (default, from the SRS), 'python', or 'fastapi'.")
+                        help="Python sub-stack: 'auto' (default, from the SRS), 'python', or 'fastapi'. "
+                             "Ignored when --language java.")
+    # Per-stage model selection (each stage can run a different model; mixed-model cost is priced
+    # accurately). Defaults: every stage on gpt-4o-mini, proof on gpt-4.1.
+    parser.add_argument("--spec-model", default=DEFAULT_MODEL, help="Model for the Spec/contracts stage.")
+    parser.add_argument("--dependency-model", default=DEFAULT_MODEL, help="Model for the Dependency stage.")
+    parser.add_argument("--planning-model", default=DEFAULT_MODEL, help="Model for the Planning stage.")
+    parser.add_argument("--code-model", default=DEFAULT_MODEL, help="Model for the Code Agent.")
+    parser.add_argument("--test-model", default=DEFAULT_MODEL, help="Model for the Test Agent.")
+    parser.add_argument("--proof-model", default=DAFNY_MODEL, help="Model for the Dafny proof tier (needs a strong model).")
+    parser.add_argument("--cert-model", default=DEFAULT_MODEL, help="Model for certification code samples / recovery regen.")
     parser.add_argument("--prove", action="store_true",
                         help="Run the Dafny proof tier: prove each feature's logic where possible "
                              "(needs a `dafny` binary + gpt-4.1). Proved features compile to native "
                              "code; with --certify the rest fall to the pass@k test track.")
-    parser.add_argument("--prove-target", default="py",
+    parser.add_argument("--prove-target", default=None,
                         choices=["py", "cs", "js", "go", "java", "cpp", "rs"],
-                        help="dafny translate target for proved features (default: py).")
+                        help="dafny translate target for proved features "
+                             "(default: follows --language — py for python, java for java).")
     parser.add_argument("--max-cert-loops", type=int, default=2,
                         help="Recovery loop: max times to re-prove + regenerate-with-test-feedback "
                              "+ re-certify features that fail pass@1 (default: 2; needs --certify; "
@@ -482,20 +596,9 @@ def main() -> None:
         sys.exit(1)
 
     metrics: dict | None = None
-    run_config = {
-        "certify": args.certify,
-        "samples": args.samples,
-        "prove": args.prove,
-        "prove_target": args.prove_target,
-        "max_cert_loops": args.max_cert_loops,
-    }
+    cfg = RunConfig.from_args(args)
     try:
-        ir, metrics = run(
-            args.srs_path, args.output_dir,
-            certify=args.certify, samples=args.samples, stack=args.stack,
-            prove=args.prove, prove_target=args.prove_target,
-            max_cert_loops=args.max_cert_loops,
-        )
+        ir, metrics = run(args.srs_path, args.output_dir, cfg)
         ir = {**ir, "metrics": metrics}
         normalize_ir(ir)
 
@@ -526,9 +629,9 @@ def main() -> None:
             if metrics is not None
             else metrics_from_globals(
                 srs=args.srs_path.name,
-                stack=args.stack,
+                stack=cfg.stack,
                 stages=[],
-                config=run_config,
+                config=cfg.as_dict(),
             )
         )
         if metrics is not None:

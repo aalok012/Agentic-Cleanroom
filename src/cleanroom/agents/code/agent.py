@@ -28,12 +28,13 @@ from src.cleanroom.agents.code.schema.code import FileImplementation, GeneratedC
 from src.cleanroom.agents.planning.agent import PlanningAgent, _slug
 from src.cleanroom.utils.contracts import prereq_ifaces, requirement_text
 from src.cleanroom.utils.ir import normalize_ir_features
+from src.cleanroom.targets import get_target
 from src.cleanroom.utils.llm_client import get_llm
 from src.cleanroom.utils.prompt_renderer import PromptRenderer
 
 
 class CodeAgent:
-    def __init__(self, llm=None, stack: str = "python") -> None:
+    def __init__(self, llm=None, stack: str = "python", language: str = "python") -> None:
         # `llm` is injectable purely so tests can avoid network calls; it is NOT a
         # channel for test data. Defaults to the shared gpt-4o-mini client.
         self.llm = llm if llm is not None else get_llm()
@@ -41,6 +42,10 @@ class CodeAgent:
         # Target stack for the run (e.g. "fastapi"). Threaded into the code prompt as
         # STRUCTURAL conventions only — never test-derived — so isolation/pass@k hold.
         self.stack = stack
+        # The language target picks the codegen template (python vs java); knowing the target
+        # language is structural, not seeing tests — isolation holds.
+        self.language = language
+        self.target = get_target(language)
 
     def generate(self, ir: dict, skip_feature_ids: set[str] | None = None) -> GeneratedCode:
         """Generate code for every contract, in planning (dependency) order.
@@ -76,7 +81,7 @@ class CodeAgent:
             prerequisites = prereq_ifaces(contract, by_fr)
 
             prompt = self.renderer.render(
-                "generate_code.j2",
+                self.target.code_template(),
                 {
                     "fr_id": fr_id,
                     "feature_id": contract["feature_id"],

@@ -153,18 +153,34 @@ uv run python run_pipeline.py "data/srs/dineout_srs.xml" --certify --samples 3
 
 # 3. The full prove-or-test flow (needs dafny + gpt-4.1; spends ~$0.6 on DineOut)
 uv run python run_pipeline.py "data/srs/dineout_srs.xml" --stack fastapi --prove --certify --samples 1
+
+# 4. Java target: Java code + JUnit tests (compile-checked if a JDK is present)
+uv run python run_pipeline.py "data/srs/dineout_srs.xml" --language java --certify
+
+# 5. A different model per stage (mixed-model cost is priced accurately)
+uv run python run_pipeline.py "data/srs/dineout_srs.xml" --certify \
+    --code-model gpt-4.1 --test-model gpt-4o-mini --spec-model gpt-4o-mini
 ```
 
 ### Flags
 
 | Flag | Default | Meaning |
 |------|---------|---------|
-| `--stack` | `auto` | App stack: `auto` (chosen from the spec), `python`, or `fastapi` |
+| `--language` | `python` | Target language: `python` (FastAPI/plain) or `java` (Java + JUnit; stack fixed to `java`) |
+| `--stack` | `auto` | Python sub-stack: `auto` (chosen from the spec), `python`, or `fastapi`. Ignored for `--language java` |
 | `--prove` | off | Run the Dafny proof tier; proved features compile to native code (needs `dafny` + gpt-4.1) |
-| `--prove-target` | `py` | `dafny translate` target for proved features (`py`/`cs`/`js`/`go`/`java`/`cpp`/`rs`) |
+| `--prove-target` | follows `--language` | `dafny translate` target for proved features (`py`/`cs`/`js`/`go`/`java`/`cpp`/`rs`) |
 | `--certify` | off | Run pass@k certification (for the un-proved features when `--prove` is on) |
-| `--samples` | 3 | Code samples per FR for pass@k |
+| `--samples` | 1 | Code samples per FR for pass@k (pass@1 by default) |
+| `--k` | `1` | pass@k values to report, e.g. `--k 1 3` |
+| `--{spec,dependency,planning,code,test,proof,cert}-model` | `gpt-4o-mini` (proof: `gpt-4.1`) | Model for each stage — set independently |
+| `--max-cert-loops` | `2` | Recovery loop passes (Python only); `0` disables |
 | `--output-dir` | `outputs` | Artifact directory |
+
+**Java note:** `--language java` emits Java classes + JUnit test classes. The v1 executable oracle
+is a `javac` **compile-check** (it degrades to "skipped" when no JDK is found); running the
+generated JUnit per case is a follow-up (set `$JUNIT_JAR` to a `junit-platform-console-standalone`
+jar to enable the classpath for it).
 
 ### Re-score for free (no re-proving)
 

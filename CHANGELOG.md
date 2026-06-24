@@ -26,6 +26,56 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-24 — Configurable, multi-language pipeline (Python + Java) via CLI
+
+Make the pipeline versatile: choose the target **language** (python | java) and configure
+**every knob via the CLI** — a separate model per stage, pass@k, samples, stack, prove/certify.
+Java produces Java code + JUnit tests and (with a JDK) compile-checks them. Built in three
+phases behind a clean target abstraction so the Python path is unchanged.
+
+### Added
+- **Step 1 — `RunConfig` (`src/cleanroom/config.py`).** Why: one object holding every knob,
+  populated from argparse, threaded through `run()`. How: dataclass with per-stage models
+  (`spec/dependency/planning/code/test/proof/cert`), `language`, `stack`, `samples`, `k_values`,
+  prove/certify; `from_args()` (java pins its own stack; `--prove-target` follows the language).
+- **Step 2 — Per-stage model selection.** Why: a mixed-model run (e.g. cheap spec, strong code)
+  prices correctly via the existing `estimate_cost_by_model`. How: `run()` builds a separate
+  `get_llm(model=...)` per agent instead of one shared client; new flags `--spec-model …
+  --cert-model`, plus `--language`, `--k`.
+- **Step 3 — `LanguageTarget` abstraction (`src/cleanroom/targets/`).** Why: keep all
+  language-specific choices (templates, packaging, oracle) in one place. How: base class *is* the
+  Python behavior; `JavaTarget` overrides. `CodeAgent`/`TestAgent`/`CertificationAgent` take a
+  `language` and dispatch the codegen/test template and the oracle through `self.target` instead
+  of branching on `stack` inline (Python output unchanged).
+- **Step 4 — Java target.** Why: the new capability. How: `targets/java.py`; prompts
+  `generate_code_java.j2` (plain Java class per contract, stdlib only) + `generate_tests_junit.j2`
+  (JUnit5); `utils/java_packager.py` (write `<PublicClass>.java`); `utils/java_tooling.py`
+  (`java_available`/`junit_jar` — mirrors `dafny_available`); `run_case_java` in
+  `evaluation/runner.py` (v1 oracle = `javac` compile-check; full JUnit execution deferred behind
+  `$JUNIT_JAR`). Certification skips gracefully when no JDK; recovery loop stays Python-only.
+
+- **Step 5 — Headline run-metrics summary.** Why: surface the research metrics in one organized
+  block at the end of every run (and in the run report). How: `_compute_summary` + `_print_summary`
+  in `run_pipeline.py` emit `verification_pass_ratio`, `test_case_pass_ratio`, `PassVer@1`
+  (= (proved + pass@1) / total features), `avg_verification_iteration` (mean Dafny rounds),
+  `avg_test_iteration` (1 + recovery passes), `avg_input_token`, `avg_output_token`, `total_time`.
+
+- **Step 6 — `PassVer@1` is a set UNION, not a sum.** Why: `PassVer@1` = features certified by
+  proof OR pass@1, over all features. The first cut summed `n_proved + n_pass@1`, which
+  double-counts a feature that is both proved and passes pass@1 (possible when proved features
+  aren't skipped from the test track — non-adapter stacks) and can exceed 1.0. How: thread the
+  proved feature ids + pass@1 feature ids into the summary and compute `|proved ∪ pass@1| / total`.
+
+### Tests
+- **Step 7 — `tests/test_config.py`, `tests/test_targets.py`, `tests/test_summary.py`.** Config
+  mapping, registry, Python template parity, Java prompt render, java packaging, a `javac`
+  compile-oracle test (`skipif(not java_available())`), the summary metric definitions, and a
+  PassVer@1 union/dedup test. Full suite: 64 passed.
+
+### Non-goals (v1)
+- Java web framework (Spring), a Java Dafny-core adapter, and executing the generated JUnit per
+  case (needs a JUnit jar + JSON marshalling) are follow-ups.
+
 ## 2026-06-24 — Default certification to pass@1 only; finish dead `revise()` removal
 
 ### Changed

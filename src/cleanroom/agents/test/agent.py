@@ -29,6 +29,7 @@ from pathlib import Path
 from src.cleanroom.agents.test.schema.tests import FeatureTests, GeneratedTests
 from src.cleanroom.agents.test.tools.spec_reader import feature_units
 from src.cleanroom.agents.planning.agent import PlanningAgent
+from src.cleanroom.targets import get_target
 from src.cleanroom.utils.ir import normalize_ir_features
 from src.cleanroom.utils.llm_client import get_llm
 from src.cleanroom.utils.prompt_renderer import PromptRenderer
@@ -38,7 +39,7 @@ class TestAgent:
     # Keep pytest from collecting this class as a test (its name starts with "Test").
     __test__ = False
 
-    def __init__(self, llm=None, stack: str = "python") -> None:
+    def __init__(self, llm=None, stack: str = "python", language: str = "python") -> None:
         # `llm` is injectable only so tests can avoid network calls; it is NOT a
         # channel for implementation data. Defaults to the shared gpt-4o-mini client.
         self.llm = llm if llm is not None else get_llm()
@@ -48,6 +49,9 @@ class TestAgent:
         # and the failure oracle (ValueError vs HTTPException). Knowing the stack is not
         # seeing code, so isolation is preserved, exactly as in the Code/Planning agents.
         self.stack = stack
+        # The language target picks the test template + framework (pytest vs JUnit).
+        self.language = language
+        self.target = get_target(language)
 
     def generate(self, ir: dict) -> GeneratedTests:
         """Generate tests for every feature from the spec only. Input is the spec."""
@@ -57,7 +61,7 @@ class TestAgent:
 
         for unit in feature_units(ir):  # the ONLY IR read: features/requirements
             prompt = self.renderer.render(
-                "generate_tests.j2",
+                self.target.test_template(),
                 {
                     "feature_id": unit["feature_id"],
                     "name": unit["name"],
@@ -90,40 +94,46 @@ class TestAgent:
         return tests
 
     @staticmethod
-    def write_files(tests: GeneratedTests, output_dir: Path) -> list[Path]:
-        """Write one runnable-style pytest module per feature under output_dir.
+    def write_files(tests: GeneratedTests, output_dir: Path, language: str = "python") -> list[Path]:
+        """Write one runnable-style test module per feature under output_dir (pytest for python,
+        a JUnit class for java).
 
-        Pure persistence of what the agent already produced — this writer reads only
-        the spec-derived `tests`, never any implementation. Each file is the feature's
-        `pytest_source`: a pytest module (fixture + test_* functions exercising the
-        planned functions) derived purely from the spec. Because the agent cannot see
-        the generated code, import paths follow sensible module conventions and may
-        need later adjustment to bind to a specific app — the structured `cases`
-        remain the canonical, code-independent oracle (see schema/tests.py).
+        Pure persistence of what the agent already produced — this writer reads only the
+        spec-derived `tests`, never any implementation. The `pytest_source` field holds the test
+        module source (python or, for java, a JUnit class). Because the agent cannot see the code,
+        import/class names follow conventions and may need binding adjustment — the structured
+        `cases` remain the canonical, code-independent oracle (see schema/tests.py).
         """
         output_dir.mkdir(parents=True, exist_ok=True)
         written: list[Path] = []
         for feature in tests.features:
-            # Sanitize the dotted feature id so the filename is a valid module name
-            # (e.g. feature '2.2' -> test_feature_2_2.py).
             slug = feature.feature_id.replace(".", "_")
             source = feature.pytest_source.strip()
-            if not source:
-                source = (
-                    f"# No pytest source was generated for feature {feature.feature_id}.\n"
-                    f"# {len(feature.cases)} black-box case(s) are recorded in the IR "
-                    f"under generated_tests.\n"
+            if language == "java":
+                from src.cleanroom.utils.java_packager import java_class_name
+                if not source:
+                    source = (f"// No JUnit source generated for feature {feature.feature_id}; "
+                              f"{len(feature.cases)} case(s) recorded in the IR.\n")
+                cls = java_class_name(source, f"Feature_{slug}Test")
+                dest = output_dir / f"{cls}.java"
+                dest.write_text(source + "\n")
+            else:
+                if not source:
+                    source = (
+                        f"# No pytest source was generated for feature {feature.feature_id}.\n"
+                        f"# {len(feature.cases)} black-box case(s) are recorded in the IR "
+                        f"under generated_tests.\n"
+                    )
+                header = (
+                    f'"""Spec-derived pytest module for feature {feature.feature_id}.\n\n'
+                    f"Generated black-box from the specification ({len(feature.cases)} case(s)); "
+                    "the Test Agent never sees the implementation, so import paths follow\n"
+                    "sensible module conventions and may need adjustment to bind to the concrete\n"
+                    "generated package.\n"
+                    '"""\n'
                 )
-            header = (
-                f'"""Spec-derived pytest module for feature {feature.feature_id}.\n\n'
-                f"Generated black-box from the specification ({len(feature.cases)} case(s)); "
-                "the Test Agent never sees the implementation, so import paths follow\n"
-                "sensible module conventions and may need adjustment to bind to the concrete\n"
-                "generated package.\n"
-                '"""\n'
-            )
-            dest = output_dir / f"test_feature_{slug}.py"
-            dest.write_text(header + "\n" + source + "\n")
+                dest = output_dir / f"test_feature_{slug}.py"
+                dest.write_text(header + "\n" + source + "\n")
             written.append(dest)
         return written
 

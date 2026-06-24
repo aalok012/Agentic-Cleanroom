@@ -1,0 +1,43 @@
+"""The Java language target — plain Java + JUnit5.
+
+v1 scope: one stack (plain Java service classes, no web framework), JUnit5 tests, and an
+executable oracle that compiles with `javac` and runs JUnit (graceful-skip when the toolchain or
+the JUnit jar is absent). The Dafny-core *adapter* path stays Python-only for now.
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+from src.cleanroom.targets.base import LanguageTarget
+
+
+class JavaTarget(LanguageTarget):
+    language = "java"
+    file_ext = ".java"
+    test_framework = "junit5"
+
+    def code_template(self) -> str:
+        return "generate_code_java.j2"
+
+    def test_template(self) -> str:
+        return "generate_tests_junit.j2"
+
+    def oracle_name(self, stack: str) -> str:
+        return "java"
+
+    def package_sample(self, generated_code: dict, code_dir: Path, stack: str) -> "Path | None":
+        from src.cleanroom.utils.java_packager import write_java_sources
+
+        write_java_sources(generated_code, code_dir)
+        return None
+
+    def run_case(self, code_dir: Path, plan: dict, case: dict, stack: str, timeout: float):
+        from src.cleanroom.agents.evaluation.runner import run_case_java
+
+        return run_case_java(code_dir, plan, case, timeout=timeout)
+
+    def oracle_available(self) -> bool:
+        from src.cleanroom.utils.java_tooling import java_available
+
+        return java_available()

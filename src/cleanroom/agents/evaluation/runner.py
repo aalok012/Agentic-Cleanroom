@@ -236,6 +236,41 @@ def run_case(
     return bool(payload.get("pass")), str(payload.get("reason", ""))
 
 
+def run_case_java(code_dir: Path, plan: dict, case: dict, timeout: float = 30.0) -> tuple[bool, str]:
+    """v1 Java oracle: compile-check the candidate Java with ``javac`` → (passed, reason).
+
+    Generated Java must be stdlib-only (java.util), so a clean compile means the codegen produced
+    well-typed Java for this FR. Full per-case JUnit *execution* is a documented follow-up (needs a
+    junit-platform-console-standalone jar via $JUNIT_JAR and a JSON-marshalling harness); when that
+    jar is present we still add it to the classpath so candidate code may reference JUnit.
+    """
+    from src.cleanroom.utils.java_tooling import javac_path, junit_jar
+
+    javac = javac_path()
+    if javac is None:
+        return False, "javac not found (set $JAVAC or install a JDK)"
+
+    src = Path(code_dir) / "src"
+    java_files = sorted(str(p) for p in src.glob("*.java"))
+    if not java_files:
+        return False, "no Java sources to compile"
+
+    classes = Path(code_dir) / "classes"
+    classes.mkdir(parents=True, exist_ok=True)
+    cmd = [javac, "-d", str(classes)]
+    if (jar := junit_jar()) is not None:
+        cmd += ["-cp", str(jar)]
+    cmd += java_files
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+    except (OSError, subprocess.SubprocessError) as exc:
+        return False, f"javac error: {str(exc)[:200]}"
+
+    if proc.returncode != 0:
+        return False, "javac: " + (proc.stderr or proc.stdout or "compile failed").strip()[:300]
+    return True, "compiled OK (v1 oracle: javac compile-check; JUnit execution deferred)"
+
+
 def run_pytest_module(code_dir: Path, test_file: Path, timeout: float = 60.0) -> tuple[bool, str]:
     """Optional: run a pytest module with PYTHONPATH=code_dir."""
     proc = subprocess.run(

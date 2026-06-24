@@ -21,8 +21,7 @@ from statistics import mean
 from src.cleanroom.agents.code.agent import CodeAgent
 from src.cleanroom.agents.code.schema.code import GeneratedCode, GeneratedFile
 from src.cleanroom.agents.evaluation.metric import pass_at_k
-from src.cleanroom.agents.evaluation.runner import run_case, run_case_http
-from src.cleanroom.utils.packager import build_runnable_package
+from src.cleanroom.targets import get_target
 from src.cleanroom.utils.dafny_project import stage_dafny_cores
 from src.cleanroom.agents.planning.agent import PlanningAgent
 from src.cleanroom.agents.evaluation.schema.certification import (
@@ -43,6 +42,7 @@ class CertificationAgent:
         k_values: tuple[int, ...] | None = None,
         temperature: float = 0.4,
         stack: str = "python",
+        language: str = "python",
         use_pipeline_sample: bool = True,
         case_timeout: float = 10.0,
         skip_feature_ids: set[str] | None = None,
@@ -62,6 +62,8 @@ class CertificationAgent:
         self.k_values = [k for k in self.k_values if k <= self.n] or [1]
         self.code_llm = code_llm if code_llm is not None else get_llm(temperature=temperature)
         self.stack = stack
+        self.language = language
+        self.target = get_target(language)
         self.use_pipeline_sample = use_pipeline_sample
         self.case_timeout = case_timeout
 
@@ -101,17 +103,10 @@ class CertificationAgent:
                 with tempfile.TemporaryDirectory(prefix="cleanroom_cert_") as tmp:
                     code_dir = Path(tmp) / "code"
                     self._write_sample(sample, code_dir)
-                    file_path = plan.get("file_path", "")
-                    signature = plan.get("signature", "")
                     for case in cases:
-                        if self.stack == "fastapi":
-                            ok, reason = run_case_http(
-                                code_dir, file_path, case, timeout=max(self.case_timeout, 30.0)
-                            )
-                        else:
-                            ok, reason = run_case(
-                                code_dir, file_path, signature, case, timeout=self.case_timeout
-                            )
+                        ok, reason = self.target.run_case(
+                            code_dir, plan, case, self.stack, self.case_timeout
+                        )
                         diagnostics.append({
                             "fr_id": fr_id,
                             "feature_id": plan.get("feature_id", ""),
@@ -160,7 +155,7 @@ class CertificationAgent:
         model = getattr(self.code_llm, "model_name", getattr(self.code_llm, "model", ""))
         result = CertificationResult(
             model=str(model),
-            oracle="http" if self.stack == "fastapi" else "executable",
+            oracle=self.target.oracle_name(self.stack),
             n=len(samples),
             k_values=self.k_values,
             frs=fr_results,
@@ -178,7 +173,7 @@ class CertificationAgent:
         return result
 
     def _collect_samples(self, ir: dict) -> list[GeneratedCode]:
-        code_agent = CodeAgent(llm=self.code_llm, stack=self.stack)
+        code_agent = CodeAgent(llm=self.code_llm, stack=self.stack, language=self.language)
         samples: list[GeneratedCode] = []
 
         if self.use_pipeline_sample and ir.get("generated_code"):
@@ -193,17 +188,12 @@ class CertificationAgent:
         return samples[: self.n]
 
     def _write_sample(self, sample: GeneratedCode, code_dir: Path) -> None:
-        """Lay a sample out for its oracle: a flat function tree (python) or the
-        assembled runnable FastAPI app under code_dir/app (fastapi).
-
-        For a fastapi sample that contains Dafny-core adapters, also stage the compiled cores +
-        the marshalling shim so the app boots (otherwise `import dafny_marshal` fails)."""
-        if self.stack == "fastapi":
-            app_dir = build_runnable_package(sample.model_dump(), code_dir)
-            if self.dafny_proj and self.dafny_modules:
-                stage_dafny_cores(Path(app_dir), self.dafny_proj, self.dafny_modules)
-        else:
-            CodeAgent.write_files(sample, code_dir)
+        """Lay a sample out for its oracle via the language target (flat tree / FastAPI app /
+        Java sources). For a fastapi sample with Dafny-core adapters, also stage the compiled
+        cores + the marshalling shim so the app boots (otherwise `import dafny_marshal` fails)."""
+        app_dir = self.target.package_sample(sample.model_dump(), code_dir, self.stack)
+        if app_dir is not None and self.dafny_proj and self.dafny_modules:
+            stage_dafny_cores(Path(app_dir), self.dafny_proj, self.dafny_modules)
 
     @staticmethod
     def _cases_by_fr(tests: dict) -> dict[str, list[dict]]:
