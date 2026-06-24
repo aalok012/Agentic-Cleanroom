@@ -36,7 +36,7 @@ Produce TWO things for this feature:
      inputs_json, oracle = "raises", expected_json = '{"raises": "IllegalArgumentException"}'.
    - `inputs` / `expected`: short human-readable summaries only.
 
-2. `pytest_source` — a JUnit5 TEST CLASS (this field holds the test module source; here it is
+2. `test_source` — a JUnit5 TEST CLASS (this field holds the test module source; here it is
    Java, not Python). Rules:
    - ONE `public class` ending in `Test` (e.g. `Feature{{ feature_id | replace('.', '_') }}Test`),
      NO `package` statement, standard library + JUnit5 only.

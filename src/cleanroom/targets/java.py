@@ -23,6 +23,15 @@ class JavaTarget(LanguageTarget):
     def test_template(self) -> str:
         return "generate_tests_junit.j2"
 
+    def adapter_template(self) -> str:
+        # Be explicit: don't silently fall back to the Python/FastAPI adapter prompt.
+        raise NotImplementedError("Java Dafny-core adapter is not supported in v1 "
+                                  "(adapter shipping is FastAPI-only).")
+
+    def feedback_template(self) -> str:
+        raise NotImplementedError("Java test-informed recovery is not supported in v1 "
+                                  "(the recovery loop is Python-only).")
+
     def oracle_name(self, stack: str) -> str:
         return "java"
 

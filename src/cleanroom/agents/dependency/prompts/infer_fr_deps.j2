@@ -2,12 +2,14 @@ You are finding build-order dependencies AMONG the functional requirements of ON
 
 A requirement B is a PREREQUISITE of A when A cannot be implemented until B already exists —
 typically A stores, links, or updates the thing that B first creates, assigns, or defines.
-Example: "store a result and link it to the test request" depends on "create a test request".
+- POSITIVE (report an edge): "store a result and link it to the test request" DEPENDS ON
+  "create a test request" — it operates on the entity the other one creates.
+- NEGATIVE (report NO edge): "record customer feedback (more information in section 2.4)" does
+  NOT depend on 2.4 — it only CITES 2.4; it never operates on data that 2.4 produces.
 
-DIRECTION (be exact):
-- When you report a dependency, A is the requirement that NEEDS the other, and B is the
-  PREREQUISITE that must exist first. Report it as source = A (the dependent),
-  target = B (the prerequisite).
+DIRECTION (be exact): for each dependent requirement, set `id` to that requirement (the one that
+NEEDS the other) and list the requirement ids it must be built after in `prerequisite_ids` (the
+ones that must already exist). Never place a requirement in its own `prerequisite_ids`.
 
 RULES:
 - Use ONLY the ids listed below. Never invent, change, or reference ids from other features.

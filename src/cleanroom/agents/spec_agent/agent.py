@@ -53,8 +53,12 @@ class SpecAgent:
             self._llm = get_llm()
         return self._llm
 
-    def run(self, srs_path: Path, output_dir: Path = Path("outputs")) -> IntermediateRepresentation:
-        """Parse the SRS deterministically into features of functional requirements. No LLM."""
+    def run(self, srs_path: Path, output_dir: Path | None = Path("outputs")) -> IntermediateRepresentation:
+        """Parse the SRS deterministically into features of functional requirements. No LLM.
+
+        Writes ``<stem>_ir.json`` only when ``output_dir`` is given. The full pipeline passes
+        ``output_dir=None`` (the bare parse is a strict subset of the final full_ir.json, so the
+        per-stage dump would be redundant); standalone callers/CLI still get the file."""
         feature_dicts = self.reader.read_features(srs_path)
 
         features = []
@@ -80,8 +84,9 @@ class SpecAgent:
             contracts=[],
         )
 
-        output_dir.mkdir(parents=True, exist_ok=True)
-        (output_dir / f"{srs_path.stem}_ir.json").write_text(ir.model_dump_json(indent=2))
+        if output_dir is not None:
+            output_dir.mkdir(parents=True, exist_ok=True)
+            (output_dir / f"{srs_path.stem}_ir.json").write_text(ir.model_dump_json(indent=2))
         return ir
 
     def synthesize_contracts(self, ir: dict, output_dir: Path | None = None) -> dict:

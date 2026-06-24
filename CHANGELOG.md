@@ -26,6 +26,69 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-24 — Headline run-metrics are all FR-level now
+
+### Changed
+- **`_compute_summary` reports every ratio at FR granularity** (the FR is the atomic
+  independently-certifiable unit; the per-FR pass@k already used it, but proof/PassVer were
+  feature-level, so the headline numbers mixed denominators). How: `verification_pass_ratio` =
+  |FRs of proved features| / total FRs; `PassVer@1` = |FRs of proved features ∪ FRs passing pass@1|
+  / total FRs (a proved feature certifies ALL its FRs; union dedupes overlap);
+  `avg_verification_iteration` is FR-weighted (each FR inherits its feature's proof rounds).
+  Certification now stores `pass_at_1_fr_ids` (from `cert.frs`) instead of feature ids. Tests
+  rewritten to FR-level synthetic data; suite 66 passed.
+
+## 2026-06-24 — Drop the redundant `<stem>_ir.json` dump from pipeline runs
+
+### Changed
+- **`SpecAgent.run` writes `_ir.json` only when `output_dir` is given.** Why: the per-stage spec
+  dump is a strict SUBSET of the final `full_ir.json` (each stage writes the whole running IR, so
+  ir ⊂ contracts ⊂ dependency ⊂ planning ⊂ full_ir) — pure duplication in a full run. How:
+  `output_dir: Path | None`; `run_pipeline` Stage 1 now passes `output_dir=None`. Standalone
+  `spec_agent/cli.py` still writes it. Suite: 66 passed.
+
+## 2026-06-24 — Cross-agent audit: de-bias schemas/prompts for python | fastapi | java
+
+Read every agent's schema + prompt and made them correct/parameterized for all three targets.
+Most were already target-agnostic (spec contract is explicitly stack-agnostic; dependency is
+language-neutral; code + test prompts dispatch via the language target; certification/dafny
+schemas are neutral). Two real biases fixed:
+
+### Changed
+- **Planning had no Java branch.** Why: `plan_feature.j2`'s TARGET STACK was `fastapi` vs
+  `else=plain Python`, so a `--language java` run (stack="java") was told "plain Python". How:
+  added a `java` branch, and reframed the signature as the CANONICAL language-neutral interface
+  (Python syntax) that codegen realizes in the target language — updated `FRPlan.signature` /
+  `Contract.signature` descriptions to match.
+- **Test schema was Python-named.** Why: `FeatureTests.pytest_source` held the JUnit class on a
+  Java run, and `expected_json`'s description hardcoded `ValueError`. How: renamed
+  `pytest_source → test_source` (all refs in `test/agent.py` + both test prompts), generalized its
+  description (pytest for Python/FastAPI, JUnit5 for Java), and generalized the `raises` example to
+  name the per-target exception. Suite: 66 passed.
+
+### Changed
+- **`infer_fr_deps.j2` sharpened.** Why: the most error-prone rule ("a cross-reference is not a
+  dependency") was only described, never shown, inviting false-positive edges. How: added a worked
+  NEGATIVE example beside the positive one, and reworded the DIRECTION block from "source/target"
+  to the actual structured-output field names (`id` / `prerequisite_ids`) so the model fills the
+  schema directly. No code change; suite still 66 passed.
+
+## 2026-06-24 — Code-agent prompts: de-bias across stacks (Python/Java parity)
+
+### Changed
+- **Java codegen prompt brought to parity with Python.** Why: `generate_code_java.j2` was thinner
+  than `generate_code.j2`, making Java a second-class citizen. How: added the same
+  contract-adherence framing ("implement EXACTLY this contract, nothing beyond it"), full
+  prerequisites guidance (don't call update/setup from read paths), exact-output matching, and
+  direct-map-key reading — Java-correct equivalents of the Python rules.
+- **All code-agent templates now route through the target.** Why: `generate_adapter.j2` and
+  `regenerate_with_feedback.j2` were hardcoded in `code/agent.py`, i.e. silently Python-only — a
+  latent bias if ever run for Java. How: `LanguageTarget.adapter_template()` /
+  `feedback_template()` (base returns the Python prompts); `JavaTarget` overrides them to raise
+  `NotImplementedError` (adapter = FastAPI-only, recovery = Python-only in v1) so nothing silently
+  falls back to a Python prompt. `code/agent.py` renders via `self.target.*`.
+- Tests: target routing + Java-refusal + Java-prompt parity (prereqs/error-mode). Suite: 66 passed.
+
 ## 2026-06-24 — Configurable, multi-language pipeline (Python + Java) via CLI
 
 Make the pipeline versatile: choose the target **language** (python | java) and configure

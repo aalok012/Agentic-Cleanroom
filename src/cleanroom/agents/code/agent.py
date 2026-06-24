@@ -138,7 +138,7 @@ class CodeAgent:
         feat = next((f for f in ir.get("features", []) if str(f.get("id")) == str(feature_id)), {})
 
         prompt = self.renderer.render(
-            "generate_adapter.j2",
+            self.target.adapter_template(),
             {
                 "feature_id": feature_id,
                 "feature_name": feat.get("name", ""),
@@ -216,7 +216,7 @@ class CodeAgent:
                 continue
             fr_id = contract["fr_id"]
             prompt = self.renderer.render(
-                "regenerate_with_feedback.j2",
+                self.target.feedback_template(),
                 {
                     "fr_id": fr_id,
                     "feature_id": contract["feature_id"],

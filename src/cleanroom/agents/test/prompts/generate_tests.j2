@@ -54,7 +54,7 @@ Produce TWO things for this feature:
      Leave setup_json empty for pure-create cases and for cases that pass all state as inputs.
      A "raises" case that expects "not found" must NOT create the entity it looks up.
 {% endif %}
-2. `pytest_source` — pytest module encoding all cases:
+2. `test_source` — pytest module encoding all cases:
 {% if stack == 'fastapi' %}   This is a FastAPI app. Drive it over HTTP with TestClient — do NOT import or call the
    route functions directly (they are FastAPI endpoints with Body params, not plain functions).
    - Header imports: `import json`, `from fastapi.testclient import TestClient`, `from app import create_app`.

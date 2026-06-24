@@ -72,7 +72,9 @@ class ArgDoc(BaseModel):
 
 class FRPlan(BaseModel):
     id: str = Field(description="The requirement id, echoed VERBATIM from the input — never changed or invented")
-    signature: str = Field(description="One-line Python function signature: name, typed params, return type")
+    signature: str = Field(description="One-line function signature in Python syntax: name, typed params, "
+                           "return type. Canonical, language-neutral interface — codegen realizes it in the "
+                           "run's target language (e.g. translated to Java).")
     args: list[ArgDoc] = Field(
         default_factory=list, description="One entry per signature parameter (omit if the signature takes none)"
     )

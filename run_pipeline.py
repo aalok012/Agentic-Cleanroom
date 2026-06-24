@@ -93,37 +93,47 @@ def _finalize_metrics(metrics: dict, stages: list) -> None:
 
 
 def _compute_summary(metrics: dict, ir: dict) -> dict:
-    """Roll the per-stage metrics up into the headline research metrics."""
+    """Roll the per-stage metrics up into the headline research metrics — ALL at FR granularity
+    (the FR is the atomic, independently-certifiable unit; a proved feature certifies all its FRs)."""
     d = metrics.get("dafny") or {}
     cert = metrics.get("certification") or {}
     rec = metrics.get("recovery") or {}
     tok = metrics.get("tokens") or {}
     calls = tok.get("calls", 0) or 0
 
-    n_feat_total = len(ir.get("features", []))
-    n_proved = d.get("n_verified", 0)
-    n_feat_dafny = d.get("n_features", 0)
-    rounds = [f.get("rounds", 0) for f in d.get("features", [])]
+    # feature id -> its FR ids, and the full FR universe
+    fr_by_feature: dict[str, list[str]] = {}
+    all_fr_ids: set[str] = set()
+    for f in ir.get("features", []):
+        ids = [str(r.get("id")) for r in f.get("functional_requirements", [])]
+        fr_by_feature[str(f.get("id"))] = ids
+        all_fr_ids.update(ids)
+    total_frs = len(all_fr_ids)
 
+    # FR-level sets: a proved feature certifies ALL its FRs; pass@1 is already per-FR.
+    proved_fr_ids = {fr for fid in (metrics.get("proved_feature_ids") or [])
+                     for fr in fr_by_feature.get(fid, [])}
+    pass1_fr_ids = set(cert.get("pass_at_1_fr_ids") or [])
+    certified_fr_ids = proved_fr_ids | pass1_fr_ids
+
+    # avg verification iterations PER FR: each FR inherits its feature's proof rounds.
+    wr = wn = 0
+    for fe in d.get("features", []):
+        n = len(fr_by_feature.get(str(fe.get("feature_id")), []))
+        wr += fe.get("rounds", 0) * n
+        wn += n
     n_tested = cert.get("n_total_tested_features", 0)
     loops_run = rec.get("loops_run", 0)
 
-    # PassVer@1 = | proved ∪ pass@1 | / total features — a UNION (not a sum) so a feature that is
-    # both proved and passes pass@1 (possible when proved features aren't skipped from the test
-    # track) is counted once.
-    proved_ids = set(metrics.get("proved_feature_ids") or [])
-    pass1_ids = set(cert.get("pass_at_1_feature_ids") or [])
-    n_certified = len(proved_ids | pass1_ids)
-
     return {
-        # verification (Dafny): proved / attempted
-        "verification_pass_ratio": round(n_proved / n_feat_dafny, 4) if n_feat_dafny else 0.0,
-        # certification (pass@k oracle): fraction of test-case executions that passed
+        # FRs covered by a discharged proof / all FRs
+        "verification_pass_ratio": round(len(proved_fr_ids) / total_frs, 4) if total_frs else 0.0,
+        # fraction of individual test-case executions that passed
         "test_case_pass_ratio": round(cert.get("aggregate_case_pass_rate", 0.0), 4),
-        # composite: feature certified by PROOF or by passing pass@1, over all features
-        "PassVer@1": round(n_certified / n_feat_total, 4) if n_feat_total else 0.0,
-        # avg generate->verify->revise rounds per feature in the proof tier
-        "avg_verification_iteration": round(sum(rounds) / len(rounds), 2) if rounds else 0.0,
+        # FRs certified by PROOF or by passing pass@1 (set union, dedupes overlap) / all FRs
+        "PassVer@1": round(len(certified_fr_ids) / total_frs, 4) if total_frs else 0.0,
+        # avg generate->verify->revise rounds, FR-weighted
+        "avg_verification_iteration": round(wr / wn, 2) if wn else 0.0,
         # avg test-track iterations = initial pass + recovery passes (Python recovery loop)
         "avg_test_iteration": round(1 + loops_run, 2) if (cert and n_tested) else 0.0,
         "avg_input_token": round(tok.get("input", 0) / calls, 1) if calls else 0.0,
@@ -173,7 +183,8 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     # contract phase then writes a design-by-contract spec per FR (one LLM call/feature).
     _banner("[1]", "Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts")
     spec = SpecAgent(llm=spec_llm)
-    ir_obj = _timed("spec_parse", stages, lambda: spec.run(srs_path, output_dir=output_dir))
+    # output_dir=None: skip the redundant <stem>_ir.json dump (it's a strict subset of full_ir.json).
+    ir_obj = _timed("spec_parse", stages, lambda: spec.run(srs_path, output_dir=None))
     ir = ir_obj.model_dump()
     ir = _timed("spec_contracts", stages,
                 lambda: spec.synthesize_contracts(ir, output_dir=output_dir))
@@ -355,12 +366,10 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             "aggregate_case_pass_rate": cert.aggregate_case_pass_rate,
             "n_tested_frs": len(cert.frs),
             "n_proved_features": len(proved_feature_ids),
-            "n_pass_at_1_features": sum(1 for f in cert.features if f.pass_at.get("pass@1", 0.0) >= 1.0),
             "n_total_tested_features": len(cert.features),
-            # feature ids passing pass@1 — unioned with proved ids for PassVer@1 (dedupes overlap
-            # on stacks where proved features still go through the test track).
-            "pass_at_1_feature_ids": sorted(
-                f.feature_id for f in cert.features if f.pass_at.get("pass@1", 0.0) >= 1.0),
+            # FR ids passing pass@1 — unioned with proved features' FRs for FR-level PassVer@1.
+            "pass_at_1_fr_ids": sorted(
+                fr.fr_id for fr in cert.frs if fr.pass_at.get("pass@1", 0.0) >= 1.0),
         }
         if not cert.frs:
             print("  (no features to test — all were certified by the proof tier)")
@@ -396,11 +405,9 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             metrics["certification"]["aggregate_pass_at"] = cert.aggregate_pass_at
             metrics["certification"]["aggregate_case_pass_rate"] = cert.aggregate_case_pass_rate
             metrics["certification"]["n_proved_features"] = len(proved_feature_ids)
-            metrics["certification"]["n_pass_at_1_features"] = sum(
-                1 for f in cert.features if f.pass_at.get("pass@1", 0.0) >= 1.0)
             metrics["certification"]["n_total_tested_features"] = len(cert.features)
-            metrics["certification"]["pass_at_1_feature_ids"] = sorted(
-                f.feature_id for f in cert.features if f.pass_at.get("pass@1", 0.0) >= 1.0)
+            metrics["certification"]["pass_at_1_fr_ids"] = sorted(
+                fr.fr_id for fr in cert.frs if fr.pass_at.get("pass@1", 0.0) >= 1.0)
             metrics["recovery"] = {
                 "max_loops": max_cert_loops,
                 "loops_run": len(recovery["loops"]),

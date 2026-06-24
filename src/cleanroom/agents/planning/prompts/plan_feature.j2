@@ -8,9 +8,11 @@ The requirement IDs are FIXED — echo each id back exactly as given; never chan
 drop, or invent ids.
 
 For each requirement produce:
-- signature: ONE concrete Python function signature — a name, typed parameters, and a
-  return type. Use JSON-serializable types ONLY (str, int, float, bool, list, dict).
-  Do NOT use custom classes, Pydantic models, or ORM types. One line, no body.
+- signature: ONE concrete function signature in PYTHON SYNTAX — a name, typed parameters, and a
+  return type. This is the CANONICAL, language-neutral interface description; downstream code
+  generation realizes it in the run's target language (e.g. translated to a Java method), so use
+  Python syntax here regardless of target. Use JSON-serializable types ONLY (str, int, float,
+  bool, list, dict). Do NOT use custom classes, Pydantic models, or ORM types. One line, no body.
   Example: "def search_videos(query: str) -> dict[str, list[dict[str, str]]]:"
 - args: one entry PER PARAMETER in the signature. Each entry has a `name` (matching the
   signature parameter EXACTLY) and a `description` of what it is and any constraints. If
@@ -82,7 +84,7 @@ TARGET STACK: {% if stack == 'fastapi' %}FastAPI + SQLAlchemy, mapped per layer:
   model      → SQLAlchemy model + the function that persists/queries it (DB access lives here);
   controller → an APIRouter handler that validates input, calls the model, and returns JSON;
   view       → an APIRouter read endpoint / serializer that returns the formatted response shape.
-Keep every signature JSON-serializable.{% else %}plain Python — signatures are directly callable as fn(**json.loads(inputs)). model = data/state functions; controller = behavior/orchestration; view = functions that format/return a payload.{% endif %}
+Keep every signature JSON-serializable.{% elif stack == 'java' %}plain Java (JDK standard library) — the reference signature above will be realized as a Java method. model = classes that hold/define/query data; controller = classes that orchestrate a state change/workflow; view = classes that format/return a payload. Keep every signature JSON-serializable (maps to Map/List/String/int/double/boolean in Java).{% else %}plain Python — signatures are directly callable as fn(**json.loads(inputs)). model = data/state functions; controller = behavior/orchestration; view = functions that format/return a payload.{% endif %}
 
 Use DISTINCT function names when two requirements implement different behavior — do not
 reuse the same name (e.g. prefer sort_torrent_results vs sort_video_results over both being

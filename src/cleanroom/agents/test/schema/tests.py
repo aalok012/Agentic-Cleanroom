@@ -14,7 +14,8 @@ class TestCase(BaseModel):
         description='JSON object of keyword arguments, e.g. {"query": "pizza"}'
     )
     expected_json: str = Field(
-        description='JSON expected return, or {"raises": "ValueError"} for failure cases'
+        description='JSON expected return, or {"raises": "<ExceptionType>"} for failure cases '
+        '(e.g. ValueError in Python / HTTPException in FastAPI / IllegalArgumentException in Java)'
     )
     oracle: Literal["eq", "raises"] = Field(
         default="eq", description="eq = assert return equals expected_json; raises = expect exception"
@@ -35,9 +36,10 @@ class TestCase(BaseModel):
 class FeatureTests(BaseModel):
     feature_id: str = Field(description="Feature these cases belong to, e.g. '2.2'")
     cases: list[TestCase] = Field(default_factory=list)
-    pytest_source: str = Field(
+    test_source: str = Field(
         default="",
-        description="Runnable pytest module using inputs_json/expected_json from cases",
+        description="Runnable test module encoding the cases — a pytest module for Python "
+        "(incl. FastAPI), or a JUnit5 test class for Java.",
     )
 
 

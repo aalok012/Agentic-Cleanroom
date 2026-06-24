@@ -13,6 +13,11 @@ tests, and the test generator never sees the code. They agree only by anchoring 
 specification. That's what makes pass@k an honest measurement instead of a number you can game by
 feeding failing tests back into the generator.
 
+**You choose the target language** — `--language python` (plain functions or a FastAPI app) or
+`--language java` (Java classes + JUnit5). Each stage's **model is configurable** (`--code-model`,
+`--test-model`, …), so you can run a strong model where it matters and a cheap one elsewhere; the
+cost ledger prices each model separately.
+
 > **Status, in one line:** the full pipeline runs end-to-end. On the DineOut SRS a real run proves
 > 6/10 features in Dafny and tests the other 4. The Dafny proof track and the FastAPI adapter that
 > ships proved logic are the newest parts and have the sharpest edges — see
@@ -63,14 +68,24 @@ progresses (`outputs/{project}_full_ir.json` is the complete record).
   [4]  Code Agent       PROVED features → a thin FastAPI adapter over the compiled Dafny core
     │                   UN-proved features → full generated code
     ▼
-  [5] Test Agent        spec-derived black-box test cases (LLM)
+  [5] Test Agent        spec-derived black-box test cases (LLM): pytest (python) or JUnit5 (java)
     │
     ▼  (optional, --certify)
-  [6] Certification     pass@k via an executable/HTTP oracle — for UN-proved features only
+  [6] Certification     pass@k via an executable oracle — for UN-proved features only
+    │                   python: run the function / boot the FastAPI app · java: javac compile-check
+    ▼  (optional, --max-cert-loops, python only)
+  [6b] Recovery loop    features still failing pass@1 → re-prove harder + regenerate code WITH the
+                        failing tests (a deliberate, contained clean-room break), then re-certify
 ```
 
-The proof tier (4a) runs **before** code generation so the Code Agent knows which features ship
-from Dafny. The full prove-or-test flow is `--prove --certify`.
+The same stages run for **python** and **java** — only the codegen template, the test framework,
+the packaging and the certification oracle differ, chosen by a `LanguageTarget` (`src/cleanroom/
+targets/`). The proof tier (4a) runs **before** code generation so the Code Agent knows which
+features ship from Dafny. The full prove-or-test flow is `--prove --certify`. Every run ends with a
+**RUN METRICS** block, reported at **FR granularity** (the FR is the atomic certifiable unit; a
+proved feature certifies all its FRs): `verification_pass_ratio` (FRs proved / all FRs),
+`PassVer@1` (FRs certified by proof ∪ pass@1 / all FRs), `test_case_pass_ratio`, FR-weighted avg
+iterations, avg tokens, total time.
 
 | Stage | LLM? | Adds to IR |
 |-------|------|------------|
@@ -277,8 +292,13 @@ After a run:
 | `outputs/generated/{project}/app/dafny_cores/` | Compiled proved cores + the marshalling shim |
 | `outputs/generated/{project}/dafny_proof/dafny/*.dfy` | Generated Dafny per feature (`--prove`) |
 | `outputs/generated/{project}/dafny_proof/out/F…-py/` | Compiled proved logic |
-| `outputs/generated/{project}/tests/` | Pytest modules (`test_feature_*.py`) |
+| `outputs/generated/{project}/src/*.java` | Generated Java classes (`--language java`) |
+| `outputs/generated/{project}/tests/` | `test_feature_*.py` (python) or `*Test.java` JUnit classes (java) |
 | `API_USAGE.md` | Append-only token/cost ledger — written on **every** run, success or failure |
+
+Only `{project}_full_ir.json` is written in a pipeline run; the per-stage IR snapshots
+(`_contracts.json`, `_dependency.json`, `_planning.json`) are a strict subset of it and only appear
+when an agent is run standalone.
 
 **Cost accounting is per-model.** A `--prove` run mixes gpt-4.1 (proof) and gpt-4o-mini (everything
 else); `API_USAGE.md` prices each model's tokens at its own rate (e.g. the DineOut run logged
@@ -324,6 +344,18 @@ This is a research/engineering pipeline. Being explicit about what's solid and w
 - **`dafny translate py` output is runtime-flavored**, not idiomatic Python — it's a verified library
   the adapter calls through `dafny_marshal`, not hand-editable code.
 - The proof tier requires **gpt-4.1**; smaller models are insufficient.
+
+**Java target (v1) — what works and what's deferred:**
+- Generates Java classes + JUnit5 test classes; planning signatures are emitted in Python syntax as
+  the canonical interface and **translated to Java** by the code prompt.
+- The certification oracle is a **`javac` compile-check**, not per-case execution: it confirms the
+  generated Java *type-checks*, but does not yet *run* the JUnit tests against inputs (that needs a
+  `junit-platform-console-standalone` jar via `$JUNIT_JAR` + a JSON-marshalling harness). Without a
+  JDK it skips gracefully. Because all `src/*.java` are compiled together, one non-compiling file
+  fails the batch.
+- `--language java` with `--prove` is **proof-only**: there is no Java Dafny-core *adapter* yet, so
+  proved logic isn't shipped from Dafny (the recovery loop is also Python-only). A Spring/web Java
+  stack and a Java adapter are follow-ups.
 
 ---
 

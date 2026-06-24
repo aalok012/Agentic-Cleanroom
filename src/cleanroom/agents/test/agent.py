@@ -73,7 +73,7 @@ class TestAgent:
 
             # One structured call per feature. Schema via with_structured_output —
             # no JSON schema in the prompt. The model returns both the structured
-            # `cases` (the certification oracle) and a runnable `pytest_source` module.
+            # `cases` (the certification oracle) and a runnable `test_source` module.
             result = self.llm.with_structured_output(FeatureTests).invoke(prompt)
 
             # The spec owns feature_id; don't trust the LLM to echo it correctly.
@@ -81,7 +81,7 @@ class TestAgent:
                 FeatureTests(
                     feature_id=unit["feature_id"],
                     cases=list(result.cases),
-                    pytest_source=result.pytest_source,
+                    test_source=result.test_source,
                 )
             )
 
@@ -99,7 +99,7 @@ class TestAgent:
         a JUnit class for java).
 
         Pure persistence of what the agent already produced — this writer reads only the
-        spec-derived `tests`, never any implementation. The `pytest_source` field holds the test
+        spec-derived `tests`, never any implementation. The `test_source` field holds the test
         module source (python or, for java, a JUnit class). Because the agent cannot see the code,
         import/class names follow conventions and may need binding adjustment — the structured
         `cases` remain the canonical, code-independent oracle (see schema/tests.py).
@@ -108,7 +108,7 @@ class TestAgent:
         written: list[Path] = []
         for feature in tests.features:
             slug = feature.feature_id.replace(".", "_")
-            source = feature.pytest_source.strip()
+            source = feature.test_source.strip()
             if language == "java":
                 from src.cleanroom.utils.java_packager import java_class_name
                 if not source:

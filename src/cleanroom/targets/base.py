@@ -19,6 +19,14 @@ class LanguageTarget:
     def code_template(self) -> str:
         return "generate_code.j2"
 
+    def adapter_template(self) -> str:
+        """Thin glue over a PROVED Dafny core (FastAPI/Python path)."""
+        return "generate_adapter.j2"
+
+    def feedback_template(self) -> str:
+        """Test-informed regeneration in the recovery loop (Python path)."""
+        return "regenerate_with_feedback.j2"
+
     def test_template(self) -> str:
         return "generate_tests.j2"
 

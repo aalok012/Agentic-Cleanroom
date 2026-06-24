@@ -1,8 +1,10 @@
 # Challenges — Building the Agentic Cleanroom Pipeline
 
 A record of the real problems hit while building this clean-room, spec-driven code-generation
-pipeline (Spec → Dependency → Planning → Code → Verification → Test → Certification), why each
-one happened, and how it was resolved. Roughly in the order they surfaced.
+pipeline (Spec → Dependency → Planning → Proof → Code → Test → Certification → Recovery), why each
+one happened, and how it was resolved. Roughly in the order they surfaced. (The early entries
+reference a standalone Verification/verify→revise loop that was later removed once certification
+became the executable oracle and the recovery loop took over feedback.)
 
 ---
 
@@ -136,6 +138,47 @@ one happened, and how it was resolved. Roughly in the order they surfaced.
   honest long-term fix is property-based or reference-solution oracles, not a single LLM's
   guess at expected outputs.
 
+## 12. Proof covers the logic, not the running program (the adapter gap)
+
+- **Symptom:** a feature was PROVED in Dafny and shipped green, yet its FastAPI adapter called
+  `M.from_json`/`M.to_json` — functions that don't exist in the marshalling shim — and persisted
+  the Model under a different DB key per feature, so the proven cross-action invariants never held
+  at runtime.
+- **Root cause:** Dafny is **effect-free** — it proves pure logic and `dafny translate` emits only
+  the executable functions (the invariant and all lemmas are *erased*). The HTTP/DB/marshalling
+  glue that connects the proven core to the world is **outside the proof**, and proved features are
+  **skipped by certification**, so the glue is never executed by any oracle. A green proof was being
+  read as if it covered the endpoint.
+- **Fix direction:** keep proof for the logic, but stop treating it as certification of the *wiring*
+  — run at least a boot/one-call smoke (or full pass@k) on proved-feature adapters; or generate the
+  glue deterministically from the introspectable compiled core instead of by LLM. Documented as the
+  adapter-glue gap.
+- **Lesson:** a formal guarantee only covers what it formalizes. The proof certified the algorithm;
+  nothing certified that the deployed program runs that algorithm on the right shared state.
+
+## 13. Going multi-language (Python + Java) without smuggling in Python bias
+
+- **Symptom:** adding a `--language java` target, it would have "worked" while quietly assuming
+  Python everywhere: the planner told Java runs "plain Python", the Code Agent's adapter/recovery
+  prompts were hardcoded Python, the Java codegen prompt was a thin afterthought, and the test
+  schema field was literally named `pytest_source` while holding a JUnit class.
+- **Root cause:** the pipeline grew up single-language, so language/stack assumptions were scattered
+  inline (template names, `if stack == 'fastapi' … else (python)` branches, Python-named schema
+  fields) rather than behind one seam.
+- **Fix:** a `LanguageTarget` abstraction (`src/cleanroom/targets/`) owns every language-specific
+  choice — codegen/test template, packaging, and the executable oracle — and the agents dispatch
+  through it. The Java target *explicitly refuses* the Python-only adapter/recovery prompts
+  (`NotImplementedError`) instead of silently falling back; the planning signature was reframed as a
+  **canonical interface in Python syntax** that codegen translates per language; and Python-named
+  fields/branches were generalized (`pytest_source → test_source`, a Java branch in planning, a
+  per-target `raises` exception).
+- **Where it's honest about its limits:** the Java oracle is a `javac` **compile-check**, not
+  per-case JUnit execution — a real but partial signal — and it degrades gracefully without a JDK,
+  mirroring how the proof tier skips without a `dafny` binary.
+- **Lesson:** "supports language X" is easy to fake by bolting X onto a Python-shaped pipeline. Real
+  support means a single seam where every language decision lives, and making unsupported paths fail
+  *loudly* rather than silently doing the wrong (Python) thing.
+
 ---
 
 ## Cross-cutting lessons
@@ -157,3 +200,6 @@ one happened, and how it was resolved. Roughly in the order they surfaced.
   decision. Intent that isn't the default gets forgotten under time pressure.
 - **Watch for over-corrections.** Fixing "tests invent garbage" by "tests copy the answer" traded
   one failure mode for a worse, quieter one (#11). Aim for the middle, not the opposite extreme.
+- **A guarantee only covers what it formalizes.** Proof certified the logic, not the deployed
+  endpoint (#12); "supports Java" can be faked by bolting it onto a Python-shaped pipeline (#13).
+  Be explicit about the boundary of every guarantee, and make unsupported paths fail loudly.

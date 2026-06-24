@@ -31,17 +31,37 @@ def test_java_target_templates_and_oracle_name():
     assert t.oracle_name("java") == "java" and t.file_ext == ".java"
 
 
+def test_all_code_templates_route_through_the_target():
+    """The adapter + feedback prompts are dispatched by the target, not hardcoded — so no path
+    silently uses the Python prompt for another language."""
+    py = get_target("python")
+    assert py.adapter_template() == "generate_adapter.j2"
+    assert py.feedback_template() == "regenerate_with_feedback.j2"
+
+
+def test_java_refuses_python_only_prompts_explicitly():
+    java = get_target("java")
+    with pytest.raises(NotImplementedError):
+        java.adapter_template()         # FastAPI-only — must not fall back to the Python prompt
+    with pytest.raises(NotImplementedError):
+        java.feedback_template()        # recovery is Python-only in v1
+
+
 # --- the Java prompts render (catch template syntax errors offline) -----------
 def test_java_prompts_render():
     r = PromptRenderer()
     code = r.render("generate_code_java.j2", {
         "fr_id": "4.1.1", "feature_id": "4.1", "mvc_layer": "controller",
         "signature": "def place_order(name: str) -> dict:", "docstring": "Place an order.",
-        "requirement": "Place an order", "prerequisites": [],
+        "requirement": "Place an order",
+        "prerequisites": [{"fr_id": "4.0.1", "layer": "model",
+                           "signature": "def menu(): ...", "example_inputs_json": "{}"}],
         "example_inputs_json": '{"name": "x"}', "expected_return_json": '{"ok": true}',
         "error_mode": "raise", "failure_inputs_json": "",
     })
     assert "public class" in code and "javac" in code            # Java instructions present
+    assert "IllegalArgumentException" in code                    # error mode translated to Java
+    assert "4.0.1" in code                                       # prerequisites rendered (parity)
     tests = r.render("generate_tests_junit.j2", {
         "feature_id": "4.1", "name": "Place Order", "description": "d",
         "requirements": [{
