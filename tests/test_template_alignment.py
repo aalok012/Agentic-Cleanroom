@@ -65,29 +65,6 @@ def test_generate_code_j2_fastapi(renderer):
     assert "look up the entity by its `id` field" in out
 
 
-def test_generate_code_revision_j2(renderer):
-    out = renderer.render(
-        "generate_code_revision.j2",
-        {
-            "fr_id": "3.1.REQ-4",
-            "feature_id": "3.1",
-            "mvc_layer": "controller",
-            "signature": "def foo(query: str) -> list:",
-            "docstring": "Doc.",
-            "requirement": "Req.",
-            "prerequisites": _prereq(),
-            "prior_content": "def foo(q): pass",
-            "violations": [{"contract_clause": "canonical_call", "observation": "failed"}],
-            "stack": "python",
-            "example_inputs_json": '{"query":"x"}',
-            "expected_return_json": "[]",
-            "error_mode": "raise",
-            "failure_inputs_json": "",
-        },
-    )
-    assert "canonical call:" in out
-
-
 def test_generate_tests_j2(renderer):
     # Build the requirement through the real helper so the template and its inputs stay aligned.
     from src.cleanroom.utils.contracts import requirement_for_prompt

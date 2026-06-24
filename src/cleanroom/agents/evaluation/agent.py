@@ -56,7 +56,9 @@ class CertificationAgent:
         # the compiled cores + shim staged or the adapters' `import dafny_marshal` fails at boot.
         self.dafny_proj = Path(dafny_proj) if dafny_proj else None
         self.dafny_modules = list(dafny_modules or [])
-        self.k_values = list(k_values or ([1, 3] if self.n >= 3 else [1]))
+        # pass@1 only by default (don't generate extra samples just to compute pass@3);
+        # callers can still pass k_values explicitly if they want a multi-sample estimate.
+        self.k_values = list(k_values or [1])
         self.k_values = [k for k in self.k_values if k <= self.n] or [1]
         self.code_llm = code_llm if code_llm is not None else get_llm(temperature=temperature)
         self.stack = stack

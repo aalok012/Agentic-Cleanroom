@@ -240,42 +240,6 @@ class CodeAgent:
             ))
         return out
 
-    def revise(self, ir: dict, contract: dict, prior_content: str, violations: list) -> str:
-        """Revise ONE file given spec-level contract violations (from verification)."""
-        contracts = (ir.get("planning") or {}).get("contracts")
-        if not contracts:
-            raise ValueError("CodeAgent.revise requires an IR enriched with 'planning.contracts'.")
-        PlanningAgent.normalize_ir_planning(ir)
-        by_fr = {c["fr_id"]: c for c in ir["planning"]["contracts"]}
-        req_text = self._requirement_index(ir)
-        fr_id = contract["fr_id"]
-        violation_dicts = [
-            v if isinstance(v, dict) else {"contract_clause": v.contract_clause, "observation": v.observation}
-            for v in violations
-        ]
-        prompt = self.renderer.render(
-            "generate_code_revision.j2",
-            {
-                "fr_id": fr_id,
-                "feature_id": contract["feature_id"],
-                "mvc_layer": contract["mvc_layer"],
-                "signature": contract["signature"],
-                "docstring": contract["docstring"],
-                "requirement": req_text.get(fr_id, ""),
-                "prerequisites": prereq_ifaces(contract, by_fr),
-                "prior_content": prior_content,
-                "violations": violation_dicts,
-                "stack": self.stack,
-                "example_inputs_json": contract.get("example_inputs_json", "{}"),
-                "expected_return_json": contract.get("expected_return_json", "null"),
-                "error_mode": contract.get("error_mode", "raise"),
-                "failure_inputs_json": contract.get("failure_inputs_json", ""),
-                "entity_identifier": contract.get("entity_identifier", ""),
-            },
-        )
-        impl: FileImplementation = self.llm.with_structured_output(FileImplementation).invoke(prompt)
-        return impl.content
-
     def run(self, ir: dict, output_dir: Path = Path("outputs/generated")) -> GeneratedCode:
         """Generate code and write it out, organized by MVC layer."""
         code = self.generate(ir)

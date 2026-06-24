@@ -26,6 +26,22 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-24 — Default certification to pass@1 only; finish dead `revise()` removal
+
+### Changed
+- **Step 1 — pass@1 is the only default metric.** Why: generating 3 samples just to
+  compute pass@3 burns 3× the tokens, and the pipeline standardized on pass@1 (the
+  recovery loop already uses it). How: `CertificationAgent.k_values` defaults to
+  `[1]` (was `[1, 3] if n >= 3`); `--samples` default `3 → 1` and `run()` default
+  `5 → 1`. Multi-sample estimates still possible via explicit `k_values`/`--samples`.
+
+### Removed
+- **Step 2 — Deleted the orphaned `revise()` path.** Why: commit a6d0ca0 removed
+  `generate_code_revision.j2` but left `CodeAgent.revise()` + its test referencing the
+  now-missing template (the suite's only failure). `revise()` had zero callers since the
+  verify→revise loop was dropped. How: removed `revise()` from `code/agent.py` and
+  `test_generate_code_revision_j2` from `tests/test_template_alignment.py`. Suite: 48 passed.
+
 ## 2026-06-24 — Recovery loop (re-prove + test-informed regen) at Stage 4↔6
 
 Adds a last-resort fallback so a feature that fails BOTH formal proof and the

@@ -95,7 +95,7 @@ def run(
     srs_path: Path,
     output_dir: Path,
     certify: bool = False,
-    samples: int = 5,
+    samples: int = 1,
     stack: str = "python",
     prove: bool = False,
     prove_target: str = "py",
@@ -455,7 +455,9 @@ def main() -> None:
     parser.add_argument("srs_path", type=Path, help="Path to the SRS XML document")
     parser.add_argument("--output-dir", type=Path, default=Path("outputs"), help="Where to write artifacts")
     parser.add_argument("--certify", action="store_true", help="Also run the pass@k certification stage.")
-    parser.add_argument("--samples", type=int, default=3, help="Code samples per FR for pass@k (default: 3).")
+    parser.add_argument("--samples", type=int, default=1,
+                        help="Code samples per FR for certification (default: 1 → pass@1 only). "
+                             "Pass a higher N with explicit k_values for a multi-sample estimate.")
     parser.add_argument("--stack", default="auto", choices=["auto", "python", "fastapi"],
                         help="MVC app stack: 'auto' (default, from the SRS), 'python', or 'fastapi'.")
     parser.add_argument("--prove", action="store_true",
