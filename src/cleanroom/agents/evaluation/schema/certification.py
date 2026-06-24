@@ -59,4 +59,10 @@ class CertificationResult(BaseModel):
     aggregate_case_pass_rate: float = Field(
         default=0.0, description="fraction of individual test case executions that passed"
     )
+    failures: list[dict] = Field(
+        default_factory=list,
+        description="Per-case failure diagnostics (fr_id/feature_id/inputs/expected/reason). "
+        "Consumed ONLY by the opt-in recovery loop to feed failing cases back into "
+        "regeneration — never read by the clean-room Code/Test agents.",
+    )
     notes: list[str] = Field(default_factory=list)

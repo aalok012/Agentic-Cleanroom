@@ -26,6 +26,51 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-24 — Recovery loop (re-prove + test-informed regen) at Stage 4↔6
+
+Adds a last-resort fallback so a feature that fails BOTH formal proof and the
+clean-room pass@1 gets one more chance: re-prove it harder, and if it still won't
+verify, regenerate its code WITH the failing test cases fed back, then re-certify.
+User decisions for this loop: full test feedback (deliberate, contained clean-room
+break), configurable cap (`--max-cert-loops`, default 2), and both escalations
+(Dafny rounds + code temperature). Failing signal = pass@1 < 1.0.
+
+### Added
+- **Step 1 — `CertificationResult.failures`.** Why: the loop needs the failing
+  inputs/expected/reason to feed back. How: added the field in
+  `src/cleanroom/agents/evaluation/schema/certification.py` and populated it in
+  `certify()` (`agents/evaluation/agent.py`) from the existing diagnostics.
+- **Step 2 — Test-informed repair prompt.** Why: a regeneration prompt that
+  shows the failing cases (the clean-room first pass must NOT). How: new
+  `src/cleanroom/agents/code/prompts/regenerate_with_feedback.j2`.
+- **Step 3 — `CodeAgent.regenerate_with_test_feedback(...)`.** Why: the ONLY code
+  path that may see tests; the clean `generate()` stays untouched. How: new method
+  in `agents/code/agent.py` with a loud header marking the contained clean-room
+  break; regenerates only the targeted failing features, embedding each FR's
+  failing cases.
+- **Step 4 — `RecoveryLoop`.** Why: orchestrate (a) escalated re-prove → ship as
+  Dafny-core adapter, (b) test-informed regen, (c) re-certify (n=1, pass@1), up to
+  the cap. How: new `src/cleanroom/agents/recovery/loop.py` (+ `__init__.py`).
+  Escalation: Dafny rounds `6 + 2·i`, code temperature `0.4 + 0.2·i`. Tests are
+  NEVER regenerated inside the loop (the oracle stays frozen).
+- **Step 5 — Per-feature certification labels.** Why: never overclaim a clean-room
+  pass we didn't earn. How: the loop emits `PROVED` / `TESTED (clean-room)` /
+  `TESTED (repaired-with-tests)` / `UNCERTIFIED`, surfaced in the run report.
+
+### Changed
+- **Step 6 — Wired the loop into `run_pipeline.py`.** Why: run it after Stage 6.
+  How: new `--max-cert-loops` flag (default 2; needs `--certify`; 0 disables);
+  Stage 6b invokes `RecoveryLoop`, swaps the repaired result/code into the IR and
+  metrics, and prints the labels. Added a "Recovery loop" section to the run report.
+
+### Tests
+- **Step 7 — `tests/test_recovery_loop.py`.** Why: lock the deterministic
+  orchestration offline. How: fake LLM + stubbed `_certify` covering the
+  test-informed regen targeting, the pass@1 failing signal, repair→label, and the
+  give-up→UNCERTIFIED + escalation schedule. Full suite: 49 passed.
+
+---
+
 ## 2026-06-23 — Stronger MVC-classification prompt; drop the keyword fallback
 
 ### Changed — `plan_feature.j2` MVC classifier

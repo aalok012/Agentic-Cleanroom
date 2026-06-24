@@ -165,6 +165,7 @@ class CertificationAgent:
             features=features_out,
             aggregate_pass_at=aggregate_pass_at,
             aggregate_case_pass_rate=aggregate_case_rate,
+            failures=[d for d in diagnostics if d["verdict"] != "pass"],
         )
         self._print_diagnostics(ir, diagnostics, result)
         return result

@@ -23,7 +23,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 
 from src.cleanroom.agents.dafny.schema.dafny import FeatureDafny, GeneratedDafny
 from src.cleanroom.utils.dafny_verify import verify_dafny
-from src.cleanroom.utils.llm_client import get_llm
+from src.cleanroom.utils.llm_client import DAFNY_MODEL, get_llm
 
 # Dafny constructs models routinely get wrong; priming these turned an infinite syntax loop
 # into actual progress in the feasibility spikes.
@@ -61,8 +61,7 @@ def _load_skill(name: str) -> str:
 
 _SYSTEM = """You are a Dafny author. Produce ONE Dafny file that refines the abstract `Domain`
 below into a verified state machine for a single feature. Output ONLY Dafny source — no markdown,
-no prose, no code fences. (Ignore skill mentions of SPEC.yaml / AppCore / Claims panel / TypeScript —
-those are UI context; your job is only the verified Dafny module.)
+no prose, no code fences.
 
 CRITICAL GOTCHA: a refining `Apply` function and the refining `StepPreservesInv` lemma must NOT
 repeat `requires Inv(m)` — it is inherited from the abstract Domain and repeating it is an error.
@@ -111,7 +110,7 @@ def _targeted_hint(messages: list[dict]) -> str:
 class DafnyAgent:
     """Generate verified Dafny modules from spec contracts, one per feature."""
 
-    def __init__(self, project_dir: Path | str, llm=None, model: str = "gpt-4.1",
+    def __init__(self, project_dir: Path | str, llm=None, model: str = DAFNY_MODEL,
                  max_rounds: int = 6) -> None:
         self.project_dir = Path(project_dir)
         self.dafny_dir = self.project_dir / "dafny"

@@ -11,8 +11,14 @@ PRICING: dict[str, dict[str, float]] = {
 }
 
 
+def _normalize_model(model: str) -> str:
+    """Strip an OpenRouter-style provider prefix (``openai/gpt-4.1`` → ``gpt-4.1``)."""
+    return model.split("/", 1)[1] if "/" in model else model
+
+
 def _rates(model: str) -> dict[str, float]:
     """Prices for a model, matching the longest known prefix (handles dated suffixes)."""
+    model = _normalize_model(model)
     if model in PRICING:
         return PRICING[model]
     for name in sorted(PRICING, key=len, reverse=True):

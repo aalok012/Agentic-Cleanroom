@@ -4,6 +4,9 @@ Paper-friendly index of every `run_pipeline.py` invocation. Each run has a dedic
 
 | run_id | date (UTC) | status | SRS | stack | certify | pass@1 | case rate | tokens | cost (USD) | seconds | detail |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| `20260624-054444-dineout-srs` | 2026-06-24 05:44:44 | complete | dineout_srs.xml | fastapi | yes | 0.500 | 0.688 | 555,477 | $1.3200 | 1494.2 | [20260624-054444-dineout-srs.md](outputs/runs/20260624-054444-dineout-srs.md) |
+| `20260624-051304-dineout-srs` | 2026-06-24 05:13:04 | failed | dineout_srs.xml | fastapi | yes | - | - | 0 | $0.0000 | 0.0 | [20260624-051304-dineout-srs.md](outputs/runs/20260624-051304-dineout-srs.md) |
+| `20260624-050940-dineout-srs` | 2026-06-24 05:09:40 | failed | dineout_srs.xml | fastapi | yes | - | - | 0 | $0.0000 | 0.0 | [20260624-050940-dineout-srs.md](outputs/runs/20260624-050940-dineout-srs.md) |
 | `20260623-232720-2009-video-search` | 2026-06-23 23:27:20 | complete | 2009 - video search.xml | python | yes | 0.714 | 0.846 | 101,779 | $0.2862 | 208.8 | [20260623-232720-2009-video-search.md](outputs/runs/20260623-232720-2009-video-search.md) |
 | `20260623-232234-gemini-code-1781976236207` | 2026-06-23 23:22:34 | complete | gemini-code-1781976236207.xml | fastapi | yes | 0.000 | 0.500 | 68,978 | $0.1568 | 144.5 | [20260623-232234-gemini-code-1781976236207.md](outputs/runs/20260623-232234-gemini-code-1781976236207.md) |
 | `20260623-040851-dineout-srs` | 2026-06-23 04:08:51 | complete | dineout_srs.xml | fastapi | yes | 0.000 | 0.375 | 307,617 | $0.7630 | 900.2 | [20260623-040851-dineout-srs.md](outputs/runs/20260623-040851-dineout-srs.md) |

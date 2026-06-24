@@ -16,7 +16,8 @@ Dafny core, and the Code Agent writes only a thin adapter over it (Stage 4); eve
 full code certified by pass@k in [6] (prove-or-test fallback). The proof tier runs BEFORE codegen
 so the Code Agent knows which features ship from Dafny.
 
-Requires OPENAI_API_KEY in .env. The proof tier additionally needs a `dafny` binary on PATH/$DAFNY.
+Requires OPENAI_API_KEY (or OPENROUTER_API_KEY) in .env. Set OPENAI_BASE_URL for OpenRouter.
+The proof tier additionally needs a `dafny` binary on PATH/$DAFNY.
 
 Usage:
     uv run python run_pipeline.py "data/srs/dineout_srs.xml"
@@ -45,18 +46,13 @@ from src.cleanroom.agents.test.agent import TestAgent
 from src.cleanroom.llms.callbacks.metric import GLOBAL_METRICS
 from src.cleanroom.utils.code_stats import code_stats
 from src.cleanroom.utils.cost import estimate_cost, estimate_cost_by_model
-from src.cleanroom.utils.llm_client import get_llm
+from src.cleanroom.utils.llm_client import DAFNY_MODEL, get_llm, llm_api_key_configured
 from src.cleanroom.utils.dafny_project import compile_dafny, scaffold_dafny_project, stage_dafny_cores
 from src.cleanroom.utils.packager import build_runnable_package
 from src.cleanroom.utils.stack_select import select_stack
 from src.cleanroom.utils.ir import normalize_ir
 from src.cleanroom.utils.run_record import make_run_id, record_run
 from src.cleanroom.utils.usage_log import append_usage_log, metrics_from_globals
-
-# The Dafny proof tier needs a strong model — the spikes showed gpt-4o-mini/gpt-4o cannot
-# discharge map-comprehension proofs, while gpt-4.1 verifies mutating CRUD features in a few rounds.
-_DAFNY_MODEL = "gpt-4.1"
-
 
 def _banner(step: str, title: str) -> None:
     print(f"\n{'=' * 70}\n  {step}  {title}\n{'=' * 70}")
@@ -103,6 +99,7 @@ def run(
     stack: str = "python",
     prove: bool = False,
     prove_target: str = "py",
+    max_cert_loops: int = 0,
 ) -> tuple[dict, dict]:
     stages: list = []
     run_config = {
@@ -110,6 +107,7 @@ def run(
         "samples": samples,
         "prove": prove,
         "prove_target": prove_target,
+        "max_cert_loops": max_cert_loops,
     }
     metrics: dict = {"srs": srs_path.name, "stack": stack, "stages": stages, "config": run_config}
     llm = get_llm()
@@ -178,7 +176,7 @@ def run(
         else:
             project_dir = output_dir / "generated" / ir["project_name"] / "dafny_proof"
             proj = _timed("scaffold", stages, lambda: scaffold_dafny_project(project_dir))
-            gen = _timed("dafny", stages, lambda: DafnyAgent(proj, model=_DAFNY_MODEL).generate(ir))
+            gen = _timed("dafny", stages, lambda: DafnyAgent(proj, model=DAFNY_MODEL).generate(ir))
             proved_feature_ids = {f.feature_id for f in gen.features if f.verified}
             proved_modules = {f.feature_id: f.module for f in gen.features if f.verified}
             proved_sources = {f.feature_id: f.dafny_source for f in gen.features if f.verified}
@@ -191,7 +189,7 @@ def run(
                 axt = f"  [{len(f.axioms)} assumed axiom(s)]" if f.verified and f.axioms else ""
                 print(f"  [{f.feature_id}] {label}  {f.module}  ({f.rounds}r){axt}")
             metrics["dafny"] = {
-                "model": _DAFNY_MODEL, "n_features": ntot, "n_verified": nver,
+                "model": DAFNY_MODEL, "n_features": ntot, "n_verified": nver,
                 "n_proved_with_axioms": n_axiom,
                 "verification_rate": round(nver / ntot, 3) if ntot else 0.0,
                 "features": [{"feature_id": f.feature_id, "module": f.module,
@@ -292,6 +290,49 @@ def run(
             for k, v in cert.aggregate_pass_at.items():
                 print(f"  {k}: {v:.3f}  (over {len(cert.frs)} un-proved FR(s))")
 
+        # --- Stage 6b: Recovery loop (opt-in via --max-cert-loops) ----------------
+        # For each feature still failing pass@1, re-prove (escalated rounds) and, if it stays
+        # unproved, regenerate its code WITH the failing test cases (the contained, user-approved
+        # clean-room break), then re-certify — up to `max_cert_loops` times.
+        from src.cleanroom.agents.recovery.loop import RecoveryLoop, failing_feature_ids
+        if max_cert_loops > 0 and cert.features and failing_feature_ids(cert):
+            _banner("[6b]", f"Recovery loop — re-prove + test-informed regen (≤ {max_cert_loops} passes)")
+            loop = RecoveryLoop(
+                ir,
+                stack=stack,
+                proj=proj,
+                proved_feature_ids=set(proved_feature_ids),
+                proved_modules=proved_modules,
+                proved_sources=proved_sources,
+                code_dir=code_dir,
+                adapter_mode=adapter_mode,
+                max_loops=max_cert_loops,
+                prove_target=prove_target,
+            )
+            recovery = _timed("recovery", stages, lambda: loop.run(cert))
+            cert = recovery["result"]
+            proved_feature_ids = set(loop.proved_feature_ids)
+            ir = {**ir, "certification": cert.model_dump(),
+                  "recovery": {k: v for k, v in recovery.items() if k != "result"}}
+            metrics["certification"]["aggregate_pass_at"] = cert.aggregate_pass_at
+            metrics["certification"]["aggregate_case_pass_rate"] = cert.aggregate_case_pass_rate
+            metrics["certification"]["n_proved_features"] = len(proved_feature_ids)
+            metrics["recovery"] = {
+                "max_loops": max_cert_loops,
+                "loops_run": len(recovery["loops"]),
+                "repaired_by_proof": recovery["repaired_by_proof"],
+                "repaired_by_tests": recovery["repaired_by_tests"],
+                "uncertified": recovery["uncertified"],
+                "labels": recovery["labels"],
+                "loops": recovery["loops"],
+            }
+            print(f"  recovery: +{len(recovery['repaired_by_proof'])} re-proved, "
+                  f"+{len(recovery['repaired_by_tests'])} repaired-with-tests, "
+                  f"{len(recovery['uncertified'])} uncertified  ·  "
+                  f"pass@1 now {cert.aggregate_pass_at.get('pass@1', 0.0):.3f}")
+            for fid, lab in sorted(recovery["labels"].items()):
+                print(f"    [{fid}] {lab}")
+
     _finalize_metrics(metrics, stages)
     return ir, metrics
 
@@ -346,6 +387,21 @@ def write_run_report(metrics: dict, dest: Path) -> None:
         lines += [f"- {k}: {v:.3f}" for k, v in cert["aggregate_pass_at"].items()]
         if "aggregate_case_pass_rate" in cert:
             lines.append(f"- case pass rate: {cert['aggregate_case_pass_rate']:.3f}")
+    if metrics.get("recovery"):
+        r = metrics["recovery"]
+        lines += [
+            "",
+            "## Recovery loop (re-prove + test-informed regen)",
+            "",
+            f"- passes run: {r['loops_run']} / {r['max_loops']} max",
+            f"- re-proved (now ship from Dafny): {r['repaired_by_proof'] or '(none)'}",
+            f"- repaired with test feedback (clean-room relaxed): {r['repaired_by_tests'] or '(none)'}",
+            f"- still UNCERTIFIED: {r['uncertified'] or '(none)'}",
+            "",
+            "Final per-feature certification label:",
+        ]
+        for fid, lab in sorted(r["labels"].items()):
+            lines.append(f"  - {fid}: {lab}")
     if metrics.get("dafny"):
         d = metrics["dafny"]
         lines += [
@@ -409,13 +465,18 @@ def main() -> None:
     parser.add_argument("--prove-target", default="py",
                         choices=["py", "cs", "js", "go", "java", "cpp", "rs"],
                         help="dafny translate target for proved features (default: py).")
+    parser.add_argument("--max-cert-loops", type=int, default=2,
+                        help="Recovery loop: max times to re-prove + regenerate-with-test-feedback "
+                             "+ re-certify features that fail pass@1 (default: 2; needs --certify; "
+                             "0 disables). NOTE: the test-feedback regen deliberately relaxes "
+                             "clean-room isolation for those failing features only.")
     args = parser.parse_args()
 
     if not args.srs_path.exists():
         parser.error(f"SRS file not found: {args.srs_path}")
 
-    if not os.getenv("OPENAI_API_KEY"):
-        print("ERROR: OPENAI_API_KEY is not set. Add it to your .env file.")
+    if not llm_api_key_configured():
+        print("ERROR: No LLM API key found. Set OPENAI_API_KEY or OPENROUTER_API_KEY in .env.")
         sys.exit(1)
 
     metrics: dict | None = None
@@ -424,12 +485,14 @@ def main() -> None:
         "samples": args.samples,
         "prove": args.prove,
         "prove_target": args.prove_target,
+        "max_cert_loops": args.max_cert_loops,
     }
     try:
         ir, metrics = run(
             args.srs_path, args.output_dir,
             certify=args.certify, samples=args.samples, stack=args.stack,
             prove=args.prove, prove_target=args.prove_target,
+            max_cert_loops=args.max_cert_loops,
         )
         ir = {**ir, "metrics": metrics}
         normalize_ir(ir)

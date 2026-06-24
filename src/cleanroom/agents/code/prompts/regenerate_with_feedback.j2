@@ -1,6 +1,8 @@
-You are a code generation agent in a clean-room software pipeline. An INDEPENDENT reviewer
-checked your previous implementation against its contract and found VIOLATIONS. Revise the
-file so it satisfies the contract.
+You are a code-repair agent in the pipeline's RECOVERY loop. Your previous implementation
+of this requirement was already PROVED-or-TESTED and FAILED its test cases, so — unlike the
+clean-room first pass — you are now shown the FAILING test cases so you can fix the code to
+satisfy them. Make the smallest change that makes every failing case pass while still
+honoring the contract.
 
 Functional requirement {{ fr_id }} (feature {{ feature_id }}), MVC layer: {{ mvc_layer }}.
 
@@ -29,32 +31,29 @@ functions. If you must call one, import from file_path and use its canonical cal
 This requirement has no prerequisites; it is self-contained.
 {%- endif %}
 
-Your previous implementation (to revise):
+Your previous implementation (to fix):
 ```python
 {{ prior_content }}
 ```
 
-Contract violations the reviewer found (fix every one):
-{% for v in violations %}- [{{ v.contract_clause }}] {{ v.observation }}
+FAILING TEST CASES (each ran against your previous code and failed — make all of them pass):
+{% for c in failing_cases %}- case: {{ c.description }}
+    inputs:   {{ c.inputs }}
+    expected: {{ c.expected }}
+    why it failed: {{ c.reason }}
 {% endfor %}
 {% if stack == 'fastapi' %}
-TARGET STACK: FastAPI + SQLAlchemy. Keep the same structural conventions as generate_code.j2:
+TARGET STACK: FastAPI + SQLAlchemy. Keep the same structural conventions as the first pass:
 shared `from app.extensions import Base, SessionLocal`; controllers/views define ONE
 `router = APIRouter()` and decorate the function `@router.post("")`; every parameter is a
 `= Body(..., embed=True)` field (so the body is `{"<param>": <value>, ...}` for any param
-count); read/write real data via `db = SessionLocal()` (NEVER fake state or
-hardcode returns). On success return the JSON body; on failure `raise HTTPException(status_code=4xx, ...)`.
+count); read/write real data via `db = SessionLocal()` (NEVER fake state or hardcode
+returns). On success return the JSON body; on failure `raise HTTPException(status_code=4xx, ...)`.
 {% if entity_identifier %}Key the entity by its `{{ entity_identifier }}` field for lookup and storage; do not require an identifier the caller does not send.
-{% endif -%}
-{% if failure_inputs_json and failure_inputs_json.strip() and failure_inputs_json != '{}' -%}
-The precondition failure call must raise HTTPException with a 4xx status, not ValueError.
 {% endif -%}
 {% else %}
 TARGET: plain Python. fn(**json.loads('{{ example_inputs_json }}')) must return
 json.loads('{{ expected_return_json }}') exactly. Dict params: request["key"], not
 request["request"]["key"]. No network/filesystem I/O.
-{% if failure_inputs_json and failure_inputs_json.strip() and failure_inputs_json != '{}' -%}
-fn(**json.loads('{{ failure_inputs_json }}')) MUST raise ValueError.
-{% endif -%}
 {% endif %}
-Produce the full content of the ONE revised Python file. Output only source code.
+Produce the full content of the ONE repaired Python file. Output only source code.

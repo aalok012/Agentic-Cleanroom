@@ -8,11 +8,11 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | metric | value |
 |---|---:|
 | runs logged | 1 |
-| LLM calls | 17 |
-| input tokens | 78,228 |
-| output tokens | 23,551 |
-| total tokens | 101,779 |
-| estimated cost (USD) | $0.2862 |
+| LLM calls | 146 |
+| input tokens | 465,060 |
+| output tokens | 90,417 |
+| total tokens | 555,477 |
+| estimated cost (USD) | $1.3200 |
 
 ## Run history
 
@@ -36,6 +36,9 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | 2026-06-23 04:08:51 | `20260623-040851-dineout-srs` | complete | dineout_srs.xml | gpt-4.1-2025-04-14+gpt-4o-mini-2024-07-18 | 86 | 248,201 | 59,416 | 307,617 | $0.7630 | 900.2 | [detail](outputs/runs/20260623-040851-dineout-srs.md) |
 | 2026-06-23 23:22:34 | `20260623-232234-gemini-code-1781976236207` | complete | gemini-code-1781976236207.xml | gpt-4.1-2025-04-14+gpt-4o-mini-2024-07-18 | 20 | 58,970 | 10,008 | 68,978 | $0.1568 | 144.5 | [detail](outputs/runs/20260623-232234-gemini-code-1781976236207.md) |
 | 2026-06-23 23:27:20 | `20260623-232720-2009-video-search` | complete | 2009 - video search.xml | gpt-4.1-2025-04-14+gpt-4o-mini-2024-07-18 | 17 | 78,228 | 23,551 | 101,779 | $0.2862 | 208.8 | [detail](outputs/runs/20260623-232720-2009-video-search.md) |
+| 2026-06-24 05:09:40 | `20260624-050940-dineout-srs` | failed | dineout_srs.xml | gpt-4o-mini | 0 | 0 | 0 | 0 | $0.0000 | 0.0 | [detail](outputs/runs/20260624-050940-dineout-srs.md) |
+| 2026-06-24 05:13:04 | `20260624-051304-dineout-srs` | failed | dineout_srs.xml | gpt-4o-mini | 0 | 0 | 0 | 0 | $0.0000 | 0.0 | [detail](outputs/runs/20260624-051304-dineout-srs.md) |
+| 2026-06-24 05:44:44 | `20260624-054444-dineout-srs` | complete | dineout_srs.xml | gpt-4.1-2025-04-14+gpt-4o-mini-2024-07-18 | 146 | 465,060 | 90,417 | 555,477 | $1.3200 | 1494.2 | [detail](outputs/runs/20260624-054444-dineout-srs.md) |
 
 ## Notes
 

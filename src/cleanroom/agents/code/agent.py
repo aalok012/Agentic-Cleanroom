@@ -165,6 +165,81 @@ class CodeAgent:
             content=impl.content,
         )
 
+    # ===================  TEST-INFORMED REPAIR (RECOVERY ONLY)  ===================
+    # DELIBERATE, CONTAINED clean-room break, enabled by the user for the recovery loop:
+    # this method — and ONLY this method — receives failing TEST CASES and regenerates code
+    # to satisfy them. It is never called on the first pass (that stays clean-room via
+    # `generate`); it runs only after a feature has already failed both proof and pass@1.
+    # Features repaired here are labelled "TESTED (repaired-with-tests)" so the report never
+    # claims a clean-room pass we did not earn. Do NOT call this from `generate`/`run`.
+    # =============================================================================
+    def regenerate_with_test_feedback(
+        self, ir: dict, feature_ids: set[str], failures: list[dict]
+    ) -> list[GeneratedFile]:
+        """Regenerate the code of the given (failing) features WITH their failing test cases.
+
+        ``failures`` is the certification result's per-case diagnostics
+        (fr_id/inputs/expected/reason). For every contract whose feature is in ``feature_ids``
+        we re-emit its file, feeding in that FR's failing cases. The Code Agent's temperature is
+        set by the caller (the recovery loop escalates it per iteration). Returns the regenerated
+        files only — the caller swaps them into ``generated_code`` by fr_id.
+        """
+        contracts = (ir.get("planning") or {}).get("contracts")
+        if not contracts:
+            raise ValueError("CodeAgent.regenerate_with_test_feedback requires 'planning.contracts'.")
+        PlanningAgent.normalize_ir_planning(ir)
+        normalize_ir_features(ir)
+        contracts = ir["planning"]["contracts"]
+        by_fr = {c["fr_id"]: c for c in contracts}
+        req_text = self._requirement_index(ir)
+        prior_by_fr = {f["fr_id"]: f["content"]
+                       for f in (ir.get("generated_code") or {}).get("files", []) if f.get("fr_id")}
+
+        fails_by_fr: dict[str, list[dict]] = {}
+        for d in failures:
+            fails_by_fr.setdefault(d.get("fr_id", ""), []).append({
+                "description": d.get("description", ""),
+                "inputs": d.get("inputs", ""),
+                "expected": d.get("expected", ""),
+                "reason": d.get("reason", ""),
+            })
+
+        feature_ids = set(feature_ids)
+        out: list[GeneratedFile] = []
+        for contract in contracts:
+            if contract["feature_id"] not in feature_ids:
+                continue
+            fr_id = contract["fr_id"]
+            prompt = self.renderer.render(
+                "regenerate_with_feedback.j2",
+                {
+                    "fr_id": fr_id,
+                    "feature_id": contract["feature_id"],
+                    "mvc_layer": contract["mvc_layer"],
+                    "signature": contract["signature"],
+                    "docstring": contract["docstring"],
+                    "requirement": req_text.get(fr_id, ""),
+                    "prerequisites": prereq_ifaces(contract, by_fr),
+                    "prior_content": prior_by_fr.get(fr_id, ""),
+                    "failing_cases": fails_by_fr.get(fr_id, []),
+                    "stack": self.stack,
+                    "example_inputs_json": contract.get("example_inputs_json", "{}"),
+                    "expected_return_json": contract.get("expected_return_json", "null"),
+                    "error_mode": contract.get("error_mode", "raise"),
+                    "failure_inputs_json": contract.get("failure_inputs_json", ""),
+                    "entity_identifier": contract.get("entity_identifier", ""),
+                },
+            )
+            impl: FileImplementation = self.llm.with_structured_output(FileImplementation).invoke(prompt)
+            out.append(GeneratedFile(
+                fr_id=fr_id,
+                feature_id=contract["feature_id"],
+                path=contract["file_path"],
+                mvc_layer=contract["mvc_layer"],
+                content=impl.content,
+            ))
+        return out
+
     def revise(self, ir: dict, contract: dict, prior_content: str, violations: list) -> str:
         """Revise ONE file given spec-level contract violations (from verification)."""
         contracts = (ir.get("planning") or {}).get("contracts")
