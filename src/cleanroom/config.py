@@ -37,6 +37,20 @@ class RunConfig:
     prove_target: str = "py"
     max_cert_loops: int = 2
 
+    # --- per-agent ON/OFF switches (compose any arm; required agents Spec/Planning/Code
+    #     have no switch — they are the irreducible spec->code task given to every arm) ---
+    run_dependency: bool = True       # Dependency agent (semantic FR graph). Off => empty graph.
+    run_test: bool = True             # Test agent (black-box tests). Off => no test generation.
+    run_recovery: bool = True         # Recovery loop after certification (off == max_cert_loops 0).
+
+    # --- per-agent knobs ---
+    temperature: float = 0.0          # generation temperature: spec / planning / code / test
+    cert_temperature: float = 0.4     # sampling temperature for certification code samples (pass@k diversity)
+    case_timeout: float = 10.0        # per-test-case execution timeout (s)
+    prove_rounds: int = 6             # Dafny generate->verify->revise rounds per feature
+    llm_deps: bool = True             # use the LLM to infer semantic FR->FR edges (else regex-only)
+    baseline: bool = False            # control run: no proof, no recovery, regex-only deps, temp 0
+
     def models_used(self) -> dict[str, str]:
         """Stage -> model, for the run report / debugging."""
         return {
@@ -45,21 +59,44 @@ class RunConfig:
             "test": self.test_model, "proof": self.proof_model, "cert": self.cert_model,
         }
 
+    def agents_enabled(self) -> dict[str, bool]:
+        """Which agents are ON for this run (required ones are always True)."""
+        return {
+            "spec": True, "dependency": self.run_dependency, "planning": True,
+            "proof": self.prove, "code": True, "test": self.run_test,
+            "certify": self.certify,
+            # recovery only fires after a real certification pass
+            "recovery": self.certify and self.run_recovery and self.max_cert_loops > 0,
+        }
+
     def as_dict(self) -> dict:
         return {
             "language": self.language, "stack": self.stack, "models": self.models_used(),
+            "agents": self.agents_enabled(),
+            "run_dependency": self.run_dependency, "run_test": self.run_test,
+            "run_recovery": self.run_recovery,
             "certify": self.certify, "samples": self.samples, "k_values": list(self.k_values),
             "prove": self.prove, "prove_target": self.prove_target,
-            "max_cert_loops": self.max_cert_loops,
+            "max_cert_loops": self.max_cert_loops, "temperature": self.temperature,
+            "cert_temperature": self.cert_temperature, "case_timeout": self.case_timeout,
+            "prove_rounds": self.prove_rounds, "llm_deps": self.llm_deps, "baseline": self.baseline,
         }
 
     @classmethod
     def from_args(cls, args) -> "RunConfig":
-        """Build from an argparse Namespace. Java fixes its own stack; --proof-target follows
-        the language (java proves to java) unless the user overrode it."""
+        """Build from an argparse Namespace. Java fixes its own stack; --prove-target follows the
+        language unless overridden. `--baseline` is a control preset: it forces proof OFF, recovery
+        OFF, regex-only dependencies, and temperature 0 (other flags still apply)."""
         language = getattr(args, "language", "python")
+        baseline = getattr(args, "baseline", False)
         prove_target = getattr(args, "prove_target", None) or ("java" if language == "java" else "py")
         k_values = tuple(getattr(args, "k", None) or (1,))
+        # Per-agent switches (baseline forces the optional ones into their control state).
+        run_dependency = getattr(args, "dependency", True)
+        run_test = getattr(args, "test", True)
+        run_recovery = False if baseline else getattr(args, "recovery", True)
+        # Recovery off (explicit, or baseline) => 0 loops, regardless of --max-cert-loops.
+        max_loops = 0 if (baseline or not run_recovery) else getattr(args, "max_cert_loops", 2)
         return cls(
             language=language,
             stack="java" if language == "java" else getattr(args, "stack", "auto"),
@@ -70,10 +107,19 @@ class RunConfig:
             test_model=getattr(args, "test_model", DEFAULT_MODEL),
             proof_model=getattr(args, "proof_model", DAFNY_MODEL),
             cert_model=getattr(args, "cert_model", DEFAULT_MODEL),
+            run_dependency=run_dependency,   # baseline keeps the deterministic graph (regex deps)
+            run_test=run_test,
+            run_recovery=run_recovery,
             certify=getattr(args, "certify", False),
             samples=getattr(args, "samples", 1),
             k_values=k_values,
-            prove=getattr(args, "prove", False),
+            prove=False if baseline else getattr(args, "prove", False),
             prove_target=prove_target,
-            max_cert_loops=getattr(args, "max_cert_loops", 2),
+            max_cert_loops=max_loops,
+            temperature=0.0 if baseline else getattr(args, "temperature", 0.0),
+            cert_temperature=getattr(args, "cert_temperature", 0.4),
+            case_timeout=getattr(args, "case_timeout", 10.0),
+            prove_rounds=getattr(args, "prove_rounds", 6),
+            llm_deps=False if baseline else getattr(args, "llm_deps", True),
+            baseline=baseline,
         )

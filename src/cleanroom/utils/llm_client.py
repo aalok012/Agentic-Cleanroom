@@ -5,7 +5,7 @@ from langchain_openai import ChatOpenAI
 
 from src.cleanroom.llms.callbacks.metric import GLOBAL_HANDLER
 
-load_dotenv()
+load_dotenv(override=True)
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
@@ -15,6 +15,8 @@ DAFNY_MODEL = "gpt-4.1"
 
 
 def _using_openrouter() -> bool:
+    if os.getenv("OPENROUTER_API_KEY") and not os.getenv("OPENAI_API_KEY"):
+        return True
     base = (os.getenv("OPENAI_BASE_URL") or "").lower()
     return "openrouter.ai" in base
 
@@ -42,7 +44,17 @@ def get_llm(model: str = DEFAULT_MODEL, temperature: float = 0.0) -> ChatOpenAI:
     # temperature defaults to 0 (deterministic) for the generation/judging stages;
     # the certification stage raises it to draw diverse samples for pass@k.
     # GLOBAL_HANDLER counts tokens/latency for every call (counts only, no content).
-    base_url = os.getenv("OPENAI_BASE_URL")
+    openrouter_key = os.getenv("OPENROUTER_API_KEY")
+    openai_key = os.getenv("OPENAI_API_KEY")
+    # If only OPENROUTER_API_KEY is set, automatically route to OpenRouter
+    # without requiring OPENAI_BASE_URL to be set.
+    if openrouter_key and not openai_key:
+        base_url = OPENROUTER_BASE_URL
+        api_key = openrouter_key
+    else:
+        base_url = os.getenv("OPENAI_BASE_URL")
+        api_key = openai_key or openrouter_key
+
     default_headers: dict[str, str] = {}
     if referer := os.getenv("OPENROUTER_HTTP_REFERER"):
         default_headers["HTTP-Referer"] = referer
@@ -52,7 +64,7 @@ def get_llm(model: str = DEFAULT_MODEL, temperature: float = 0.0) -> ChatOpenAI:
     kwargs: dict = {
         "model": resolve_model(model),
         "temperature": temperature,
-        "api_key": llm_api_key(),
+        "api_key": api_key,
         "callbacks": [GLOBAL_HANDLER],
     }
     if base_url:

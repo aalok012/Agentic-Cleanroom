@@ -26,6 +26,39 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-24 — Delete standalone baseline; per-agent ON/OFF switches on the pipeline
+
+Replaces the separate `run_baseline.py` with composable per-agent flags on `run_pipeline.py`,
+so any "arm" (including a baseline) is just a flag combination over the SAME harness, contracts
+(task spec), oracle, and metric code — the correct setup for a controlled ablation. Required
+agents (Spec, Planning, Code) are the irreducible spec→code task and have no switch.
+
+### Removed
+- **Step 1 — Deleted `run_baseline.py`, `output_baseline/`, and `dineout_srs_run_baseline_report.md`.**
+  Why: the standalone baseline used a different oracle/metric path (confounds) and produced an
+  inaccurate `PassVer@1=0.10` (untestable interactive code, decoupled vacuous Dafny proofs). How:
+  removed the files; verified nothing imports `run_baseline`.
+
+### Added
+- **Step 2 — Per-agent switches in `RunConfig`** (`src/cleanroom/config.py`): `run_dependency`,
+  `run_test`, `run_recovery` + `agents_enabled()`; `from_args` maps `--dependency/--test/--recovery`
+  and forces recovery→0 loops when off or under `--baseline`. Why: one switch per optional agent.
+- **Step 3 — CLI flags** (`run_pipeline.py`): `--dependency/--no-dependency`, `--test/--no-test`,
+  `--recovery/--no-recovery`; converted `--prove` and `--certify` to symmetric
+  `BooleanOptionalAction`. Added an "Agents: …=on/off" banner at run start.
+
+### Changed
+- **Step 4 — Stage gating** (`run_pipeline.py`): `--no-dependency` injects a valid EMPTY graph via
+  `_inject_empty_dependency` (Planning still runs; features independent); `--no-test` skips test
+  generation (certification, if on, synthesizes ephemeral tests). `--baseline` kept as a preset
+  (proof OFF, recovery OFF, regex deps, temp 0) but now expressed through the same switches.
+
+### Tests
+- **Step 5 — Verified**: full suite 66 passed; offline flag→config mapping check confirms
+  full / minimal / cert-no-recovery / baseline arms resolve correctly.
+
+---
+
 ## 2026-06-24 — Headline run-metrics are all FR-level now
 
 ### Changed

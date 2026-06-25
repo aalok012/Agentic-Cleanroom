@@ -5,7 +5,9 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 
-DEFAULT_USAGE_LOG = Path("API_USAGE.md")
+# Active usage ledger. API_USAGE.md is frozen as the historical record; all runs from
+# 2026-06-24 onward log to API_USAGE_2.md (a fresh ledger with its own cumulative totals).
+DEFAULT_USAGE_LOG = Path("API_USAGE_2.md")
 
 _HISTORY_HEADER = (
     "| date (UTC) | run_id | status | SRS | model | calls | input tok | output tok | "

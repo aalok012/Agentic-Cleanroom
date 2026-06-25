@@ -19,10 +19,19 @@ so the Code Agent knows which features ship from Dafny.
 Requires OPENAI_API_KEY (or OPENROUTER_API_KEY) in .env. Set OPENAI_BASE_URL for OpenRouter.
 The proof tier additionally needs a `dafny` binary on PATH/$DAFNY.
 
+Every optional agent has its own ON/OFF switch, so any "arm" is just a flag combination — there
+is no separate baseline script. Required agents (Spec, Planning, Code) are the irreducible
+spec→code task and have no switch; Dependency / Proof / Test / Certify / Recovery toggle freely.
+
 Usage:
-    uv run python run_pipeline.py "data/srs/dineout_srs.xml"
-    uv run python run_pipeline.py "data/srs/dineout_srs.xml" --certify --samples 1
+    # full pipeline
     uv run python run_pipeline.py "data/srs/dineout_srs.xml" --prove --certify --samples 3
+    # certify only, no recovery
+    uv run python run_pipeline.py "data/srs/dineout_srs.xml" --certify --no-recovery
+    # minimal arm: spec → code only (no deps/proof/test/cert)
+    uv run python run_pipeline.py "data/srs/dineout_srs.xml" --no-dependency --no-test
+    # convenience preset (== --no-prove --no-recovery --no-llm-deps --temperature 0)
+    uv run python run_pipeline.py "data/srs/dineout_srs.xml" --baseline --certify
 """
 
 import argparse
@@ -57,6 +66,19 @@ from src.cleanroom.utils.usage_log import append_usage_log, metrics_from_globals
 
 def _banner(step: str, title: str) -> None:
     print(f"\n{'=' * 70}\n  {step}  {title}\n{'=' * 70}")
+
+
+def _inject_empty_dependency(ir: dict) -> dict:
+    """Dependency agent OFF (--no-dependency): install a valid but EMPTY graph so Planning
+    (which requires `dependency_graph`) still runs, with no edges/prerequisites — every feature
+    is independent and ordered as it appears in the spec."""
+    fids = [str(f.get("id")) for f in ir.get("features", [])]
+    ir["dependency_graph"] = {"nodes": fids, "edges": [], "build_order": fids, "cycles": []}
+    for f in ir.get("features", []):
+        f["fr_order"] = [str(r.get("id")) for r in f.get("functional_requirements", [])]
+        f["fr_edges"] = []
+        f["fr_cycles"] = []
+    return ir
 
 
 def _timed(name: str, stages: list, fn):
@@ -170,13 +192,19 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     metrics: dict = {"srs": srs_path.name, "stack": stack, "language": language,
                      "stages": stages, "config": cfg.as_dict()}
     # Per-stage models: each agent gets its OWN client so a mixed-model run prices correctly
-    # (estimate_cost_by_model reads the per-call model recorded on GLOBAL_METRICS).
-    spec_llm = get_llm(model=cfg.spec_model)
-    dep_llm = get_llm(model=cfg.dependency_model)
-    plan_llm = get_llm(model=cfg.planning_model)
-    code_llm = get_llm(model=cfg.code_model)
-    test_llm = get_llm(model=cfg.test_model)
-    cert_llm = get_llm(model=cfg.cert_model)
+    # (estimate_cost_by_model reads the per-call model recorded on GLOBAL_METRICS). Generation
+    # stages share cfg.temperature; certification samples at cfg.cert_temperature for pass@k diversity.
+    spec_llm = get_llm(model=cfg.spec_model, temperature=cfg.temperature)
+    dep_llm = get_llm(model=cfg.dependency_model, temperature=cfg.temperature)
+    plan_llm = get_llm(model=cfg.planning_model, temperature=cfg.temperature)
+    code_llm = get_llm(model=cfg.code_model, temperature=cfg.temperature)
+    test_llm = get_llm(model=cfg.test_model, temperature=cfg.temperature)
+    cert_llm = get_llm(model=cfg.cert_model, temperature=cfg.cert_temperature)
+    on = cfg.agents_enabled()
+    arm = " ".join(f"{name}={'on' if state else 'off'}" for name, state in on.items())
+    print(f"  Agents: {arm}")
+    if cfg.baseline:
+        print("  [BASELINE preset] proof OFF · recovery OFF · regex-only deps · temperature 0")
 
     # --- Stage 1: Spec (deterministic FR parse, then LLM behavioral contracts) -
     # The SRSReader extracts functional requirements only (section-aware, no LLM); the
@@ -211,7 +239,14 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
 
     # --- Stage 2: Dependency (nested; LLM infers semantic FR->FR edges) -------
     _banner("[2]", "Dependency Agent — building the nested dependency graph")
-    ir = _timed("dependency", stages, lambda: DependencyAnalyzer(llm=dep_llm).enrich(ir, output_dir=output_dir))
+    if not cfg.run_dependency:
+        # Agent OFF (--no-dependency): empty graph, no edges/prerequisites. No LLM call.
+        print("  Dependency agent OFF (--no-dependency) — empty graph, features independent.")
+        ir = _inject_empty_dependency(ir)
+    else:
+        # cfg.llm_deps=False (e.g. --baseline) → deterministic regex-only edges (no semantic LLM inference).
+        ir = _timed("dependency", stages,
+                    lambda: DependencyAnalyzer(llm=dep_llm if cfg.llm_deps else None).enrich(ir, output_dir=output_dir))
     graph = ir["dependency_graph"]
     print(f"Outer nodes : {len(graph['nodes'])}  edges: {len(graph['edges'])}")
     print(f"Build order : {' -> '.join(graph['build_order']) or '(none)'}")
@@ -248,7 +283,8 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
         else:
             project_dir = output_dir / "generated" / ir["project_name"] / "dafny_proof"
             proj = _timed("scaffold", stages, lambda: scaffold_dafny_project(project_dir))
-            gen = _timed("dafny", stages, lambda: DafnyAgent(proj, model=cfg.proof_model).generate(ir))
+            gen = _timed("dafny", stages,
+                         lambda: DafnyAgent(proj, model=cfg.proof_model, max_rounds=cfg.prove_rounds).generate(ir))
             proved_feature_ids = {f.feature_id for f in gen.features if f.verified}
             proved_modules = {f.feature_id: f.module for f in gen.features if f.verified}
             proved_sources = {f.feature_id: f.dafny_source for f in gen.features if f.verified}
@@ -324,16 +360,23 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     # --- Stage 5: Test (LLM) -------------------------------------------------
     # The Test Agent reads only ir['features']; the generated_code in the IR is
     # structurally ignored — isolation is preserved.
-    _banner("[5]", "Test Agent — deriving black-box tests from the spec")
-    generated_tests = _timed("test", stages, lambda: TestAgent(llm=test_llm, stack=stack, language=language).generate(ir))
-    ir = {**ir, "generated_tests": generated_tests.model_dump()}
-    tests_dir = output_dir / "generated" / ir["project_name"] / "tests"
-    written_tests = TestAgent.write_files(generated_tests, tests_dir, language=language)
-    total_cases = sum(len(f.cases) for f in generated_tests.features)
-    metrics["tests"] = {"features": len(generated_tests.features), "cases": total_cases}
-    _fw = "JUnit" if language == "java" else "pytest"
-    print(f"{len(generated_tests.features)} feature(s), {total_cases} test case(s).")
-    print(f"Wrote {len(written_tests)} {_fw} module(s) to {tests_dir}")
+    if not cfg.run_test:
+        # Agent OFF (--no-test): no test artifacts. If --certify is also set, the cert stage
+        # will synthesize ephemeral tests on the fly (a weaker, non-persisted oracle).
+        _banner("[5]", "Test Agent — SKIPPED (--no-test)")
+        note = "  certification will synthesize ephemeral tests." if certify else "  (no certification will run.)"
+        print(f"  Test agent OFF — no test modules written.{note}")
+    else:
+        _banner("[5]", "Test Agent — deriving black-box tests from the spec")
+        generated_tests = _timed("test", stages, lambda: TestAgent(llm=test_llm, stack=stack, language=language).generate(ir))
+        ir = {**ir, "generated_tests": generated_tests.model_dump()}
+        tests_dir = output_dir / "generated" / ir["project_name"] / "tests"
+        written_tests = TestAgent.write_files(generated_tests, tests_dir, language=language)
+        total_cases = sum(len(f.cases) for f in generated_tests.features)
+        metrics["tests"] = {"features": len(generated_tests.features), "cases": total_cases}
+        _fw = "JUnit" if language == "java" else "pytest"
+        print(f"{len(generated_tests.features)} feature(s), {total_cases} test case(s).")
+        print(f"Wrote {len(written_tests)} {_fw} module(s) to {tests_dir}")
 
     # --- Stage 6: Certification (optional) — pass@k for the UN-proved (test fallback) --
     from src.cleanroom.targets import get_target as _get_target
@@ -353,6 +396,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
                 k_values=cfg.k_values,
                 stack=stack,
                 language=language,
+                case_timeout=cfg.case_timeout,
                 skip_feature_ids=cert_skip,
                 dafny_proj=proj if adapter_mode else None,
                 dafny_modules=[proved_modules[fid] for fid in sorted(proved_feature_ids)] if adapter_mode else None,
@@ -562,7 +606,18 @@ def main() -> None:
     parser.add_argument("--language", default="python", choices=list(LANGUAGES),
                         help="Target language for code + tests (default: python). "
                              "'java' → Java code + JUnit tests (stack fixed to java).")
-    parser.add_argument("--certify", action="store_true", help="Also run the pass@k certification stage.")
+    # --- Per-agent ON/OFF switches (compose any arm). Required agents — Spec, Planning, Code —
+    #     have no switch: they are the irreducible spec→code task given to every arm. ---
+    parser.add_argument("--dependency", action=argparse.BooleanOptionalAction, default=True,
+                        help="Dependency agent (FR graph). --no-dependency skips it (empty graph; "
+                             "features independent, spec order).")
+    parser.add_argument("--test", action=argparse.BooleanOptionalAction, default=True,
+                        help="Test agent (black-box tests). --no-test skips test generation.")
+    parser.add_argument("--recovery", action=argparse.BooleanOptionalAction, default=True,
+                        help="Recovery loop after certification (needs --certify). "
+                             "--no-recovery is equivalent to --max-cert-loops 0.")
+    parser.add_argument("--certify", action=argparse.BooleanOptionalAction, default=False,
+                        help="Run the pass@k certification stage (--no-certify to skip; default off).")
     parser.add_argument("--samples", type=int, default=1,
                         help="Code samples per FR for certification (default: 1 → pass@1 only). "
                              "Pass a higher N with explicit --k for a multi-sample estimate.")
@@ -580,10 +635,11 @@ def main() -> None:
     parser.add_argument("--test-model", default=DEFAULT_MODEL, help="Model for the Test Agent.")
     parser.add_argument("--proof-model", default=DAFNY_MODEL, help="Model for the Dafny proof tier (needs a strong model).")
     parser.add_argument("--cert-model", default=DEFAULT_MODEL, help="Model for certification code samples / recovery regen.")
-    parser.add_argument("--prove", action="store_true",
-                        help="Run the Dafny proof tier: prove each feature's logic where possible "
+    parser.add_argument("--prove", action=argparse.BooleanOptionalAction, default=False,
+                        help="Dafny proof tier: prove each feature's logic where possible "
                              "(needs a `dafny` binary + gpt-4.1). Proved features compile to native "
-                             "code; with --certify the rest fall to the pass@k test track.")
+                             "code; with --certify the rest fall to the pass@k test track. "
+                             "--no-prove (default) skips it.")
     parser.add_argument("--prove-target", default=None,
                         choices=["py", "cs", "js", "go", "java", "cpp", "rs"],
                         help="dafny translate target for proved features "
@@ -593,6 +649,22 @@ def main() -> None:
                              "+ re-certify features that fail pass@1 (default: 2; needs --certify; "
                              "0 disables). NOTE: the test-feedback regen deliberately relaxes "
                              "clean-room isolation for those failing features only.")
+    # Per-agent tuning knobs.
+    parser.add_argument("--temperature", type=float, default=0.0,
+                        help="Generation temperature for spec/planning/code/test (default: 0.0).")
+    parser.add_argument("--cert-temperature", type=float, default=0.4,
+                        help="Sampling temperature for certification code samples (pass@k diversity; default: 0.4).")
+    parser.add_argument("--case-timeout", type=float, default=10.0,
+                        help="Per-test-case execution timeout in seconds (default: 10.0).")
+    parser.add_argument("--prove-rounds", type=int, default=6,
+                        help="Dafny generate→verify→revise rounds per feature (default: 6).")
+    parser.add_argument("--llm-deps", action=argparse.BooleanOptionalAction, default=True,
+                        help="Use the LLM to infer semantic FR→FR edges in the dependency stage "
+                             "(--no-llm-deps = deterministic regex edges only).")
+    parser.add_argument("--baseline", action="store_true",
+                        help="Control run: forces proof OFF, recovery OFF, regex-only dependencies, "
+                             "and temperature 0 — a plain spec→code→test(→pass@k) baseline to A/B "
+                             "against the full prove-or-test pipeline.")
     args = parser.parse_args()
 
     if not args.srs_path.exists():
