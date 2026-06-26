@@ -4,6 +4,19 @@ Paper-friendly index of every `run_pipeline.py` invocation. Each run has a dedic
 
 | run_id | date (UTC) | status | SRS | stack | certify | pass@1 | case rate | tokens | cost (USD) | seconds | detail |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| `20260626-050029-dineout-srs` | 2026-06-26 05:00:29 | complete | dineout_srs.xml | fastapi | yes | 0.000 | 0.000 | 379,202 | $0.1699 | 1912.6 | [20260626-050029-dineout-srs.md](outputs/parallel/google_gemini-3_1-pro-preview/runs/20260626-050029-dineout-srs.md) |
+| `20260626-033030-dineout-srs` | 2026-06-26 03:30:30 | failed | dineout_srs.xml | fastapi | yes | - | - | 891,273 | $1.6048 | 0.0 | [20260626-033030-dineout-srs.md](outputs/parallel/qwen_qwen3-max/runs/20260626-033030-dineout-srs.md) |
+| `20260625-232050-dineout-srs` | 2026-06-25 23:20:50 | complete | dineout_srs.xml | fastapi | yes | 1.000 | 1.000 | 533,661 | $0.2277 | 6155.8 | [20260625-232050-dineout-srs.md](outputs/parallel/deepseek_deepseek-v4-pro/runs/20260625-232050-dineout-srs.md) |
+| `20260625-210821-dineout-srs` | 2026-06-25 21:08:21 | complete | dineout_srs.xml | fastapi | yes | 0.000 | 0.000 | 269,041 | $0.1041 | 2456.9 | [20260625-210821-dineout-srs.md](outputs/parallel/openai_gpt-5_5/runs/20260625-210821-dineout-srs.md) |
+| `20260625-192000-dineout-srs` | 2026-06-25 19:20:00 | failed | dineout_srs.xml | fastapi | yes | - | - | 37,328 | $0.0090 | 0.0 | [20260625-192000-dineout-srs.md](outputs/parallel/anthropic_claude-sonnet-4-6/runs/20260625-192000-dineout-srs.md) |
+| `20260625-092003-dineout-srs` | 2026-06-25 09:20:03 | failed | dineout_srs.xml | fastapi | yes | - | - | 5,806 | $0.0013 | 0.0 | [20260625-092003-dineout-srs.md](outputs/runs/20260625-092003-dineout-srs.md) |
+| `20260625-091755-dineout-srs` | 2026-06-25 09:17:55 | failed | dineout_srs.xml | fastapi | yes | - | - | 13,160 | $0.0031 | 0.0 | [20260625-091755-dineout-srs.md](outputs/runs/20260625-091755-dineout-srs.md) |
+| `20260625-091354-dineout-srs` | 2026-06-25 09:13:54 | failed | dineout_srs.xml | fastapi | yes | - | - | 17,049 | $0.0040 | 0.0 | [20260625-091354-dineout-srs.md](outputs/runs/20260625-091354-dineout-srs.md) |
+| `20260625-090529-dineout-srs` | 2026-06-25 09:05:29 | failed | dineout_srs.xml | fastapi | yes | - | - | 0 | $0.0000 | 0.0 | [20260625-090529-dineout-srs.md](outputs/runs/20260625-090529-dineout-srs.md) |
+| `20260625-090505-dineout-srs` | 2026-06-25 09:05:05 | failed | dineout_srs.xml | fastapi | yes | - | - | 0 | $0.0000 | 0.0 | [20260625-090505-dineout-srs.md](outputs/runs/20260625-090505-dineout-srs.md) |
+| `20260625-090017-dineout-srs` | 2026-06-25 09:00:17 | failed | dineout_srs.xml | fastapi | yes | - | - | 1,953 | $0.0007 | 0.0 | [20260625-090017-dineout-srs.md](outputs/runs/20260625-090017-dineout-srs.md) |
+| `20260625-083356-dineout-srs` | 2026-06-25 08:33:56 | complete | dineout_srs.xml | fastapi | yes | 1.000 | 1.000 | 363,474 | $0.1079 | 1541.0 | [20260625-083356-dineout-srs.md](outputs/runs/20260625-083356-dineout-srs.md) |
+| `20260625-075012-dineout-srs` | 2026-06-25 07:50:12 | failed | dineout_srs.xml | fastapi | yes | - | - | 4,288 | $0.0018 | 0.0 | [20260625-075012-dineout-srs.md](outputs/runs/20260625-075012-dineout-srs.md) |
 | `20260625-050033-dineout-srs` | 2026-06-25 05:00:33 | complete | dineout_srs.xml | fastapi | yes | 0.000 | 0.000 | 277,130 | $0.6050 | 702.7 | [20260625-050033-dineout-srs.md](outputs/runs/20260625-050033-dineout-srs.md) |
 | `20260624-203421-dineout-srs` | 2026-06-24 20:34:21 | complete | dineout_srs.xml | fastapi | yes | 0.000 | 0.500 | 296,812 | $0.5918 | 660.9 | [20260624-203421-dineout-srs.md](outputs/runs/20260624-203421-dineout-srs.md) |
 | `20260624-054444-dineout-srs` | 2026-06-24 05:44:44 | complete | dineout_srs.xml | fastapi | yes | 0.500 | 0.688 | 555,477 | $1.3200 | 1494.2 | [20260624-054444-dineout-srs.md](outputs/runs/20260624-054444-dineout-srs.md) |

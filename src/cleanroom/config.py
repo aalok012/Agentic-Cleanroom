@@ -97,16 +97,22 @@ class RunConfig:
         run_recovery = False if baseline else getattr(args, "recovery", True)
         # Recovery off (explicit, or baseline) => 0 loops, regardless of --max-cert-loops.
         max_loops = 0 if (baseline or not run_recovery) else getattr(args, "max_cert_loops", 2)
+        # Model resolution precedence (highest first): explicit per-stage flag -> --model -> stage
+        # default. `--model X` thus runs every stage (proof included) on X; a per-stage flag still
+        # overrides just that stage. With neither, stages fall back to DEFAULT_MODEL (proof: DAFNY_MODEL).
+        one = getattr(args, "model", None)
+        base = one or DEFAULT_MODEL          # default for all non-proof stages
+        proof_base = one or DAFNY_MODEL       # proof keeps its stronger default unless --model is set
         return cls(
             language=language,
             stack="java" if language == "java" else getattr(args, "stack", "auto"),
-            spec_model=getattr(args, "spec_model", DEFAULT_MODEL),
-            dependency_model=getattr(args, "dependency_model", DEFAULT_MODEL),
-            planning_model=getattr(args, "planning_model", DEFAULT_MODEL),
-            code_model=getattr(args, "code_model", DEFAULT_MODEL),
-            test_model=getattr(args, "test_model", DEFAULT_MODEL),
-            proof_model=getattr(args, "proof_model", DAFNY_MODEL),
-            cert_model=getattr(args, "cert_model", DEFAULT_MODEL),
+            spec_model=getattr(args, "spec_model", None) or base,
+            dependency_model=getattr(args, "dependency_model", None) or base,
+            planning_model=getattr(args, "planning_model", None) or base,
+            code_model=getattr(args, "code_model", None) or base,
+            test_model=getattr(args, "test_model", None) or base,
+            proof_model=getattr(args, "proof_model", None) or proof_base,
+            cert_model=getattr(args, "cert_model", None) or base,
             run_dependency=run_dependency,   # baseline keeps the deterministic graph (regex deps)
             run_test=run_test,
             run_recovery=run_recovery,

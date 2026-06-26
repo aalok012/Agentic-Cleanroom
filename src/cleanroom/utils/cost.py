@@ -8,6 +8,7 @@ PRICING: dict[str, dict[str, float]] = {
     "gpt-4o": {"input": 2.50, "output": 10.00},
     "gpt-4.1": {"input": 2.00, "output": 8.00},
     "gpt-4.1-mini": {"input": 0.40, "output": 1.60},
+    "gpt-5.5": {"input": 5.00, "output": 30.00},
 }
 
 

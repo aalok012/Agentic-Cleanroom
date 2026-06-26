@@ -244,10 +244,12 @@ class DependencyAnalyzer:
             "infer_fr_deps.j2",
             {"feature_name": feature.get("name", feature_id_of(feature)), "requirements": requirements},
         )
-        try:
-            result: FeatureFRDeps = self.llm.with_structured_output(FeatureFRDeps).invoke(prompt)
-        except Exception as _exc:
-            raise
+        result: FeatureFRDeps | None = self.llm.with_structured_output(FeatureFRDeps).invoke(prompt)
+        # Function-calling structured output returns None when the model emits no tool call
+        # (e.g. an open model replying "no dependencies" in prose rather than calling the tool).
+        # Semantically that means "no inferred edges" for this feature — treat it as empty.
+        if result is None:
+            return []
 
         pairs: list[tuple[str, str]] = []
         for dep in result.dependencies:

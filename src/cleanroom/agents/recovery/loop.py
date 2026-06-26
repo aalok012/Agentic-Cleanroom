@@ -19,6 +19,7 @@ Outcome labels per feature, surfaced in the run report so we never overclaim:
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 from src.cleanroom.agents.code.agent import CodeAgent
@@ -56,6 +57,7 @@ class RecoveryLoop:
         max_loops: int = 2,
         prove_target: str = "py",
         dafny_model: str = DAFNY_MODEL,
+        iter_log: Path | None = None,
     ) -> None:
         self.ir = ir
         self.stack = stack
@@ -68,6 +70,9 @@ class RecoveryLoop:
         self.max_loops = max_loops
         self.prove_target = prove_target
         self.dafny_model = dafny_model
+        # If set, each iteration's full metrics are flushed here as a JSON line the moment it
+        # finishes — so you can stop the run early (Ctrl-C / kill) and keep the per-iteration data.
+        self.iter_log = Path(iter_log) if iter_log else None
         # Adapters are spec+Dafny only (no test feedback), so a base-temperature agent writes them.
         self._adapter_agent = CodeAgent(llm=get_llm(temperature=0.0), stack=stack)
 
@@ -109,12 +114,27 @@ class RecoveryLoop:
             result = self._certify()
             now_failing = failing_feature_ids(result)
             repaired_by_tests |= (still - now_failing)
+            # Full metric snapshot for THIS iteration (not just pass@1) — so the per-iteration
+            # progression of every headline metric is recorded, printed, and laddered in the ledger.
+            snap = self._snapshot(result)
             loops.append({
                 "loop": i + 1, "dafny_rounds": rounds, "code_temp": temp,
                 "targeted": sorted(failing), "reproved": sorted(newly_proved),
                 "still_failing": sorted(now_failing),
-                "pass_at_1": round(result.aggregate_pass_at.get("pass@1", 0.0), 3),
+                "pass_at_1": snap["pass_at"].get("pass@1", 0.0),
+                **snap,
             })
+            print(f"     iter {i + 1} metrics: PassVer@1={snap['passver_at_1']}  "
+                  f"pass@1={snap['pass_at'].get('pass@1', 0.0)}  "
+                  f"case_pass_rate={snap['case_pass_rate']}  "
+                  f"proved_frs={snap['proved_frs']}/{snap['total_frs']}  "
+                  f"certified_frs={snap['certified_frs']}/{snap['total_frs']}")
+            # Flush THIS iteration to disk now, so stopping early keeps every completed iteration.
+            if self.iter_log is not None:
+                self.iter_log.parent.mkdir(parents=True, exist_ok=True)
+                with self.iter_log.open("a") as fh:
+                    fh.write(json.dumps(loops[-1]) + "\n")
+                    fh.flush()
             if not now_failing:
                 break
 
@@ -127,6 +147,30 @@ class RecoveryLoop:
             "repaired_by_proof": sorted(repaired_by_proof),
             "repaired_by_tests": sorted(repaired_by_tests),
             "uncertified": sorted(final_failing),
+        }
+
+    # --- per-iteration metrics snapshot ---------------------------------------
+    def _snapshot(self, result: CertificationResult) -> dict:
+        """All headline metrics for the pipeline state AFTER one recovery iteration, at FR
+        granularity (the atomic unit): pass@k, case-pass-rate, count of FRs covered by a proof,
+        and PassVer@1 (FRs that are proved OR pass pass@1, deduped) over the full FR universe."""
+        fr_by_feature: dict[str, list[str]] = {}
+        all_fr: set[str] = set()
+        for f in self.ir.get("features", []):
+            ids = [str(r.get("id")) for r in f.get("functional_requirements", [])]
+            fr_by_feature[str(f.get("id"))] = ids
+            all_fr.update(ids)
+        total = len(all_fr) or 1
+        proved_fr = {fr for fid in self.proved_feature_ids for fr in fr_by_feature.get(fid, [])}
+        pass1_fr = {fr.fr_id for fr in result.frs if fr.pass_at.get("pass@1", 0.0) >= 1.0}
+        certified_fr = proved_fr | pass1_fr
+        return {
+            "pass_at": {k: round(v, 3) for k, v in result.aggregate_pass_at.items()},
+            "case_pass_rate": round(result.aggregate_case_pass_rate, 3),
+            "proved_frs": len(proved_fr),
+            "certified_frs": len(certified_fr),
+            "total_frs": total,
+            "passver_at_1": round(len(certified_fr) / total, 3),
         }
 
     # --- (a) re-prove ----------------------------------------------------------

@@ -43,8 +43,10 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+# Load .env BEFORE importing project modules — some read API keys / model env vars at import time.
 load_dotenv()
 
+# --- Agents (one per pipeline stage) ---
 from src.cleanroom.agents.evaluation.agent import CertificationAgent
 from src.cleanroom.agents.code.agent import CodeAgent
 from src.cleanroom.agents.dafny.agent import DafnyAgent
@@ -52,11 +54,13 @@ from src.cleanroom.agents.dependency.agent import DependencyAnalyzer
 from src.cleanroom.agents.planning.agent import PlanningAgent
 from src.cleanroom.agents.spec_agent.agent import SpecAgent
 from src.cleanroom.agents.test.agent import TestAgent
+
+# --- Utilities, metrics, config ---
 from src.cleanroom.llms.callbacks.metric import GLOBAL_METRICS
 from src.cleanroom.utils.code_stats import code_stats
-from src.cleanroom.utils.cost import estimate_cost, estimate_cost_by_model
+from src.cleanroom.utils.cost import estimate_cost_by_model
 from src.cleanroom.config import LANGUAGES, RunConfig
-from src.cleanroom.utils.llm_client import DAFNY_MODEL, DEFAULT_MODEL, get_llm, llm_api_key_configured
+from src.cleanroom.utils.llm_client import get_llm, llm_api_key_configured
 from src.cleanroom.utils.dafny_project import compile_dafny, scaffold_dafny_project, stage_dafny_cores
 from src.cleanroom.utils.packager import build_runnable_package
 from src.cleanroom.utils.stack_select import select_stack
@@ -440,6 +444,8 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
                 adapter_mode=adapter_mode,
                 max_loops=max_cert_loops,
                 prove_target=prove_target,
+                # Live per-iteration metrics, flushed each loop → survives an early stop.
+                iter_log=output_dir / f"{ir['project_name']}_recovery_iters.jsonl",
             )
             recovery = _timed("recovery", stages, lambda: loop.run(cert))
             cert = recovery["result"]
@@ -577,6 +583,193 @@ def write_run_report(metrics: dict, dest: Path) -> None:
     dest.write_text("\n".join(lines) + "\n")
 
 
+RECORD_FILE = Path("Full_Pipeline_run_metric_record_with_differentModels.md")
+
+
+def append_metric_record(
+    metrics: dict, cfg: RunConfig, command: str, status: str, dest: Path | None = None
+) -> None:
+    """Append one structured section per run to the cross-model comparison ledger.
+
+    Captures: which models drove each stage, the exact command + pipeline flags, the
+    headline summary metrics (PassVer@1 etc.), the Dafny proof results per feature, the
+    pass@k certification, the per-recovery-loop progress (targeted/reproved/still-failing/
+    pass@1), and the final per-feature outcome label (PROVED / TESTED / UNCERTIFIED).
+    Appended for every run — completed or failed — so models can be A/B'd from one file.
+    """
+    from datetime import datetime
+
+    # Ledger path: env override (PIPELINE_LEDGER_FILE) lets parallel runs each write their OWN
+    # ledger so concurrent appends never interleave; a wrapper merges them afterwards. Default
+    # is the shared repo-root ledger for normal single runs.
+    if dest is None:
+        dest = Path(os.getenv("PIPELINE_LEDGER_FILE") or RECORD_FILE)
+
+    s = metrics.get("summary") or {}
+    models = (metrics.get("config") or {}).get("models") or cfg.models_used()
+    agents = (metrics.get("config") or {}).get("agents") or {}
+    tok = metrics.get("tokens") or {}
+    ts = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    L: list[str] = []
+
+    if not dest.exists():
+        L += [
+            "# Full pipeline — run metrics across different models",
+            "",
+            "_Auto-appended after every `run_pipeline.py` run. One section per run._",
+            "",
+        ]
+
+    L += [
+        "---",
+        "",
+        f"## Run {metrics.get('run_id', ts)} — {status.upper()}",
+        "",
+        f"- **When**: {ts}",
+        f"- **SRS**: {metrics.get('srs', '?')}  ·  **language**: {metrics.get('language', '?')}"
+        f"  ·  **stack**: {metrics.get('stack', '?')}",
+        f"- **Command**: `{command}`",
+        "",
+        "### Models used (per stage)",
+        "",
+        "| stage | model |",
+        "|---|---|",
+    ]
+    for stage in ("spec", "dependency", "planning", "code", "test", "proof", "cert"):
+        if stage in models:
+            L.append(f"| {stage} | `{models[stage]}` |")
+
+    arm = ", ".join(f"{k}={'on' if v else 'off'}" for k, v in agents.items())
+    L += [
+        "",
+        "### Pipeline flags",
+        "",
+        f"- agents: {arm}",
+        f"- certify={cfg.certify} · samples={cfg.samples} · k={list(cfg.k_values)} · "
+        f"prove={cfg.prove} · max_cert_loops={cfg.max_cert_loops}",
+        f"- temperature={cfg.temperature} · cert_temperature={cfg.cert_temperature} · "
+        f"prove_rounds={cfg.prove_rounds} · baseline={cfg.baseline}",
+        "",
+    ]
+
+    if s:
+        L += [
+            "### Run metrics (summary)",
+            "",
+            "| metric | value |",
+            "|---|---|",
+            f"| PassVer@1 | {s.get('PassVer@1')} |",
+            f"| verification_pass_ratio | {s.get('verification_pass_ratio')} |",
+            f"| test_case_pass_ratio | {s.get('test_case_pass_ratio')} |",
+            f"| avg_verification_iteration | {s.get('avg_verification_iteration')} |",
+            f"| avg_test_iteration | {s.get('avg_test_iteration')} |",
+            f"| avg_input_token | {s.get('avg_input_token')} |",
+            f"| avg_output_token | {s.get('avg_output_token')} |",
+            f"| total_time (s) | {s.get('total_time')} |",
+            "",
+            "#### Copy-paste row (TSV — paste directly under your spreadsheet header)",
+            "",
+            "```text",
+            "verification_pass_ratio\ttest_case_pass_ratio\tavg_input_token\t"
+            "avg_output_token\ttotal_time\tavg_verification_iter\tavg_test_iter\tPassVer@1",
+            "\t".join(
+                str(s.get(k, ""))
+                for k in (
+                    "verification_pass_ratio",
+                    "test_case_pass_ratio",
+                    "avg_input_token",
+                    "avg_output_token",
+                    "total_time",
+                    "avg_verification_iteration",
+                    "avg_test_iteration",
+                    "PassVer@1",
+                )
+            ),
+            "```",
+            "",
+        ]
+    L += [
+        f"- tokens: {tok.get('total', 0):,} (in {tok.get('input', 0):,} / "
+        f"out {tok.get('output', 0):,}) · calls {tok.get('calls', 0)}",
+        f"- estimated cost: ${metrics.get('cost_usd', 0):.4f}",
+        "",
+    ]
+    by_model = metrics.get("cost_by_model") or {}
+    if len(by_model) > 1:
+        L.append("- cost by model:")
+        for m, agg in sorted(by_model.items()):
+            L.append(
+                f"  - `{m}`: {agg['calls']} call(s), "
+                f"{agg['input'] + agg['output']:,} tok, ${agg['cost_usd']:.4f}"
+            )
+        L.append("")
+
+    d = metrics.get("dafny") or {}
+    if d:
+        L += [
+            "### Dafny proof tier",
+            "",
+            f"- proved {d.get('n_verified', 0)}/{d.get('n_features', 0)} features "
+            f"(rate {d.get('verification_rate', 0)})",
+            "",
+            "| feature | result | rounds | axioms |",
+            "|---|---|---|---|",
+        ]
+        for f in d.get("features", []):
+            mark = "PROVED" if f["verified"] else "unproved"
+            L.append(f"| {f['feature_id']} | {mark} | {f['rounds']} | {f.get('axioms', 0)} |")
+        L.append("")
+
+    cert = metrics.get("certification") or {}
+    if cert:
+        L += ["### Certification (pass@k)", ""]
+        for k, v in (cert.get("aggregate_pass_at") or {}).items():
+            L.append(f"- {k}: {v:.3f}")
+        L += [
+            f"- case pass rate: {cert.get('aggregate_case_pass_rate', 0):.3f}",
+            f"- pass@1 FR ids: {cert.get('pass_at_1_fr_ids') or '(none)'}",
+            "",
+        ]
+
+    rec = metrics.get("recovery") or {}
+    if rec:
+        L += [
+            "### Recovery loops (full metrics per iteration)",
+            "",
+            "| loop | targeted | reproved | still failing | pass@1 | PassVer@1 | case_pass | proved FRs | certified FRs |",
+            "|---|---|---|---|---|---|---|---|---|",
+        ]
+        for lp in rec.get("loops", []):
+            tot = lp.get("total_frs", "?")
+            L.append(
+                f"| {lp['loop']} | {lp['targeted']} | {lp['reproved'] or '—'} | "
+                f"{lp['still_failing'] or '—'} | {lp['pass_at_1']} | "
+                f"{lp.get('passver_at_1', '—')} | {lp.get('case_pass_rate', '—')} | "
+                f"{lp.get('proved_frs', '—')}/{tot} | {lp.get('certified_frs', '—')}/{tot} |"
+            )
+        L += [
+            "",
+            f"- re-proved (now ship from Dafny): {rec.get('repaired_by_proof') or '(none)'}",
+            f"- repaired-with-tests (clean-room relaxed): {rec.get('repaired_by_tests') or '(none)'}",
+            f"- still UNCERTIFIED: {rec.get('uncertified') or '(none)'}",
+            "",
+        ]
+
+    labels = dict(rec.get("labels") or {})
+    if not labels:  # no recovery this run — synthesize from proved set
+        for fid in sorted(metrics.get("proved_feature_ids") or []):
+            labels[fid] = "PROVED"
+    if labels:
+        L += ["### Final per-feature outcome", "", "| feature | outcome |", "|---|---|"]
+        for fid, lab in sorted(labels.items()):
+            L.append(f"| {fid} | {lab} |")
+        L.append("")
+    L += [f"- proved feature ids: {metrics.get('proved_feature_ids') or '(none)'}", ""]
+
+    with dest.open("a") as fh:
+        fh.write("\n".join(L) + "\n")
+
+
 def _persist_run_artifacts(
     metrics: dict,
     *,
@@ -600,6 +793,7 @@ def _persist_run_artifacts(
 
 
 def main() -> None:
+    # ===== CLI definition: target, per-agent ON/OFF switches, per-stage models, tuning knobs =====
     parser = argparse.ArgumentParser(description="Run the full Agentic Cleanroom pipeline on an SRS document.")
     parser.add_argument("srs_path", type=Path, help="Path to the SRS XML document")
     parser.add_argument("--output-dir", type=Path, default=Path("outputs"), help="Where to write artifacts")
@@ -626,15 +820,19 @@ def main() -> None:
     parser.add_argument("--stack", default="auto", choices=["auto", "python", "fastapi"],
                         help="Python sub-stack: 'auto' (default, from the SRS), 'python', or 'fastapi'. "
                              "Ignored when --language java.")
-    # Per-stage model selection (each stage can run a different model; mixed-model cost is priced
-    # accurately). Defaults: every stage on gpt-4o-mini, proof on gpt-4.1.
-    parser.add_argument("--spec-model", default=DEFAULT_MODEL, help="Model for the Spec/contracts stage.")
-    parser.add_argument("--dependency-model", default=DEFAULT_MODEL, help="Model for the Dependency stage.")
-    parser.add_argument("--planning-model", default=DEFAULT_MODEL, help="Model for the Planning stage.")
-    parser.add_argument("--code-model", default=DEFAULT_MODEL, help="Model for the Code Agent.")
-    parser.add_argument("--test-model", default=DEFAULT_MODEL, help="Model for the Test Agent.")
-    parser.add_argument("--proof-model", default=DAFNY_MODEL, help="Model for the Dafny proof tier (needs a strong model).")
-    parser.add_argument("--cert-model", default=DEFAULT_MODEL, help="Model for certification code samples / recovery regen.")
+    # Model selection. The simplest path is --model, which runs EVERY stage (proof included) on one
+    # model. The per-stage flags below override individual stages and always win over --model.
+    # With no model flags at all: every stage uses DEFAULT_MODEL, and the proof tier uses DAFNY_MODEL.
+    parser.add_argument("--model", default=None,
+                        help="Single model for ALL stages (proof included) — shorthand for setting "
+                             "every --*-model at once. Per-stage flags below override it.")
+    parser.add_argument("--spec-model", default=None, help="Override model for the Spec/contracts stage.")
+    parser.add_argument("--dependency-model", default=None, help="Override model for the Dependency stage.")
+    parser.add_argument("--planning-model", default=None, help="Override model for the Planning stage.")
+    parser.add_argument("--code-model", default=None, help="Override model for the Code Agent.")
+    parser.add_argument("--test-model", default=None, help="Override model for the Test Agent.")
+    parser.add_argument("--proof-model", default=None, help="Override model for the Dafny proof tier (needs a strong model).")
+    parser.add_argument("--cert-model", default=None, help="Override model for certification samples / recovery regen.")
     parser.add_argument("--prove", action=argparse.BooleanOptionalAction, default=False,
                         help="Dafny proof tier: prove each feature's logic where possible "
                              "(needs a `dafny` binary + gpt-4.1). Proved features compile to native "
@@ -666,6 +864,7 @@ def main() -> None:
                              "and temperature 0 — a plain spec→code→test(→pass@k) baseline to A/B "
                              "against the full prove-or-test pipeline.")
     args = parser.parse_args()
+    command = "python run_pipeline.py " + " ".join(sys.argv[1:])
 
     if not args.srs_path.exists():
         parser.error(f"SRS file not found: {args.srs_path}")
@@ -674,6 +873,9 @@ def main() -> None:
         print("ERROR: No LLM API key found. Set OPENAI_API_KEY or OPENROUTER_API_KEY in .env.")
         sys.exit(1)
 
+    # ===== Execute: run the pipeline → persist artifacts → append the model-comparison ledger =====
+    # On success we write the IR, run report, per-run record, and the cross-model metric ledger.
+    # On failure we still persist whatever partial metrics were collected (status="failed").
     metrics: dict | None = None
     cfg = RunConfig.from_args(args)
     try:
@@ -692,6 +894,7 @@ def main() -> None:
             output_dir=args.output_dir,
             srs_stem=args.srs_path.stem,
         )
+        append_metric_record(metrics, cfg, command, status="complete")
         _banner("DONE", "Run complete")
         print(f"IR        : {dest}")
         print(f"Report    : {report}")
@@ -721,6 +924,7 @@ def main() -> None:
             output_dir=args.output_dir,
             srs_stem=args.srs_path.stem,
         )
+        append_metric_record(partial, cfg, command, status="failed")
         print(f"Run record: {recorded['markdown']}  (partial)")
         print(f"Usage log : {recorded['usage_log']}  (partial tokens recorded)")
         raise

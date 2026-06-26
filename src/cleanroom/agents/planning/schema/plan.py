@@ -1,11 +1,36 @@
+import json
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from src.cleanroom.agents.spec_agent.schema.ir import BehavioralContract
 
 
-class Contract(BaseModel):
+class _JsonStrFields(BaseModel):
+    """Mixin: coerce the `*_json` fields that hold JSON-as-a-string.
+
+    These fields are typed `str` (they carry serialized JSON), but capable models — Sonnet,
+    GPT-5, etc. — naturally return *real* JSON for them (e.g. the list ``[{"id": 1}]`` instead
+    of the string ``'[{"id": 1}]'``). That fails strict `str` validation and the whole structured
+    call comes back unparsed (a None that then crashes the agent). We json.dumps any non-string
+    value back into a string so validation passes regardless of how the model formatted it.
+    """
+
+    @field_validator(
+        "example_inputs_json", "expected_return_json", "failure_inputs_json",
+        mode="before", check_fields=False,
+    )
+    @classmethod
+    def _coerce_json_to_str(cls, v):
+        if isinstance(v, str):
+            return v
+        try:
+            return json.dumps(v)
+        except (TypeError, ValueError):
+            return str(v)
+
+
+class Contract(_JsonStrFields):
     """An implementation contract for ONE functional requirement.
 
     Built by attaching implementation metadata to the spec-derived behavioral contract.
@@ -70,7 +95,7 @@ class ArgDoc(BaseModel):
     description: str = Field(description="What this parameter is and any constraints on it")
 
 
-class FRPlan(BaseModel):
+class FRPlan(_JsonStrFields):
     id: str = Field(description="The requirement id, echoed VERBATIM from the input — never changed or invented")
     signature: str = Field(description="One-line function signature in Python syntax: name, typed params, "
                            "return type. Canonical, language-neutral interface — codegen realizes it in the "

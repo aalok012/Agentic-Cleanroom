@@ -1,10 +1,24 @@
+import json
 from typing import ClassVar, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class TestCase(BaseModel):
     __test__: ClassVar[bool] = False
+
+    # Capable models often return real JSON (dict/list) for these JSON-as-string fields instead of
+    # a string; coerce non-strings back to a JSON string so strict `str` validation doesn't fail
+    # the whole structured call (which would surface as a None and crash the test stage).
+    @field_validator("inputs_json", "expected_json", "setup_json", mode="before", check_fields=False)
+    @classmethod
+    def _coerce_json_to_str(cls, v):
+        if isinstance(v, str):
+            return v
+        try:
+            return json.dumps(v)
+        except (TypeError, ValueError):
+            return str(v)
 
     requirement_id: str = Field(description="The requirement this case verifies, e.g. '2.2.1'")
     description: str = Field(description="What behavior is being checked")
