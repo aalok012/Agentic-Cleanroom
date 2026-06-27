@@ -61,7 +61,7 @@ from src.cleanroom.utils.code_stats import code_stats
 from src.cleanroom.utils.cost import estimate_cost_by_model
 from src.cleanroom.config import LANGUAGES, RunConfig
 from src.cleanroom.utils.llm_client import get_llm, llm_api_key_configured
-from src.cleanroom.utils.dafny_project import compile_dafny, scaffold_dafny_project, stage_dafny_cores
+from src.cleanroom.utils.dafny_project import compile_dafny, scaffold_dafny_project
 from src.cleanroom.utils.packager import build_runnable_package
 from src.cleanroom.utils.stack_select import select_stack
 from src.cleanroom.utils.ir import normalize_ir
@@ -229,8 +229,15 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     # Done here, after contracts exist, so the classifier can read preconditions. The
     # chosen stack drives planning signatures, codegen shape, packaging and certification.
     if language == "java":
-        stack = "java"
-        print(f"Language  : java   (stack: java, tests: JUnit)")
+        # Java sub-stack already resolved in RunConfig (plain 'java' or 'spring'); never auto-select.
+        stack = stack if stack in ("java", "spring") else "java"
+        _java_desc = ("spring (Spring Boot web), tests: JUnit+MockMvc" if stack == "spring"
+                      else "java (plain), tests: JUnit")
+        print(f"Language  : java   (stack: {_java_desc})")
+    elif language == "javascript":
+        # Single JS stack (Node/Express + SQLite); never auto-select.
+        stack = "express"
+        print("Language  : javascript   (stack: express — Node/Express + SQLite, tests: Jest)")
     elif stack == "auto":
         stack, reason = select_stack(ir)
         print(f"Stack     : {stack}  (auto-selected — {reason})")
@@ -278,6 +285,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     proved_feature_ids: set[str] = set()
     proved_modules: dict[str, str] = {}        # feature_id -> Dafny module base (e.g. "F4_1")
     proved_sources: dict[str, str] = {}        # feature_id -> Dafny source
+    proved_compiled_ids: set[str] = set()      # proved features whose Dafny ALSO translated to native
     proj = None
     if prove:
         _banner("[4a]", "Dafny Proof Agent — proving feature logic (formal verification)")
@@ -310,15 +318,26 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             }
             comp = _timed("compile", stages, lambda: compile_dafny(proj, gen, target=prove_target))
             metrics["compile"] = comp
+            proved_compiled_ids = {c["feature_id"] for c in comp.get("compiled", [])}
             print(f"Compiled  : {len(comp['compiled'])}/{nver} proved features to {comp.get('target', prove_target)}")
             ir = {**ir, "generated_dafny": gen.model_dump(),
                   "proved_feature_ids": sorted(proved_feature_ids)}
 
-    # Adapter shipping (Dafny core + thin glue) is the FastAPI design; proved features there ship
-    # from Dafny and are excluded from pass@k. On the python stack --prove is proof-only (extra
-    # certification) and code/test proceed normally for every feature.
-    adapter_mode = bool(proved_feature_ids) and stack == "fastapi"
-    cert_skip = set(proved_feature_ids) if adapter_mode else set()
+    # Adapter shipping (Dafny core + thin glue) ships proved features FROM Dafny and excludes them
+    # from pass@k. Supported on FastAPI (compiled-to-Python core + Python adapter) and Spring
+    # (translated-to-Java core staged into the Maven build + a @RestController adapter). On the
+    # plain python/java stacks --prove is proof-only and code/test proceed normally for every
+    # feature. For Spring we only adapt features whose Dafny ALSO translated to Java successfully —
+    # a proved-but-untranslated feature would leave its adapter with no core to call (and the
+    # build-check compiles the whole project), so those fall back to normal codegen + cert.
+    if stack == "fastapi":
+        adapter_feature_ids = set(proved_feature_ids)
+    elif stack == "spring":
+        adapter_feature_ids = set(proved_feature_ids) & proved_compiled_ids
+    else:
+        adapter_feature_ids = set()
+    adapter_mode = bool(adapter_feature_ids)
+    cert_skip = set(adapter_feature_ids)
 
     # --- Stage 4: Code (LLM) — adapters over proved cores + full code for the rest ----
     _banner("[4]", "Code Agent — generating MVC code from the spec")
@@ -327,13 +346,13 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     if adapter_mode:
         from src.cleanroom.agents.code.schema.code import GeneratedCode
         adapters = []
-        for fid in sorted(proved_feature_ids):
+        for fid in sorted(adapter_feature_ids):
             adapters.append(_timed(
                 "adapter", stages,
                 lambda fid=fid: code_agent.generate_adapter(
                     ir, fid, proved_modules[fid], proved_sources[fid])))
         full = _timed("code", stages,
-                      lambda: code_agent.generate(ir, skip_feature_ids=proved_feature_ids))
+                      lambda: code_agent.generate(ir, skip_feature_ids=adapter_feature_ids))
         generated_code = GeneratedCode(files=adapters + full.files)
         print(f"  {len(adapters)} proved feature(s) shipped as Dafny-core adapters; "
               f"{len(full.files)} file(s) generated for the rest.")
@@ -344,22 +363,36 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     stat = metrics["code"]
     if language == "java":
         metrics["code"]["language"] = "Java"   # code_stats labels by Python AST; override
+    elif language == "javascript":
+        metrics["code"]["language"] = "JavaScript"   # code_stats labels by Python AST; override
     if stack == "fastapi":
         app_dir = build_runnable_package(ir["generated_code"], code_dir)
         metrics["code"]["runnable_app"] = str(app_dir)
         if adapter_mode and proj is not None:
-            staged = stage_dafny_cores(Path(app_dir), proj,
-                                       [proved_modules[fid] for fid in sorted(proved_feature_ids)])
+            staged = code_agent.target.stage_cores(
+                Path(app_dir), proj, [proved_modules[fid] for fid in sorted(adapter_feature_ids)])
             metrics["code"]["dafny_cores"] = staged
             print(f"  Staged proved Dafny cores {staged['staged']} + shim into {staged['cores_dir']}")
         print(f"{stat['files']} file(s); {stat['lines_of_code']} LOC ({stat['language']}); "
               f"layers={stat['files_per_layer']}")
         print(f"Assembled runnable FastAPI app: {app_dir}  (cd \"{code_dir}\" && python -m app)")
     else:
-        # python (flat functions) or java (src/*.java) — the target picks the layout.
-        code_agent.target.package_sample(ir["generated_code"], code_dir, stack)
+        # python (flat functions), plain java (src/*.java), or spring (a Maven project) — the
+        # target picks the layout.
+        proj_dir = code_agent.target.package_sample(ir["generated_code"], code_dir, stack)
         print(f"Wrote {stat['files']} file(s); {stat['lines_of_code']} LOC "
               f"({stat['language']}); layers={stat['files_per_layer']}")
+        if stack == "spring":
+            metrics["code"]["runnable_app"] = str(proj_dir or code_dir)
+            if adapter_mode and proj is not None:
+                staged = code_agent.target.stage_cores(
+                    proj_dir or code_dir, proj,
+                    [proved_modules[fid] for fid in sorted(adapter_feature_ids)])
+                metrics["code"]["dafny_cores"] = staged
+                print(f"  Staged translated Dafny Java cores {staged['staged']} into "
+                      f"{staged.get('java_src', proj_dir)}")
+            print(f"Assembled runnable Spring Boot project: {proj_dir or code_dir}  "
+                  f"(cd \"{proj_dir or code_dir}\" && mvn spring-boot:run)")
 
     # --- Stage 5: Test (LLM) -------------------------------------------------
     # The Test Agent reads only ir['features']; the generated_code in the IR is
@@ -378,13 +411,14 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
         written_tests = TestAgent.write_files(generated_tests, tests_dir, language=language)
         total_cases = sum(len(f.cases) for f in generated_tests.features)
         metrics["tests"] = {"features": len(generated_tests.features), "cases": total_cases}
-        _fw = "JUnit" if language == "java" else "pytest"
+        _fw = ("JUnit+MockMvc" if stack == "spring" else "JUnit") if language == "java" else (
+            "Jest" if language == "javascript" else "pytest")
         print(f"{len(generated_tests.features)} feature(s), {total_cases} test case(s).")
         print(f"Wrote {len(written_tests)} {_fw} module(s) to {tests_dir}")
 
     # --- Stage 6: Certification (optional) — pass@k for the UN-proved (test fallback) --
     from src.cleanroom.targets import get_target as _get_target
-    if certify and not _get_target(language).oracle_available():
+    if certify and not _get_target(language, stack).oracle_available():
         _banner("[6]", "Certification — SKIPPED (no executable oracle for this target)")
         print(f"  No executable oracle for language='{language}' (e.g. javac/JDK missing) — "
               f"code + tests were generated, but pass@k is unavailable.")
@@ -403,7 +437,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
                 case_timeout=cfg.case_timeout,
                 skip_feature_ids=cert_skip,
                 dafny_proj=proj if adapter_mode else None,
-                dafny_modules=[proved_modules[fid] for fid in sorted(proved_feature_ids)] if adapter_mode else None,
+                dafny_modules=[proved_modules[fid] for fid in sorted(adapter_feature_ids)] if adapter_mode else None,
             ).run(ir),
         )
         ir = {**ir, "certification": cert.model_dump()}
@@ -799,7 +833,8 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, default=Path("outputs"), help="Where to write artifacts")
     parser.add_argument("--language", default="python", choices=list(LANGUAGES),
                         help="Target language for code + tests (default: python). "
-                             "'java' → Java code + JUnit tests (stack fixed to java).")
+                             "'java' → Java code + JUnit tests. With --language java the Java "
+                             "sub-stack is 'java' (plain) by default, or 'spring' for Spring Boot.")
     # --- Per-agent ON/OFF switches (compose any arm). Required agents — Spec, Planning, Code —
     #     have no switch: they are the irreducible spec→code task given to every arm. ---
     parser.add_argument("--dependency", action=argparse.BooleanOptionalAction, default=True,
@@ -817,9 +852,10 @@ def main() -> None:
                              "Pass a higher N with explicit --k for a multi-sample estimate.")
     parser.add_argument("--k", type=int, nargs="+", default=None, metavar="K",
                         help="pass@k values to report (default: 1). e.g. --k 1 3")
-    parser.add_argument("--stack", default="auto", choices=["auto", "python", "fastapi"],
-                        help="Python sub-stack: 'auto' (default, from the SRS), 'python', or 'fastapi'. "
-                             "Ignored when --language java.")
+    parser.add_argument("--stack", default="auto", choices=["auto", "python", "fastapi", "java", "spring", "express"],
+                        help="Sub-stack within a language. Python: 'auto' (default, from the SRS), "
+                             "'python', or 'fastapi'. Java: 'java' (plain, default) or 'spring' "
+                             "(Spring Boot web). 'auto' under --language java resolves to plain java.")
     # Model selection. The simplest path is --model, which runs EVERY stage (proof included) on one
     # model. The per-stage flags below override individual stages and always win over --model.
     # With no model flags at all: every stage uses DEFAULT_MODEL, and the proof tier uses DAFNY_MODEL.

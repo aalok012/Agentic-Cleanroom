@@ -141,6 +141,117 @@ _HTTP_RUNNER_SCRIPT = textwrap.dedent(
 )
 
 
+_JS_RUNNER_SCRIPT = textwrap.dedent(
+    """
+    'use strict';
+    const path = require('path');
+    const codeRoot = process.argv[1];
+    const filePath = process.argv[2];
+    const funcName = process.argv[3];
+    const inputsJson = process.argv[4];
+    const expectedJson = process.argv[5];
+    const oracle = process.argv[6];
+
+    function canon(v) {
+      if (Array.isArray(v)) return v.map(canon);
+      if (v && typeof v === 'object') {
+        const o = {};
+        for (const k of Object.keys(v).sort()) o[k] = canon(v[k]);
+        return o;
+      }
+      return v;
+    }
+    function eq(a, b) { return JSON.stringify(canon(a)) === JSON.stringify(canon(b)); }
+    function out(pass, reason) {
+      console.log(JSON.stringify({ pass: pass, reason: String(reason) }));
+      process.exit(0);
+    }
+
+    let mod;
+    try {
+      mod = require(path.resolve(codeRoot, filePath));
+    } catch (e) {
+      out(false, 'cannot load ' + filePath + ': ' + ((e && e.message) || e));
+    }
+    let fn = mod && mod[funcName];
+    if (typeof fn !== 'function') {
+      fn = mod && Object.values(mod).find((x) => typeof x === 'function');
+    }
+    if (typeof fn !== 'function') {
+      out(false, 'function ' + funcName + ' not found in ' + filePath);
+    }
+
+    let inputs;
+    try { inputs = JSON.parse(inputsJson); } catch (e) { out(false, 'bad inputs json'); }
+
+    try {
+      if (oracle === 'raises') {
+        let threw = false;
+        try { fn(inputs); } catch (e) { threw = true; }
+        out(threw, threw ? 'threw' : 'expected throw but none');
+      } else {
+        const result = fn(inputs);
+        const expected = JSON.parse(expectedJson);
+        const ok = eq(result, expected);
+        out(ok, ok ? 'match'
+          : ('got ' + JSON.stringify(canon(result)) + ', expected ' + JSON.stringify(canon(expected))));
+      }
+    } catch (e) {
+      out(false, 'execution error: ' + ((e && e.message) || e));
+    }
+    """
+)
+
+
+def run_case_js(code_dir: Path, plan: dict, case: dict, timeout: float = 30.0) -> tuple[bool, str]:
+    """In-process JS oracle: load the generated module under Node and call the contract function.
+
+    Mirrors the Python ``run_case`` executable oracle — the generated FR module exports a PURE,
+    stdlib-only function named per the contract, so Node can ``require`` it and call it directly
+    (no Express, no DB, no ``npm install``). The function takes a single object argument (the
+    inputs JSON). Gracefully reports when Node is absent.
+    """
+    from src.cleanroom.utils.js_tooling import node_path
+    from src.cleanroom.utils.js_packager import js_file_path
+
+    node = node_path()
+    if node is None:
+        return False, "node not found (install Node.js or set $NODE)"
+
+    func_name = func_name_from_signature(plan.get("signature", ""))
+    if not func_name:
+        return False, "no function name in signature"
+
+    file_path = js_file_path(plan.get("file_path", ""))
+    inputs_json = case.get("inputs_json") or "{}"
+    expected_json = case.get("expected_json") or "null"
+    oracle = case.get("oracle") or "eq"
+
+    try:
+        json.loads(inputs_json)
+        json.loads(expected_json)
+    except json.JSONDecodeError as exc:
+        return False, f"invalid test JSON: {exc}"
+
+    try:
+        proc = subprocess.run(
+            [node, "-e", _JS_RUNNER_SCRIPT, str(code_dir), file_path, func_name,
+             inputs_json, expected_json, oracle],
+            capture_output=True, text=True, timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return False, f"node timed out after {timeout:.0f}s"
+    except (OSError, subprocess.SubprocessError) as exc:
+        return False, f"node error: {str(exc)[:200]}"
+
+    line = proc.stdout.strip().splitlines()[-1] if proc.stdout.strip() else ""
+    try:
+        payload = json.loads(line)
+    except json.JSONDecodeError:
+        return False, (proc.stderr or proc.stdout or "no result")[:300]
+    return bool(payload.get("pass")), str(payload.get("reason", ""))
+
+
 def route_from_file_path(file_path: str) -> str:
     """The HTTP route the packager registers for a generated module.
 
@@ -269,6 +380,52 @@ def run_case_java(code_dir: Path, plan: dict, case: dict, timeout: float = 30.0)
     if proc.returncode != 0:
         return False, "javac: " + (proc.stderr or proc.stdout or "compile failed").strip()[:300]
     return True, "compiled OK (v1 oracle: javac compile-check; JUnit execution deferred)"
+
+
+# Cache the build verdict per assembled project dir: the build outcome is independent of the
+# individual test case, so we compile each sample's Spring project once and reuse the verdict for
+# all of its cases (mirrors how run_case_java's compile-check is identical across cases).
+_SPRING_BUILD_CACHE: dict[str, tuple[bool, str]] = {}
+
+
+def run_case_spring(code_dir: Path, plan: dict, case: dict, timeout: float = 180.0) -> tuple[bool, str]:
+    """v1 Spring oracle: build the assembled Maven Spring Boot project with Maven → (passed, reason).
+
+    A clean ``mvn compile`` means the isolated controllers assembled into a well-typed Spring app
+    (component scanning + Spring Web on the classpath). The build outcome is the same for every
+    case of a sample, so it is computed once per project dir and cached. In-process MockMvc HTTP
+    execution of each case is a documented follow-up (needs the app booted on a random port and a
+    JSON-marshalling harness); gracefully reports when Maven/JDK is absent.
+    """
+    from src.cleanroom.utils.maven_tooling import mvn_path
+
+    key = str(Path(code_dir).resolve())
+    if key in _SPRING_BUILD_CACHE:
+        return _SPRING_BUILD_CACHE[key]
+
+    mvn = mvn_path()
+    if mvn is None:
+        return False, "mvn not found (set $MVN or install Maven)"
+    if not (Path(code_dir) / "pom.xml").is_file():
+        return False, "no pom.xml — Spring project was not assembled"
+
+    cmd = [mvn, "-B", "-q", "-Dstyle.color=never", "compile"]
+    try:
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=str(code_dir))
+    except subprocess.TimeoutExpired:
+        result = (False, f"mvn compile timed out after {timeout:.0f}s")
+        _SPRING_BUILD_CACHE[key] = result
+        return result
+    except (OSError, subprocess.SubprocessError) as exc:
+        return False, f"mvn error: {str(exc)[:200]}"
+
+    if proc.returncode != 0:
+        tail = (proc.stdout or "") + (proc.stderr or "")
+        result = (False, "mvn compile: " + tail.strip()[-300:])
+    else:
+        result = (True, "built OK (v1 oracle: mvn compile-check; MockMvc HTTP execution deferred)")
+    _SPRING_BUILD_CACHE[key] = result
+    return result
 
 
 def run_pytest_module(code_dir: Path, test_file: Path, timeout: float = 60.0) -> tuple[bool, str]:

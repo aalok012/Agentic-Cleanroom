@@ -27,6 +27,19 @@ class LanguageTarget:
         """Test-informed regeneration in the recovery loop (Python path)."""
         return "regenerate_with_feedback.j2"
 
+    # --- Dafny-core adapter (proved features ship from Dafny + thin glue) ---
+    def adapter_file_path(self, feature_id: str) -> str:
+        """Path (relative to the code dir) for a feature's proved-core adapter file."""
+        return f"controllers/f{feature_id.replace('.', '_')}_adapter.py"
+
+    def stage_cores(self, app_dir: Path, project_dir: Path, modules: list[str]) -> dict:
+        """Stage the compiled Dafny cores (+ any shim) into an assembled app so adapters resolve.
+
+        Default = the FastAPI/Python path (compiled ``<module>-py`` dirs + ``dafny_marshal``)."""
+        from src.cleanroom.utils.dafny_project import stage_dafny_cores
+
+        return stage_dafny_cores(Path(app_dir), Path(project_dir), modules)
+
     def test_template(self) -> str:
         return "generate_tests.j2"
 

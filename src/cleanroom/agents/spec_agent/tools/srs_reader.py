@@ -253,6 +253,106 @@ def build_peppol_normative_features(tree: list[dict]) -> list[dict]:
     return [features[k] for k in order if features[k]["functional_requirements"]]
 
 
+def build_userclass_features(root) -> list[dict]:
+    """SRS variant: ``<SRS><FunctionalRequirements>`` grouping ``<UserClass>`` blocks of
+    ``<Requirement>`` (e.g. kinmail).
+
+    Example::
+
+        <FunctionalRequirements>
+          <UserClass id="1" name="Non Registered Users">
+            <Requirement id="4.1.1"><Title>..</Title><Desc>..</Desc></Requirement>
+
+    Each ``<UserClass>`` becomes a feature; each ``<Requirement>`` is one FR — id from the
+    ``id`` attribute, text from ``<Desc>`` (falling back to all descendant text). If there is
+    no ``<UserClass>`` grouping, the whole ``<FunctionalRequirements>`` block is one feature.
+    """
+    fr = root.find(".//FunctionalRequirements")
+    if fr is None:
+        return []
+
+    features: list[dict] = []
+    classes = [c for c in fr if _strip_ns(c.tag) == "UserClass"]
+    groups = classes or [fr]
+    for grp in groups:
+        feature_id = grp.get("id") or str(len(features) + 1)
+        name = grp.get("name") or grp.get("id") or feature_id
+        reqs: list[dict] = []
+        for req in grp.iter():
+            if _strip_ns(req.tag) != "Requirement":
+                continue
+            desc_el = next((e for e in req if _strip_ns(e.tag) == "Desc"), None)
+            src = desc_el if desc_el is not None else req
+            text = _clean("".join(src.itertext()))
+            if text:
+                reqs.append({"id": req.get("id") or f"{feature_id}.REQ-{len(reqs) + 1}", "text": text})
+        if reqs:
+            features.append({
+                "id": feature_id,
+                "name": name,
+                "description": "",
+                "functional_requirements": reqs,
+            })
+    return features
+
+
+def _is_modules_fr_section(title: str) -> bool:
+    """A section whose title CONTAINS 'functional requirements' but is not the non-functional
+    list (e.g. 'Description of the Modules and Functional Requirements')."""
+    t = _clean(title).lower()
+    return "functional requirements" in t and "non-functional" not in t and "non functional" not in t
+
+
+def build_module_section_features(tree: list[dict]) -> list[dict]:
+    """Last-resort ``req_document`` fallback (e.g. cctns).
+
+    Used only when no exact "Functional Requirements" section exists. Finds a section whose
+    title CONTAINS "functional requirements" and treats each of its child ``<p>`` nodes as a
+    module/feature: the module's prose body becomes ``<id>.REQ-1`` and any nested ``<p>``
+    bodies / itemize items become further requirements.
+    """
+    features: list[dict] = []
+
+    def module_to_feature(mod: dict) -> dict | None:
+        reqs: list[dict] = []
+        for idx, item in enumerate(mod.get("items", []), start=1):
+            label, text = _parse_req_item(item)
+            if text:
+                reqs.append({"id": f"{mod['id']}.{label or f'REQ-{idx}'}", "text": text})
+        body = _clean(mod.get("body", ""))
+        if body and not any(r["text"] == body for r in reqs):
+            reqs.insert(0, {"id": f"{mod['id']}.REQ-1", "text": body})
+        for child in mod.get("children", []):
+            ctext = _clean(child.get("body") or child.get("title") or "")
+            if ctext:
+                reqs.append({"id": child["id"], "text": ctext})
+        if not reqs:
+            return None
+        return {
+            "id": mod["id"],
+            "name": mod.get("title") or mod["id"],
+            "description": body,
+            "functional_requirements": reqs,
+        }
+
+    seen: set[str] = set()
+
+    def walk(node: dict) -> None:
+        # Check the node itself: a modules section can be a top-level root or nested.
+        if _is_modules_fr_section(node.get("title", "")):
+            for mod in node.get("children", []):
+                feat = module_to_feature(mod)
+                if feat and feat["id"] not in seen:
+                    seen.add(feat["id"])
+                    features.append(feat)
+        for child in node.get("children", []):
+            walk(child)
+
+    for root in tree:
+        walk(root)
+    return features
+
+
 def build_system_requirements_features(root) -> list[dict]:
     """Parse SRS variants that declare features directly under ``SystemRequirements``.
 
@@ -339,7 +439,16 @@ class SRSReader:
         features = build_system_requirements_features(root)
         if features:
             return features
-        return build_peppol_normative_features(tree)
+        # <SRS><FunctionalRequirements><UserClass><Requirement> (e.g. kinmail).
+        features = build_userclass_features(root)
+        if features:
+            return features
+        features = build_peppol_normative_features(tree)
+        if features:
+            return features
+        # Last resort: a "… Modules and Functional Requirements" section of prose modules
+        # (e.g. cctns). Only reached when nothing above matched, so working SRS are untouched.
+        return build_module_section_features(tree)
 
 
 if __name__ == "__main__":

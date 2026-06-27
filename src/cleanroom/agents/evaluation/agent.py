@@ -22,7 +22,6 @@ from src.cleanroom.agents.code.agent import CodeAgent
 from src.cleanroom.agents.code.schema.code import GeneratedCode, GeneratedFile
 from src.cleanroom.agents.evaluation.metric import pass_at_k
 from src.cleanroom.targets import get_target
-from src.cleanroom.utils.dafny_project import stage_dafny_cores
 from src.cleanroom.agents.planning.agent import PlanningAgent
 from src.cleanroom.agents.evaluation.schema.certification import (
     CertificationResult,
@@ -63,7 +62,7 @@ class CertificationAgent:
         self.code_llm = code_llm if code_llm is not None else get_llm(temperature=temperature)
         self.stack = stack
         self.language = language
-        self.target = get_target(language)
+        self.target = get_target(language, stack)
         self.use_pipeline_sample = use_pipeline_sample
         self.case_timeout = case_timeout
 
@@ -193,7 +192,9 @@ class CertificationAgent:
         cores + the marshalling shim so the app boots (otherwise `import dafny_marshal` fails)."""
         app_dir = self.target.package_sample(sample.model_dump(), code_dir, self.stack)
         if app_dir is not None and self.dafny_proj and self.dafny_modules:
-            stage_dafny_cores(Path(app_dir), self.dafny_proj, self.dafny_modules)
+            # Route through the target so the FastAPI (compiled -py + shim) and Spring (translated
+            # Java cores into src/main/java) staging each use their own layout.
+            self.target.stage_cores(Path(app_dir), self.dafny_proj, self.dafny_modules)
 
     @staticmethod
     def _cases_by_fr(tests: dict) -> dict[str, list[dict]]:

@@ -26,6 +26,240 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-26 — Third language target: JavaScript (Node/Express + SQLite), mirroring the Python stack
+
+### Added
+- **Step 1 — `targets/js.py` (`JsTarget`)** + registered in `targets/__init__.py`
+  (`get_target` returns it for `language=="javascript"`). Mirrors the FastAPI/web pattern:
+  Express + SQLite app, Jest tests, in-process executable oracle. Like Java, it ships no
+  Dafny-core adapter in v1 (proof tier still runs for the verification metric).
+- **Step 2 — `utils/js_tooling.py`** (`node_available()` gates the oracle, like `java_available()`)
+  and **`utils/js_packager.py`** (`write_js_sources`: writes each FR module as `.js` + an
+  Express `app.js` with route auto-discovery + a `db.js` SQLite key/value store mirroring the
+  Python adapter's AppState + `package.json`).
+- **Step 3 — Prompts** `agents/code/prompts/generate_code_express.j2` (one pure, stdlib-only
+  CommonJS module per FR, function named per contract, single `args` object param, `throw` on
+  precondition failure) and `agents/test/prompts/generate_tests_jest.j2` (Jest module + the
+  canonical structured `cases`).
+- **Step 4 — `run_case_js` + `_JS_RUNNER_SCRIPT` in `agents/evaluation/runner.py`**: a Node
+  subprocess loads the generated module and calls the function directly (no Express/DB/`npm`),
+  deep-compares JSON (`eq`) or checks a throw (`raises`). The JS analog of the Python `run_case`.
+
+### Changed
+- **Step 5 — `config.py`**: `LANGUAGES` gains `javascript`; `from_args` resolves its stack to
+  `express` and `prove_target` to `py` (compiled cores are unused for JS, and verification_rate is
+  target-independent, so this avoids any dafny-JS-compile risk).
+- **Step 6 — `run_pipeline.py`**: added the `javascript`/`express` branches (language banner,
+  `code.language="JavaScript"` label, `Jest` test-framework label) and `express` to `--stack`
+  choices; **`TestAgent.write_files`** writes `feature_<id>.test.js` for JS. Metrics/run-records are
+  unchanged (language-agnostic), so JS records the SAME metrics as python/java.
+
+### Verified
+- End-to-end without the LLM: config wiring, `get_target("javascript")`, `write_js_sources`, and
+  the Node oracle on a hand-written function — `eq` pass=True, `eq` mismatch=False, `raises`=True;
+  both prompts render; agents construct; `run_pipeline` imports. node v22 + npm 10 present.
+
+### Tooling
+- **Step 7 — Run the matrix for JS**: `./run_matrix.sh javascript express` (4 models in parallel
+  per SRS) → `outputs/matrix/javascript/...`, folded into `experiment_metrics.csv` (`language=javascript`).
+
+---
+
+## 2026-06-26 — SRS reader: support two more SRS schemas (cctns, kinmail)
+
+### Added
+- **Step 1 — `build_userclass_features()` in `srs_reader.py`.** Why: `kinmail_srs.xml`
+  uses a `<SRS><FunctionalRequirements><UserClass id name><Requirement id><Title>/<Desc>`
+  schema that no existing branch understood → 0 features → every cell crashed at the Code
+  Agent. How: each `<UserClass>` becomes a feature, each `<Requirement>` an FR (id from the
+  attribute, text from `<Desc>`).
+- **Step 2 — `build_module_section_features()` in `srs_reader.py`.** Why: `0000 - cctns.xml`
+  is a `req_document` but its section is titled "Description of the Modules and Functional
+  Requirements" (not the exact "Functional Requirements" the reader keys on), with each
+  module's requirement as prose in `<text_body>`. How: a last-resort branch that finds a
+  section whose title *contains* "functional requirements" (excluding non-functional) and
+  treats each child `<p>` module as a feature (prose body → `<id>.REQ-1`). `walk()` inspects
+  the node itself, not just children, so a top-level modules section is matched.
+
+### Changed
+- **Step 3 — Wired both into the `read_features()` fallback chain** (after FR-section and
+  SystemRequirements; userclass before peppol; module-section last). Both are **purely
+  additive** — only reached when all prior branches return 0 features, so the SRS that
+  already parsed are provably untouched.
+
+### Verified
+- **Step 4 — Parsed all 6 SRS.** cctns 0→**7** features, kinmail 0→**2** (13 FRs); the 4
+  working SRS unchanged (gamma j 6, video search 1/7, Human 2, dineout 10/26). Confirmed via
+  `SpecAgent.run` (full IR build) and live in the running pipeline (cctns cell logged
+  "Features : 7"). Safe to edit mid-batch because working files short-circuit earlier.
+
+### Added (tooling)
+- **Step 5 — `rerun_cells.sh`** to backfill a single SRS's 4-model group into the matrix
+  layout without rebuilding the CSV (the main collector folds them in). Used to re-run the
+  cctns Python cells that failed before the fix; kinmail Python (later group) and both Java
+  phases auto-pick-up the fix.
+
+---
+
+## 2026-06-26 — Experiment matrix runner + unified metrics CSV
+
+### Added
+- **Step 1 — Added `scripts/collect_metrics.py`.** Why: there was no single place
+  to compare runs — metrics lived as scattered per-run JSON and markdown ledgers.
+  How: walks `outputs/**/runs/*.json` (the per-run records written by
+  `src/cleanroom/utils/run_record.py`), flattens each into one row, dedupes by
+  `run_id`, and rebuilds `experiment_metrics.csv` at the repo root. Idempotent
+  (full rebuild each call), stdlib-only (`csv`/`json`/`pathlib`). Derives
+  language/srs/model from the path `outputs/<lang>/<srs>/<model>/runs/...` and
+  falls back to the JSON body so older flat layouts still aggregate. Columns
+  cover timing, tokens, cost, code/test counts, Dafny verification rate, and
+  certification pass@1 / case-pass-rate.
+- **Step 2 — Added `run_matrix.sh`.** Why: collect benchmark data across the full
+  SRS × model matrix hands-off, reusable per language. How: fully sequential
+  nested loop over every `data/srs/*.xml` × the Frontier-mix models
+  (`openai/gpt-5.5`, `google/gemini-3.1-pro-preview`, `anthropic/claude-sonnet-4-6`,
+  `deepseek/deepseek-v4-pro`). Each cell runs into an isolated
+  `outputs/<language>/<srs_stem>/<model_safe>/` with its own `--output-dir`,
+  `PIPELINE_LEDGER_FILE`, and `run.log`; flags `--prove --certify --max-cert-loops 4`.
+  A failing cell logs FAIL and the batch continues (partial metrics still recorded).
+  Rebuilds the unified CSV after every cell. Phase-1 default is `python fastapi`;
+  reuse for Java via `./run_matrix.sh java spring`. Mirrors the `tr '/:.' '___'`
+  model-naming and `PIPELINE_LEDGER_FILE` conventions from `run_parallel.sh`.
+
+### Verified
+- **Step 3 — Ran the collector against existing run JSONs.** Aggregated 11 prior
+  runs; completed runs populate all rich columns (code LOC, Dafny rate, pass@1,
+  cost), failed runs degrade to blank cells without crashing.
+
+### Known limitations
+- JS/MERN is not yet a supported pipeline target (`LANGUAGES = ("python", "java")`).
+  `run_matrix.sh` accepts language as an arg, but the JS phase needs a pipeline
+  target added first.
+
+---
+
+## 2026-06-26 — Spring Boot Dafny-core adapters (proved features ship in the Spring build)
+
+Made `--prove --stack spring` actually **ship** the translated Dafny: proved features whose
+Dafny `dafny translate java` succeeded are now staged into the Spring Maven build and exposed
+through a thin `@RestController` adapter (the Java analog of the FastAPI Dafny-core adapter),
+and are excluded from pass@k. Previously the translated Java was produced but left unused in
+the proof dir.
+
+### Added
+- **Step 1 — Target adapter hooks** in [src/cleanroom/targets/base.py](src/cleanroom/targets/base.py):
+  `adapter_file_path(feature_id)` (default Python `controllers/f<fid>_adapter.py`) and
+  `stage_cores(app_dir, project_dir, modules)` (default = FastAPI's `stage_dafny_cores`). Why:
+  let each target own its adapter path + core-staging layout instead of hard-coding the Python
+  one. `SpringBootTarget` ([spring.py](src/cleanroom/targets/spring.py)) overrides
+  `adapter_template` → `generate_adapter_spring.j2`, `adapter_file_path` →
+  `controllers/F<fid>Adapter.java`, `stage_cores` → Java staging; plain `JavaTarget` gets a
+  no-op `stage_cores` (its adapter path is never taken).
+- **Step 2 — `stage_dafny_cores_java`** in [src/cleanroom/utils/dafny_project.py](src/cleanroom/utils/dafny_project.py).
+  Why: get the translated cores onto the Maven compile path. How: replicates each
+  `out/<module>-java/**.java` at its package-relative path under `src/main/java`, **skipping a
+  destination that already exists** — that dedupes the `dafny` runtime that every
+  `--include-runtime` core bundles, so javac never sees a duplicate class.
+- **Step 3 — `generate_adapter_spring.j2`** [prompt](src/cleanroom/agents/code/prompts/generate_adapter_spring.j2).
+  Why: write the Spring glue over the proved core. How: one `@RestController` per feature, no
+  business logic (every transition goes through `<pkg>.__default.Apply/Normalize`), documents
+  Dafny's Java-backend calling conventions (`__default`, `create_<Ctor>`, `DafnySequence`/
+  `DafnyMap`, `BigInteger`), in-memory state (v1, no DB), verbatim `@PostMapping` routes.
+- **Step 4 — Code Agent adapter wiring** in [src/cleanroom/agents/code/agent.py](src/cleanroom/agents/code/agent.py):
+  adapter path now comes from `target.adapter_file_path`, and the prompt context carries the
+  Java core package (`module`/`core_java_package`) + a per-contract `route`.
+
+### Changed
+- **Step 5 — Pipeline adapter routing** in [run_pipeline.py](run_pipeline.py): `adapter_mode`
+  is now true for `fastapi` OR `spring`; for Spring only `proved ∩ proved_compiled_ids` become
+  adapters+`cert_skip` (a proved-but-untranslated feature would leave its adapter with no core
+  to call and the build-check compiles the whole project, so it safely falls back to normal
+  codegen + cert). Staging now goes through `target.stage_cores`; the Spring branch stages the
+  Java cores into the Maven project and records `dafny_cores`. The certification sample writer
+  ([evaluation/agent.py](src/cleanroom/agents/evaluation/agent.py)) routes staging through
+  `self.target.stage_cores` too, so each sample app boots with its cores.
+- **Step 6 — Robustness fix:** the adapter context now coalesces a present-but-`None`
+  behavioral contract (`c.get("contract") or {}`) — previously `.get("contract", {})` returned
+  `None` and the FastAPI/Spring adapter templates raised `'None' has no attribute 'get'`.
+
+### Verified
+- Token-free: target/adapter-hook routing, `prove_target=java` for spring, the
+  proved∩compiled gating, `stage_dafny_cores_java` (incl. shared-runtime **dedup** across two
+  cores + missing-core reporting), Spring adapter prompt rendering with the agent's real
+  context, and end-to-end `generate_adapter` (fake LLM) → spring packager placement (correct
+  sub-package, core call survives packaging). `py_compile` clean across all touched modules.
+- **Not run live** (host has no `dafny`/`mvn`): an actual `dafny translate java` + `mvn compile`
+  of a staged core + adapter is the remaining live check. The LLM-written adapter glue is the
+  fragile part (see [[cleanroom-adapter-glue-gap]]) — the Spring build-check oracle is exactly
+  what surfaces any core/adapter mismatch.
+
+---
+
+## 2026-06-26 — Spring Boot web stack for the Java target
+
+Added a Spring Boot web stack under `--language java`, as the Java analog of the Python
+`fastapi` stack: per-FR `@RestController`s generated in isolation, then assembled
+**mechanically** into a runnable Maven project via Spring component scanning (so the
+Code/Test isolation guarantee is preserved). Selected with `--language java --stack spring`.
+
+### Added
+- **Step 1 — `SpringBootTarget`** in [src/cleanroom/targets/spring.py](src/cleanroom/targets/spring.py).
+  Why: route the Spring stack through the existing `LanguageTarget` dispatch rather than
+  branching inside agents. How: subclass of `JavaTarget` overriding `code_template`
+  (`generate_code_spring.j2`), `test_template` (`generate_tests_spring.j2`), `oracle_name`
+  (`spring-build`), `package_sample` (Maven project), `run_case` (build-check), and
+  `oracle_available` (mvn+JDK).
+- **Step 2 — Stack-aware `get_target(language, stack)`** in
+  [src/cleanroom/targets/__init__.py](src/cleanroom/targets/__init__.py). Why: one language
+  (java) now has two stacks. How: returns `SpringBootTarget` for `(java, spring)`, else
+  `JavaTarget`/`LanguageTarget`. Updated the three callers (code/test/evaluation agents) to
+  pass their `stack`.
+- **Step 3 — Spring code prompt** [generate_code_spring.j2](src/cleanroom/agents/code/prompts/generate_code_spring.j2).
+  Why: emit Spring Web REST handlers, not plain Java. How: one `@RestController` per FR, no
+  `package` line (the packager injects it), in-memory state (no JPA in v1 → self-contained,
+  compile-clean), deterministic `@PostMapping("/{route}")`, `ResponseStatusException(400)` on
+  precondition failure. Threaded a deterministic `route` into the Code Agent's render context
+  (`_route_from_path`).
+- **Step 4 — Spring test prompt** [generate_tests_spring.j2](src/cleanroom/agents/test/prompts/generate_tests_spring.j2).
+  Why: JUnit5 + `@SpringBootTest`/MockMvc tests. How: structured `cases` stay the canonical
+  oracle (status 400 for `raises`); `test_source` is a MockMvc class for human use.
+- **Step 5 — `spring_packager`** [src/cleanroom/utils/spring_packager.py](src/cleanroom/utils/spring_packager.py).
+  Why: assemble isolated controllers into a buildable app. How: writes `pom.xml`
+  (spring-boot-starter-parent 3.3.4, web+test, Java 17), `Application.java`
+  (`@SpringBootApplication` component-scanning `com.cleanroom.app`), `application.properties`,
+  and each FR's class into its OWN sub-package `...gen.g<fr_slug>` so identically-named
+  classes from isolated generations never collide. Mechanical only — strips any stray
+  `package` line and injects the real one; no program logic.
+- **Step 6 — Build-check oracle** `run_case_spring` in
+  [src/cleanroom/agents/evaluation/runner.py](src/cleanroom/agents/evaluation/runner.py) +
+  [src/cleanroom/utils/maven_tooling.py](src/cleanroom/utils/maven_tooling.py). Why: a clean
+  `mvn compile` proves the isolated controllers assemble into a well-typed Spring app. How:
+  runs `mvn -B -q compile` once per sample dir (cached across the sample's cases, like the
+  `javac` compile-check), gated by `spring_oracle_available()` (mvn + JDK present) so
+  certification SKIPS gracefully when the toolchain is absent — exactly like the `javac`/Dafny
+  tiers. In-process MockMvc HTTP execution is a documented follow-up.
+
+### Changed
+- **Step 7 — CLI/config wiring.** Why: let users pick the stack. How: `--stack` choices now
+  include `java`/`spring` ([run_pipeline.py](run_pipeline.py)); `RunConfig.from_args` resolves
+  the Java sub-stack (`spring` if asked, else plain `java`) ([src/cleanroom/config.py](src/cleanroom/config.py));
+  run_pipeline honors `stack` for java, labels the stack/test-framework, prints the
+  `mvn spring-boot:run` command, and records `runnable_app`.
+
+### Verified
+- **Step 8 — Token-free smoke checks.** Routing, config resolution, packager layout (incl.
+  duplicate-class collision avoidance + bogus-package stripping), Jinja rendering of both new
+  prompts, well-formed `pom.xml`, and graceful oracle degradation when `mvn` is absent — all
+  pass. (Host has javac/java but not mvn, so the Spring oracle correctly reports unavailable.)
+
+### Known limitations (v1)
+- In-memory state only (no JPA/DB); the oracle is a build-check, not HTTP execution. A real
+  HTTP oracle (boot + MockMvc) and JPA persistence (needs a JavaParser repair layer mirroring
+  the FastAPI packager) are follow-ups. The Dafny-core adapter and recovery loop remain
+  Python-only, so Spring inherits `JavaTarget`'s `NotImplementedError` on those paths.
+
+---
+
 ## 2026-06-24 — Delete standalone baseline; per-agent ON/OFF switches on the pipeline
 
 Replaces the separate `run_baseline.py` with composable per-agent flags on `run_pipeline.py`,

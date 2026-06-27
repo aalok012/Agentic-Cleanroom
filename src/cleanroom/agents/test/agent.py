@@ -51,7 +51,7 @@ class TestAgent:
         self.stack = stack
         # The language target picks the test template + framework (pytest vs JUnit).
         self.language = language
-        self.target = get_target(language)
+        self.target = get_target(language, stack)
 
     def generate(self, ir: dict) -> GeneratedTests:
         """Generate tests for every feature from the spec only. Input is the spec."""
@@ -116,6 +116,12 @@ class TestAgent:
                               f"{len(feature.cases)} case(s) recorded in the IR.\n")
                 cls = java_class_name(source, f"Feature_{slug}Test")
                 dest = output_dir / f"{cls}.java"
+                dest.write_text(source + "\n")
+            elif language == "javascript":
+                if not source:
+                    source = (f"// No Jest source generated for feature {feature.feature_id}; "
+                              f"{len(feature.cases)} case(s) recorded in the IR.\n")
+                dest = output_dir / f"feature_{slug}.test.js"
                 dest.write_text(source + "\n")
             else:
                 if not source:

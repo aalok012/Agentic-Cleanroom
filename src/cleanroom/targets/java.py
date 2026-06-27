@@ -32,6 +32,10 @@ class JavaTarget(LanguageTarget):
         raise NotImplementedError("Java test-informed recovery is not supported in v1 "
                                   "(the recovery loop is Python-only).")
 
+    def stage_cores(self, app_dir, project_dir, modules: list[str]) -> dict:
+        # Plain Java has no adapter path (adapter_mode is never true for it), so nothing to stage.
+        return {"staged": [], "missing": list(modules), "note": "plain-java stack has no adapter"}
+
     def oracle_name(self, stack: str) -> str:
         return "java"
 

@@ -65,6 +65,34 @@ def stage_dafny_cores(app_dir: Path, project_dir: Path, modules: list[str]) -> d
     return {"cores_dir": str(cores_dir), "staged": staged, "missing": missing}
 
 
+def stage_dafny_cores_java(maven_dir: Path, project_dir: Path, modules: list[str]) -> dict:
+    """Copy translated Dafny Java cores into a Maven project's ``src/main/java`` so it compiles.
+
+    For each proved feature ``module`` (e.g. ``F4_1``) ``dafny translate java --include-runtime``
+    produced ``out/<module>-java/`` — a package tree of ``.java`` sources that bundles its OWN copy
+    of the ``dafny`` runtime. We replicate each file at its package-relative path under
+    ``src/main/java``, but SKIP a destination that already exists: that dedupes the shared
+    ``dafny`` runtime across multiple staged cores (first writer wins — every core bundles the same
+    runtime), so javac never sees a duplicate class. Returns staged/missing module lists.
+    """
+    src_root = Path(maven_dir) / "src" / "main" / "java"
+    src_root.mkdir(parents=True, exist_ok=True)
+    staged, missing = [], []
+    for module in modules:
+        core_dir = Path(project_dir) / "out" / f"{module}-java"
+        if not core_dir.is_dir():
+            missing.append(module)
+            continue
+        for jf in core_dir.rglob("*.java"):
+            dst = src_root / jf.relative_to(core_dir)
+            if dst.exists():          # shared DafnyRuntime already staged by an earlier core
+                continue
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(jf, dst)
+        staged.append(module)
+    return {"java_src": str(src_root), "staged": staged, "missing": missing}
+
+
 def compile_dafny(project_dir: Path, gen: GeneratedDafny, target: str = "py",
                   timeout: float = 240.0) -> dict:
     """Compile each VERIFIED feature module to native source via ``dafny translate`` (best-effort).

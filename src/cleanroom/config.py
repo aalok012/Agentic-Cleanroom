@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 
 from src.cleanroom.utils.llm_client import DAFNY_MODEL, DEFAULT_MODEL
 
-LANGUAGES = ("python", "java")
+LANGUAGES = ("python", "java", "javascript")
 
 
 @dataclass
@@ -89,6 +89,21 @@ class RunConfig:
         OFF, regex-only dependencies, and temperature 0 (other flags still apply)."""
         language = getattr(args, "language", "python")
         baseline = getattr(args, "baseline", False)
+        # Java sub-stacks: plain `java` (default) or `spring` (Spring Boot web). Anything else the
+        # user might pass (python/fastapi/auto) is not a Java stack, so it falls back to plain java.
+        java_stack = getattr(args, "stack", "java")
+        java_stack = java_stack if java_stack in ("java", "spring") else "java"
+        # JS has a single stack (Node/Express + SQLite); Java picks plain/spring; python keeps its
+        # raw --stack (auto|python|fastapi).
+        if language == "java":
+            resolved_stack = java_stack
+        elif language == "javascript":
+            resolved_stack = "express"
+        else:
+            resolved_stack = getattr(args, "stack", "auto")
+        # --prove-target follows the language: java->java, else py. JS ships no Dafny-core adapter
+        # (like Java), so its proved cores are unused — compiling to py is safe and the proof-tier
+        # verification_rate (the recorded metric) is target-independent.
         prove_target = getattr(args, "prove_target", None) or ("java" if language == "java" else "py")
         k_values = tuple(getattr(args, "k", None) or (1,))
         # Per-agent switches (baseline forces the optional ones into their control state).
@@ -105,7 +120,7 @@ class RunConfig:
         proof_base = one or DAFNY_MODEL       # proof keeps its stronger default unless --model is set
         return cls(
             language=language,
-            stack="java" if language == "java" else getattr(args, "stack", "auto"),
+            stack=resolved_stack,
             spec_model=getattr(args, "spec_model", None) or base,
             dependency_model=getattr(args, "dependency_model", None) or base,
             planning_model=getattr(args, "planning_model", None) or base,

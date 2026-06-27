@@ -33,6 +33,18 @@ from src.cleanroom.utils.llm_client import get_llm
 from src.cleanroom.utils.prompt_renderer import PromptRenderer
 
 
+def _route_from_path(file_path: str) -> str:
+    """Deterministic REST route stem for a contract's file_path (Spring stack).
+
+    The planner writes file_path as ``{layer}/{func}.py``; the route mirrors the FastAPI
+    packager's ``/{layer}/{module_stem}`` convention so a sample's endpoints are predictable.
+    """
+    p = (file_path or "").strip("/")
+    if p.endswith(".py"):
+        p = p[:-3]
+    return p
+
+
 class CodeAgent:
     def __init__(self, llm=None, stack: str = "python", language: str = "python") -> None:
         # `llm` is injectable purely so tests can avoid network calls; it is NOT a
@@ -45,7 +57,7 @@ class CodeAgent:
         # The language target picks the codegen template (python vs java); knowing the target
         # language is structural, not seeing tests — isolation holds.
         self.language = language
-        self.target = get_target(language)
+        self.target = get_target(language, stack)
 
     def generate(self, ir: dict, skip_feature_ids: set[str] | None = None) -> GeneratedCode:
         """Generate code for every contract, in planning (dependency) order.
@@ -91,6 +103,7 @@ class CodeAgent:
                     "requirement": req_text.get(fr_id, ""),
                     "prerequisites": prerequisites,
                     "stack": self.stack,
+                    "route": _route_from_path(contract["file_path"]),
                     "example_inputs_json": contract.get("example_inputs_json", "{}"),
                     "expected_return_json": contract.get("expected_return_json", "null"),
                     "error_mode": contract.get("error_mode", "raise"),
@@ -146,14 +159,18 @@ class CodeAgent:
                 # `F4_1Domain` compiles to the importable Python module `F4__1Domain`.
                 "core_module": f"{module}Domain".replace("_", "__"),
                 "core_dir": f"{module}-py",              # compiled core directory (on sys.path, NOT mangled)
+                # Java/Spring path: the translated Dafny module keeps its name as the Java package.
+                "module": module,
+                "core_java_package": module,
                 "dafny_source": dafny_source,
                 "contracts": [
                     {
                         "fr_id": c["fr_id"],
                         "signature": c.get("signature", ""),
                         "file_path": c.get("file_path", ""),
+                        "route": _route_from_path(c.get("file_path", "")),
                         "requirement": req_text.get(c["fr_id"], ""),
-                        "contract": c.get("contract", {}),
+                        "contract": c.get("contract") or {},
                         "entity_identifier": c.get("entity_identifier", ""),
                     }
                     for c in contracts
@@ -161,7 +178,7 @@ class CodeAgent:
             },
         )
         impl: FileImplementation = self.llm.with_structured_output(FileImplementation).invoke(prompt)
-        path = f"controllers/f{feature_id.replace('.', '_')}_adapter.py"
+        path = self.target.adapter_file_path(feature_id)
         return GeneratedFile(
             fr_id=contracts[0]["fr_id"],
             feature_id=feature_id,
@@ -228,6 +245,7 @@ class CodeAgent:
                     "prior_content": prior_by_fr.get(fr_id, ""),
                     "failing_cases": fails_by_fr.get(fr_id, []),
                     "stack": self.stack,
+                    "route": _route_from_path(contract["file_path"]),
                     "example_inputs_json": contract.get("example_inputs_json", "{}"),
                     "expected_return_json": contract.get("expected_return_json", "null"),
                     "error_mode": contract.get("error_mode", "raise"),

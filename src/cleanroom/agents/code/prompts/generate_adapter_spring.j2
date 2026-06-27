@@ -1,0 +1,56 @@
+You are writing a thin Spring Boot @RestController that exposes a feature whose business logic has
+ALREADY been PROVED in Dafny and translated to Java. You DO NOT re-implement the logic. You write
+only the glue: HTTP routes, in-memory state, and marshalling between JSON and the proved core. The
+proved core is the single source of truth for every state transition.
+
+FEATURE {{ feature_id }} — {{ feature_name }}
+
+The proved Dafny state machine (read it to learn the Model shape and the Action variants — names
+and field types — you must construct):
+```dafny
+{{ dafny_source }}
+```
+
+The routes to expose (one per functional requirement):
+{% for c in contracts %}
+- FR {{ c.fr_id }}: {{ c.requirement }}
+  signature: {{ c.signature }}
+  contract: stimulus={{ c.contract.get('stimulus','') }} | precondition={{ c.contract.get('precondition','') }} | response={{ c.contract.get('response','') }} | postcondition={{ c.contract.get('postcondition','') }}
+  {% if c.entity_identifier %}entity identifier: {{ c.entity_identifier }}{% endif %}
+  route (use verbatim): @PostMapping("/{{ c.route }}")
+{% endfor %}
+
+=== HOW TO CALL THE TRANSLATED DAFNY CORE (Dafny's Java backend conventions) ===
+The proved module was translated with `dafny translate java` into the Java package
+`{{ core_java_package }}` (already on the compile classpath — DO NOT redefine its classes):
+- The module's top-level functions/methods (Init, Apply, Normalize) live on the class
+  `{{ core_java_package }}.__default`. Call them fully-qualified, e.g.
+  `{{ core_java_package }}.__default.Apply(state, action)` and
+  `{{ core_java_package }}.__default.Normalize(...)`; the initial state is
+  `{{ core_java_package }}.__default.Init()`.
+- A Dafny `datatype Action = Add(...) | Remove(...)` becomes a class `{{ core_java_package }}.Action`
+  with static factory methods `create_Add(...)` / `create_Remove(...)` (use those to build actions).
+- Dafny runtime types (package `dafny`, also on the classpath): a Dafny `string`/`seq<char>` is a
+  `dafny.DafnySequence<Character>` — build one with `dafny.DafnySequence.asString("text")` and read
+  it back with `seq.verbatimString()`. A Dafny `int` is a `java.math.BigInteger`
+  (`java.math.BigInteger.valueOf(n)` to build, `.intValueExact()` / `.longValueExact()` to read). A
+  Dafny `map<K,V>` is a `dafny.DafnyMap<K,V>` and a `seq<T>` is a `dafny.DafnySequence<T>`.
+
+=== STATE (v1 Spring: in memory, NO database) ===
+- Hold the proved Model in a `private static` field on the controller, initialized to
+  `{{ core_java_package }}.__default.Init()`. There is NO database in the v1 Spring stack.
+- Each request: build the Action from the request body (`@RequestBody Map<String,Object> body`) →
+  `model = {{ core_java_package }}.__default.Normalize({{ core_java_package }}.__default.Apply(model, action))`
+  (the PROVED transition — never reimplement it) → marshal the relevant part of the Model back to a
+  JSON-able `Map`/`List`/scalar and return it.
+
+=== RULES ===
+- Output ONE Java file: a single `public class` annotated `@org.springframework.web.bind.annotation.RestController`
+  named `F{{ feature_id | replace('.', '_') }}Adapter`, with NO `package` statement (the packager
+  injects it) and one `@PostMapping` handler per route above.
+- NO business logic in Java — every state change goes through `Apply`/`Normalize` on the proved core.
+- Preconditions the proved core does not enforce (e.g. "must exist", "must be authenticated") may be
+  checked here and rejected with
+  `throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "...")`.
+- Return JSON bodies. Import everything you use with fully-qualified `import` lines. Do not import or
+  reference tests. Output ONLY the Java source (no markdown, no fences).
