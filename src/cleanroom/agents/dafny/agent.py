@@ -78,6 +78,38 @@ repeat `requires Inv(m)` — it is inherited from the abstract Domain and repeat
 {domain}
 """
 
+# CoT variant (--prompt-strategy cot): a LIGHT reasoning pass before the Dafny. Kept deliberately
+# light — the reasoning is short and, critically, the Dafny MUST be emitted inside a single ```dafny
+# code fence so `_strip_fences` keeps the reasoning OUT of the written .dfy file (prose in a .dfy
+# would fail to verify). Everything else (the Domain interface, gotchas, skills) is unchanged.
+_SYSTEM_COT = """You are a Dafny author. Produce ONE Dafny file that refines the abstract `Domain`
+below into a verified state machine for a single feature.
+
+THINK FIRST, BRIEFLY. Before writing the file, reason in 3-6 short lines about:
+  1. MODEL — the concrete `type Model` that represents this feature's state.
+  2. INVARIANT — the `Inv` that must always hold (and how `Normalize` repairs it).
+  3. PROOF OBLIGATIONS — that `Init` satisfies `Inv`, that each `Apply` case preserves `Inv`
+     (`StepPreservesInv`), and which postcondition lemma(s) back the contract postconditions.
+Keep this reasoning short and high-level; do NOT write Dafny inside it.
+
+THEN output the COMPLETE Dafny file inside a SINGLE ```dafny ... ``` code fence — nothing after
+the closing fence. Only the fenced Dafny source is compiled; your reasoning above it is ignored.
+
+CRITICAL GOTCHA: a refining `Apply` function and the refining `StepPreservesInv` lemma must NOT
+repeat `requires Inv(m)` — it is inherited from the abstract Domain and repeating it is an error.
+
+{ref}
+
+=== DAFNY PATTERNS (state-machine pattern + common mistakes) ===
+{dafny_skill}
+
+=== DAFNY PROOFS (proof-maximizing workflow) ===
+{proofs_skill}
+
+=== ABSTRACT DOMAIN INTERFACE (refine this; do not redefine it) ===
+{domain}
+"""
+
 
 def _strip_fences(text: str) -> str:
     m = re.search(r"```(?:dafny)?\s*(.*?)```", text, re.DOTALL)
@@ -111,18 +143,22 @@ class DafnyAgent:
     """Generate verified Dafny modules from spec contracts, one per feature."""
 
     def __init__(self, project_dir: Path | str, llm=None, model: str = DAFNY_MODEL,
-                 max_rounds: int = 6) -> None:
+                 max_rounds: int = 6, prompt_strategy: str = "baseline") -> None:
         self.project_dir = Path(project_dir)
         self.dafny_dir = self.project_dir / "dafny"
         self.model = model
         self.max_rounds = max_rounds
+        # 'baseline' = original prompt; 'cot' = a LIGHT reasoning block (model/invariant/proof
+        # obligations) before the Dafny — kept light so it does not destabilize Dafny syntax.
+        self.prompt_strategy = prompt_strategy
         self.llm = llm or get_llm(model=model, temperature=0.0)
         self._system = self._build_system()
 
     def _build_system(self) -> str:
         domain = (self.dafny_dir / "Replay.dfy").read_text().split(
             "abstract module {:compile false} Kernel")[0]
-        return _SYSTEM.format(
+        template = _SYSTEM_COT if self.prompt_strategy == "cot" else _SYSTEM
+        return template.format(
             ref=DAFNY_REF,
             dafny_skill=_load_skill("dafny-patterns"),
             proofs_skill=_load_skill("dafny-proofs"),
@@ -154,7 +190,9 @@ class DafnyAgent:
             "`requires`), and at least one domain-specific postcondition lemma with an `ensures` "
             f"matching a postcondition above; and defines `module {mod}Kernel refines Kernel "
             f"{{ import D = {mod}Domain }}`. Derive everything ONLY from the spec above. "
-            "Output ONLY the Dafny source.")
+            + ("Reason briefly first (model / invariant / proof obligations), then output the "
+               "complete Dafny file inside ONE ```dafny code fence."
+               if self.prompt_strategy == "cot" else "Output ONLY the Dafny source."))
 
     def generate_feature(self, ir: dict, feature_id: str) -> FeatureDafny:
         mod = "F" + feature_id.replace(".", "_")
@@ -174,9 +212,14 @@ class DafnyAgent:
                 return last
             errs = "\n".join(f"  line {m['line']}: {m['message']}" for m in res.messages[:12])
             messages.append(resp)
+            _out_instr = (
+                "Reason briefly about what caused each error, then output the FULL corrected Dafny "
+                "module inside ONE ```dafny code fence."
+                if self.prompt_strategy == "cot"
+                else "Output the FULL corrected Dafny module (only Dafny source).")
             messages.append(HumanMessage(
                 f"`dafny verify` failed with these errors:\n{errs}{_targeted_hint(res.messages)}\n\n"
-                "Output the FULL corrected Dafny module (only Dafny source). Do not repeat "
+                f"{_out_instr} Do not repeat "
                 "`requires Inv(m)` on refining Apply/StepPreservesInv."))
         return last
 

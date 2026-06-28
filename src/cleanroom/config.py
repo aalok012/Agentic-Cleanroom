@@ -20,6 +20,11 @@ class RunConfig:
     language: str = "python"          # python | java  (the top-level axis the user picks)
     stack: str = "auto"               # python sub-stack: auto | python | fastapi (ignored for java)
 
+    # --- prompt strategy ---
+    # 'baseline' = the original prompts (unchanged); 'cot' = parallel Chain-of-Thought variants
+    # that make each agent reason step-by-step BEFORE emitting its (unchanged) structured output.
+    prompt_strategy: str = "baseline"
+
     # --- per-stage models (each stage can run a different model) ---
     spec_model: str = DEFAULT_MODEL
     dependency_model: str = DEFAULT_MODEL
@@ -74,6 +79,7 @@ class RunConfig:
     def as_dict(self) -> dict:
         return {
             "language": self.language, "stack": self.stack, "models": self.models_used(),
+            "prompt_strategy": self.prompt_strategy,
             "agents": self.agents_enabled(),
             "run_dependency": self.run_dependency, "run_test": self.run_test,
             "run_recovery": self.run_recovery,
@@ -125,6 +131,7 @@ class RunConfig:
         return cls(
             language=language,
             stack=resolved_stack,
+            prompt_strategy=getattr(args, "prompt_strategy", "baseline") or "baseline",
             spec_model=getattr(args, "spec_model", None) or base,
             dependency_model=getattr(args, "dependency_model", None) or base,
             planning_model=getattr(args, "planning_model", None) or base,

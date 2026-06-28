@@ -207,6 +207,8 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     on = cfg.agents_enabled()
     arm = " ".join(f"{name}={'on' if state else 'off'}" for name, state in on.items())
     print(f"  Agents: {arm}")
+    ps = cfg.prompt_strategy
+    print(f"  Prompt strategy: {ps}")
     if cfg.baseline:
         print("  [BASELINE preset] proof OFF · recovery OFF · regex-only deps · temperature 0")
 
@@ -214,7 +216,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     # The SRSReader extracts functional requirements only (section-aware, no LLM); the
     # contract phase then writes a design-by-contract spec per FR (one LLM call/feature).
     _banner("[1]", "Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts")
-    spec = SpecAgent(llm=spec_llm)
+    spec = SpecAgent(llm=spec_llm, prompt_strategy=ps)
     # output_dir=None: skip the redundant <stem>_ir.json dump (it's a strict subset of full_ir.json).
     ir_obj = _timed("spec_parse", stages, lambda: spec.run(srs_path, output_dir=None))
     ir = ir_obj.model_dump()
@@ -257,7 +259,8 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     else:
         # cfg.llm_deps=False (e.g. --baseline) → deterministic regex-only edges (no semantic LLM inference).
         ir = _timed("dependency", stages,
-                    lambda: DependencyAnalyzer(llm=dep_llm if cfg.llm_deps else None).enrich(ir, output_dir=output_dir))
+                    lambda: DependencyAnalyzer(llm=dep_llm if cfg.llm_deps else None,
+                                               prompt_strategy=ps).enrich(ir, output_dir=output_dir))
     graph = ir["dependency_graph"]
     print(f"Outer nodes : {len(graph['nodes'])}  edges: {len(graph['edges'])}")
     print(f"Build order : {' -> '.join(graph['build_order']) or '(none)'}")
@@ -268,7 +271,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
 
     # --- Stage 3: Planning (per-FR contracts) --------------------------------
     _banner("[3]", "Planning Agent — generating per-FR contracts (signature + docstring + path)")
-    ir = _timed("planning", stages, lambda: PlanningAgent(llm=plan_llm, stack=stack).enrich(ir, output_dir=output_dir))
+    ir = _timed("planning", stages, lambda: PlanningAgent(llm=plan_llm, stack=stack, prompt_strategy=ps).enrich(ir, output_dir=output_dir))
     contracts = ir["planning"]["contracts"]
     print(f"Contracts   : {len(contracts)}  (in dependency order)")
     for c in contracts[:12]:
@@ -297,7 +300,8 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             project_dir = output_dir / "generated" / ir["project_name"] / "dafny_proof"
             proj = _timed("scaffold", stages, lambda: scaffold_dafny_project(project_dir))
             gen = _timed("dafny", stages,
-                         lambda: DafnyAgent(proj, model=cfg.proof_model, max_rounds=cfg.prove_rounds).generate(ir))
+                         lambda: DafnyAgent(proj, model=cfg.proof_model, max_rounds=cfg.prove_rounds,
+                                            prompt_strategy=ps).generate(ir))
             proved_feature_ids = {f.feature_id for f in gen.features if f.verified}
             proved_modules = {f.feature_id: f.module for f in gen.features if f.verified}
             proved_sources = {f.feature_id: f.dafny_source for f in gen.features if f.verified}
@@ -355,7 +359,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
 
     # --- Stage 4: Code (LLM) — adapters over proved cores + full code for the rest ----
     _banner("[4]", "Code Agent — generating MVC code from the spec")
-    code_agent = CodeAgent(llm=code_llm, stack=stack, language=language)
+    code_agent = CodeAgent(llm=code_llm, stack=stack, language=language, prompt_strategy=ps)
     code_dir = output_dir / "generated" / ir["project_name"]
     if adapter_mode:
         from src.cleanroom.agents.code.schema.code import GeneratedCode
@@ -426,7 +430,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
         print(f"  Test agent OFF — no test modules written.{note}")
     else:
         _banner("[5]", "Test Agent — deriving black-box tests from the spec")
-        test_agent_runner = TestAgent(llm=test_llm, stack=stack, language=language)
+        test_agent_runner = TestAgent(llm=test_llm, stack=stack, language=language, prompt_strategy=ps)
         generated_tests = _timed("test", stages, lambda: test_agent_runner.generate(ir))
         generated_tests_dict = generated_tests.model_dump()
         ir = {**ir, "generated_tests": generated_tests_dict}
@@ -518,6 +522,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
                 skip_feature_ids=cert_skip,
                 dafny_proj=proj if adapter_mode else None,
                 dafny_modules=[proved_modules[fid] for fid in sorted(adapter_feature_ids)] if adapter_mode else None,
+                prompt_strategy=ps,
             ).run(ir),
         )
         ir = {**ir, "certification": cert.model_dump()}
@@ -560,6 +565,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
                 prove_target=prove_target,
                 # Live per-iteration metrics, flushed each loop → survives an early stop.
                 iter_log=output_dir / f"{ir['project_name']}_recovery_iters.jsonl",
+                prompt_strategy=ps,
             )
             recovery = _timed("recovery", stages, lambda: loop.run(cert))
             cert = recovery["result"]
@@ -1014,6 +1020,12 @@ def main() -> None:
     parser.add_argument("--llm-deps", action=argparse.BooleanOptionalAction, default=True,
                         help="Use the LLM to infer semantic FR→FR edges in the dependency stage "
                              "(--no-llm-deps = deterministic regex edges only).")
+    parser.add_argument("--prompt-strategy", default="baseline", choices=["baseline", "cot"],
+                        help="Which prompt set to use for every LLM stage: 'baseline' (default, the "
+                             "original prompts) or 'cot' (parallel Chain-of-Thought variants that "
+                             "reason step-by-step before emitting the SAME structured output). "
+                             "Only the prompt wording changes — schemas, parser, and isolation are "
+                             "untouched.")
     parser.add_argument("--baseline", action="store_true",
                         help="Control run: forces proof OFF, recovery OFF, regex-only dependencies, "
                              "and temperature 0 — a plain spec→code→test(→pass@k) baseline to A/B "

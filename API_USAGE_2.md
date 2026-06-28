@@ -8,11 +8,11 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | metric | value |
 |---|---:|
 | runs logged | 1 |
-| LLM calls | 86 |
-| input tokens | 189,354 |
-| output tokens | 69,399 |
-| total tokens | 258,753 |
-| estimated cost (USD) | $0.9339 |
+| LLM calls | 48 |
+| input tokens | 211,045 |
+| output tokens | 74,759 |
+| total tokens | 285,804 |
+| estimated cost (USD) | $0.0739 |
 
 ## Run history
 
@@ -215,6 +215,30 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | 2026-06-27 21:37:27 | `20260627-213727-dineout-srs` | complete | dineout_srs.xml | openai/gpt-4.1-2025-04-14+openai/gpt-4o-mini+openai/gpt-5.1-20251113 | 366 | 2,297,840 | 466,566 | 2,764,406 | $6.4260 | 3574.3 | [detail](outputs/matrix/python/dineout_srs/openai_gpt-5_1/runs/20260627-213727-dineout-srs.md) |
 | 2026-06-27 23:33:56 | `20260627-233356-dineout-srs` | failed | dineout_srs.xml | google/gemini-3.1-pro-preview-20260219 | 63 | 116,249 | 248,501 | 364,750 | $0.1665 | 0.0 | [detail](outputs/matrix/java/dineout_srs/google_gemini-3_1-pro-preview/runs/20260627-233356-dineout-srs.md) |
 | 2026-06-28 03:37:07 | `20260628-033707-dineout-srs` | complete | dineout_srs.xml | openai/gpt-4.1-2025-04-14 | 86 | 189,354 | 69,399 | 258,753 | $0.9339 | 471.5 | [detail](outputs/matrix/java/dineout_srs/openai_gpt-4_1/runs/20260628-033707-dineout-srs.md) |
+| 2026-06-28 10:15:10 | `20260628-101510-human` | complete | Human.xml | deepseek/deepseek-v3.2-20251201 | 8 | 15,273 | 6,890 | 22,163 | $0.0059 | 188.6 | [detail](outputs/smoke_cot/runs/20260628-101510-human.md) |
+| 2026-06-28 10:25:30 | `20260628-102530-0000-cctns` | failed | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 8 | 11,576 | 2,305 | 13,881 | $0.0034 | 0.0 | [detail](outputs/cot/0000 - cctns/java/runs/20260628-102530-0000-cctns.md) |
+| 2026-06-28 10:30:39 | `20260628-103039-0000-cctns` | failed | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 14 | 28,401 | 4,761 | 33,162 | $0.0081 | 0.0 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/0000 - cctns/java/runs/20260628-103039-0000-cctns.md) |
+| 2026-06-28 10:45:06 | `20260628-104506-0000-cctns` | complete | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 45 | 109,212 | 26,066 | 135,278 | $0.0339 | 976.1 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/0000 - cctns/javascript/runs/20260628-104506-0000-cctns.md) |
+| 2026-06-28 10:49:45 | `20260628-104945-0000-cctns` | complete | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 40 | 97,173 | 31,645 | 128,818 | $0.0331 | 1255.2 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/0000 - cctns/python/runs/20260628-104945-0000-cctns.md) |
+| 2026-06-28 10:50:28 | `20260628-105028-0000-gamma-j` | failed | 0000 - gamma j.xml | deepseek/deepseek-v3.2-20251201 | 2 | 2,552 | 810 | 3,362 | $0.0009 | 0.0 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/0000 - gamma j/java/runs/20260628-105028-0000-gamma-j.md) |
+| 2026-06-28 11:12:17 | `20260628-111217-0000-gamma-j` | complete | 0000 - gamma j.xml | deepseek/deepseek-v3.2-20251201 | 37 | 91,642 | 31,896 | 123,538 | $0.0319 | 1347.1 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/0000 - gamma j/javascript/runs/20260628-111217-0000-gamma-j.md) |
+| 2026-06-28 11:22:29 | `20260628-112229-0000-gamma-j` | complete | 0000 - gamma j.xml | deepseek/deepseek-v3.2-20251201 | 59 | 224,281 | 58,320 | 282,601 | $0.0713 | 1958.3 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/0000 - gamma j/python/runs/20260628-112229-0000-gamma-j.md) |
+| 2026-06-28 11:24:55 | `20260628-112455-2009-video-search` | failed | 2009 - video search.xml | deepseek/deepseek-v3.2-20251201 | 3 | 5,759 | 2,322 | 8,081 | $0.0021 | 0.0 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/2009 - video search/java/runs/20260628-112455-2009-video-search.md) |
+| 2026-06-28 11:39:34 | `20260628-113934-2009-video-search` | complete | 2009 - video search.xml | deepseek/deepseek-v3.2-20251201 | 43 | 78,906 | 37,036 | 115,942 | $0.0308 | 1021.9 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/2009 - video search/python/runs/20260628-113934-2009-video-search.md) |
+| 2026-06-28 11:39:36 | `20260628-113936-2009-video-search` | complete | 2009 - video search.xml | deepseek/deepseek-v3.2-20251201 | 15 | 39,098 | 13,922 | 53,020 | $0.0137 | 1024.6 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/2009 - video search/javascript/runs/20260628-113936-2009-video-search.md) |
+| 2026-06-28 11:44:16 | `20260628-114416-human` | complete | Human.xml | deepseek/deepseek-v3.2-20251201 | 10 | 22,125 | 10,874 | 32,999 | $0.0088 | 273.9 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/Human/python/runs/20260628-114416-human.md) |
+| 2026-06-28 11:44:54 | `20260628-114454-human` | complete | Human.xml | deepseek/deepseek-v3.2-20251201 | 13 | 31,438 | 9,900 | 41,338 | $0.0106 | 312.1 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/Human/javascript/runs/20260628-114454-human.md) |
+| 2026-06-28 11:49:56 | `20260628-114956-human` | complete | Human.xml | deepseek/deepseek-v3.2-20251201 | 15 | 45,481 | 14,135 | 59,616 | $0.0153 | 614.0 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/Human/java/runs/20260628-114956-human.md) |
+| 2026-06-28 12:36:52 | `20260628-123652-dineout-srs` | complete | dineout_srs.xml | deepseek/deepseek-v3.2-20251201 | 95 | 232,111 | 93,878 | 325,989 | $0.0853 | 2809.1 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/dineout_srs/javascript/runs/20260628-123652-dineout-srs.md) |
+| 2026-06-28 12:40:01 | `20260628-124001-dineout-srs` | complete | dineout_srs.xml | deepseek/deepseek-v3.2-20251201 | 81 | 227,900 | 100,933 | 328,833 | $0.0868 | 2997.7 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/dineout_srs/java/runs/20260628-124001-dineout-srs.md) |
+| 2026-06-28 13:11:55 | `20260628-131155-kinmail-srs` | complete | kinmail_srs.xml | deepseek/deepseek-v3.2-20251201 | 29 | 82,332 | 40,680 | 123,012 | $0.0328 | 1009.8 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/kinmail_srs/javascript/runs/20260628-131155-kinmail-srs.md) |
+| 2026-06-28 13:15:01 | `20260628-131501-dineout-srs` | complete | dineout_srs.xml | deepseek/deepseek-v3.2-20251201 | 148 | 604,653 | 168,399 | 773,052 | $0.1961 | 5098.3 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/dineout_srs/python/runs/20260628-131501-dineout-srs.md) |
+| 2026-06-28 13:16:07 | `20260628-131607-kinmail-srs` | failed | kinmail_srs.xml | deepseek/deepseek-v3.2-20251201 | 31 | 89,842 | 42,714 | 132,556 | $0.0352 | 0.0 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/kinmail_srs/python/runs/20260628-131607-kinmail-srs.md) |
+| 2026-06-28 13:18:06 | `20260628-131806-kinmail-srs` | complete | kinmail_srs.xml | deepseek/deepseek-v3.2-20251201 | 29 | 87,684 | 48,507 | 136,191 | $0.0367 | 1380.3 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/kinmail_srs/java/runs/20260628-131806-kinmail-srs.md) |
+| 2026-06-28 13:33:32 | `20260628-133332-0000-cctns` | complete | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 43 | 118,604 | 33,175 | 151,779 | $0.0385 | 914.9 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/0000 - cctns/java/runs/20260628-133332-0000-cctns.md) |
+| 2026-06-28 13:53:00 | `20260628-135300-0000-gamma-j` | complete | 0000 - gamma j.xml | deepseek/deepseek-v3.2-20251201 | 41 | 129,932 | 38,987 | 168,919 | $0.0431 | 1163.1 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/0000 - gamma j/java/runs/20260628-135300-0000-gamma-j.md) |
+| 2026-06-28 14:03:07 | `20260628-140307-2009-video-search` | complete | 2009 - video search.xml | deepseek/deepseek-v3.2-20251201 | 15 | 41,469 | 16,409 | 57,878 | $0.0151 | 598.5 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/2009 - video search/java/runs/20260628-140307-2009-video-search.md) |
+| 2026-06-28 14:36:09 | `20260628-143609-kinmail-srs` | complete | kinmail_srs.xml | deepseek/deepseek-v3.2-20251201 | 48 | 211,045 | 74,759 | 285,804 | $0.0739 | 1980.3 | [detail](/Users/alokthakur/agentic-cleanroom/outputs/cot/kinmail_srs/python/runs/20260628-143609-kinmail-srs.md) |
 
 ## Notes
 

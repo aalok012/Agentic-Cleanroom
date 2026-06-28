@@ -32,18 +32,22 @@ from src.cleanroom.agents.test.tools.spec_reader import feature_units
 from src.cleanroom.targets import get_target
 from src.cleanroom.utils.ir import normalize_ir_features
 from src.cleanroom.utils.llm_client import get_llm
-from src.cleanroom.utils.prompt_renderer import PromptRenderer
+from src.cleanroom.utils.prompt_renderer import PromptRenderer, cot_template
 
 
 class TestAgent:
     # Keep pytest from collecting this class as a test (its name starts with "Test").
     __test__ = False
 
-    def __init__(self, llm=None, stack: str = "python", language: str = "python") -> None:
+    def __init__(self, llm=None, stack: str = "python", language: str = "python",
+                 prompt_strategy: str = "baseline") -> None:
         # `llm` is injectable only so tests can avoid network calls; it is NOT a
         # channel for implementation data. Defaults to the shared cost-control model client.
         self.llm = llm if llm is not None else get_llm()
         self.renderer = PromptRenderer()
+        # 'baseline' = original prompts; 'cot' = the parallel reason-first variants. CoT reasons
+        # about coverage FROM THE SPEC ONLY — the agent still never sees generated code.
+        self.prompt_strategy = prompt_strategy
         # Target stack (spec/run-level, NOT implementation): shapes the emitted pytest
         # module — plain function calls (python) vs TestClient HTTP requests (fastapi) —
         # and the failure oracle (ValueError vs HTTPException). Knowing the stack is not
@@ -61,7 +65,7 @@ class TestAgent:
 
         for unit in feature_units(ir):  # the ONLY IR read: features/requirements
             prompt = self.renderer.render(
-                self.target.test_template(),
+                cot_template(self.target.test_template(), self.prompt_strategy),
                 {
                     "feature_id": unit["feature_id"],
                     "name": unit["name"],
@@ -108,7 +112,7 @@ class TestAgent:
 
         result: TestSourceRepair = self.llm.with_structured_output(TestSourceRepair).invoke(
             self.renderer.render(
-                "repair_compile_errors_java_tests.j2",
+                cot_template("repair_compile_errors_java_tests.j2", self.prompt_strategy),
                 {
                     "feature_id": feature_id,
                     "name": unit.get("name", ""),
