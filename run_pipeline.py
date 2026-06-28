@@ -6,7 +6,7 @@ Runs the full pipeline on a single SRS document and saves the enriched IR:
       -> [1] Spec        FR parse + behavioral contracts    [parse: deterministic, contracts: LLM]
       -> [2] Dependency  nested graph (feature + FR level)  [regex deterministic, inner: LLM semantic]
       -> [3] Planning    impl metadata per FR contract      [LLM: signature/layer; docstring deterministic]
-      -> [4a] Proof tier   prove feature logic in Dafny     [Dafny verifier + gpt-4.1, opt-in via --prove]
+      -> [4a] Proof tier   prove feature logic in Dafny     [Dafny verifier + configured LLM, opt-in via --prove]
       -> [4] Code        adapters over proved cores + full code for the rest  [LLM: one call per contract]
       -> [5] Test        black-box test cases               [LLM: one call per feature]
       -> [6] Certification  pass@k for UN-proved features   [executable oracle, opt-in via --certify]
@@ -60,8 +60,8 @@ from src.cleanroom.llms.callbacks.metric import GLOBAL_METRICS
 from src.cleanroom.utils.code_stats import code_stats
 from src.cleanroom.utils.cost import estimate_cost_by_model
 from src.cleanroom.config import LANGUAGES, RunConfig
-from src.cleanroom.utils.llm_client import get_llm, llm_api_key_configured
-from src.cleanroom.utils.dafny_project import compile_dafny, scaffold_dafny_project
+from src.cleanroom.utils.llm_client import DEFAULT_MODEL, get_llm, llm_api_key_configured
+from src.cleanroom.utils.dafny_project import compile_dafny, scaffold_dafny_project, summarize_dafny_java_api
 from src.cleanroom.utils.packager import build_runnable_package
 from src.cleanroom.utils.stack_select import select_stack
 from src.cleanroom.utils.ir import normalize_ir
@@ -110,8 +110,8 @@ def _timed(name: str, stages: list, fn):
 def _finalize_metrics(metrics: dict, stages: list) -> None:
     in_tot, out_tot, calls = GLOBAL_METRICS.snapshot()
     cost, by_model = estimate_cost_by_model(GLOBAL_METRICS.calls)
-    # Accurate per-model cost (a --prove run mixes gpt-4o-mini + gpt-4.1); show all models used.
-    metrics["model"] = "+".join(sorted(by_model)) if len(by_model) > 1 else (GLOBAL_METRICS.model or "gpt-4o-mini")
+    # Accurate per-model cost; show all models used if a run is intentionally mixed.
+    metrics["model"] = "+".join(sorted(by_model)) if len(by_model) > 1 else (GLOBAL_METRICS.model or DEFAULT_MODEL)
     metrics["total_seconds"] = round(sum(s["seconds"] for s in stages), 3)
     metrics["tokens"] = {"input": in_tot, "output": out_tot, "total": in_tot + out_tot, "calls": calls}
     metrics["cost_usd"] = cost
@@ -286,6 +286,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     proved_modules: dict[str, str] = {}        # feature_id -> Dafny module base (e.g. "F4_1")
     proved_sources: dict[str, str] = {}        # feature_id -> Dafny source
     proved_compiled_ids: set[str] = set()      # proved features whose Dafny ALSO translated to native
+    proved_java_apis: dict[str, dict] = {}      # feature_id -> actual translated Java API summary
     proj = None
     if prove:
         _banner("[4a]", "Dafny Proof Agent — proving feature logic (formal verification)")
@@ -319,6 +320,12 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             comp = _timed("compile", stages, lambda: compile_dafny(proj, gen, target=prove_target))
             metrics["compile"] = comp
             proved_compiled_ids = {c["feature_id"] for c in comp.get("compiled", [])}
+            if prove_target == "java":
+                proved_java_apis = {
+                    fid: summarize_dafny_java_api(proj, proved_modules[fid])
+                    for fid in sorted(proved_compiled_ids)
+                    if fid in proved_modules
+                }
             print(f"Compiled  : {len(comp['compiled'])}/{nver} proved features to {comp.get('target', prove_target)}")
             ir = {**ir, "generated_dafny": gen.model_dump(),
                   "proved_feature_ids": sorted(proved_feature_ids)}
@@ -338,6 +345,13 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
         adapter_feature_ids = set()
     adapter_mode = bool(adapter_feature_ids)
     cert_skip = set(adapter_feature_ids)
+    # JS (express) ships no Dafny-core adapter, but — like FastAPI/Spring — a PROVED feature's
+    # correctness is already guaranteed by the proof, so exclude it from certification too. This
+    # makes test_case_pass_ratio / PassVer@1 cover the SAME unproved set across all languages.
+    # (adapter_mode stays False: the proved feature's code is still generated normally, we just
+    # don't re-test it — JS has no adapter to ship it from.)
+    if stack == "express":
+        cert_skip = set(proved_feature_ids)
 
     # --- Stage 4: Code (LLM) — adapters over proved cores + full code for the rest ----
     _banner("[4]", "Code Agent — generating MVC code from the spec")
@@ -350,7 +364,12 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             adapters.append(_timed(
                 "adapter", stages,
                 lambda fid=fid: code_agent.generate_adapter(
-                    ir, fid, proved_modules[fid], proved_sources[fid])))
+                    ir,
+                    fid,
+                    proved_modules[fid],
+                    proved_sources[fid],
+                    java_api=proved_java_apis.get(fid),
+                )))
         full = _timed("code", stages,
                       lambda: code_agent.generate(ir, skip_feature_ids=adapter_feature_ids))
         generated_code = GeneratedCode(files=adapters + full.files)
@@ -397,6 +416,8 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     # --- Stage 5: Test (LLM) -------------------------------------------------
     # The Test Agent reads only ir['features']; the generated_code in the IR is
     # structurally ignored — isolation is preserved.
+    generated_tests_dict: dict | None = None
+    test_agent_runner: TestAgent | None = None
     if not cfg.run_test:
         # Agent OFF (--no-test): no test artifacts. If --certify is also set, the cert stage
         # will synthesize ephemeral tests on the fly (a weaker, non-persisted oracle).
@@ -405,16 +426,75 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
         print(f"  Test agent OFF — no test modules written.{note}")
     else:
         _banner("[5]", "Test Agent — deriving black-box tests from the spec")
-        generated_tests = _timed("test", stages, lambda: TestAgent(llm=test_llm, stack=stack, language=language).generate(ir))
-        ir = {**ir, "generated_tests": generated_tests.model_dump()}
-        tests_dir = output_dir / "generated" / ir["project_name"] / "tests"
-        written_tests = TestAgent.write_files(generated_tests, tests_dir, language=language)
+        test_agent_runner = TestAgent(llm=test_llm, stack=stack, language=language)
+        generated_tests = _timed("test", stages, lambda: test_agent_runner.generate(ir))
+        generated_tests_dict = generated_tests.model_dump()
+        ir = {**ir, "generated_tests": generated_tests_dict}
+        if language == "java":
+            written_tests = code_agent.target.package_tests(generated_tests_dict, code_dir, stack)
+            tests_dir = code_dir / ("src/test/java" if stack == "spring" else "src")
+        else:
+            tests_dir = output_dir / "generated" / ir["project_name"] / "tests"
+            written_tests = TestAgent.write_files(generated_tests, tests_dir, language=language)
         total_cases = sum(len(f.cases) for f in generated_tests.features)
         metrics["tests"] = {"features": len(generated_tests.features), "cases": total_cases}
         _fw = ("JUnit+MockMvc" if stack == "spring" else "JUnit") if language == "java" else (
             "Jest" if language == "javascript" else "pytest")
         print(f"{len(generated_tests.features)} feature(s), {total_cases} test case(s).")
         print(f"Wrote {len(written_tests)} {_fw} module(s) to {tests_dir}")
+
+    # --- Stage 5b: Java static compile repair --------------------------------
+    # This is compile-diagnostic feedback only: no test cases, expected outputs, or runtime
+    # verdicts are fed to the Code Agent. It makes the Java source tree buildable before pass@k.
+    if language == "java" and cfg.max_compile_repair_loops > 0:
+        _banner("[5b]", f"Java compile repair — static build check (≤ {cfg.max_compile_repair_loops} repairs)")
+        from src.cleanroom.agents.code.compile_repair import run_java_compile_repair
+
+        adapter_modules = {
+            fid: proved_modules[fid]
+            for fid in sorted(adapter_feature_ids)
+            if fid in proved_modules
+        }
+        compile_repair = _timed(
+            "java_compile_repair",
+            stages,
+            lambda: run_java_compile_repair(
+                code_agent=code_agent,
+                ir=ir,
+                code_dir=code_dir,
+                stack=stack,
+                generated_tests=generated_tests_dict,
+                test_agent=test_agent_runner,
+                dafny_proj=proj if adapter_mode else None,
+                adapter_modules=adapter_modules,
+                max_rounds=cfg.max_compile_repair_loops,
+                timeout=max(240.0, cfg.case_timeout),
+            ),
+        )
+        metrics["java_compile_repair"] = compile_repair
+        repaired = compile_repair.get("repaired_files") or []
+        if repaired:
+            prev_code = metrics.get("code") or {}
+            next_code = code_stats(ir["generated_code"])
+            next_code["language"] = "Java"
+            if prev_code.get("runnable_app"):
+                next_code["runnable_app"] = prev_code["runnable_app"]
+            if prev_code.get("dafny_cores"):
+                next_code["dafny_cores"] = prev_code["dafny_cores"]
+            metrics["code"] = next_code
+        if compile_repair.get("skipped") and compile_repair.get("ok"):
+            print(f"  Java static compile partially checked: {compile_repair.get('reason', 'tooling missing')}")
+        elif compile_repair.get("skipped"):
+            print(f"  Java compile repair skipped: {compile_repair.get('reason', 'unknown')}")
+        elif compile_repair.get("ok"):
+            print(f"  Java static compile passed after {len(compile_repair.get('attempts', []))} check(s); "
+                  f"repaired {len(repaired)} generated file(s).")
+        else:
+            print(f"  Java static compile still failing after "
+                  f"{len(compile_repair.get('attempts', []))} check(s): "
+                  f"{compile_repair.get('reason', 'compile failed')}")
+            for err in (compile_repair.get("unmapped_errors") or [])[:3]:
+                print(f"    unmapped: {err.get('path')}:{err.get('line')} {err.get('message')}")
 
     # --- Stage 6: Certification (optional) — pass@k for the UN-proved (test fallback) --
     from src.cleanroom.targets import get_target as _get_target
@@ -570,6 +650,22 @@ def write_run_report(metrics: dict, dest: Path) -> None:
     if metrics.get("tests"):
         t = metrics["tests"]
         lines += ["", "## Generated tests", "", f"- features: {t['features']} · test cases: {t['cases']}"]
+    if metrics.get("java_compile_repair"):
+        r = metrics["java_compile_repair"]
+        status = (
+            "partial" if r.get("ok") and r.get("skipped")
+            else "passed" if r.get("ok")
+            else "skipped" if r.get("skipped")
+            else "failed"
+        )
+        lines += [
+            "",
+            "## Java compile repair",
+            "",
+            f"- status: {status}",
+            f"- checks: {len(r.get('attempts') or [])} · repaired files: {len(r.get('repaired_files') or [])}",
+            f"- reason: {r.get('reason', '')}",
+        ]
     if metrics.get("certification"):
         cert = metrics["certification"]
         lines += ["", "## Certification (pass@k)", "", f"- samples n={cert['n']}"]
@@ -680,7 +776,8 @@ def append_metric_record(
         "",
         f"- agents: {arm}",
         f"- certify={cfg.certify} · samples={cfg.samples} · k={list(cfg.k_values)} · "
-        f"prove={cfg.prove} · max_cert_loops={cfg.max_cert_loops}",
+        f"prove={cfg.prove} · max_cert_loops={cfg.max_cert_loops} · "
+        f"max_compile_repair_loops={cfg.max_compile_repair_loops}",
         f"- temperature={cfg.temperature} · cert_temperature={cfg.cert_temperature} · "
         f"prove_rounds={cfg.prove_rounds} · baseline={cfg.baseline}",
         "",
@@ -762,6 +859,24 @@ def append_metric_record(
         L += [
             f"- case pass rate: {cert.get('aggregate_case_pass_rate', 0):.3f}",
             f"- pass@1 FR ids: {cert.get('pass_at_1_fr_ids') or '(none)'}",
+            "",
+        ]
+
+    crep = metrics.get("java_compile_repair") or {}
+    if crep:
+        crep_status = (
+            "partial" if crep.get("ok") and crep.get("skipped")
+            else "passed" if crep.get("ok")
+            else "skipped" if crep.get("skipped")
+            else "failed"
+        )
+        L += [
+            "### Java compile repair",
+            "",
+            f"- status: {crep_status}",
+            f"- checks: {len(crep.get('attempts') or [])}",
+            f"- repaired files: {len(crep.get('repaired_files') or [])}",
+            f"- reason: {crep.get('reason', '')}",
             "",
         ]
 
@@ -871,7 +986,7 @@ def main() -> None:
     parser.add_argument("--cert-model", default=None, help="Override model for certification samples / recovery regen.")
     parser.add_argument("--prove", action=argparse.BooleanOptionalAction, default=False,
                         help="Dafny proof tier: prove each feature's logic where possible "
-                             "(needs a `dafny` binary + gpt-4.1). Proved features compile to native "
+                             "(needs a `dafny` binary + the configured proof model). Proved features compile to native "
                              "code; with --certify the rest fall to the pass@k test track. "
                              "--no-prove (default) skips it.")
     parser.add_argument("--prove-target", default=None,
@@ -883,6 +998,10 @@ def main() -> None:
                              "+ re-certify features that fail pass@1 (default: 2; needs --certify; "
                              "0 disables). NOTE: the test-feedback regen deliberately relaxes "
                              "clean-room isolation for those failing features only.")
+    parser.add_argument("--max-compile-repair-loops", type=int, default=2,
+                        help="Java only: max static compile-repair passes before certification "
+                             "(default: 2; 0 disables). Uses compiler diagnostics only, not "
+                             "runtime test outcomes.")
     # Per-agent tuning knobs.
     parser.add_argument("--temperature", type=float, default=0.0,
                         help="Generation temperature for spec/planning/code/test (default: 0.0).")
@@ -899,11 +1018,17 @@ def main() -> None:
                         help="Control run: forces proof OFF, recovery OFF, regex-only dependencies, "
                              "and temperature 0 — a plain spec→code→test(→pass@k) baseline to A/B "
                              "against the full prove-or-test pipeline.")
+    parser.add_argument("--debug-llm-once", action="store_true",
+                        help="Print the first LLM prompt, raw model response, and reasoning-token "
+                             "usage fields before structured-output parsing. Debug only.")
     args = parser.parse_args()
     command = "python run_pipeline.py " + " ".join(sys.argv[1:])
 
     if not args.srs_path.exists():
         parser.error(f"SRS file not found: {args.srs_path}")
+
+    if args.debug_llm_once:
+        os.environ["CLEANROOM_LLM_DEBUG_ONCE"] = "1"
 
     if not llm_api_key_configured():
         print("ERROR: No LLM API key found. Set OPENAI_API_KEY or OPENROUTER_API_KEY in .env.")

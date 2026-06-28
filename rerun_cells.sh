@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Re-run the 4-model group for a SINGLE SRS into the matrix layout. Used to backfill cells
+# Re-run DeepSeek for a SINGLE SRS into the matrix layout. Used to backfill cells
 # that failed earlier (e.g. an SRS that the parser couldn't read until it was fixed).
 #
 # It does NOT rebuild the CSV — the main run_matrix.sh/run_all_matrix.sh collector scans all
@@ -20,9 +20,6 @@ LANGUAGE="$1"; STACK="$2"; SRS="$3"
 FLAGS="--prove --certify --max-cert-loops 4 --prove-rounds 4"   # keep in sync with run_matrix.sh
 BASE="outputs/matrix"
 MODELS=(
-  "openai/gpt-4.1"
-  "google/gemini-3.1-pro-preview"
-  "anthropic/claude-sonnet-4-6"
   "deepseek/deepseek-v3.2"
 )
 

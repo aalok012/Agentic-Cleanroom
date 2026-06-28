@@ -21,6 +21,7 @@ whole point of the pipeline.
 """
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -45,10 +46,25 @@ def _route_from_path(file_path: str) -> str:
     return p
 
 
+def _strip_java_package_imports(content: str, package_names: list[str]) -> str:
+    """Remove invalid Java imports of package names emitted by Dafny translation.
+
+    Java can import a class from a package, but not the package itself. Dafny Java packages like
+    ``F4__9Domain`` are referenced with fully-qualified class names such as
+    ``F4__9Domain.__default`` and ``F4__9Domain.Action``.
+    """
+    out = content or ""
+    for package in package_names:
+        if not package:
+            continue
+        out = re.sub(rf"(?m)^\s*import\s+{re.escape(package)}\s*;\s*\n?", "", out)
+    return out
+
+
 class CodeAgent:
     def __init__(self, llm=None, stack: str = "python", language: str = "python") -> None:
         # `llm` is injectable purely so tests can avoid network calls; it is NOT a
-        # channel for test data. Defaults to the shared gpt-4o-mini client.
+        # channel for test data. Defaults to the shared cost-control model client.
         self.llm = llm if llm is not None else get_llm()
         self.renderer = PromptRenderer()
         # Target stack for the run (e.g. "fastapi"). Threaded into the code prompt as
@@ -129,8 +145,14 @@ class CodeAgent:
 
         return GeneratedCode(files=files)
 
-    def generate_adapter(self, ir: dict, feature_id: str, module: str,
-                         dafny_source: str) -> GeneratedFile:
+    def generate_adapter(
+        self,
+        ir: dict,
+        feature_id: str,
+        module: str,
+        dafny_source: str,
+        java_api: dict | None = None,
+    ) -> GeneratedFile:
         """Write the thin FastAPI glue over a PROVED Dafny core (no business logic here).
 
         For a feature the proof tier verified, the logic ships as the compiled Dafny module; this
@@ -149,6 +171,9 @@ class CodeAgent:
             raise ValueError(f"no contracts for feature {feature_id}")
         req_text = self._requirement_index(ir)
         feat = next((f for f in ir.get("features", []) if str(f.get("id")) == str(feature_id)), {})
+        java_api = java_api or {}
+        core_java_domain_package = java_api.get("domain_package") or f"{module}Domain".replace("_", "__")
+        core_java_kernel_package = java_api.get("kernel_package") or f"{module}Kernel".replace("_", "__")
 
         prompt = self.renderer.render(
             self.target.adapter_template(),
@@ -159,9 +184,16 @@ class CodeAgent:
                 # `F4_1Domain` compiles to the importable Python module `F4__1Domain`.
                 "core_module": f"{module}Domain".replace("_", "__"),
                 "core_dir": f"{module}-py",              # compiled core directory (on sys.path, NOT mangled)
-                # Java/Spring path: the translated Dafny module keeps its name as the Java package.
+                # Java/Spring path: Dafny's Java backend mangles `_` -> `__` in package names,
+                # so module F4_9 emits packages like F4__9Domain and F4__9Kernel. The top-level
+                # F4_9.java file is in the default package and is not importable from Spring's
+                # named controller packages.
                 "module": module,
-                "core_java_package": module,
+                "core_java_package": core_java_domain_package,
+                "core_java_domain_package": core_java_domain_package,
+                "core_java_kernel_package": core_java_kernel_package,
+                "core_java_api": java_api,
+                "core_java_api_summary": java_api.get("summary", ""),
                 "dafny_source": dafny_source,
                 "contracts": [
                     {
@@ -179,12 +211,101 @@ class CodeAgent:
         )
         impl: FileImplementation = self.llm.with_structured_output(FileImplementation).invoke(prompt)
         path = self.target.adapter_file_path(feature_id)
+        content = impl.content
+        if self.language == "java" and self.stack == "spring":
+            content = _strip_java_package_imports(
+                content,
+                [
+                    module,
+                    core_java_domain_package,
+                    core_java_kernel_package,
+                ],
+            )
         return GeneratedFile(
             fr_id=contracts[0]["fr_id"],
             feature_id=feature_id,
             path=path,
             mvc_layer="controller",
-            content=impl.content,
+            content=content,
+        )
+
+    # ===================  COMPILE-INFORMED REPAIR (JAVA ONLY)  ===================
+    # This repair path receives compiler diagnostics (javac/Maven) only. It does not receive test
+    # cases, expected outputs, or test assertions, so it preserves the clean-room separation while
+    # enforcing that generated Java is syntactically and structurally buildable before certification.
+    # =============================================================================
+    def repair_compile_error(
+        self,
+        ir: dict,
+        generated_file: dict,
+        diagnostics: str,
+        *,
+        proved_modules: dict[str, str] | None = None,
+        proved_java_apis: dict[str, dict] | None = None,
+    ) -> GeneratedFile:
+        """Repair one generated Java file using compiler diagnostics only."""
+        PlanningAgent.normalize_ir_planning(ir)
+        normalize_ir_features(ir)
+        contracts = (ir.get("planning") or {}).get("contracts") or []
+        by_fr = {c["fr_id"]: c for c in contracts}
+        req_text = self._requirement_index(ir)
+        fr_id = generated_file.get("fr_id", "")
+        feature_id = generated_file.get("feature_id", "")
+        contract = by_fr.get(fr_id, {})
+        proved_modules = proved_modules or {}
+        proved_java_apis = proved_java_apis or {}
+        module = proved_modules.get(feature_id, "")
+        java_api = proved_java_apis.get(feature_id, {})
+        core_java_domain_package = (
+            java_api.get("domain_package")
+            or (f"{module}Domain".replace("_", "__") if module else "")
+        )
+        core_java_kernel_package = (
+            java_api.get("kernel_package")
+            or (f"{module}Kernel".replace("_", "__") if module else "")
+        )
+        prompt = self.renderer.render(
+            "repair_compile_errors_java.j2",
+            {
+                "fr_id": fr_id,
+                "feature_id": feature_id,
+                "mvc_layer": generated_file.get("mvc_layer", ""),
+                "path": generated_file.get("path", ""),
+                "signature": contract.get("signature", ""),
+                "docstring": contract.get("docstring", ""),
+                "requirement": req_text.get(fr_id, ""),
+                "route": _route_from_path(contract.get("file_path", generated_file.get("path", ""))),
+                "example_inputs_json": contract.get("example_inputs_json", "{}"),
+                "expected_return_json": contract.get("expected_return_json", "null"),
+                "error_mode": contract.get("error_mode", "raise"),
+                "failure_inputs_json": contract.get("failure_inputs_json", ""),
+                "prior_content": generated_file.get("content", ""),
+                "diagnostics": diagnostics,
+                "stack": self.stack,
+                "is_adapter": bool(module),
+                "module": module,
+                "core_java_domain_package": core_java_domain_package,
+                "core_java_kernel_package": core_java_kernel_package,
+                "core_java_api_summary": java_api.get("summary", ""),
+            },
+        )
+        impl: FileImplementation = self.llm.with_structured_output(FileImplementation).invoke(prompt)
+        content = impl.content
+        if module and self.language == "java" and self.stack == "spring":
+            content = _strip_java_package_imports(
+                content,
+                [
+                    module,
+                    core_java_domain_package,
+                    core_java_kernel_package,
+                ],
+            )
+        return GeneratedFile(
+            fr_id=fr_id,
+            feature_id=feature_id,
+            path=generated_file.get("path", ""),
+            mvc_layer=generated_file.get("mvc_layer", ""),
+            content=content,
         )
 
     # ===================  TEST-INFORMED REPAIR (RECOVERY ONLY)  ===================

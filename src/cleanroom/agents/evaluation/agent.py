@@ -101,7 +101,7 @@ class CertificationAgent:
                 sample_pass = True
                 with tempfile.TemporaryDirectory(prefix="cleanroom_cert_") as tmp:
                     code_dir = Path(tmp) / "code"
-                    self._write_sample(sample, code_dir)
+                    self._write_sample(sample, code_dir, tests)
                     for case in cases:
                         ok, reason = self.target.run_case(
                             code_dir, plan, case, self.stack, self.case_timeout
@@ -186,15 +186,18 @@ class CertificationAgent:
             samples.append(code_agent.generate(ir))
         return samples[: self.n]
 
-    def _write_sample(self, sample: GeneratedCode, code_dir: Path) -> None:
+    def _write_sample(self, sample: GeneratedCode, code_dir: Path, tests: dict | None = None) -> None:
         """Lay a sample out for its oracle via the language target (flat tree / FastAPI app /
         Java sources). For a fastapi sample with Dafny-core adapters, also stage the compiled
-        cores + the marshalling shim so the app boots (otherwise `import dafny_marshal` fails)."""
+        cores + the marshalling shim so the app boots (otherwise `import dafny_marshal` fails).
+        Targets that statically compile generated tests can lay those sources out too."""
         app_dir = self.target.package_sample(sample.model_dump(), code_dir, self.stack)
         if app_dir is not None and self.dafny_proj and self.dafny_modules:
             # Route through the target so the FastAPI (compiled -py + shim) and Spring (translated
             # Java cores into src/main/java) staging each use their own layout.
             self.target.stage_cores(Path(app_dir), self.dafny_proj, self.dafny_modules)
+        self.target.package_tests(tests or {}, Path(app_dir) if app_dir is not None else code_dir,
+                                  self.stack)
 
     @staticmethod
     def _cases_by_fr(tests: dict) -> dict[str, list[dict]]:

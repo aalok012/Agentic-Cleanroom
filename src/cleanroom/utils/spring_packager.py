@@ -17,6 +17,7 @@ isolated generations happened to name identically never collide at compile time.
 from __future__ import annotations
 
 import re
+import shutil
 from pathlib import Path
 
 from src.cleanroom.utils.java_packager import java_class_name
@@ -118,6 +119,8 @@ def write_spring_sources(generated_code: dict, project_dir: Path) -> list[Path]:
     not collide. Returns the written paths.
     """
     gen_root = project_dir / "src" / "main" / "java" / Path(*GEN_PACKAGE.split("."))
+    if gen_root.exists():
+        shutil.rmtree(gen_root)
     written: list[Path] = []
     for i, f in enumerate(_files_of(generated_code)):
         content = _strip_package(f.get("content", ""))
@@ -129,6 +132,35 @@ def write_spring_sources(generated_code: dict, project_dir: Path) -> list[Path]:
         pkg_dir.mkdir(parents=True, exist_ok=True)
         dest = pkg_dir / f"{cls}.java"
         dest.write_text(f"package {pkg};\n\n{content}\n")
+        written.append(dest)
+    return written
+
+
+def write_spring_tests(generated_tests: dict, project_dir: Path) -> list[Path]:
+    """Write generated MockMvc/JUnit tests under src/test/java so Maven compiles them.
+
+    The Test Agent emits no package statement by design. Spring tests are placed in the app's base
+    package so ``@SpringBootTest`` can discover ``Application`` through normal package scanning.
+    """
+    test_root = (Path(project_dir) / "src" / "test" / "java" /
+                 Path(*BASE_PACKAGE.split(".")))
+    if test_root.exists():
+        shutil.rmtree(test_root)
+    test_root.mkdir(parents=True, exist_ok=True)
+    written: list[Path] = []
+    used: set[str] = set()
+    for i, feature in enumerate(generated_tests.get("features", [])):
+        slug = str(feature.get("feature_id", i)).replace(".", "_")
+        source = _strip_package((feature.get("test_source") or "").strip())
+        if not source:
+            source = (f"// No Spring/JUnit source generated for feature "
+                      f"{feature.get('feature_id', slug)}; "
+                      f"{len(feature.get('cases', []))} case(s) recorded in the IR.\n")
+        cls = java_class_name(source, f"Feature_{slug}Test")
+        dest_name = cls if cls not in used else f"{cls}_{i}"
+        used.add(dest_name)
+        dest = test_root / f"{dest_name}.java"
+        dest.write_text(f"package {BASE_PACKAGE};\n\n{source}\n")
         written.append(dest)
     return written
 

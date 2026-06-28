@@ -3,7 +3,7 @@
 `java_available()` gates the Java executable oracle: if there is no `javac`, certification skips
 (rather than failing the run), exactly like the proof tier skips without a `dafny` binary.
 `junit_jar()` finds an optional JUnit console-standalone jar (env `JUNIT_JAR` or a known path);
-when present the oracle can additionally compile+run the generated JUnit tests.
+when present the plain-Java oracle can compile generated JUnit tests.
 """
 
 from __future__ import annotations
@@ -29,8 +29,7 @@ def java_available() -> bool:
 def junit_jar() -> Path | None:
     """Locate a junit-platform-console-standalone jar, if the user provided one.
 
-    Looked up via $JUNIT_JAR, then ~/.cleanroom/. Returns None when absent (the oracle then does a
-    compile-check only and reports that JUnit execution was deferred)."""
+    Looked up via $JUNIT_JAR, then ~/.cleanroom/. Returns None when absent."""
     env = os.getenv("JUNIT_JAR")
     if env and Path(env).is_file():
         return Path(env)

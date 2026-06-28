@@ -72,7 +72,7 @@ progresses (`outputs/{project}_full_ir.json` is the complete record).
     │
     ▼  (optional, --certify)
   [6] Certification     pass@k via an executable oracle — for UN-proved features only
-    │                   python: run the function / boot the FastAPI app · java: javac compile-check
+    │                   python: run the function / boot the FastAPI app · java: javac/Maven test-compile
     ▼  (optional, --max-cert-loops, python only)
   [6b] Recovery loop    features still failing pass@1 → re-prove harder + regenerate code WITH the
                         failing tests (a deliberate, contained clean-room break), then re-certify
@@ -190,12 +190,15 @@ uv run python run_pipeline.py "data/srs/dineout_srs.xml" --certify \
 | `--k` | `1` | pass@k values to report, e.g. `--k 1 3` |
 | `--{spec,dependency,planning,code,test,proof,cert}-model` | `gpt-4o-mini` (proof: `gpt-4.1`) | Model for each stage — set independently |
 | `--max-cert-loops` | `2` | Recovery loop passes (Python only); `0` disables |
+| `--max-compile-repair-loops` | `2` | Java-only static compile repair passes before certification; `0` disables |
 | `--output-dir` | `outputs` | Artifact directory |
 
 **Java note:** `--language java` emits Java classes + JUnit test classes. The v1 executable oracle
-is a `javac` **compile-check** (it degrades to "skipped" when no JDK is found); running the
-generated JUnit per case is a follow-up (set `$JUNIT_JAR` to a `junit-platform-console-standalone`
-jar to enable the classpath for it).
+is still a compile-check, not a per-case JUnit runner: plain Java compiles implementation + JUnit
+test sources with `javac` (set `$JUNIT_JAR` to a `junit-platform-console-standalone` jar), while
+Spring uses Maven `test-compile` so generated MockMvc tests are part of the build. Java runs also
+perform a compile-diagnostic repair loop before certification, fixing generated app/test sources
+from compiler errors only.
 
 ### Re-score for free (no re-proving)
 
@@ -348,14 +351,14 @@ This is a research/engineering pipeline. Being explicit about what's solid and w
 **Java target (v1) — what works and what's deferred:**
 - Generates Java classes + JUnit5 test classes; planning signatures are emitted in Python syntax as
   the canonical interface and **translated to Java** by the code prompt.
-- The certification oracle is a **`javac` compile-check**, not per-case execution: it confirms the
-  generated Java *type-checks*, but does not yet *run* the JUnit tests against inputs (that needs a
-  `junit-platform-console-standalone` jar via `$JUNIT_JAR` + a JSON-marshalling harness). Without a
-  JDK it skips gracefully. Because all `src/*.java` are compiled together, one non-compiling file
-  fails the batch.
-- `--language java` with `--prove` is **proof-only**: there is no Java Dafny-core *adapter* yet, so
-  proved logic isn't shipped from Dafny (the recovery loop is also Python-only). A Spring/web Java
-  stack and a Java adapter are follow-ups.
+- The certification oracle is a **compile-check**, not per-case execution: plain Java compiles
+  implementation + generated JUnit tests with `javac` (requires `$JUNIT_JAR` when test sources are
+  present); Spring compiles main + generated MockMvc/JUnit tests with `mvn test-compile`. It does
+  not yet run the JUnit tests against inputs. Without a JDK/Maven it skips gracefully. Because the
+  compiler sees the whole source set, one non-compiling file fails the batch.
+- `--language java --stack spring --prove` can ship proved features through translated Dafny Java
+  cores plus thin Spring adapters. Plain Java remains proof-only. The runtime recovery loop is still
+  Python-only; Java has the separate compiler-diagnostic repair loop.
 
 ---
 

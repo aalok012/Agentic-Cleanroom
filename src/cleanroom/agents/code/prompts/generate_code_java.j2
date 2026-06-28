@@ -45,7 +45,11 @@ TARGET: plain Java (JDK standard library only — `java.util.*`, etc.). STRICT r
 - For a `Map` parameter, read keys directly (`input.get("key")`), never nested under an extra wrapper.
 - On a precondition/validation failure, `throw new IllegalArgumentException("...")` (never return a
   sentinel instead).
+- Exception messages MUST be simple, valid Java string literals like `"Invalid input"`; do not embed
+  raw JSON in exception strings, and never leave a string split across lines.
 - The class MUST compile with `javac` using only the standard library. Include every `import` you
   use (e.g. `import java.util.*;`).
+- Before finalizing, mentally run `javac` over the file: every string literal is closed, every block
+  brace is balanced, and there are no markdown fences or prose.
 
 Output ONLY the Java source for the one file (no markdown, no fences, no commentary).

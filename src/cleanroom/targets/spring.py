@@ -8,9 +8,9 @@ classes anywhere under the base package and ``@SpringBootApplication`` registers
 packager never writes per-feature wiring and the Code/Test isolation guarantee is preserved.
 
 v1 scope: in-memory state (no JPA/DB), so each FR class stays self-contained and compiles cleanly;
-the oracle is a Maven build-check that degrades gracefully when the toolchain is absent (mirroring
-the plain-Java ``javac`` compile-check). JPA persistence + an in-process MockMvc HTTP oracle are
-documented follow-ups (they need a JavaParser repair layer like the FastAPI packager's).
+the oracle is a Maven test-compile check that degrades gracefully when the toolchain is absent
+(mirroring the plain-Java ``javac`` compile-check). Full MockMvc execution is a documented
+follow-up.
 """
 
 from __future__ import annotations
@@ -50,6 +50,11 @@ class SpringBootTarget(JavaTarget):
         from src.cleanroom.utils.spring_packager import build_spring_project
 
         return build_spring_project(generated_code, code_dir)
+
+    def package_tests(self, generated_tests: dict, code_dir: Path, stack: str) -> list[Path]:
+        from src.cleanroom.utils.spring_packager import write_spring_tests
+
+        return write_spring_tests(generated_tests, code_dir)
 
     def run_case(self, code_dir: Path, plan: dict, case: dict, stack: str, timeout: float):
         from src.cleanroom.agents.evaluation.runner import run_case_spring

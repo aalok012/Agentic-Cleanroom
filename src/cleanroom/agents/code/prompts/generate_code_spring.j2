@@ -55,6 +55,11 @@ TARGET: Spring Boot 3 web (Jakarta). STRICT rules:
 - On a precondition/validation failure, throw
   `new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "...")`
   (the web equivalent of a raised precondition failure) — never return a sentinel instead.
+- Exception messages MUST be simple, valid Java string literals like `"Invalid order_id"` or
+  `"Unknown bill_id"`. Do NOT embed raw JSON in exception strings, and never leave a string split
+  across lines.
 - The class MUST compile under Spring Boot 3 / Java 17 using only the dependencies above.
+- Before finalizing, mentally run `javac` over the file: every string literal is closed, every block
+  brace is balanced, and there are no markdown fences or prose.
 
 Output ONLY the Java source for the one file (no markdown, no fences, no commentary).

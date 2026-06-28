@@ -3,6 +3,7 @@ import os
 import re
 
 from dotenv import load_dotenv
+from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.runnables import RunnableLambda
 from langchain_openai import ChatOpenAI
 
@@ -13,8 +14,149 @@ load_dotenv(override=True)
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 # Short names used across the pipeline; resolve_model() maps them for OpenRouter when configured.
-DEFAULT_MODEL = "gpt-4o-mini"
-DAFNY_MODEL = "gpt-4.1"
+# Keep both the normal pipeline and Dafny/proof stages on DeepSeek by default for lower-cost runs.
+DEFAULT_MODEL = "deepseek/deepseek-v3.2"
+DAFNY_MODEL = "deepseek/deepseek-v3.2"
+DEEPSEEK_ONLY = False
+
+_DEBUG_ACTIVE_RUN_ID = None
+_DEBUG_INPUT_PRINTED = False
+_DEBUG_OUTPUT_PRINTED = False
+
+
+def _debug_once_enabled() -> bool:
+    return os.getenv("CLEANROOM_LLM_DEBUG_ONCE", "").lower() in ("1", "true", "yes", "on")
+
+
+def _debug_max_chars() -> int:
+    try:
+        return max(500, int(os.getenv("CLEANROOM_LLM_DEBUG_MAX_CHARS", "4000")))
+    except ValueError:
+        return 4000
+
+
+def _truncate(text: str, limit: int | None = None) -> str:
+    limit = _debug_max_chars() if limit is None else limit
+    if len(text) <= limit:
+        return text
+    return text[:limit] + f"\n... [truncated {len(text) - limit} chars]"
+
+
+def _safe_json(value) -> str:
+    try:
+        return json.dumps(value, indent=2, default=str)
+    except Exception:
+        return repr(value)
+
+
+def _message_debug_dict(msg) -> dict:
+    data = {
+        "type": getattr(msg, "type", type(msg).__name__),
+        "content": getattr(msg, "content", None),
+    }
+    for attr in ("name", "tool_calls", "invalid_tool_calls", "additional_kwargs",
+                 "response_metadata", "usage_metadata"):
+        value = getattr(msg, attr, None)
+        if value:
+            data[attr] = value
+    return data
+
+
+def _find_reasoning_fields(value, prefix: str = "") -> list[tuple[str, object]]:
+    fields: list[tuple[str, object]] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            path = f"{prefix}.{key}" if prefix else str(key)
+            if "reason" in str(key).lower():
+                fields.append((path, child))
+            fields.extend(_find_reasoning_fields(child, path))
+    elif isinstance(value, list):
+        for i, child in enumerate(value):
+            fields.extend(_find_reasoning_fields(child, f"{prefix}[{i}]"))
+    return fields
+
+
+class _OneShotLLMDebugCallback(BaseCallbackHandler):
+    """Print one prompt and its raw model response before structured-output parsing."""
+
+    def on_chat_model_start(self, serialized, messages, *, run_id=None, **kwargs) -> None:
+        global _DEBUG_ACTIVE_RUN_ID, _DEBUG_INPUT_PRINTED
+        if _DEBUG_INPUT_PRINTED or _DEBUG_OUTPUT_PRINTED:
+            return
+        _DEBUG_ACTIVE_RUN_ID = run_id
+        _DEBUG_INPUT_PRINTED = True
+        serial = serialized.get("name") if isinstance(serialized, dict) else None
+        print("\n=== CLEANROOM LLM DEBUG: first input before structured output ===")
+        if serial:
+            print(f"model wrapper: {serial}")
+        payload = [[_message_debug_dict(msg) for msg in batch] for batch in messages]
+        print(_truncate(_safe_json(payload)))
+
+    def on_llm_start(self, serialized, prompts, *, run_id=None, **kwargs) -> None:
+        global _DEBUG_ACTIVE_RUN_ID, _DEBUG_INPUT_PRINTED
+        if _DEBUG_INPUT_PRINTED or _DEBUG_OUTPUT_PRINTED:
+            return
+        _DEBUG_ACTIVE_RUN_ID = run_id
+        _DEBUG_INPUT_PRINTED = True
+        serial = serialized.get("name") if isinstance(serialized, dict) else None
+        print("\n=== CLEANROOM LLM DEBUG: first input before structured output ===")
+        if serial:
+            print(f"model wrapper: {serial}")
+        print(_truncate(_safe_json(prompts)))
+
+    def on_llm_end(self, response, *, run_id=None, **kwargs) -> None:
+        global _DEBUG_ACTIVE_RUN_ID, _DEBUG_OUTPUT_PRINTED
+        if _DEBUG_OUTPUT_PRINTED:
+            return
+        if _DEBUG_ACTIVE_RUN_ID is not None and run_id != _DEBUG_ACTIVE_RUN_ID:
+            return
+        _DEBUG_OUTPUT_PRINTED = True
+        _DEBUG_ACTIVE_RUN_ID = run_id
+
+        generations = []
+        usage_payloads = []
+        for batch in getattr(response, "generations", None) or []:
+            batch_items = []
+            for gen in batch:
+                msg = getattr(gen, "message", None)
+                if msg is not None:
+                    item = _message_debug_dict(msg)
+                    usage_payloads.append(item.get("usage_metadata") or {})
+                    usage_payloads.append(item.get("response_metadata") or {})
+                else:
+                    item = {"text": getattr(gen, "text", None)}
+                info = getattr(gen, "generation_info", None)
+                if info:
+                    item["generation_info"] = info
+                    usage_payloads.append(info)
+                batch_items.append(item)
+            generations.append(batch_items)
+
+        llm_output = getattr(response, "llm_output", None) or {}
+        usage_payloads.append(llm_output)
+        debug_payload = {
+            "generations": generations,
+            "llm_output": llm_output,
+        }
+        reasoning_fields = []
+        for payload in usage_payloads:
+            reasoning_fields.extend(_find_reasoning_fields(payload))
+        deduped_reasoning_fields = []
+        seen_reasoning_fields = set()
+        for path, value in reasoning_fields:
+            key = (path, repr(value))
+            if key not in seen_reasoning_fields:
+                seen_reasoning_fields.add(key)
+                deduped_reasoning_fields.append((path, value))
+
+        print("\n=== CLEANROOM LLM DEBUG: first raw output before structured parsing ===")
+        print(_truncate(_safe_json(debug_payload)))
+        print("\n=== CLEANROOM LLM DEBUG: reasoning-token fields ===")
+        if deduped_reasoning_fields:
+            for path, value in deduped_reasoning_fields:
+                print(f"{path}: {value}")
+        else:
+            print("no usage fields containing 'reason' were returned")
 
 
 def _extract_json(text: str | None) -> dict | None:
@@ -114,6 +256,8 @@ def resolve_model(name: str) -> str:
     """Map a short model name to an OpenRouter slug when routing through OpenRouter."""
     if "/" in name:
         return name
+    if name.startswith("deepseek-"):
+        return f"deepseek/{name}"
     prefix = os.getenv("LLM_MODEL_PREFIX", "")
     if not prefix and _using_openrouter():
         prefix = "openai/"
@@ -141,11 +285,21 @@ def get_llm(model: str = DEFAULT_MODEL, temperature: float = 0.0) -> ChatOpenAI:
     if title := os.getenv("OPENROUTER_X_TITLE"):
         default_headers["X-Title"] = title
 
+    callbacks = [GLOBAL_HANDLER]
+    if _debug_once_enabled():
+        callbacks.append(_OneShotLLMDebugCallback())
+
+    resolved_model = resolve_model(model)
+    if DEEPSEEK_ONLY and "deepseek" not in resolved_model.lower():
+        raise ValueError(
+            f"DeepSeek-only mode is active; refusing to create LLM client for {resolved_model!r}."
+        )
+
     kwargs: dict = {
-        "model": resolve_model(model),
+        "model": resolved_model,
         "temperature": temperature,
         "api_key": api_key,
-        "callbacks": [GLOBAL_HANDLER],
+        "callbacks": callbacks,
     }
     if base_url:
         kwargs["base_url"] = base_url

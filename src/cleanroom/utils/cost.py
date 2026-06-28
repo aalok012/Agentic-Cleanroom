@@ -3,7 +3,10 @@
 Prices are USD per 1M tokens and may drift over time — update PRICING if they change.
 """
 
+from src.cleanroom.utils.llm_client import DEFAULT_MODEL
+
 PRICING: dict[str, dict[str, float]] = {
+    "deepseek-v3.2": {"input": 0.2288, "output": 0.3432},
     "gpt-4o-mini": {"input": 0.15, "output": 0.60},
     "gpt-4o": {"input": 2.50, "output": 10.00},
     "gpt-4.1": {"input": 2.00, "output": 8.00},
@@ -25,7 +28,7 @@ def _rates(model: str) -> dict[str, float]:
     for name in sorted(PRICING, key=len, reverse=True):
         if model.startswith(name):
             return PRICING[name]
-    return PRICING["gpt-4o-mini"]
+    return PRICING[_normalize_model(DEFAULT_MODEL)]
 
 
 def estimate_cost(model: str, input_tokens: int, output_tokens: int) -> float:
@@ -43,7 +46,7 @@ def estimate_cost_by_model(calls) -> tuple[float, dict[str, dict]]:
     """
     by_model: dict[str, dict] = {}
     for c in calls or []:
-        m = c.get("model") or "gpt-4o-mini"
+        m = c.get("model") or DEFAULT_MODEL
         agg = by_model.setdefault(m, {"input": 0, "output": 0, "calls": 0, "cost_usd": 0.0})
         agg["input"] += int(c.get("input_tokens", 0))
         agg["output"] += int(c.get("output_tokens", 0))

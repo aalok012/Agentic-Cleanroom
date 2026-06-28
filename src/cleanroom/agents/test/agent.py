@@ -26,9 +26,9 @@ import json
 import sys
 from pathlib import Path
 
-from src.cleanroom.agents.test.schema.tests import FeatureTests, GeneratedTests
-from src.cleanroom.agents.test.tools.spec_reader import feature_units
 from src.cleanroom.agents.planning.agent import PlanningAgent
+from src.cleanroom.agents.test.schema.tests import FeatureTests, GeneratedTests, TestSourceRepair
+from src.cleanroom.agents.test.tools.spec_reader import feature_units
 from src.cleanroom.targets import get_target
 from src.cleanroom.utils.ir import normalize_ir_features
 from src.cleanroom.utils.llm_client import get_llm
@@ -41,7 +41,7 @@ class TestAgent:
 
     def __init__(self, llm=None, stack: str = "python", language: str = "python") -> None:
         # `llm` is injectable only so tests can avoid network calls; it is NOT a
-        # channel for implementation data. Defaults to the shared gpt-4o-mini client.
+        # channel for implementation data. Defaults to the shared cost-control model client.
         self.llm = llm if llm is not None else get_llm()
         self.renderer = PromptRenderer()
         # Target stack (spec/run-level, NOT implementation): shapes the emitted pytest
@@ -92,6 +92,39 @@ class TestAgent:
         tests = self.generate(ir)
         self.write_files(tests, output_dir / ir.get("project_name", "project") / "tests")
         return tests
+
+    def repair_compile_error(self, ir: dict, feature_test: dict, diagnostics: str) -> FeatureTests:
+        """Repair one generated Java test source using compiler diagnostics only.
+
+        This preserves the structured black-box cases exactly; only the runnable-style JUnit source
+        is rewritten so the static Java compile check can include tests.
+        """
+        normalize_ir_features(ir)
+        PlanningAgent.normalize_ir_planning(ir)
+        feature_id = str(feature_test.get("feature_id", ""))
+        unit = next((u for u in feature_units(ir) if str(u.get("feature_id")) == feature_id), None)
+        if unit is None:
+            raise ValueError(f"no feature spec found for generated test feature {feature_id}")
+
+        result: TestSourceRepair = self.llm.with_structured_output(TestSourceRepair).invoke(
+            self.renderer.render(
+                "repair_compile_errors_java_tests.j2",
+                {
+                    "feature_id": feature_id,
+                    "name": unit.get("name", ""),
+                    "description": unit.get("description", ""),
+                    "requirements": unit.get("requirements", []),
+                    "stack": self.stack,
+                    "diagnostics": diagnostics,
+                    "prior_source": feature_test.get("test_source", ""),
+                },
+            )
+        )
+        return FeatureTests(
+            feature_id=feature_id,
+            cases=list(feature_test.get("cases", [])),
+            test_source=result.test_source,
+        )
 
     @staticmethod
     def write_files(tests: GeneratedTests, output_dir: Path, language: str = "python") -> list[Path]:

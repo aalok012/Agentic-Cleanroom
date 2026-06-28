@@ -59,6 +59,10 @@ class LanguageTarget:
         CodeAgent.write_files(GeneratedCode(**generated_code), code_dir)
         return None
 
+    def package_tests(self, generated_tests: dict, code_dir: Path, stack: str) -> list[Path]:
+        """Lay generated test source out where the target's compiler/build tool can see it."""
+        return []
+
     def run_case(self, code_dir: Path, plan: dict, case: dict, stack: str, timeout: float):
         """Execute one spec-derived test case against a laid-out sample → (ok, reason)."""
         from src.cleanroom.agents.evaluation.runner import run_case, run_case_http

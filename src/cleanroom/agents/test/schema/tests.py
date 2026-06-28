@@ -57,5 +57,11 @@ class FeatureTests(BaseModel):
     )
 
 
+class TestSourceRepair(BaseModel):
+    test_source: str = Field(
+        description="Full repaired Java source for the same generated JUnit/Spring test class."
+    )
+
+
 class GeneratedTests(BaseModel):
     features: list[FeatureTests] = Field(default_factory=list)

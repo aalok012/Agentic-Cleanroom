@@ -4,7 +4,7 @@ For each feature it casts the FRs into a Dafny ``Domain`` state machine (one ``A
 BehavioralContract -> Inv / precondition guards / postcondition lemmas) that refines our vendored
 ``Replay.dfy`` kernel, then runs the real Dafny verifier and feeds proof errors back for up to
 ``max_rounds`` rounds — the generate->verify->revise loop validated by the feasibility spikes
-(needs a gpt-4.1-class model; gpt-4o-mini/gpt-4o cannot discharge map-comprehension proofs).
+(needs a proof-capable configured model; weaker models struggle with map-comprehension proofs).
 
 Prompt knowledge is OWNED here: a DAFNY_REF syntax cheat-sheet plus two Dafny guidance docs
 (``skills/dafny-patterns.md`` and ``skills/dafny-proofs.md``) vendored in this repo.

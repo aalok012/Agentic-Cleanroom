@@ -348,12 +348,11 @@ def run_case(
 
 
 def run_case_java(code_dir: Path, plan: dict, case: dict, timeout: float = 30.0) -> tuple[bool, str]:
-    """v1 Java oracle: compile-check the candidate Java with ``javac`` → (passed, reason).
+    """v1 Java oracle: compile-check candidate Java and generated JUnit tests → (passed, reason).
 
     Generated Java must be stdlib-only (java.util), so a clean compile means the codegen produced
-    well-typed Java for this FR. Full per-case JUnit *execution* is a documented follow-up (needs a
-    junit-platform-console-standalone jar via $JUNIT_JAR and a JSON-marshalling harness); when that
-    jar is present we still add it to the classpath so candidate code may reference JUnit.
+    well-typed Java for this FR. Generated JUnit test sources are compiled too when present. Full
+    per-case JUnit *execution* remains a documented follow-up.
     """
     from src.cleanroom.utils.java_tooling import javac_path, junit_jar
 
@@ -362,14 +361,19 @@ def run_case_java(code_dir: Path, plan: dict, case: dict, timeout: float = 30.0)
         return False, "javac not found (set $JAVAC or install a JDK)"
 
     src = Path(code_dir) / "src"
-    java_files = sorted(str(p) for p in src.glob("*.java"))
+    java_paths = sorted(src.glob("*.java"))
+    java_files = [str(p) for p in java_paths]
     if not java_files:
         return False, "no Java sources to compile"
+    test_files = [p for p in java_paths if p.name.endswith("Test.java")]
 
     classes = Path(code_dir) / "classes"
     classes.mkdir(parents=True, exist_ok=True)
     cmd = [javac, "-d", str(classes)]
-    if (jar := junit_jar()) is not None:
+    jar = junit_jar()
+    if test_files and jar is None:
+        return False, "JUnit test sources present but JUNIT_JAR was not found"
+    if jar is not None:
         cmd += ["-cp", str(jar)]
     cmd += java_files
     try:
@@ -379,7 +383,9 @@ def run_case_java(code_dir: Path, plan: dict, case: dict, timeout: float = 30.0)
 
     if proc.returncode != 0:
         return False, "javac: " + (proc.stderr or proc.stdout or "compile failed").strip()[:300]
-    return True, "compiled OK (v1 oracle: javac compile-check; JUnit execution deferred)"
+    if test_files:
+        return True, "compiled OK (v1 oracle: javac + JUnit test compile-check; execution deferred)"
+    return True, "compiled OK (v1 oracle: javac compile-check; no JUnit tests found)"
 
 
 # Cache the build verdict per assembled project dir: the build outcome is independent of the
@@ -389,13 +395,12 @@ _SPRING_BUILD_CACHE: dict[str, tuple[bool, str]] = {}
 
 
 def run_case_spring(code_dir: Path, plan: dict, case: dict, timeout: float = 180.0) -> tuple[bool, str]:
-    """v1 Spring oracle: build the assembled Maven Spring Boot project with Maven → (passed, reason).
+    """v1 Spring oracle: test-compile the assembled Maven Spring Boot project → (passed, reason).
 
-    A clean ``mvn compile`` means the isolated controllers assembled into a well-typed Spring app
-    (component scanning + Spring Web on the classpath). The build outcome is the same for every
-    case of a sample, so it is computed once per project dir and cached. In-process MockMvc HTTP
-    execution of each case is a documented follow-up (needs the app booted on a random port and a
-    JSON-marshalling harness); gracefully reports when Maven/JDK is absent.
+    A clean ``mvn test-compile`` means the isolated controllers and generated MockMvc/JUnit tests
+    assembled into a well-typed Spring app. The build outcome is the same for every case of a
+    sample, so it is computed once per project dir and cached. In-process MockMvc execution of each
+    case remains deferred; this is a static compile check.
     """
     from src.cleanroom.utils.maven_tooling import mvn_path
 
@@ -409,11 +414,11 @@ def run_case_spring(code_dir: Path, plan: dict, case: dict, timeout: float = 180
     if not (Path(code_dir) / "pom.xml").is_file():
         return False, "no pom.xml — Spring project was not assembled"
 
-    cmd = [mvn, "-B", "-q", "-Dstyle.color=never", "compile"]
+    cmd = [mvn, "-B", "-q", "-Dstyle.color=never", "test-compile"]
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, cwd=str(code_dir))
     except subprocess.TimeoutExpired:
-        result = (False, f"mvn compile timed out after {timeout:.0f}s")
+        result = (False, f"mvn test-compile timed out after {timeout:.0f}s")
         _SPRING_BUILD_CACHE[key] = result
         return result
     except (OSError, subprocess.SubprocessError) as exc:
@@ -421,9 +426,9 @@ def run_case_spring(code_dir: Path, plan: dict, case: dict, timeout: float = 180
 
     if proc.returncode != 0:
         tail = (proc.stdout or "") + (proc.stderr or "")
-        result = (False, "mvn compile: " + tail.strip()[-300:])
+        result = (False, "mvn test-compile: " + tail.strip()[-300:])
     else:
-        result = (True, "built OK (v1 oracle: mvn compile-check; MockMvc HTTP execution deferred)")
+        result = (True, "built OK (v1 oracle: mvn test-compile; MockMvc execution deferred)")
     _SPRING_BUILD_CACHE[key] = result
     return result
 

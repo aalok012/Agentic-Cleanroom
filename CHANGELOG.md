@@ -26,6 +26,76 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-27 — collect_metrics: per-SRS FR count, and FIX cell-dropping dedup bug
+
+### Added
+- **`n_frs` column** (after `srs`) — number of functional requirements per SRS from the
+  deterministic `SRSReader` (cctns 7, gamma-j 6, video-search 7, Human 2, dineout 26, kinmail 13).
+  Same value for every row of a given SRS; filled even for failed cells.
+
+### Fixed
+- **`scripts/collect_metrics.py` was dropping cells.** It deduped rows by `run_id`
+  (`timestamp-srs`, no model), so parallel cells of the same SRS finishing in the same second
+  collided and overwrote each other — `experiment_metrics.csv` had 58/72 cells, `baseline_metrics.csv`
+  40/72. Now dedupes by the **cell identity** (language/srs/model from the path), keeping the latest
+  run per cell. Both CSVs now contain all **72 rows (24 per language)**.
+
+### Verified
+- Per-cell `tokens_total` cross-checked against run-JSON `tokens.total`, the per-stage token sum,
+  and `full_ir` metrics across all 144 run JSONs — 0 discrepancies. Failed (402) cells correctly
+  show `tokens_total=0` (died before spending tokens).
+
+---
+
+## 2026-06-27 — Add the 8 headline summary metrics as columns in the metrics CSV
+
+### Changed
+- **`scripts/collect_metrics.py`** now emits `verification_pass_ratio, test_case_pass_ratio,
+  avg_input_token, avg_output_token, total_time, avg_verification_iter, avg_test_iter, PassVer@1`.
+  Why: these run-report headline metrics weren't in the CSV (the per-run JSON doesn't store them).
+  How: per run JSON, read the authoritative pre-computed `metrics.summary` from the cell's
+  `<stem>_full_ir.json` (exactly what `run_pipeline._compute_summary` wrote); fall back to the
+  always-available token/time/case-rate fields from the run JSON when full_ir is absent.
+- Rebuilt `experiment_metrics.csv` (72 rows). avg_input/output/total_time populated for all 72;
+  the FR-level ratios are blank only for the 3 failed cells (no full_ir). Java rows now carry
+  verification_pass_ratio / PassVer@1 / avg_verification_iter even though their pass@k was skipped
+  (no Maven oracle). Values verified against the per-cell run reports (e.g. dineout/python/gpt-4.1
+  = 0.4615).
+
+---
+
+## 2026-06-27 — Baseline pipeline (contract-free naive flow) + separate metrics
+
+### Added
+- **Step 1 — `run_baseline.py`** — a standalone NAIVE pipeline (does not touch run_pipeline.py).
+  Per cell: (1) LLM extracts features from the raw SRS (`agents/baseline/prompts/extract_features.j2`,
+  pydantic structured output); (2) LLM writes code per feature DIRECTLY
+  (`generate_code_naive_{python,java,js}.j2`) with a fixed `feature_<slug>(payload)` binding
+  convention; (3) Dafny proof **1 round, no loop** (reuses `DafnyAgent(max_rounds=1)` via a minimal
+  features→`planning.contracts` shim that maps FR text into `contract.response`); (4) UNPROVED
+  features get a naive test (`generate_tests_naive_*.j2`) that is RUN against the code; (5) records
+  the SAME metric shape via `record_run` into `outputs/baseline/<lang>/<srs>/<model>/runs/`.
+- **Step 2 — `utils/baseline_oracle.py`** — runs the generated tests: python `pytest`, javascript
+  `node --test` (Node built-in, no npm), java `javac` compile-check per feature pair (matches the
+  full pipeline's Java oracle). Returns (passed, total) → mapped to `pass@1`/`case_pass_rate`.
+- **Step 3 — `run_baseline_matrix.sh`** — 3 languages × 6 SRS × 4 models, parallel-by-model,
+  idempotent skip, `MATRIX_MODELS` override. Output `outputs/baseline/...`; collected into a
+  SEPARATE `baseline_metrics.csv` via the existing `scripts/collect_metrics.py` (schema aligns).
+
+### Verified
+- Smoke per language: python oracle 6/9, java 5/5 (compile), js runs `node --test` (0/8 — a genuine
+  naive-mismatch signal: code & tests invent different field names with no shared contract).
+  `baseline_metrics.csv` builds with verification_rate + pass@1 + cost populated.
+
+### Notes / caveats (by design)
+- Baseline `pass@1` = *test-file pass rate* (a DIFFERENT oracle than the full pipeline's structured
+  pass@k) — comparable in spirit, not numerically identical. Lives in `baseline_metrics.csv`,
+  separate from `experiment_metrics.csv`.
+- "Fully contract-free" makes code/tests bind only by naming convention → expect low pass rates;
+  that is the intended baseline contrast with the full pipeline.
+
+---
+
 ## 2026-06-26 — Third language target: JavaScript (Node/Express + SQLite), mirroring the Python stack
 
 ### Added

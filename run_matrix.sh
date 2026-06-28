@@ -39,14 +39,12 @@ FLAGS="--prove --certify --max-cert-loops 4 --prove-rounds 4"
 BASE="outputs/matrix"   # isolated from historical outputs/ so the CSV holds ONLY matrix runs
 CSV="experiment_metrics.csv"
 
-# Frontier mix — 4 models. Override for a run with: MATRIX_MODELS="m1 m2 m3" ./run_matrix.sh ...
+# Cost-control default: DeepSeek only. Override deliberately with:
+#   MATRIX_MODELS="m1 m2 m3" ./run_matrix.sh ...
 if [ -n "${MATRIX_MODELS:-}" ]; then
   read -r -a MODELS <<< "$MATRIX_MODELS"
 else
   MODELS=(
-    "openai/gpt-4.1"
-    "google/gemini-3.1-pro-preview"
-    "anthropic/claude-sonnet-4-6"
     "deepseek/deepseek-v3.2"
   )
 fi
@@ -65,7 +63,7 @@ OK=0; FAIL=0; SKIP=0; GROUP=0; TOTAL=$(( ${#MODELS[@]} * ${#SRS_FILES[@]} ))
 # Models run CONCURRENTLY within each SRS (safe: each cell has its own --output-dir
 # and PIPELINE_LEDGER_FILE, so generated code / dafny / ledgers never collide). We move
 # to the next SRS only after all of that SRS's models finish — caps concurrency at
-# ${#MODELS[@]} (4) API streams, which is gentle on OpenRouter rate limits.
+# ${#MODELS[@]} API streams, which is gentle on OpenRouter rate limits.
 for SRS in "${SRS_FILES[@]}"; do
   [ -e "$SRS" ] || { echo "!! no SRS files matched data/srs/*.xml"; break; }
   STEM=$(basename "$SRS" .xml)

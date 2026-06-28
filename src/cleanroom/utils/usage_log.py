@@ -223,7 +223,9 @@ def metrics_from_globals(*, srs: str, stack: str, stages: list, config: dict | N
 
     in_tot, out_tot, calls = GLOBAL_METRICS.snapshot()
     cost, by_model = estimate_cost_by_model(GLOBAL_METRICS.calls)
-    model = "+".join(sorted(by_model)) if len(by_model) > 1 else (GLOBAL_METRICS.model or "gpt-4o-mini")
+    from src.cleanroom.utils.llm_client import DEFAULT_MODEL
+
+    model = "+".join(sorted(by_model)) if len(by_model) > 1 else (GLOBAL_METRICS.model or DEFAULT_MODEL)
     return {
         "srs": srs,
         "stack": stack,

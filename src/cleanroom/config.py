@@ -36,6 +36,7 @@ class RunConfig:
     prove: bool = False
     prove_target: str = "py"
     max_cert_loops: int = 2
+    max_compile_repair_loops: int = 2
 
     # --- per-agent ON/OFF switches (compose any arm; required agents Spec/Planning/Code
     #     have no switch — they are the irreducible spec->code task given to every arm) ---
@@ -67,6 +68,7 @@ class RunConfig:
             "certify": self.certify,
             # recovery only fires after a real certification pass
             "recovery": self.certify and self.run_recovery and self.max_cert_loops > 0,
+            "compile_repair": self.language == "java" and self.max_compile_repair_loops > 0,
         }
 
     def as_dict(self) -> dict:
@@ -77,7 +79,9 @@ class RunConfig:
             "run_recovery": self.run_recovery,
             "certify": self.certify, "samples": self.samples, "k_values": list(self.k_values),
             "prove": self.prove, "prove_target": self.prove_target,
-            "max_cert_loops": self.max_cert_loops, "temperature": self.temperature,
+            "max_cert_loops": self.max_cert_loops,
+            "max_compile_repair_loops": self.max_compile_repair_loops,
+            "temperature": self.temperature,
             "cert_temperature": self.cert_temperature, "case_timeout": self.case_timeout,
             "prove_rounds": self.prove_rounds, "llm_deps": self.llm_deps, "baseline": self.baseline,
         }
@@ -137,6 +141,7 @@ class RunConfig:
             prove=False if baseline else getattr(args, "prove", False),
             prove_target=prove_target,
             max_cert_loops=max_loops,
+            max_compile_repair_loops=getattr(args, "max_compile_repair_loops", 2),
             temperature=0.0 if baseline else getattr(args, "temperature", 0.0),
             cert_temperature=getattr(args, "cert_temperature", 0.4),
             case_timeout=getattr(args, "case_timeout", 10.0),

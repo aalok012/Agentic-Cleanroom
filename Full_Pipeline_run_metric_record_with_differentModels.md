@@ -307,3 +307,86 @@ verification_pass_ratio	test_case_pass_ratio	avg_input_token	avg_output_token	to
 
 - proved feature ids: (none)
 
+---
+
+## Run 20260628-033707-dineout-srs — COMPLETE
+
+- **When**: 2026-06-27 22:37:07
+- **SRS**: dineout_srs.xml  ·  **language**: java  ·  **stack**: spring
+- **Command**: `python run_pipeline.py data/srs/dineout_srs.xml --output-dir outputs/matrix/java/dineout_srs/openai_gpt-4_1 --language java --stack spring --model gpt-4.1 --prove --certify --samples 1 --max-cert-loops 4 --prove-rounds 4`
+
+### Models used (per stage)
+
+| stage | model |
+|---|---|
+| spec | `gpt-4.1` |
+| dependency | `gpt-4.1` |
+| planning | `gpt-4.1` |
+| code | `gpt-4.1` |
+| test | `gpt-4.1` |
+| proof | `gpt-4.1` |
+| cert | `gpt-4.1` |
+
+### Pipeline flags
+
+- agents: spec=on, dependency=on, planning=on, proof=on, code=on, test=on, certify=on, recovery=on
+- certify=True · samples=1 · k=[1] · prove=True · max_cert_loops=4
+- temperature=0.0 · cert_temperature=0.4 · prove_rounds=4 · baseline=False
+
+### Run metrics (summary)
+
+| metric | value |
+|---|---|
+| PassVer@1 | 0.5385 |
+| verification_pass_ratio | 0.5385 |
+| test_case_pass_ratio | 0.0 |
+| avg_verification_iteration | 2.81 |
+| avg_test_iteration | 1 |
+| avg_input_token | 2201.8 |
+| avg_output_token | 807.0 |
+| total_time (s) | 471.45 |
+
+#### Copy-paste row (TSV — paste directly under your spreadsheet header)
+
+```text
+verification_pass_ratio	test_case_pass_ratio	avg_input_token	avg_output_token	total_time	avg_verification_iter	avg_test_iter	PassVer@1
+0.5385	0.0	2201.8	807.0	471.45	2.81	1	0.5385
+```
+
+- tokens: 258,753 (in 189,354 / out 69,399) · calls 86
+- estimated cost: $0.9339
+
+### Dafny proof tier
+
+- proved 4/10 features (rate 0.4)
+
+| feature | result | rounds | axioms |
+|---|---|---|---|
+| 4.1 | PROVED | 2 | 0 |
+| 4.10 | PROVED | 1 | 0 |
+| 4.2 | unproved | 4 | 0 |
+| 4.3 | unproved | 4 | 0 |
+| 4.4 | unproved | 4 | 0 |
+| 4.5 | unproved | 4 | 0 |
+| 4.6 | unproved | 4 | 0 |
+| 4.7 | unproved | 4 | 0 |
+| 4.8 | PROVED | 2 | 0 |
+| 4.9 | PROVED | 2 | 0 |
+
+### Certification (pass@k)
+
+- pass@1: 0.000
+- case pass rate: 0.000
+- pass@1 FR ids: (none)
+
+### Final per-feature outcome
+
+| feature | outcome |
+|---|---|
+| 4.1 | PROVED |
+| 4.10 | PROVED |
+| 4.8 | PROVED |
+| 4.9 | PROVED |
+
+- proved feature ids: ['4.1', '4.10', '4.8', '4.9']
+

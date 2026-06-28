@@ -20,17 +20,96 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import sys
 from pathlib import Path
 
+# Allow `from src.cleanroom...` when run as `python scripts/collect_metrics.py` (repo root on path).
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+_SRS_DIR = Path(__file__).resolve().parent.parent / "data" / "srs"
+_FR_CACHE: dict[str, object] = {}
+
+
+def _n_frs(srs_stem: str) -> object:
+    """Number of functional requirements in this SRS, via the deterministic parser. Cached per
+    stem; blank if the SRS file can't be found/parsed. Same value for every row of a given SRS."""
+    if srs_stem in _FR_CACHE:
+        return _FR_CACHE[srs_stem]
+    val: object = ""
+    srs_file = _SRS_DIR / f"{srs_stem}.xml"
+    if srs_file.is_file():
+        try:
+            from src.cleanroom.agents.spec_agent.tools.srs_reader import SRSReader
+            feats = SRSReader().read_features(srs_file)
+            val = sum(len(f.get("functional_requirements", [])) for f in feats)
+        except Exception:
+            val = ""
+    _FR_CACHE[srs_stem] = val
+    return val
+
 COLUMNS = [
-    "run_id", "timestamp", "status", "language", "srs", "stack", "model",
+    "run_id", "timestamp", "status", "language", "srs", "n_frs", "stack", "model",
     "total_seconds",
     "tokens_in", "tokens_out", "tokens_total", "llm_calls", "cost_usd",
     "code_files", "code_loc", "test_features", "test_cases",
     "dafny_n_features", "dafny_n_verified", "dafny_verification_rate", "dafny_axioms",
     "cert_n", "pass@1", "case_pass_rate", "n_tested_frs", "n_proved_features",
     "prove", "certify", "samples", "max_cert_loops", "temperature",
+    # headline research summary (from <stem>_full_ir.json metrics.summary; falls back to the
+    # always-available token/time/case-rate fields from the run JSON when full_ir is absent).
+    "verification_pass_ratio", "test_case_pass_ratio", "avg_input_token", "avg_output_token",
+    "total_time", "avg_verification_iter", "avg_test_iter", "PassVer@1",
 ]
+
+# summary key in full_ir metrics  ->  CSV column
+_SUMMARY_MAP = {
+    "verification_pass_ratio": "verification_pass_ratio",
+    "test_case_pass_ratio": "test_case_pass_ratio",
+    "avg_input_token": "avg_input_token",
+    "avg_output_token": "avg_output_token",
+    "total_time": "total_time",
+    "avg_verification_iteration": "avg_verification_iter",
+    "avg_test_iteration": "avg_test_iter",
+    "PassVer@1": "PassVer@1",
+}
+
+
+def _summary_fields(json_path: Path, rec: dict) -> dict:
+    """The 8 headline metrics for one run. Prefer the authoritative pre-computed
+    ``metrics.summary`` in the cell's <stem>_full_ir.json; otherwise fall back to the
+    fields recomputable from the run JSON alone (FR-level ratios left blank)."""
+    out = {c: "" for c in _SUMMARY_MAP.values()}
+    # cell dir = parent of runs/ ; full_ir lives there as <stem>_full_ir.json
+    cell_dir = json_path.parent.parent
+    fir = next(iter(cell_dir.glob("*full_ir.json")), None)
+    if fir is not None:
+        try:
+            summary = (json.loads(fir.read_text(encoding="utf-8")).get("metrics") or {}).get("summary") or {}
+        except (json.JSONDecodeError, OSError):
+            summary = {}
+        if summary:
+            for src, col in _SUMMARY_MAP.items():
+                out[col] = summary.get(src, "")
+            return out
+    # Fallback: token/time/case-rate are present in the run JSON for every cell.
+    tok = rec.get("tokens") or {}
+    calls = tok.get("calls") or 0
+    cert = rec.get("certification") or {}
+    if calls:
+        out["avg_input_token"] = round(tok.get("input", 0) / calls, 1)
+        out["avg_output_token"] = round(tok.get("output", 0) / calls, 1)
+    out["total_time"] = rec.get("total_seconds", "")
+    if cert.get("aggregate_case_pass_rate") is not None:
+        out["test_case_pass_ratio"] = round(cert.get("aggregate_case_pass_rate", 0.0), 4)
+    # The naive baseline emits no full_ir summary. Prefer its FR-granular ratio
+    # (proved_FRs / total_FRs, matches the full pipeline) when recorded; otherwise fall
+    # back to the feature-granular rate (n_verified / n_features).
+    dafny = rec.get("dafny") or {}
+    if dafny.get("verification_pass_ratio_fr") is not None:
+        out["verification_pass_ratio"] = round(dafny.get("verification_pass_ratio_fr", 0.0), 4)
+    elif dafny.get("verification_rate") is not None:
+        out["verification_pass_ratio"] = round(dafny.get("verification_rate", 0.0), 4)
+    return out
 
 
 def _derive_from_path(json_path: Path, root: Path) -> dict:
@@ -102,8 +181,18 @@ def collect(root: Path, out: Path) -> int:
             print(f"  skip {json_path}: {e}")
             continue
         row = _row(rec, _derive_from_path(json_path, root))
-        rid = row["run_id"] or json_path.stem
-        rows[rid] = row
+        row["n_frs"] = _n_frs(row.get("srs", ""))
+        row.update(_summary_fields(json_path, rec))
+        # Dedupe by CELL identity (language/srs/model from the path), NOT run_id: run_id is
+        # timestamp+srs (no model), so parallel cells of the same SRS finishing in the same second
+        # would collide and overwrite each other. Keep the latest run per cell.
+        try:
+            key = "/".join(json_path.parent.parent.relative_to(root).parts)  # lang/srs/model
+        except ValueError:
+            key = row["run_id"] or json_path.stem
+        prev = rows.get(key)
+        if prev is None or (row.get("timestamp") or "") >= (prev.get("timestamp") or ""):
+            rows[key] = row
 
     ordered = sorted(rows.values(), key=lambda r: (r.get("timestamp") or "", r.get("run_id") or ""))
     with out.open("w", newline="", encoding="utf-8") as f:
