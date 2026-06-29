@@ -51,6 +51,7 @@ class RunConfig:
     prove_rounds: int = 6             # Dafny generate->verify->revise rounds per feature
     llm_deps: bool = True             # use the LLM to infer semantic FR->FR edges (else regex-only)
     baseline: bool = False            # control run: no proof, no recovery, regex-only deps, temp 0
+    resume: bool = False              # resume from the per-stage checkpoint, skipping completed stages
 
     def models_used(self) -> dict[str, str]:
         """Stage -> model, for the run report / debugging."""
@@ -148,4 +149,5 @@ class RunConfig:
             prove_rounds=getattr(args, "prove_rounds", 6),
             llm_deps=False if baseline else getattr(args, "llm_deps", True),
             baseline=baseline,
+            resume=getattr(args, "resume", False),
         )

@@ -28,6 +28,30 @@ def _debug_once_enabled() -> bool:
     return os.getenv("CLEANROOM_LLM_DEBUG_ONCE", "").lower() in ("1", "true", "yes", "on")
 
 
+def _llm_timeout() -> float:
+    """Per-request HTTP timeout (seconds) for the LLM client. A bounded timeout turns a hung /
+    half-delivered response (the transient OpenRouter `JSONDecodeError` we hit) into a clean
+    timeout the SDK can RETRY instead of crashing the whole run.
+
+    Default 120s — generous enough for the Dafny/proof stage's long reasoning responses while
+    still catching hangs. Lower it (e.g. 30) via CLEANROOM_LLM_TIMEOUT for snappier failure on
+    the lighter stages."""
+    try:
+        return max(5.0, float(os.getenv("CLEANROOM_LLM_TIMEOUT", "120")))
+    except ValueError:
+        return 120.0
+
+
+def _llm_max_retries() -> int:
+    """Automatic retries the OpenAI SDK performs on transient failures (timeouts, connection
+    errors, 429 rate limits, 5xx). Default 3 (SDK default is 2); override with
+    CLEANROOM_LLM_MAX_RETRIES."""
+    try:
+        return max(0, int(os.getenv("CLEANROOM_LLM_MAX_RETRIES", "3")))
+    except ValueError:
+        return 3
+
+
 def _debug_max_chars() -> int:
     try:
         return max(500, int(os.getenv("CLEANROOM_LLM_DEBUG_MAX_CHARS", "4000")))
@@ -300,6 +324,11 @@ def get_llm(model: str = DEFAULT_MODEL, temperature: float = 0.0) -> ChatOpenAI:
         "temperature": temperature,
         "api_key": api_key,
         "callbacks": callbacks,
+        # Bounded per-request timeout + automatic retries so a transient OpenRouter hiccup
+        # (timeout / 429 / 5xx / half-delivered body → JSONDecodeError) is retried instead of
+        # killing the whole run. Both env-tunable (CLEANROOM_LLM_TIMEOUT / _MAX_RETRIES).
+        "timeout": _llm_timeout(),
+        "max_retries": _llm_max_retries(),
     }
     if base_url:
         kwargs["base_url"] = base_url

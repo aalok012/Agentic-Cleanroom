@@ -16,6 +16,8 @@ Code Agent, just targeting Dafny.
 
 from __future__ import annotations
 
+import hashlib
+import json
 import re
 from pathlib import Path
 
@@ -118,6 +120,32 @@ class DafnyAgent:
         self.max_rounds = max_rounds
         self.llm = llm or get_llm(model=model, temperature=0.0)
         self._system = self._build_system()
+        # Per-feature proof cache: lets the (otherwise monolithic) proof tier survive a mid-run
+        # crash/blip — already-proved features are reloaded instead of re-proved on the next run.
+        # MUST live OUTSIDE project_dir: scaffold_dafny_project() rmtree's project_dir at the start
+        # of every proof run, so the cache sits next to it (parent dir) to survive that wipe.
+        self.cache_path = self.project_dir.parent / f"{self.project_dir.name}__proof_cache.json"
+
+    def _feature_sig(self, ir: dict, feature_id: str, mod: str) -> str:
+        """Stable hash of everything that determines a feature's proof input, so the cache is only
+        reused when the spec/planning + prompt + round budget are unchanged."""
+        blob = f"{self.model}|{self.max_rounds}|{self._system}|{self._feature_prompt(ir, feature_id, mod)}"
+        return hashlib.sha256(blob.encode("utf-8")).hexdigest()
+
+    def _load_cache(self) -> dict:
+        try:
+            return json.loads(self.cache_path.read_text())
+        except Exception:
+            return {}
+
+    def _save_cache(self, cache: dict) -> None:
+        try:
+            self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = self.cache_path.with_suffix(".json.tmp")
+            tmp.write_text(json.dumps(cache, indent=2))
+            tmp.replace(self.cache_path)
+        except Exception:
+            pass   # caching is a best-effort optimization; never fail the proof on a cache write
 
     def _build_system(self) -> str:
         domain = (self.dafny_dir / "Replay.dfy").read_text().split(
@@ -182,5 +210,24 @@ class DafnyAgent:
 
     def generate(self, ir: dict) -> GeneratedDafny:
         feature_ids = sorted({c["feature_id"] for c in (ir.get("planning") or {}).get("contracts", [])})
-        features = [self.generate_feature(ir, fid) for fid in feature_ids]
+        cache = self._load_cache()
+        features: list[FeatureDafny] = []
+        for fid in feature_ids:
+            mod = "F" + fid.replace(".", "_")
+            sig = self._feature_sig(ir, fid, mod)
+            ent = cache.get(fid)
+            if ent and ent.get("sig") == sig:
+                # Cache hit: reuse the proven result and re-materialize its .dfy so the later
+                # compile/translate step still finds every module on disk.
+                fd = FeatureDafny.model_validate(ent["data"])
+                try:
+                    (self.dafny_dir / f"{mod}.dfy").write_text(fd.dafny_source)
+                except Exception:
+                    pass
+                features.append(fd)
+                continue
+            fd = self.generate_feature(ir, fid)
+            cache[fid] = {"sig": sig, "data": fd.model_dump()}
+            self._save_cache(cache)   # incremental: persist after EACH feature so a crash keeps them
+            features.append(fd)
         return GeneratedDafny(features=features)

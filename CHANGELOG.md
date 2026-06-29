@@ -26,6 +26,91 @@ Keep each step small and concrete so anyone can follow the change after the fact
 
 ---
 
+## 2026-06-28 — Pipeline: opt-in stage-level checkpoint / `--resume`
+
+### Added
+- **Per-stage checkpointing in `run_pipeline.py` so a failed run resumes from the failed stage instead of re-spending earlier stages' tokens.** Why: `run_pipeline` only wrote its IR at the very end, so any failure (e.g. a transient proof/cert error on a 26-feature SRS) meant re-running the whole expensive sequence. How: new helpers `_save_ckpt` / `_load_ckpt` / `_ckpt_path` write `outputs/<stem>_ckpt.json` after **every** completed stage (`spec, dependency, planning, proof, code, test, certification`), capturing the enriched `ir`, the `metrics` (incl. the per-stage timing/token table) and a full snapshot of `GLOBAL_METRICS` (input/output tokens + per-call records) so resumed token totals and cost stay accurate. Writes are atomic (`*.json.tmp` → `replace`). Each stage is wrapped in an `if "<stage>" in done:` skip-branch that reconstructs the locals it would have produced — the proof tier re-derives `proved_*` from `ir['generated_dafny']` + `metrics['compile']` and re-scaffolds the on-disk Dafny project (mkdir + copy kernel, **no tokens**). New `--resume` flag (and `RunConfig.resume`) controls *loading* the checkpoint; checkpoints are always *written*. A fully-completed run clears its checkpoint. Verified token-free: save/load round-trip restores `GLOBAL_METRICS` accounting and the completed-stage set.
+
+---
+
+## 2026-06-28 — SRS reader: Tagged-PDF (Acrobat SaveAsXML) support for foodsaver
+
+### Fixed
+- **`_strip_ns` no longer crashes on comment / processing-instruction nodes** (`src/cleanroom/agents/spec_agent/tools/srs_reader.py`). Why: `foodsaver.xml` is an Acrobat "SaveAsXML" export whose root carries `<?xpacket?>` PIs; lxml gives those a *callable* `.tag`, and `read_tree`'s `_strip_ns(child.tag)` raised `TypeError: ... not a container`. How: `_strip_ns` now returns `""` for any non-str tag, so iterators over mixed children skip non-elements.
+
+### Added
+- **`build_tagged_pdf_usecase_features(root)` — new additive reader branch for `<TaggedPDF-doc>` exports.** Why: foodsaver is a Tagged-PDF logical tree (`Part > Sect > {H1..H6, P, L, Table}`) matching none of the existing shapes, so it parsed to zero features. How: scopes to the "3. Specific Requirements" subtree, flattens it to an ordered block stream, and splits on the `3.1.<n> <Title>` use-case marker. Each use case's following body prose (Description/Actor/Trigger/Conditions/Exceptions) becomes a single `REQ-1`. Wired into `read_features` after the PEPPOL branch and before the last-resort module builder, so the other 6 SRS are untouched.
+
+### Fixed
+- **Tagged-PDF reader was MERGING ~11 use cases into their predecessors (caught reviewing the run checkpoint).** Why: the Acrobat export is inconsistent — it tags *some* use-case titles as `<H4>` headings but leaves others (3.1.4, 3.1.6, 3.1.12, 3.1.14, 3.1.16, 3.1.22, 3.1.23, 3.1.25, 3.1.29, 3.1.32, 3.1.33) as plain `<P>` text inside the previous use case's section. The first cut split only on `<H4>`, so those 11 got swallowed into the preceding feature's body and never became top-level features (so planning/codegen skipped their endpoints — e.g. "Add food post", "Reserve Food"). How: the builder now splits on the `3.1.<n>` marker **wherever it appears** — heading or a short standalone paragraph (a length guard rejects long body lines that merely cite a section number) — with lists/tables flattened as opaque blobs so inner cells don't double-count. Also de-duplicates the source's two `3.1.10` sections (`3.1.10` Report a user + `3.1.10_2` Edit profile) so feature ids stay unique. Result: foodsaver → **37 features / 37 FRs** (was 26); all 11 recovered, ids unique; other 6 SRS unchanged (cctns 7, gamma 6, video 7, Human 2, dineout 10/26, kinmail 13).
+
+---
+
+## 2026-06-28 — LLM client: bounded timeout + automatic retries
+
+### Added
+- **Per-request `timeout` and `max_retries` on the `ChatOpenAI` client** (`get_llm()` in
+  `src/cleanroom/utils/llm_client.py`). Why: a deepseek kinmail run crashed at the Dafny proof
+  stage with `json.decoder.JSONDecodeError` — OpenRouter returned a half-delivered / non-JSON
+  body (transient, likely rate-limiting under concurrent runs), and with no timeout/retry it
+  killed the whole pipeline run. How: new env-tunable helpers `_llm_timeout()`
+  (`CLEANROOM_LLM_TIMEOUT`, default 120s — generous enough for the proof stage's long reasoning
+  responses, bounded enough to catch hangs) and `_llm_max_retries()` (`CLEANROOM_LLM_MAX_RETRIES`,
+  default 3) feed `timeout`/`max_retries` into the client, so transient timeouts/429/5xx/hung
+  bodies are retried instead of aborting the run. Verified the client picks up both values and
+  honors env overrides (token-free).
+
+---
+
+## 2026-06-28 — consolidate API usage into one ledger + fix totals bug
+
+### Fixed
+- **`_parse_history_rows` / `_normalize_history_line` off-by-one** (`src/cleanroom/utils/usage_log.py`).
+  History rows are 12 cells (current) / 10 cells (legacy), but the parser only matched 11/13, so it
+  parsed ZERO rows — cumulative totals always reset to just the latest run ("runs logged | 1" despite
+  hundreds of history rows). Changed the length checks to 12 (current) and 10 (legacy). Cumulative
+  totals now accumulate across every row.
+
+### Changed
+- **Merged `API_USAGE.md` (2026-06-21..24) + `API_USAGE_2.md` (2026-06-26..28) into a single
+  `API_USAGE.md`** covering the full history from the beginning (219 runs; corrected cumulative
+  totals: 7,878 calls, 40.7M tokens, $80.13). Re-pointed `DEFAULT_USAGE_LOG` back to `API_USAGE.md`
+  so all future runs append to the one ledger. Removed `API_USAGE_2.md`. Why: the deliberate
+  2-file split (frozen historical + active) was confusing and, combined with the totals bug, made
+  the cumulative numbers meaningless. How: merged via the module's own `_collect_history_lines` /
+  `_render_document` so the format stays append-compatible; verified the consolidated file
+  round-trips (219 rows parse back; a dry append correctly yields 220).
+
+## 2026-06-28 — video search: split a lone multi-requirement feature
+
+### Changed
+- **`build_fr_features()` now splits a SINGLE collapsed feature into per-requirement features**
+  via new helper `_split_lone_feature()` (`src/cleanroom/agents/spec_agent/tools/srs_reader.py`).
+  Why: video search parsed to just 1 feature ("Torrent Search") holding all 7 FRs, so the Dafny
+  proof was one oversized all-or-nothing state machine that weaker models (deepseek/gpt) could
+  not discharge — verification rate stuck at 0. How: the guard fires ONLY when the document
+  yields exactly one feature with >1 requirement, so multi-feature SRS that share this branch
+  (dineout, gamma, Human) are returned untouched and their existing results stand. Verified:
+  video search 1→**7 features**; dineout 10, gamma 6, Human 2, cctns 7, kinmail 13 all unchanged.
+
+## 2026-06-28 — kinmail: split UserClass actor-groups into per-requirement features
+
+### Changed
+- **`build_userclass_features()` now emits one feature per `<Requirement>`, not one per
+  `<UserClass>`** (`src/cleanroom/agents/spec_agent/tools/srs_reader.py`). Why: kinmail's 13 FRs
+  were collapsed into just 2 "features" (the two `<UserClass>` actor blocks), producing oversized
+  single-state-machine Dafny proofs that almost never verified — `verification_pass_ratio` was 0
+  for most models/languages and only swung to 1.0 when a top-tier model (gemini) discharged both
+  giant proofs. The baseline pipeline, which extracts ~9 features for kinmail, verified far better
+  on identical inputs (up to 9/9), confirming feature granularity as the cause. How: each
+  `<Requirement>` becomes its own feature — id from the `id` attr, name from `<Title>`, text from
+  `<Desc>`, owning `<UserClass>` name kept as `description` (actor context); added a duplicate-id
+  guard. The SRS XML is intentionally untouched (input data; fix belongs in the deterministic
+  reader). Verified `python -m src.cleanroom.agents.spec_agent.tools.srs_reader data/srs/*.xml`:
+  kinmail 2→**13 features**; cctns 7, gamma 6, video-search 1, Human 2, dineout 10 all unchanged.
+
+---
+
 ## 2026-06-27 — collect_metrics: per-SRS FR count, and FIX cell-dropping dedup bug
 
 ### Added

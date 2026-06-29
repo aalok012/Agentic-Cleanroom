@@ -5,9 +5,9 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from pathlib import Path
 
-# Active usage ledger. API_USAGE.md is frozen as the historical record; all runs from
-# 2026-06-24 onward log to API_USAGE_2.md (a fresh ledger with its own cumulative totals).
-DEFAULT_USAGE_LOG = Path("API_USAGE_2.md")
+# Single consolidated usage ledger (full history from the beginning). All runs append here and
+# cumulative totals are recomputed from every row on each write.
+DEFAULT_USAGE_LOG = Path("API_USAGE.md")
 
 _HISTORY_HEADER = (
     "| date (UTC) | run_id | status | SRS | model | calls | input tok | output tok | "
@@ -33,7 +33,7 @@ def _parse_history_rows(text: str) -> list[dict]:
         if stripped == _HISTORY_SEP or stripped.replace("---|", "") == _LEGACY_HEADER.replace("|", ""):
             continue
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if len(cells) == 11:
+        if len(cells) == 10:
             try:
                 rows.append(
                     {
@@ -46,7 +46,7 @@ def _parse_history_rows(text: str) -> list[dict]:
                 )
             except ValueError:
                 continue
-        elif len(cells) == 13:
+        elif len(cells) == 12:
             try:
                 rows.append(
                     {
@@ -63,11 +63,11 @@ def _parse_history_rows(text: str) -> list[dict]:
 
 
 def _normalize_history_line(line: str) -> str:
-    """Upgrade legacy 11-column rows to the current 13-column format."""
+    """Upgrade legacy 10-column rows to the current 12-column format."""
     cells = [c.strip() for c in line.strip().strip("|").split("|")]
-    if len(cells) == 13:
+    if len(cells) == 12:
         return line
-    if len(cells) != 11:
+    if len(cells) != 10:
         return line
     return (
         f"| {cells[0]} | `legacy` | {cells[1]} | {cells[2]} | {cells[3]} | "

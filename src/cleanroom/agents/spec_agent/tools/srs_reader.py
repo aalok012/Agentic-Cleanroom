@@ -29,8 +29,15 @@ from lxml import etree
 # --------------------------------------------------------------------------
 # low-level helpers
 # --------------------------------------------------------------------------
-def _strip_ns(tag: str) -> str:
-    """Drop the namespace prefix from a tag name (lxml gives '{ns}tag')."""
+def _strip_ns(tag) -> str:
+    """Drop the namespace prefix from a tag name (lxml gives '{ns}tag').
+
+    Comment / processing-instruction nodes carry a *callable* tag (not a str) — those
+    appear in PDF-exported XML (e.g. `<?xpacket?>`). Treat them as nameless so callers
+    iterating mixed children skip them instead of crashing.
+    """
+    if not isinstance(tag, str):
+        return ""
     return tag.split("}")[-1] if "}" in tag else tag
 
 
@@ -196,7 +203,40 @@ def build_fr_features(tree: list[dict]) -> list[dict]:
     for root in tree:
         walk(root)
 
-    return [features[k] for k in order]
+    return _split_lone_feature([features[k] for k in order])
+
+
+def _split_lone_feature(features: list[dict]) -> list[dict]:
+    """If the document collapsed to a SINGLE feature carrying multiple requirements, split it
+    into one feature per requirement.
+
+    A lone multi-requirement feature becomes one oversized Dafny state machine whose proof is
+    all-or-nothing — e.g. video search parses to 1 feature ("Torrent Search") holding 7 FRs, and
+    weaker models (deepseek/gpt) cannot discharge the whole 7-requirement proof in one shot, so
+    its verification rate sits at 0. Splitting gives each requirement its own small proof, the
+    1:1 granularity that verifies well elsewhere.
+
+    Deliberately fires ONLY when there is exactly one feature: multi-feature documents
+    (dineout, gamma, Human, …) are returned untouched, so their existing grouping/results are
+    unaffected. The owning feature name is kept as actor context in ``description``.
+    """
+    if len(features) != 1:
+        return features
+    only = features[0]
+    reqs = only.get("functional_requirements", [])
+    if len(reqs) <= 1:
+        return features
+    actor = _clean(only.get("name") or only.get("id") or "")
+    split: list[dict] = []
+    for req in reqs:
+        fid = req["id"]
+        split.append({
+            "id": fid,
+            "name": f"{actor}: {fid}" if actor else fid,
+            "description": actor,
+            "functional_requirements": [{"id": fid, "text": req["text"]}],
+        })
+    return split
 
 
 def _is_nfr_section_title(title: str) -> bool:
@@ -263,35 +303,49 @@ def build_userclass_features(root) -> list[dict]:
           <UserClass id="1" name="Non Registered Users">
             <Requirement id="4.1.1"><Title>..</Title><Desc>..</Desc></Requirement>
 
-    Each ``<UserClass>`` becomes a feature; each ``<Requirement>`` is one FR — id from the
-    ``id`` attribute, text from ``<Desc>`` (falling back to all descendant text). If there is
-    no ``<UserClass>`` grouping, the whole ``<FunctionalRequirements>`` block is one feature.
+    Each ``<Requirement>`` becomes its OWN feature — id from the ``id`` attribute, name from
+    ``<Title>``, text from ``<Desc>`` (falling back to all descendant text), with the owning
+    ``<UserClass>`` name kept as actor context in ``description``. This deliberately does NOT
+    group by ``<UserClass>``: grouping collapsed kinmail's 13 FRs into 2 giant features, which
+    produced oversized single-state-machine Dafny proofs that rarely verified (verification
+    rate ~0 for all but top-tier models). One feature per requirement keeps each proof small,
+    matching the 1:1 granularity that verifies well for the other SRS. See HANDOFF.md §6.
     """
     fr = root.find(".//FunctionalRequirements")
     if fr is None:
         return []
 
     features: list[dict] = []
+    seen_ids: set[str] = set()
     classes = [c for c in fr if _strip_ns(c.tag) == "UserClass"]
     groups = classes or [fr]
     for grp in groups:
-        feature_id = grp.get("id") or str(len(features) + 1)
-        name = grp.get("name") or grp.get("id") or feature_id
-        reqs: list[dict] = []
+        actor = _clean(grp.get("name") or grp.get("id") or "")
         for req in grp.iter():
             if _strip_ns(req.tag) != "Requirement":
                 continue
             desc_el = next((e for e in req if _strip_ns(e.tag) == "Desc"), None)
+            title_el = next((e for e in req if _strip_ns(e.tag) == "Title"), None)
             src = desc_el if desc_el is not None else req
             text = _clean("".join(src.itertext()))
-            if text:
-                reqs.append({"id": req.get("id") or f"{feature_id}.REQ-{len(reqs) + 1}", "text": text})
-        if reqs:
+            if not text:
+                continue
+
+            feature_id = req.get("id") or str(len(features) + 1)
+            # Guard against duplicate Requirement ids across UserClass blocks.
+            base_id, n = feature_id, 2
+            while feature_id in seen_ids:
+                feature_id = f"{base_id}-{n}"
+                n += 1
+            seen_ids.add(feature_id)
+
+            title = _clean("".join(title_el.itertext())) if title_el is not None else ""
+            name = title or (f"{actor}: {feature_id}" if actor else feature_id)
             features.append({
                 "id": feature_id,
                 "name": name,
-                "description": "",
-                "functional_requirements": reqs,
+                "description": actor,
+                "functional_requirements": [{"id": feature_id, "text": text}],
             })
     return features
 
@@ -395,6 +449,104 @@ def build_system_requirements_features(root) -> list[dict]:
     return features
 
 
+_TAGGED_PDF_HEADINGS = {"H1", "H2", "H3", "H4", "H5", "H6"}
+# A use-case marker: "3.1.<n> <Title>". The PDF export tags SOME use-case titles as <H4>
+# headings and leaves OTHERS as plain <P> body text inside the previous section, so we must
+# split on this marker wherever it appears — not only on headings.
+_TAGGED_PDF_MARKER = re.compile(r"^3\.1\.(\d+)\b\s*(.*)$")
+_TAGGED_PDF_STOP = re.compile(r"^3\.2\b")        # start of 3.2 Non-Functional Requirements
+_TAGGED_PDF_BLOCKS = {"P", "Lbl", "LBody", "L", "Table", "Figure"}
+_MARKER_MAX_LEN = 60                              # a title-only line is short; body prose is long
+
+
+def _tagged_pdf_heading(sect) -> str:
+    for ch in sect:
+        if _strip_ns(ch.tag) in _TAGGED_PDF_HEADINGS:
+            return _clean("".join(ch.itertext()))
+    return ""
+
+
+def _tagged_pdf_stream(elem, out: list) -> None:
+    """Flatten a Sect subtree into an ordered (tag, text) stream. Recurse only into nested
+    ``Sect``s; treat lists/tables/figures as opaque text blobs so their inner ``P``/``TD``
+    nodes aren't double-counted (and can't masquerade as use-case markers)."""
+    for ch in elem:
+        n = _strip_ns(ch.tag)
+        if n == "Sect":
+            _tagged_pdf_stream(ch, out)
+        elif n in _TAGGED_PDF_HEADINGS or n in _TAGGED_PDF_BLOCKS:
+            out.append((n, _clean("".join(ch.itertext()))))
+
+
+def _is_usecase_marker(tag: str, text: str):
+    """Return (number, title) if this block STARTS a use case, else None. A marker is either a
+    heading or a short standalone title line — long body paragraphs that merely mention a
+    section number are rejected by the length guard."""
+    m = _TAGGED_PDF_MARKER.match(text)
+    if not m:
+        return None
+    if tag in _TAGGED_PDF_HEADINGS or len(text) <= _MARKER_MAX_LEN:
+        return m.group(1), m.group(2).strip()
+    return None
+
+
+def build_tagged_pdf_usecase_features(root) -> list[dict]:
+    """Parse Acrobat "SaveAsXML" Tagged-PDF exports (``<TaggedPDF-doc>``, e.g. foodsaver).
+
+    The logical structure is ``Part > Sect > {H1..H6, P, L/LI, Table}``. Functional use cases
+    live under the "3. Specific Requirements" section as ``3.1.<n> <Title>`` blocks. Crucially
+    the PDF export is INCONSISTENT: some titles are tagged ``<H4>`` headings, others are plain
+    ``<P>`` text embedded in the previous use case's section. So we scope to the Specific
+    Requirements subtree (excludes the Table-of-Contents and 3.2 Non-Functional sections),
+    flatten it to an ordered block stream, and split on the ``3.1.<n>`` marker wherever it
+    appears. Each use case's following body prose (Description / Actor / Trigger / Conditions /
+    Exceptions) becomes one functional requirement. Duplicate section numbers (the source has
+    two ``3.1.10``s) get a ``_<k>`` suffix so feature ids stay unique.
+    """
+    # Scope to the "Specific Requirements" section; fall back to the whole doc if not found.
+    scope = None
+    for sect in root.iter():
+        if _strip_ns(sect.tag) == "Sect" and \
+                re.match(r"^3\.?\s*\.?\s*Specific Requirements", _tagged_pdf_heading(sect)):
+            scope = sect
+            break
+    stream: list = []
+    _tagged_pdf_stream(scope if scope is not None else root, stream)
+
+    feats: list[dict] = []
+    seen: dict[str, int] = {}
+    cur: dict | None = None
+    stopped = False
+    for tag, text in stream:
+        if not text:
+            continue
+        if _TAGGED_PDF_STOP.match(text) and (tag in _TAGGED_PDF_HEADINGS or len(text) <= _MARKER_MAX_LEN):
+            stopped = True
+        if stopped:
+            continue
+        mk = _is_usecase_marker(tag, text)
+        if mk:
+            num, title = mk
+            base = f"3.1.{num}"
+            seen[base] = seen.get(base, 0) + 1
+            fid = base if seen[base] == 1 else f"{base}_{seen[base]}"   # disambiguate dup 3.1.10
+            cur = {"id": fid, "name": title or fid, "_body": []}
+            feats.append(cur)
+        elif cur is not None:
+            cur["_body"].append(text)
+
+    out: list[dict] = []
+    for f in feats:
+        description = " ".join(f.pop("_body")).strip() or f["name"]
+        out.append({
+            "id": f["id"],
+            "name": f["name"],
+            "description": description,
+            "functional_requirements": [{"id": f"{f['id']}.REQ-1", "text": description}],
+        })
+    return out
+
+
 # --------------------------------------------------------------------------
 # public API
 # --------------------------------------------------------------------------
@@ -444,6 +596,11 @@ class SRSReader:
         if features:
             return features
         features = build_peppol_normative_features(tree)
+        if features:
+            return features
+        # Acrobat "SaveAsXML" Tagged-PDF exports (<TaggedPDF-doc>, e.g. foodsaver): 3.1.x
+        # use-case sections become features. Additive — only reached when none above matched.
+        features = build_tagged_pdf_usecase_features(root)
         if features:
             return features
         # Last resort: a "… Modules and Functional Requirements" section of prose modules

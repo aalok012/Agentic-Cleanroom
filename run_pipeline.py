@@ -187,6 +187,52 @@ def _print_summary(s: dict) -> None:
     print("=" * 70)
 
 
+# --- Stage-level checkpointing (opt-in via --resume) -------------------------
+# The pipeline is a long, expensive sequence (proof tier + codegen + cert can each be
+# many LLM calls). A checkpoint is written AFTER every completed stage so a failure in a
+# later stage can resume without re-spending the earlier stages' tokens. We persist the
+# enriched `ir`, the `metrics` (incl. the per-stage timing/token table), and a full snapshot
+# of GLOBAL_METRICS (input/output/calls) so the resumed run's totals + cost stay accurate.
+CKPT_STAGES = ("spec", "dependency", "planning", "proof", "code", "test", "certification")
+
+
+def _ckpt_path(output_dir: Path, srs_path: Path) -> Path:
+    return output_dir / f"{srs_path.stem}_ckpt.json"
+
+
+def _save_ckpt(path: Path, completed: list, ir: dict, metrics: dict) -> None:
+    payload = {
+        "completed": list(completed),
+        "ir": ir,
+        "metrics": metrics,
+        "global_metrics": {
+            "input_tokens": GLOBAL_METRICS.input_tokens,
+            "output_tokens": GLOBAL_METRICS.output_tokens,
+            "latency_ms": GLOBAL_METRICS.latency_ms,
+            "model": GLOBAL_METRICS.model,
+            "calls": GLOBAL_METRICS.calls,
+        },
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(payload, indent=2, default=str))
+    tmp.replace(path)   # atomic: a crash mid-write never corrupts a good checkpoint
+
+
+def _load_ckpt(path: Path) -> dict | None:
+    if not path.exists():
+        return None
+    ckpt = json.loads(path.read_text())
+    gm = ckpt.get("global_metrics") or {}
+    # Restore the process-wide token accumulator so resumed totals include prior stages.
+    GLOBAL_METRICS.input_tokens = gm.get("input_tokens", 0)
+    GLOBAL_METRICS.output_tokens = gm.get("output_tokens", 0)
+    GLOBAL_METRICS.latency_ms = gm.get("latency_ms", 0.0)
+    GLOBAL_METRICS.model = gm.get("model", "") or ""
+    GLOBAL_METRICS.calls = list(gm.get("calls", []))
+    return ckpt
+
+
 def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     stages: list = []
     language = cfg.language
@@ -210,72 +256,105 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     if cfg.baseline:
         print("  [BASELINE preset] proof OFF · recovery OFF · regex-only deps · temperature 0")
 
+    # --- Checkpoint bookkeeping (opt-in via --resume) ------------------------
+    # On --resume, adopt the persisted metrics/per-stage table + IR and skip completed stages.
+    ckpt_path = _ckpt_path(output_dir, srs_path)
+    ckpt = _load_ckpt(ckpt_path) if cfg.resume else None
+    done: set = set(ckpt.get("completed", [])) if ckpt else set()
+    completed: list = list(ckpt.get("completed", [])) if ckpt else []
+    ir_ckpt: dict = (ckpt or {}).get("ir") or {}
+    if ckpt:
+        metrics = ckpt.get("metrics") or metrics      # persisted timing/token table + sub-metrics
+        stages = metrics.setdefault("stages", stages)  # _timed appends new stages after the loaded ones
+        stack = ir_ckpt.get("stack", stack)
+        print(f"\n  [RESUME] checkpoint loaded — skipping completed stages: {sorted(done) or '(none)'}")
+
+    def _checkpoint(name: str, _ir: dict) -> None:
+        if name not in completed:
+            completed.append(name)
+        _save_ckpt(ckpt_path, completed, _ir, metrics)
+
     # --- Stage 1: Spec (deterministic FR parse, then LLM behavioral contracts) -
     # The SRSReader extracts functional requirements only (section-aware, no LLM); the
     # contract phase then writes a design-by-contract spec per FR (one LLM call/feature).
     _banner("[1]", "Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts")
-    spec = SpecAgent(llm=spec_llm)
-    # output_dir=None: skip the redundant <stem>_ir.json dump (it's a strict subset of full_ir.json).
-    ir_obj = _timed("spec_parse", stages, lambda: spec.run(srs_path, output_dir=None))
-    ir = ir_obj.model_dump()
-    ir = _timed("spec_contracts", stages,
-                lambda: spec.synthesize_contracts(ir, output_dir=output_dir))
-    n_fr = sum(len(f["functional_requirements"]) for f in ir["features"])
-    print(f"Project   : {ir['project_name']}")
-    print(f"Features  : {len(ir['features'])}  (FR={n_fr})")
-    print(f"Contracts : {len(ir['contracts'])}")
-
-    # --- Resolve the target stack (auto-select from the spec unless pinned) -----
-    # Done here, after contracts exist, so the classifier can read preconditions. The
-    # chosen stack drives planning signatures, codegen shape, packaging and certification.
-    if language == "java":
-        # Java sub-stack already resolved in RunConfig (plain 'java' or 'spring'); never auto-select.
-        stack = stack if stack in ("java", "spring") else "java"
-        _java_desc = ("spring (Spring Boot web), tests: JUnit+MockMvc" if stack == "spring"
-                      else "java (plain), tests: JUnit")
-        print(f"Language  : java   (stack: {_java_desc})")
-    elif language == "javascript":
-        # Single JS stack (Node/Express + SQLite); never auto-select.
-        stack = "express"
-        print("Language  : javascript   (stack: express — Node/Express + SQLite, tests: Jest)")
-    elif stack == "auto":
-        stack, reason = select_stack(ir)
-        print(f"Stack     : {stack}  (auto-selected — {reason})")
+    if "spec" in done:
+        ir = ir_ckpt
+        stack = ir.get("stack", stack)
+        n_fr = sum(len(f["functional_requirements"]) for f in ir["features"])
+        print(f"  [skip — resumed] {ir.get('project_name')}: {len(ir['features'])} feature(s), "
+              f"FR={n_fr}, stack={stack}")
     else:
-        print(f"Stack     : {stack}  (pinned via --stack)")
-    metrics["stack"] = stack
-    metrics["language"] = language
-    ir["stack"] = stack
-    ir["language"] = language
+        spec = SpecAgent(llm=spec_llm)
+        # output_dir=None: skip the redundant <stem>_ir.json dump (subset of full_ir.json).
+        ir_obj = _timed("spec_parse", stages, lambda: spec.run(srs_path, output_dir=None))
+        ir = ir_obj.model_dump()
+        ir = _timed("spec_contracts", stages,
+                    lambda: spec.synthesize_contracts(ir, output_dir=output_dir))
+        n_fr = sum(len(f["functional_requirements"]) for f in ir["features"])
+        print(f"Project   : {ir['project_name']}")
+        print(f"Features  : {len(ir['features'])}  (FR={n_fr})")
+        print(f"Contracts : {len(ir['contracts'])}")
+
+        # --- Resolve the target stack (auto-select from the spec unless pinned) -----
+        # Done here, after contracts exist, so the classifier can read preconditions. The
+        # chosen stack drives planning signatures, codegen shape, packaging and certification.
+        if language == "java":
+            # Java sub-stack resolved in RunConfig (plain 'java' or 'spring'); never auto-select.
+            stack = stack if stack in ("java", "spring") else "java"
+            _java_desc = ("spring (Spring Boot web), tests: JUnit+MockMvc" if stack == "spring"
+                          else "java (plain), tests: JUnit")
+            print(f"Language  : java   (stack: {_java_desc})")
+        elif language == "javascript":
+            stack = "express"
+            print("Language  : javascript   (stack: express — Node/Express + SQLite, tests: Jest)")
+        elif stack == "auto":
+            stack, reason = select_stack(ir)
+            print(f"Stack     : {stack}  (auto-selected — {reason})")
+        else:
+            print(f"Stack     : {stack}  (pinned via --stack)")
+        metrics["stack"] = stack
+        metrics["language"] = language
+        ir["stack"] = stack
+        ir["language"] = language
+        _checkpoint("spec", ir)
 
     # --- Stage 2: Dependency (nested; LLM infers semantic FR->FR edges) -------
     _banner("[2]", "Dependency Agent — building the nested dependency graph")
-    if not cfg.run_dependency:
-        # Agent OFF (--no-dependency): empty graph, no edges/prerequisites. No LLM call.
-        print("  Dependency agent OFF (--no-dependency) — empty graph, features independent.")
-        ir = _inject_empty_dependency(ir)
+    if "dependency" in done:
+        print("  [skip — resumed] dependency graph loaded from checkpoint.")
     else:
-        # cfg.llm_deps=False (e.g. --baseline) → deterministic regex-only edges (no semantic LLM inference).
-        ir = _timed("dependency", stages,
-                    lambda: DependencyAnalyzer(llm=dep_llm if cfg.llm_deps else None).enrich(ir, output_dir=output_dir))
-    graph = ir["dependency_graph"]
-    print(f"Outer nodes : {len(graph['nodes'])}  edges: {len(graph['edges'])}")
-    print(f"Build order : {' -> '.join(graph['build_order']) or '(none)'}")
-    print(f"Cycles      : {graph['cycles'] or 'none'}")
-    inner_edges = sum(len(f.get("fr_edges", [])) for f in ir["features"])
-    inner_cycles = sum(len(f.get("fr_cycles", [])) for f in ir["features"])
-    print(f"Inner (FR)  : {inner_edges} edge(s), {inner_cycles} cycle(s) across features")
+        if not cfg.run_dependency:
+            # Agent OFF (--no-dependency): empty graph, no edges/prerequisites. No LLM call.
+            print("  Dependency agent OFF (--no-dependency) — empty graph, features independent.")
+            ir = _inject_empty_dependency(ir)
+        else:
+            # cfg.llm_deps=False (e.g. --baseline) → deterministic regex-only edges.
+            ir = _timed("dependency", stages,
+                        lambda: DependencyAnalyzer(llm=dep_llm if cfg.llm_deps else None).enrich(ir, output_dir=output_dir))
+        graph = ir["dependency_graph"]
+        print(f"Outer nodes : {len(graph['nodes'])}  edges: {len(graph['edges'])}")
+        print(f"Build order : {' -> '.join(graph['build_order']) or '(none)'}")
+        print(f"Cycles      : {graph['cycles'] or 'none'}")
+        inner_edges = sum(len(f.get("fr_edges", [])) for f in ir["features"])
+        inner_cycles = sum(len(f.get("fr_cycles", [])) for f in ir["features"])
+        print(f"Inner (FR)  : {inner_edges} edge(s), {inner_cycles} cycle(s) across features")
+        _checkpoint("dependency", ir)
 
     # --- Stage 3: Planning (per-FR contracts) --------------------------------
     _banner("[3]", "Planning Agent — generating per-FR contracts (signature + docstring + path)")
-    ir = _timed("planning", stages, lambda: PlanningAgent(llm=plan_llm, stack=stack).enrich(ir, output_dir=output_dir))
-    contracts = ir["planning"]["contracts"]
-    print(f"Contracts   : {len(contracts)}  (in dependency order)")
-    for c in contracts[:12]:
-        print(f"  [{c['fr_id']}] ({c['mvc_layer']}) {c['signature']}")
-        print(f"        -> {c['file_path']}   prereqs={c['prerequisite_fr_ids']}")
-    if len(contracts) > 12:
-        print(f"  … and {len(contracts) - 12} more (see {ir['project_name']}_planning.json)")
+    if "planning" in done:
+        print(f"  [skip — resumed] planning loaded: {len(ir['planning']['contracts'])} contract(s).")
+    else:
+        ir = _timed("planning", stages, lambda: PlanningAgent(llm=plan_llm, stack=stack).enrich(ir, output_dir=output_dir))
+        contracts = ir["planning"]["contracts"]
+        print(f"Contracts   : {len(contracts)}  (in dependency order)")
+        for c in contracts[:12]:
+            print(f"  [{c['fr_id']}] ({c['mvc_layer']}) {c['signature']}")
+            print(f"        -> {c['file_path']}   prereqs={c['prerequisite_fr_ids']}")
+        if len(contracts) > 12:
+            print(f"  … and {len(contracts) - 12} more (see {ir['project_name']}_planning.json)")
+        _checkpoint("planning", ir)
 
     # --- Stage 4a: Proof tier (Dafny) — prove each feature's logic where possible -----
     # Runs BEFORE code generation so the Code Agent knows which features ship from Dafny. A PROVED
@@ -288,7 +367,29 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     proved_compiled_ids: set[str] = set()      # proved features whose Dafny ALSO translated to native
     proved_java_apis: dict[str, dict] = {}      # feature_id -> actual translated Java API summary
     proj = None
-    if prove:
+    if "proof" in done:
+        # Reconstruct the proof-stage locals from the persisted IR/metrics (NO tokens): the proved
+        # set + Dafny sources live in ir['generated_dafny']; the compiled set in metrics['compile'].
+        # The on-disk dafny project is re-scaffolded (mkdir + copy kernel — no LLM) so adapter
+        # staging / cert can still reach the translated cores.
+        _banner("[4a]", "Dafny Proof Agent — [skip — resumed]")
+        gdaf = ir.get("generated_dafny")
+        if gdaf:
+            feats = gdaf.get("features", [])
+            proved_feature_ids = {f["feature_id"] for f in feats if f.get("verified")}
+            proved_modules = {f["feature_id"]: f["module"] for f in feats if f.get("verified")}
+            proved_sources = {f["feature_id"]: f.get("dafny_source", "") for f in feats if f.get("verified")}
+            proved_compiled_ids = {c["feature_id"] for c in (metrics.get("compile") or {}).get("compiled", [])}
+            project_dir = output_dir / "generated" / ir["project_name"] / "dafny_proof"
+            proj = scaffold_dafny_project(project_dir)
+            if prove_target == "java":
+                proved_java_apis = {fid: summarize_dafny_java_api(proj, proved_modules[fid])
+                                    for fid in sorted(proved_compiled_ids) if fid in proved_modules}
+            print(f"  proved {len(proved_feature_ids)}, compiled {len(proved_compiled_ids)}; "
+                  f"dafny project re-scaffolded at {project_dir}")
+        else:
+            print("  nothing to restore (no Dafny output captured in checkpoint).")
+    elif prove:
         _banner("[4a]", "Dafny Proof Agent — proving feature logic (formal verification)")
         from src.cleanroom.utils.dafny_verify import dafny_available
         if not dafny_available():
@@ -329,6 +430,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             print(f"Compiled  : {len(comp['compiled'])}/{nver} proved features to {comp.get('target', prove_target)}")
             ir = {**ir, "generated_dafny": gen.model_dump(),
                   "proved_feature_ids": sorted(proved_feature_ids)}
+        _checkpoint("proof", ir)
 
     # Adapter shipping (Dafny core + thin glue) ships proved features FROM Dafny and excludes them
     # from pass@k. Supported on FastAPI (compiled-to-Python core + Python adapter) and Spring
@@ -354,76 +456,92 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
         cert_skip = set(proved_feature_ids)
 
     # --- Stage 4: Code (LLM) — adapters over proved cores + full code for the rest ----
-    _banner("[4]", "Code Agent — generating MVC code from the spec")
+    # code_agent / code_dir are defined unconditionally (the Test, compile-repair, cert and
+    # recovery stages all reference them) even when the codegen itself is skipped on resume.
     code_agent = CodeAgent(llm=code_llm, stack=stack, language=language)
     code_dir = output_dir / "generated" / ir["project_name"]
-    if adapter_mode:
-        from src.cleanroom.agents.code.schema.code import GeneratedCode
-        adapters = []
-        for fid in sorted(adapter_feature_ids):
-            adapters.append(_timed(
-                "adapter", stages,
-                lambda fid=fid: code_agent.generate_adapter(
-                    ir,
-                    fid,
-                    proved_modules[fid],
-                    proved_sources[fid],
-                    java_api=proved_java_apis.get(fid),
-                )))
-        full = _timed("code", stages,
-                      lambda: code_agent.generate(ir, skip_feature_ids=adapter_feature_ids))
-        generated_code = GeneratedCode(files=adapters + full.files)
-        print(f"  {len(adapters)} proved feature(s) shipped as Dafny-core adapters; "
-              f"{len(full.files)} file(s) generated for the rest.")
+    if "code" in done:
+        _banner("[4]", "Code Agent — [skip — resumed]")
+        print(f"  loaded {len(ir.get('generated_code', {}).get('files', []))} generated file(s) "
+              "from checkpoint (packaged app already on disk).")
     else:
-        generated_code = _timed("code", stages, lambda: code_agent.generate(ir))
-    ir = {**ir, "generated_code": generated_code.model_dump()}
-    metrics["code"] = code_stats(ir["generated_code"])
-    stat = metrics["code"]
-    if language == "java":
-        metrics["code"]["language"] = "Java"   # code_stats labels by Python AST; override
-    elif language == "javascript":
-        metrics["code"]["language"] = "JavaScript"   # code_stats labels by Python AST; override
-    if stack == "fastapi":
-        app_dir = build_runnable_package(ir["generated_code"], code_dir)
-        metrics["code"]["runnable_app"] = str(app_dir)
-        if adapter_mode and proj is not None:
-            staged = code_agent.target.stage_cores(
-                Path(app_dir), proj, [proved_modules[fid] for fid in sorted(adapter_feature_ids)])
-            metrics["code"]["dafny_cores"] = staged
-            print(f"  Staged proved Dafny cores {staged['staged']} + shim into {staged['cores_dir']}")
-        print(f"{stat['files']} file(s); {stat['lines_of_code']} LOC ({stat['language']}); "
-              f"layers={stat['files_per_layer']}")
-        print(f"Assembled runnable FastAPI app: {app_dir}  (cd \"{code_dir}\" && python -m app)")
-    else:
-        # python (flat functions), plain java (src/*.java), or spring (a Maven project) — the
-        # target picks the layout.
-        proj_dir = code_agent.target.package_sample(ir["generated_code"], code_dir, stack)
-        print(f"Wrote {stat['files']} file(s); {stat['lines_of_code']} LOC "
-              f"({stat['language']}); layers={stat['files_per_layer']}")
-        if stack == "spring":
-            metrics["code"]["runnable_app"] = str(proj_dir or code_dir)
+        _banner("[4]", "Code Agent — generating MVC code from the spec")
+        if adapter_mode:
+            from src.cleanroom.agents.code.schema.code import GeneratedCode
+            adapters = []
+            for fid in sorted(adapter_feature_ids):
+                adapters.append(_timed(
+                    "adapter", stages,
+                    lambda fid=fid: code_agent.generate_adapter(
+                        ir,
+                        fid,
+                        proved_modules[fid],
+                        proved_sources[fid],
+                        java_api=proved_java_apis.get(fid),
+                    )))
+            full = _timed("code", stages,
+                          lambda: code_agent.generate(ir, skip_feature_ids=adapter_feature_ids))
+            generated_code = GeneratedCode(files=adapters + full.files)
+            print(f"  {len(adapters)} proved feature(s) shipped as Dafny-core adapters; "
+                  f"{len(full.files)} file(s) generated for the rest.")
+        else:
+            generated_code = _timed("code", stages, lambda: code_agent.generate(ir))
+        ir = {**ir, "generated_code": generated_code.model_dump()}
+        metrics["code"] = code_stats(ir["generated_code"])
+        stat = metrics["code"]
+        if language == "java":
+            metrics["code"]["language"] = "Java"   # code_stats labels by Python AST; override
+        elif language == "javascript":
+            metrics["code"]["language"] = "JavaScript"   # code_stats labels by Python AST; override
+        if stack == "fastapi":
+            app_dir = build_runnable_package(ir["generated_code"], code_dir)
+            metrics["code"]["runnable_app"] = str(app_dir)
             if adapter_mode and proj is not None:
                 staged = code_agent.target.stage_cores(
-                    proj_dir or code_dir, proj,
-                    [proved_modules[fid] for fid in sorted(adapter_feature_ids)])
+                    Path(app_dir), proj, [proved_modules[fid] for fid in sorted(adapter_feature_ids)])
                 metrics["code"]["dafny_cores"] = staged
-                print(f"  Staged translated Dafny Java cores {staged['staged']} into "
-                      f"{staged.get('java_src', proj_dir)}")
-            print(f"Assembled runnable Spring Boot project: {proj_dir or code_dir}  "
-                  f"(cd \"{proj_dir or code_dir}\" && mvn spring-boot:run)")
+                print(f"  Staged proved Dafny cores {staged['staged']} + shim into {staged['cores_dir']}")
+            print(f"{stat['files']} file(s); {stat['lines_of_code']} LOC ({stat['language']}); "
+                  f"layers={stat['files_per_layer']}")
+            print(f"Assembled runnable FastAPI app: {app_dir}  (cd \"{code_dir}\" && python -m app)")
+        else:
+            # python (flat functions), plain java (src/*.java), or spring (a Maven project) — the
+            # target picks the layout.
+            proj_dir = code_agent.target.package_sample(ir["generated_code"], code_dir, stack)
+            print(f"Wrote {stat['files']} file(s); {stat['lines_of_code']} LOC "
+                  f"({stat['language']}); layers={stat['files_per_layer']}")
+            if stack == "spring":
+                metrics["code"]["runnable_app"] = str(proj_dir or code_dir)
+                if adapter_mode and proj is not None:
+                    staged = code_agent.target.stage_cores(
+                        proj_dir or code_dir, proj,
+                        [proved_modules[fid] for fid in sorted(adapter_feature_ids)])
+                    metrics["code"]["dafny_cores"] = staged
+                    print(f"  Staged translated Dafny Java cores {staged['staged']} into "
+                          f"{staged.get('java_src', proj_dir)}")
+                print(f"Assembled runnable Spring Boot project: {proj_dir or code_dir}  "
+                      f"(cd \"{proj_dir or code_dir}\" && mvn spring-boot:run)")
+        _checkpoint("code", ir)
 
     # --- Stage 5: Test (LLM) -------------------------------------------------
     # The Test Agent reads only ir['features']; the generated_code in the IR is
     # structurally ignored — isolation is preserved.
     generated_tests_dict: dict | None = None
     test_agent_runner: TestAgent | None = None
-    if not cfg.run_test:
+    if "test" in done:
+        _banner("[5]", "Test Agent — [skip — resumed]")
+        generated_tests_dict = ir.get("generated_tests")
+        if cfg.run_test:
+            test_agent_runner = TestAgent(llm=test_llm, stack=stack, language=language)
+        print(f"  loaded {len((generated_tests_dict or {}).get('features', []))} tested "
+              "feature(s) from checkpoint (test modules already on disk).")
+    elif not cfg.run_test:
         # Agent OFF (--no-test): no test artifacts. If --certify is also set, the cert stage
         # will synthesize ephemeral tests on the fly (a weaker, non-persisted oracle).
         _banner("[5]", "Test Agent — SKIPPED (--no-test)")
         note = "  certification will synthesize ephemeral tests." if certify else "  (no certification will run.)"
         print(f"  Test agent OFF — no test modules written.{note}")
+        _checkpoint("test", ir)
     else:
         _banner("[5]", "Test Agent — deriving black-box tests from the spec")
         test_agent_runner = TestAgent(llm=test_llm, stack=stack, language=language)
@@ -442,6 +560,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             "Jest" if language == "javascript" else "pytest")
         print(f"{len(generated_tests.features)} feature(s), {total_cases} test case(s).")
         print(f"Wrote {len(written_tests)} {_fw} module(s) to {tests_dir}")
+        _checkpoint("test", ir)
 
     # --- Stage 5b: Java static compile repair --------------------------------
     # This is compile-diagnostic feedback only: no test cases, expected outputs, or runtime
@@ -498,7 +617,12 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
 
     # --- Stage 6: Certification (optional) — pass@k for the UN-proved (test fallback) --
     from src.cleanroom.targets import get_target as _get_target
-    if certify and not _get_target(language, stack).oracle_available():
+    if "certification" in done:
+        _banner("[6]", "Certification — [skip — resumed]")
+        proved_feature_ids = set(ir.get("proved_feature_ids") or proved_feature_ids)
+        print(f"  loaded certification from checkpoint: "
+              f"{(metrics.get('certification') or {}).get('aggregate_pass_at', {})}")
+    elif certify and not _get_target(language, stack).oracle_available():
         _banner("[6]", "Certification — SKIPPED (no executable oracle for this target)")
         print(f"  No executable oracle for language='{language}' (e.g. javac/JDK missing) — "
               f"code + tests were generated, but pass@k is unavailable.")
@@ -565,6 +689,7 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             cert = recovery["result"]
             proved_feature_ids = set(loop.proved_feature_ids)
             ir = {**ir, "certification": cert.model_dump(),
+                  "proved_feature_ids": sorted(proved_feature_ids),   # final set incl. recovery re-proofs
                   "recovery": {k: v for k, v in recovery.items() if k != "result"}}
             metrics["certification"]["aggregate_pass_at"] = cert.aggregate_pass_at
             metrics["certification"]["aggregate_case_pass_rate"] = cert.aggregate_case_pass_rate
@@ -588,10 +713,15 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             for fid, lab in sorted(recovery["labels"].items()):
                 print(f"    [{fid}] {lab}")
 
+    if certify and "certification" not in done:
+        _checkpoint("certification", ir)
+
     _finalize_metrics(metrics, stages)
     metrics["proved_feature_ids"] = sorted(proved_feature_ids)   # final set (incl. recovery)
     metrics["summary"] = _compute_summary(metrics, ir)
     _print_summary(metrics["summary"])
+    # A fully-completed run clears its checkpoint so the next invocation starts fresh.
+    ckpt_path.unlink(missing_ok=True)
     return ir, metrics
 
 
@@ -1018,6 +1148,11 @@ def main() -> None:
                         help="Control run: forces proof OFF, recovery OFF, regex-only dependencies, "
                              "and temperature 0 — a plain spec→code→test(→pass@k) baseline to A/B "
                              "against the full prove-or-test pipeline.")
+    parser.add_argument("--resume", action="store_true",
+                        help="Resume from the per-stage checkpoint (outputs/<stem>_ckpt.json): reload "
+                             "the IR + metrics + token accounting and SKIP every stage already "
+                             "completed, continuing from the one that failed. A successful run clears "
+                             "the checkpoint. Run the SAME command with --resume after a failure.")
     parser.add_argument("--debug-llm-once", action="store_true",
                         help="Print the first LLM prompt, raw model response, and reasoning-token "
                              "usage fields before structured-output parsing. Debug only.")
