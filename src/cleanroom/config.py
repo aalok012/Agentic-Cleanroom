@@ -22,7 +22,9 @@ class RunConfig:
 
     # --- prompt strategy ---
     # 'baseline' = the original prompts (unchanged); 'cot' = parallel Chain-of-Thought variants
-    # that make each agent reason step-by-step BEFORE emitting its (unchanged) structured output.
+    # that make each agent reason step-by-step BEFORE emitting its (unchanged) structured output;
+    # 'mot' = Module-of-Thought variants that decompose into private helpers, implement, then
+    # compose the public entry (Planning/Code/Test only; other stages fall back to the CoT prompt).
     prompt_strategy: str = "baseline"
 
     # --- per-stage models (each stage can run a different model) ---

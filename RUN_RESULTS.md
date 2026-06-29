@@ -4,6 +4,7 @@ Paper-friendly index of every `run_pipeline.py` invocation. Each run has a dedic
 
 | run_id | date (UTC) | status | SRS | stack | certify | pass@1 | case rate | tokens | cost (USD) | seconds | detail |
 |---|---|---|---|---|---:|---:|---:|---:|---:|---:|---|
+| `20260629-094017-foodsaver` | 2026-06-29 09:40:17 | failed | foodsaver.xml | spring | yes | - | - | 1,243,223 | $0.3102 | 0.0 | [20260629-094017-foodsaver.md](outputs/foodsaver_lang/java/runs/20260629-094017-foodsaver.md) |
 | `20260629-073733-foodsaver` | 2026-06-29 07:37:33 | complete | foodsaver.xml | fastapi | yes | 0.000 | 0.000 | 1,251,920 | $0.3159 | 7179.0 | [20260629-073733-foodsaver.md](outputs/foodsaver_lang/python/runs/20260629-073733-foodsaver.md) |
 | `20260629-033316-foodsaver` | 2026-06-29 03:33:16 | failed | foodsaver.xml | express | yes | - | - | 0 | $0.0000 | 0.0 | [20260629-033316-foodsaver.md](outputs/foodsaver_lang/javascript/runs/20260629-033316-foodsaver.md) |
 | `20260629-033254-foodsaver` | 2026-06-29 03:32:54 | failed | foodsaver.xml | spring | yes | - | - | 0 | $0.0000 | 0.0 | [20260629-033254-foodsaver.md](outputs/foodsaver_lang/java/runs/20260629-033254-foodsaver.md) |

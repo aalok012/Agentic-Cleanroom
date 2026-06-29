@@ -7,12 +7,12 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 
 | metric | value |
 |---|---:|
-| runs logged | 228 |
-| LLM calls | 8,731 |
-| input tokens | 31,400,599 |
-| output tokens | 12,332,320 |
-| total tokens | 43,732,919 |
-| estimated cost (USD) | $80.8911 |
+| runs logged | 229 |
+| LLM calls | 9,036 |
+| input tokens | 32,418,532 |
+| output tokens | 12,557,610 |
+| total tokens | 44,976,142 |
+| estimated cost (USD) | $81.2013 |
 
 ## Run history
 
@@ -246,6 +246,7 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | 2026-06-29 03:32:54 | `20260629-033254-foodsaver` | failed | foodsaver.xml | deepseek/deepseek-v3.2 | 0 | 0 | 0 | 0 | $0.0000 | 0.0 | [detail](outputs/foodsaver_lang/java/runs/20260629-033254-foodsaver.md) |
 | 2026-06-29 03:33:16 | `20260629-033316-foodsaver` | failed | foodsaver.xml | deepseek/deepseek-v3.2 | 0 | 0 | 0 | 0 | $0.0000 | 0.0 | [detail](outputs/foodsaver_lang/javascript/runs/20260629-033316-foodsaver.md) |
 | 2026-06-29 07:37:33 | `20260629-073733-foodsaver` | complete | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 306 | 994,707 | 257,213 | 1,251,920 | $0.3159 | 7179.0 | [detail](outputs/foodsaver_lang/python/runs/20260629-073733-foodsaver.md) |
+| 2026-06-29 09:40:17 | `20260629-094017-foodsaver` | failed | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 305 | 1,017,933 | 225,290 | 1,243,223 | $0.3102 | 0.0 | [detail](outputs/foodsaver_lang/java/runs/20260629-094017-foodsaver.md) |
 
 ## Notes
 

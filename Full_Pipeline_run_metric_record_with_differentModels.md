@@ -329,5 +329,34 @@ verification_pass_ratio	test_case_pass_ratio	avg_input_token	avg_output_token	to
 - tokens: 22,163 (in 15,273 / out 6,890) · calls 8
 - estimated cost: $0.0059
 
+---
+
+## Run 20260629-094017-foodsaver — FAILED
+
+- **When**: 2026-06-29 04:40:17
+- **SRS**: foodsaver.xml  ·  **language**: java  ·  **stack**: spring
+- **Command**: `python run_pipeline.py data/srs/foodsaver.xml --language java --stack spring --prove --certify --samples 1 --resume --output-dir outputs/foodsaver_lang/java`
+
+### Models used (per stage)
+
+| stage | model |
+|---|---|
+| spec | `deepseek/deepseek-v3.2` |
+| dependency | `deepseek/deepseek-v3.2` |
+| planning | `deepseek/deepseek-v3.2` |
+| code | `deepseek/deepseek-v3.2` |
+| test | `deepseek/deepseek-v3.2` |
+| proof | `deepseek/deepseek-v3.2` |
+| cert | `deepseek/deepseek-v3.2` |
+
+### Pipeline flags
+
+- agents: spec=on, dependency=on, planning=on, proof=on, code=on, test=on, certify=on, recovery=on, compile_repair=on
+- certify=True · samples=1 · k=[1] · prove=True · max_cert_loops=2 · max_compile_repair_loops=2
+- temperature=0.0 · cert_temperature=0.4 · prove_rounds=6 · baseline=False
+
+- tokens: 1,243,223 (in 1,017,933 / out 225,290) · calls 305
+- estimated cost: $0.3102
+
 - proved feature ids: (none)
 

@@ -150,8 +150,9 @@ class DafnyAgent:
         self.dafny_dir = self.project_dir / "dafny"
         self.model = model
         self.max_rounds = max_rounds
-        # 'baseline' = original prompt; 'cot' = a LIGHT reasoning block (model/invariant/proof
-        # obligations) before the Dafny — kept light so it does not destabilize Dafny syntax.
+        # 'baseline' = original prompt; 'cot'/'mot' = a LIGHT reasoning block (model/invariant/proof
+        # obligations) before the Dafny — kept light so it does not destabilize Dafny syntax. The
+        # proof track has no structural decomposition of its own, so 'mot' reuses the CoT reasoning.
         self.prompt_strategy = prompt_strategy
         self.llm = llm or get_llm(model=model, temperature=0.0)
         self._system = self._build_system()
@@ -185,7 +186,7 @@ class DafnyAgent:
     def _build_system(self) -> str:
         domain = (self.dafny_dir / "Replay.dfy").read_text().split(
             "abstract module {:compile false} Kernel")[0]
-        template = _SYSTEM_COT if self.prompt_strategy == "cot" else _SYSTEM
+        template = _SYSTEM_COT if self.prompt_strategy in ("cot", "mot") else _SYSTEM
         return template.format(
             ref=DAFNY_REF,
             dafny_skill=_load_skill("dafny-patterns"),
@@ -220,7 +221,7 @@ class DafnyAgent:
             f"{{ import D = {mod}Domain }}`. Derive everything ONLY from the spec above. "
             + ("Reason briefly first (model / invariant / proof obligations), then output the "
                "complete Dafny file inside ONE ```dafny code fence."
-               if self.prompt_strategy == "cot" else "Output ONLY the Dafny source."))
+               if self.prompt_strategy in ("cot", "mot") else "Output ONLY the Dafny source."))
 
     def generate_feature(self, ir: dict, feature_id: str) -> FeatureDafny:
         mod = "F" + feature_id.replace(".", "_")
@@ -243,7 +244,7 @@ class DafnyAgent:
             _out_instr = (
                 "Reason briefly about what caused each error, then output the FULL corrected Dafny "
                 "module inside ONE ```dafny code fence."
-                if self.prompt_strategy == "cot"
+                if self.prompt_strategy in ("cot", "mot")
                 else "Output the FULL corrected Dafny module (only Dafny source).")
             messages.append(HumanMessage(
                 f"`dafny verify` failed with these errors:\n{errs}{_targeted_hint(res.messages)}\n\n"

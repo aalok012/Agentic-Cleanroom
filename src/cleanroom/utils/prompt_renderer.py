@@ -6,16 +6,32 @@ _PROMPTS_ROOT = Path(__file__).parent.parent / "agents"
 
 
 def cot_template(template_name: str, prompt_strategy: str) -> str:
-    """Map a base template name to its parallel Chain-of-Thought variant when the run uses the
-    ``cot`` prompt strategy (e.g. ``generate_code_java.j2`` -> ``generate_code_java_cot.j2``).
+    """Map a base template name to its parallel reasoning variant for the active prompt strategy.
 
-    For the default ``baseline`` strategy (or any non-cot value) the name is returned unchanged,
-    so the baseline prompt path is byte-for-byte identical. The CoT variants are parallel files —
-    nothing is overwritten — and are resolved by the same rglob lookup as the originals.
+    - ``cot``  -> ``<base>_cot.j2`` when that variant exists on disk, else the base name.
+    - ``mot``  -> ``<base>_mot.j2`` if present, else ``<base>_cot.j2`` if present, else the base
+      name. This is the ``_mot`` -> ``_cot`` -> baseline fallback chain: a stage only gets the
+      Module-of-Thought prompt when a ``_mot`` file was authored for it (Planning, Code, Test);
+      every other stage (Spec, Dependency, Dafny proof track, adapters, feedback, compile-repair)
+      transparently falls back to its CoT prompt, then to the original.
+    - any other value (``baseline``, …) -> the base name unchanged (byte-for-byte identical path).
+
+    Variants are parallel files resolved by the same rglob lookup as the originals; nothing is
+    overwritten and the rendered context (template variables) is identical across strategies.
     """
-    if prompt_strategy != "cot" or not template_name.endswith(".j2"):
+    if not template_name.endswith(".j2"):
         return template_name
-    return template_name[:-3] + "_cot.j2"
+    base = template_name[:-3]
+    if prompt_strategy == "mot":
+        candidates = (base + "_mot.j2", base + "_cot.j2")
+    elif prompt_strategy == "cot":
+        candidates = (base + "_cot.j2",)
+    else:
+        return template_name
+    for candidate in candidates:
+        if next(_PROMPTS_ROOT.rglob(candidate), None) is not None:
+            return candidate
+    return template_name
 
 
 class PromptRenderer:

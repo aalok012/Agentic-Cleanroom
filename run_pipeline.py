@@ -1150,10 +1150,13 @@ def main() -> None:
     parser.add_argument("--llm-deps", action=argparse.BooleanOptionalAction, default=True,
                         help="Use the LLM to infer semantic FR→FR edges in the dependency stage "
                              "(--no-llm-deps = deterministic regex edges only).")
-    parser.add_argument("--prompt-strategy", default="baseline", choices=["baseline", "cot"],
+    parser.add_argument("--prompt-strategy", default="baseline", choices=["baseline", "cot", "mot"],
                         help="Which prompt set to use for every LLM stage: 'baseline' (default, the "
-                             "original prompts) or 'cot' (parallel Chain-of-Thought variants that "
-                             "reason step-by-step before emitting the SAME structured output). "
+                             "original prompts), 'cot' (parallel Chain-of-Thought variants that "
+                             "reason step-by-step before emitting the SAME structured output), or "
+                             "'mot' (Module-of-Thought: decompose into private helpers, implement, "
+                             "then compose the public entry — applied to Planning/Code/Test, with "
+                             "every other stage falling back to its CoT prompt). "
                              "Only the prompt wording changes — schemas, parser, and isolation are "
                              "untouched.")
     parser.add_argument("--baseline", action="store_true",
