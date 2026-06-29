@@ -61,6 +61,16 @@ def _strip_java_package_imports(content: str, package_names: list[str]) -> str:
     return out
 
 
+def _extract_code_block(text: str) -> str:
+    """Pull source out of a free-text model reply. Prefer the largest fenced ```...``` block (the
+    implementation, leaving any reasoning prose outside the fence); fall back to the whole stripped
+    text when there is no fence. Used only when structured output fails to parse."""
+    blocks = re.findall(r"```[a-zA-Z0-9_+\-]*\s*(.*?)```", text, re.DOTALL)
+    if blocks:
+        return max((b.strip() for b in blocks), key=len)
+    return text.strip()
+
+
 class CodeAgent:
     def __init__(self, llm=None, stack: str = "python", language: str = "python",
                  prompt_strategy: str = "baseline") -> None:
@@ -134,7 +144,21 @@ class CodeAgent:
 
             # One structured call per contract. Schema via with_structured_output —
             # no JSON schema in the prompt.
-            impl: FileImplementation = self.llm.with_structured_output(FileImplementation).invoke(prompt)
+            # Resilience: the structured-output coercion returns None when a reply is unparseable —
+            # e.g. a verbose CoT/MoT reasoning prompt makes the model answer in prose + a fenced
+            # code block instead of a clean tool call. That is deterministic at temperature 0, so a
+            # plain retry would just reproduce it; instead fall back to a plain (non-structured)
+            # call and extract the source from the reply (a text reply IS the file content).
+            structured = self.llm.with_structured_output(FileImplementation)
+            impl: FileImplementation | None = structured.invoke(prompt)
+            if impl is None:
+                raw = self.llm.invoke(prompt)
+                raw_text = raw.content if isinstance(raw.content, str) else str(raw.content)
+                code = _extract_code_block(raw_text)
+                impl = FileImplementation(content=code) if code.strip() else None
+            if impl is None:
+                raise RuntimeError(
+                    f"code generation returned no parseable implementation for FR {fr_id}")
 
             # The planner owns ids/path/layer; the LLM only supplies the body.
             files.append(
@@ -213,7 +237,18 @@ class CodeAgent:
                 ],
             },
         )
-        impl: FileImplementation = self.llm.with_structured_output(FileImplementation).invoke(prompt)
+        # Same intermittent unparseable-reply fallback as generate(): on None, a plain call returns
+        # the source as text, which we extract and wrap.
+        structured = self.llm.with_structured_output(FileImplementation)
+        impl: FileImplementation | None = structured.invoke(prompt)
+        if impl is None:
+            raw = self.llm.invoke(prompt)
+            raw_text = raw.content if isinstance(raw.content, str) else str(raw.content)
+            code = _extract_code_block(raw_text)
+            impl = FileImplementation(content=code) if code.strip() else None
+        if impl is None:
+            raise RuntimeError(
+                f"adapter generation returned no parseable implementation for feature {feature_id}")
         path = self.target.adapter_file_path(feature_id)
         content = impl.content
         if self.language == "java" and self.stack == "spring":

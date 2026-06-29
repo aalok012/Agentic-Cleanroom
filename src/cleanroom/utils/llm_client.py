@@ -257,7 +257,20 @@ class _ChatOpenAI(ChatOpenAI):
             schema, method=method, include_raw=True, **kwargs)
         if include_raw:
             return base                                # caller asked for the raw envelope
-        return base | RunnableLambda(lambda d, _s=schema: _coerce_structured(d, _s))
+
+        def _coerce_with_retry(inp, _s=schema, _base=base):
+            # _coerce_structured returns None when a model reply is unparseable (no clean tool
+            # call AND no recoverable JSON/text) — which happens intermittently (provider
+            # non-determinism). Re-invoke the structured call a few times before giving up so a
+            # transient None becomes a clean object instead of crashing whatever agent
+            # dereferences it (.content / .cases / …). Returns None only if every attempt fails.
+            out = _coerce_structured(_base.invoke(inp), _s)
+            attempts = 0
+            while out is None and attempts < 3:
+                attempts += 1
+                out = _coerce_structured(_base.invoke(inp), _s)
+            return out
+        return RunnableLambda(_coerce_with_retry)
 
 
 def _using_openrouter() -> bool:

@@ -7,12 +7,12 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 
 | metric | value |
 |---|---:|
-| runs logged | 229 |
-| LLM calls | 9,036 |
-| input tokens | 32,418,532 |
-| output tokens | 12,557,610 |
-| total tokens | 44,976,142 |
-| estimated cost (USD) | $81.2013 |
+| runs logged | 255 |
+| LLM calls | 11,218 |
+| input tokens | 39,084,826 |
+| output tokens | 14,494,711 |
+| total tokens | 53,579,537 |
+| estimated cost (USD) | $83.3912 |
 
 ## Run history
 
@@ -247,6 +247,32 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | 2026-06-29 03:33:16 | `20260629-033316-foodsaver` | failed | foodsaver.xml | deepseek/deepseek-v3.2 | 0 | 0 | 0 | 0 | $0.0000 | 0.0 | [detail](outputs/foodsaver_lang/javascript/runs/20260629-033316-foodsaver.md) |
 | 2026-06-29 07:37:33 | `20260629-073733-foodsaver` | complete | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 306 | 994,707 | 257,213 | 1,251,920 | $0.3159 | 7179.0 | [detail](outputs/foodsaver_lang/python/runs/20260629-073733-foodsaver.md) |
 | 2026-06-29 09:40:17 | `20260629-094017-foodsaver` | failed | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 305 | 1,017,933 | 225,290 | 1,243,223 | $0.3102 | 0.0 | [detail](outputs/foodsaver_lang/java/runs/20260629-094017-foodsaver.md) |
+| 2026-06-29 10:36:27 | `20260629-103627-human` | complete | Human.xml | deepseek/deepseek-v3.2-20251201 | 8 | 17,783 | 8,472 | 26,255 | $0.0070 | 172.4 | [detail](outputs/mot_smoke/runs/20260629-103627-human.md) |
+| 2026-06-29 11:04:06 | `20260629-110406-0000-cctns` | complete | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 39 | 97,059 | 30,300 | 127,359 | $0.0326 | 995.5 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/0000 - cctns/python/runs/20260629-110406-0000-cctns.md) |
+| 2026-06-29 11:05:43 | `20260629-110543-0000-cctns` | complete | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 42 | 108,085 | 33,314 | 141,399 | $0.0362 | 1093.1 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/0000 - cctns/java/runs/20260629-110543-0000-cctns.md) |
+| 2026-06-29 11:17:52 | `20260629-111752-0000-cctns` | failed | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 33 | 109,661 | 26,567 | 136,228 | $0.0342 | 0.0 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/0000 - cctns/javascript/runs/20260629-111752-0000-cctns.md) |
+| 2026-06-29 11:18:37 | `20260629-111837-0000-cctns` | failed | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 35 | 112,757 | 27,829 | 140,586 | $0.0353 | 0.0 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/0000 - cctns/javascript/runs/20260629-111837-0000-cctns.md) |
+| 2026-06-29 11:19:11 | `20260629-111911-0000-cctns` | failed | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 33 | 109,661 | 26,994 | 136,655 | $0.0344 | 0.0 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/0000 - cctns/javascript/runs/20260629-111911-0000-cctns.md) |
+| 2026-06-29 11:36:34 | `20260629-113634-0000-gamma-j` | complete | 0000 - gamma j.xml | deepseek/deepseek-v3.2-20251201 | 52 | 168,879 | 51,231 | 220,110 | $0.0562 | 1797.9 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/0000 - gamma j/python/runs/20260629-113634-0000-gamma-j.md) |
+| 2026-06-29 11:43:17 | `20260629-114317-0000-cctns` | complete | 0000 - cctns.xml | deepseek/deepseek-v3.2-20251201 | 49 | 137,337 | 45,223 | 182,560 | $0.0469 | 1785.1 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/0000 - cctns/javascript/runs/20260629-114317-0000-cctns.md) |
+| 2026-06-29 11:47:29 | `20260629-114729-0000-gamma-j` | complete | 0000 - gamma j.xml | deepseek/deepseek-v3.2-20251201 | 31 | 79,456 | 31,543 | 110,999 | $0.0290 | 756.5 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/0000 - gamma j/java/runs/20260629-114729-0000-gamma-j.md) |
+| 2026-06-29 11:57:31 | `20260629-115731-0000-gamma-j` | complete | 0000 - gamma j.xml | deepseek/deepseek-v3.2-20251201 | 41 | 117,773 | 35,350 | 153,123 | $0.0391 | 852.0 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/0000 - gamma j/javascript/runs/20260629-115731-0000-gamma-j.md) |
+| 2026-06-29 12:19:31 | `20260629-121931-2009-video-search` | complete | 2009 - video search.xml | deepseek/deepseek-v3.2-20251201 | 52 | 160,582 | 47,217 | 207,799 | $0.0529 | 1318.6 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/2009 - video search/java/runs/20260629-121931-2009-video-search.md) |
+| 2026-06-29 12:26:12 | `20260629-122612-2009-video-search` | complete | 2009 - video search.xml | deepseek/deepseek-v3.2-20251201 | 86 | 352,272 | 81,213 | 433,485 | $0.1085 | 2321.8 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/2009 - video search/python/runs/20260629-122612-2009-video-search.md) |
+| 2026-06-29 12:32:17 | `20260629-123217-human` | complete | Human.xml | deepseek/deepseek-v3.2-20251201 | 15 | 39,942 | 12,697 | 52,639 | $0.0135 | 363.2 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/Human/python/runs/20260629-123217-human.md) |
+| 2026-06-29 12:36:27 | `20260629-123627-human` | complete | Human.xml | deepseek/deepseek-v3.2-20251201 | 11 | 26,666 | 7,984 | 34,650 | $0.0088 | 248.5 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/Human/java/runs/20260629-123627-human.md) |
+| 2026-06-29 12:38:17 | `20260629-123817-2009-video-search` | complete | 2009 - video search.xml | deepseek/deepseek-v3.2-20251201 | 51 | 132,380 | 36,413 | 168,793 | $0.0428 | 1125.1 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/2009 - video search/javascript/runs/20260629-123817-2009-video-search.md) |
+| 2026-06-29 12:39:52 | `20260629-123952-human` | complete | Human.xml | deepseek/deepseek-v3.2-20251201 | 11 | 23,575 | 4,823 | 28,398 | $0.0070 | 203.4 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/Human/javascript/runs/20260629-123952-human.md) |
+| 2026-06-29 13:30:48 | `20260629-133048-dineout-srs` | complete | dineout_srs.xml | deepseek/deepseek-v3.2-20251201 | 90 | 251,680 | 98,893 | 350,573 | $0.0915 | 3054.7 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/dineout_srs/java/runs/20260629-133048-dineout-srs.md) |
+| 2026-06-29 14:29:02 | `20260629-142902-dineout-srs` | complete | dineout_srs.xml | deepseek/deepseek-v3.2-20251201 | 104 | 247,153 | 83,214 | 330,367 | $0.0851 | 3492.1 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/dineout_srs/javascript/runs/20260629-142902-dineout-srs.md) |
+| 2026-06-29 14:48:05 | `20260629-144805-dineout-srs` | complete | dineout_srs.xml | deepseek/deepseek-v3.2-20251201 | 212 | 923,208 | 238,130 | 1,161,338 | $0.2930 | 7786.0 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/dineout_srs/python/runs/20260629-144805-dineout-srs.md) |
+| 2026-06-29 15:13:46 | `20260629-151346-kinmail-srs` | complete | kinmail_srs.xml | deepseek/deepseek-v3.2-20251201 | 84 | 223,748 | 78,638 | 302,386 | $0.0782 | 2682.6 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/kinmail_srs/python/runs/20260629-151346-kinmail-srs.md) |
+| 2026-06-29 15:32:44 | `20260629-153244-kinmail-srs` | complete | kinmail_srs.xml | deepseek/deepseek-v3.2-20251201 | 91 | 256,156 | 83,155 | 339,311 | $0.0871 | 2677.5 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/kinmail_srs/java/runs/20260629-153244-kinmail-srs.md) |
+| 2026-06-29 15:50:03 | `20260629-155003-kinmail-srs` | complete | kinmail_srs.xml | deepseek/deepseek-v3.2-20251201 | 86 | 226,999 | 74,486 | 301,485 | $0.0775 | 2175.4 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/kinmail_srs/javascript/runs/20260629-155003-kinmail-srs.md) |
+| 2026-06-29 16:34:34 | `20260629-163434-foodsaver` | failed | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 178 | 507,657 | 105,642 | 613,299 | $0.1524 | 0.0 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/foodsaver/python/runs/20260629-163434-foodsaver.md) |
+| 2026-06-29 17:32:03 | `20260629-173203-foodsaver` | failed | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 229 | 626,479 | 190,491 | 816,970 | $0.2087 | 0.0 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/foodsaver/python/runs/20260629-173203-foodsaver.md) |
+| 2026-06-29 18:28:41 | `20260629-182841-foodsaver` | complete | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 194 | 534,933 | 186,493 | 721,426 | $0.1864 | 5724.8 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/foodsaver/java/runs/20260629-182841-foodsaver.md) |
+| 2026-06-29 18:52:51 | `20260629-185251-foodsaver` | complete | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 325 | 1,074,413 | 290,789 | 1,365,202 | $0.3456 | 9304.7 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/foodsaver/python/runs/20260629-185251-foodsaver.md) |
 
 ## Notes
 
@@ -254,13 +280,3 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 - `status=failed` means the pipeline exited early; tokens from completed stages are still counted.
 - **Per-run detail** (config, pass@k, stage breakdown): `outputs/runs/<run_id>.md` and the cumulative index [RUN_RESULTS.md](RUN_RESULTS.md).
 - Latest per-SRS snapshot (overwritten): `outputs/<srs>_run_report.md`.
-
----
-
-## CoT prompt-strategy experiment (2026-06-28)
-
-Chain-of-Thought (`--prompt-strategy cot`) runs across all 6 SRS × 3 languages (python/fastapi,
-java/spring, javascript/express). **Model (forced, explicit): `deepseek/deepseek-v3.2`** for every
-stage (spec, dependency, planning, code, dafny/proof, test, certification). Per-run token/cost
-accounting is auto-appended to the active ledger `API_USAGE_2.md`; per-SRS results are written to
-`<srs>_results_cot_deepseek.csv` (same columns as `experiment_metrics.csv`).

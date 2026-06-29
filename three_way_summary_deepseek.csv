@@ -1,0 +1,10 @@
+metric,mean_pipeline,mean_cot,mean_mot
+verification_pass_ratio,0.4048,,0.8056
+test_case_pass_ratio,0.347,,0.3671
+avg_input_token,2556.4889,,2863.38
+avg_output_token,762.0833,,876.465
+total_time,1126.6811,,2487.9305
+avg_verification_iter,3.0733,,2.4315
+avg_test_iter,1.7778,,0.95
+PassVer@1,0.4982,,0.8623
+total_tokens,214598.1111,,336670.1
