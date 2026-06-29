@@ -58,9 +58,13 @@ class RecoveryLoop:
         prove_target: str = "py",
         dafny_model: str = DAFNY_MODEL,
         iter_log: Path | None = None,
+        prompt_strategy: str = "baseline",
     ) -> None:
         self.ir = ir
         self.stack = stack
+        # Strategy for the re-prove / regen / re-certify agents below — keep it identical to the
+        # run's strategy so the recovery pass uses the same prompts as the first pass.
+        self.prompt_strategy = prompt_strategy
         self.proj = Path(proj) if proj else None
         self.proved_feature_ids = set(proved_feature_ids)
         self.proved_modules = dict(proved_modules)
@@ -74,7 +78,8 @@ class RecoveryLoop:
         # finishes — so you can stop the run early (Ctrl-C / kill) and keep the per-iteration data.
         self.iter_log = Path(iter_log) if iter_log else None
         # Adapters are spec+Dafny only (no test feedback), so a base-temperature agent writes them.
-        self._adapter_agent = CodeAgent(llm=get_llm(temperature=0.0), stack=stack)
+        self._adapter_agent = CodeAgent(llm=get_llm(temperature=0.0), stack=stack,
+                                        prompt_strategy=prompt_strategy)
 
     # --- public ----------------------------------------------------------------
     def run(self, initial_result: CertificationResult) -> dict:
@@ -103,7 +108,8 @@ class RecoveryLoop:
             # (b) regenerate the still-failing features WITH failing test cases (clean-room break).
             still = failing - newly_proved
             if still:
-                regen = CodeAgent(llm=get_llm(temperature=temp), stack=self.stack)
+                regen = CodeAgent(llm=get_llm(temperature=temp), stack=self.stack,
+                                  prompt_strategy=self.prompt_strategy)
                 new_files = regen.regenerate_with_test_feedback(self.ir, still, result.failures)
                 self._swap_files(new_files)
                 print(f"     regenerated {len(new_files)} file(s) for {sorted(still)} with test feedback")
@@ -178,7 +184,8 @@ class RecoveryLoop:
         """Re-prove failing features with escalated rounds; ship newly-proved ones from Dafny."""
         if not (self.proj and self.adapter_mode):
             return set()  # shipping a proved core is a FastAPI/adapter-mode concept only.
-        agent = DafnyAgent(self.proj, model=self.dafny_model, max_rounds=rounds)
+        agent = DafnyAgent(self.proj, model=self.dafny_model, max_rounds=rounds,
+                           prompt_strategy=self.prompt_strategy)
         proved_now: list = []
         for fid in feature_ids:
             feat = agent.generate_feature(self.ir, fid)
@@ -229,6 +236,7 @@ class RecoveryLoop:
             code_llm=get_llm(temperature=0.0),
             n=1,                       # pass@1 on the repaired pipeline sample
             stack=self.stack,
+            prompt_strategy=self.prompt_strategy,
             skip_feature_ids=self.proved_feature_ids if self.adapter_mode else set(),
             dafny_proj=self.proj if self.adapter_mode else None,
             dafny_modules=self._proved_module_list() if self.adapter_mode else None,

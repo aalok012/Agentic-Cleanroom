@@ -31,7 +31,7 @@ from src.cleanroom.agents.planning.schema.plan import Contract, FeaturePlan, Pla
 from src.cleanroom.agents.spec_agent.schema.ir import BehavioralContract
 from src.cleanroom.utils.ir import feature_id_of, normalize_ir_features, requirement_text
 from src.cleanroom.utils.llm_client import get_llm
-from src.cleanroom.utils.prompt_renderer import PromptRenderer
+from src.cleanroom.utils.prompt_renderer import PromptRenderer, cot_template
 
 # Directory each MVC layer's files live under. The plan_feature.j2 prompt is the classifier
 # (Literal-typed `mvc_layer`); there is no keyword fallback — invalid output defaults to controller.
@@ -191,10 +191,12 @@ def _infer_return_type(signature: str) -> str | None:
 
 
 class PlanningAgent:
-    def __init__(self, llm=None, stack: str = "python") -> None:
+    def __init__(self, llm=None, stack: str = "python", prompt_strategy: str = "baseline") -> None:
         # `llm` is injectable so tests/stubs avoid network calls.
         self.llm = llm if llm is not None else get_llm()
         self.renderer = PromptRenderer()
+        # 'baseline' = original prompt; 'cot' = the parallel reason-first variant.
+        self.prompt_strategy = prompt_strategy
         # Target stack for the run (e.g. "fastapi"). Threaded into the design prompt so
         # signatures/layers come out shaped for that stack. The stack lives in the run,
         # not hardcoded in the prompt prose, so other profiles can be added later.
@@ -320,7 +322,7 @@ class PlanningAgent:
                 "contract": bc,
             })
         prompt = self.renderer.render(
-            "plan_feature.j2",
+            cot_template("plan_feature.j2", self.prompt_strategy),
             {"feature_name": feature_name, "requirements": requirements, "stack": self.stack},
         )
         result: FeaturePlan = self.llm.with_structured_output(FeaturePlan).invoke(prompt)

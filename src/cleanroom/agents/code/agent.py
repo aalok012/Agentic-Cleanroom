@@ -31,7 +31,7 @@ from src.cleanroom.utils.contracts import prereq_ifaces, requirement_text
 from src.cleanroom.utils.ir import normalize_ir_features
 from src.cleanroom.targets import get_target
 from src.cleanroom.utils.llm_client import get_llm
-from src.cleanroom.utils.prompt_renderer import PromptRenderer
+from src.cleanroom.utils.prompt_renderer import PromptRenderer, cot_template
 
 
 def _route_from_path(file_path: str) -> str:
@@ -62,11 +62,15 @@ def _strip_java_package_imports(content: str, package_names: list[str]) -> str:
 
 
 class CodeAgent:
-    def __init__(self, llm=None, stack: str = "python", language: str = "python") -> None:
+    def __init__(self, llm=None, stack: str = "python", language: str = "python",
+                 prompt_strategy: str = "baseline") -> None:
         # `llm` is injectable purely so tests can avoid network calls; it is NOT a
         # channel for test data. Defaults to the shared cost-control model client.
         self.llm = llm if llm is not None else get_llm()
         self.renderer = PromptRenderer()
+        # 'baseline' = original prompts; 'cot' = the parallel reason-first variants. CoT changes
+        # only the prompt wording (reason from the SPEC first) — the clean-room isolation is intact.
+        self.prompt_strategy = prompt_strategy
         # Target stack for the run (e.g. "fastapi"). Threaded into the code prompt as
         # STRUCTURAL conventions only — never test-derived — so isolation/pass@k hold.
         self.stack = stack
@@ -109,7 +113,7 @@ class CodeAgent:
             prerequisites = prereq_ifaces(contract, by_fr)
 
             prompt = self.renderer.render(
-                self.target.code_template(),
+                cot_template(self.target.code_template(), self.prompt_strategy),
                 {
                     "fr_id": fr_id,
                     "feature_id": contract["feature_id"],
@@ -176,7 +180,7 @@ class CodeAgent:
         core_java_kernel_package = java_api.get("kernel_package") or f"{module}Kernel".replace("_", "__")
 
         prompt = self.renderer.render(
-            self.target.adapter_template(),
+            cot_template(self.target.adapter_template(), self.prompt_strategy),
             {
                 "feature_id": feature_id,
                 "feature_name": feat.get("name", ""),
@@ -265,7 +269,7 @@ class CodeAgent:
             or (f"{module}Kernel".replace("_", "__") if module else "")
         )
         prompt = self.renderer.render(
-            "repair_compile_errors_java.j2",
+            cot_template("repair_compile_errors_java.j2", self.prompt_strategy),
             {
                 "fr_id": fr_id,
                 "feature_id": feature_id,
@@ -354,7 +358,7 @@ class CodeAgent:
                 continue
             fr_id = contract["fr_id"]
             prompt = self.renderer.render(
-                self.target.feedback_template(),
+                cot_template(self.target.feedback_template(), self.prompt_strategy),
                 {
                     "fr_id": fr_id,
                     "feature_id": contract["feature_id"],

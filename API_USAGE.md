@@ -253,3 +253,13 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 - `status=failed` means the pipeline exited early; tokens from completed stages are still counted.
 - **Per-run detail** (config, pass@k, stage breakdown): `outputs/runs/<run_id>.md` and the cumulative index [RUN_RESULTS.md](RUN_RESULTS.md).
 - Latest per-SRS snapshot (overwritten): `outputs/<srs>_run_report.md`.
+
+---
+
+## CoT prompt-strategy experiment (2026-06-28)
+
+Chain-of-Thought (`--prompt-strategy cot`) runs across all 6 SRS × 3 languages (python/fastapi,
+java/spring, javascript/express). **Model (forced, explicit): `deepseek/deepseek-v3.2`** for every
+stage (spec, dependency, planning, code, dafny/proof, test, certification). Per-run token/cost
+accounting is auto-appended to the active ledger `API_USAGE_2.md`; per-SRS results are written to
+`<srs>_results_cot_deepseek.csv` (same columns as `experiment_metrics.csv`).

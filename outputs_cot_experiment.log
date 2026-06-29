@@ -1,0 +1,95 @@
+=== CoT experiment START 2026-06-28 05:28:48 ===
+model=deepseek/deepseek-v3.2 strategy=cot flags=--prove --certify --max-cert-loops 4 --prove-rounds 4
+cells=18  cell_timeout=3900s  max_rounds=4
+
+########## ROUND 1/4  (18 cell(s) to run) ##########
+>>> [05:28:48] SRS: 0000 - cctns
+      start   0000 - cctns/python
+      start   0000 - cctns/java
+      start   0000 - cctns/javascript
+      EXIT1   0000 - cctns/java
+      done    0000 - cctns/javascript
+      done    0000 - cctns/python
+wrote 3 run(s) -> /Users/alokthakur/agentic-cleanroom/0000 - cctns_results_cot_deepseek.csv
+  wrote cot_deepseek_results.csv  (2/18 cells with data)
+>>> [05:49:49] SRS: 0000 - gamma j
+      start   0000 - gamma j/python
+      start   0000 - gamma j/java
+      start   0000 - gamma j/javascript
+      EXIT1   0000 - gamma j/java
+      done    0000 - gamma j/javascript
+      done    0000 - gamma j/python
+wrote 3 run(s) -> /Users/alokthakur/agentic-cleanroom/0000 - gamma j_results_cot_deepseek.csv
+  wrote cot_deepseek_results.csv  (4/18 cells with data)
+>>> [06:22:30] SRS: 2009 - video search
+      start   2009 - video search/python
+      start   2009 - video search/java
+      start   2009 - video search/javascript
+      EXIT1   2009 - video search/java
+      done    2009 - video search/python
+      done    2009 - video search/javascript
+wrote 3 run(s) -> /Users/alokthakur/agentic-cleanroom/2009 - video search_results_cot_deepseek.csv
+  wrote cot_deepseek_results.csv  (6/18 cells with data)
+>>> [06:39:41] SRS: Human
+      start   Human/python
+      start   Human/java
+      start   Human/javascript
+      done    Human/python
+      done    Human/javascript
+      done    Human/java
+wrote 3 run(s) -> /Users/alokthakur/agentic-cleanroom/Human_results_cot_deepseek.csv
+  wrote cot_deepseek_results.csv  (9/18 cells with data)
+>>> [06:50:02] SRS: dineout_srs
+      start   dineout_srs/python
+      start   dineout_srs/java
+      start   dineout_srs/javascript
+      done    dineout_srs/javascript
+      done    dineout_srs/java
+      TIMEOUT dineout_srs/python  (killed after 3900s)
+wrote 2 run(s) -> /Users/alokthakur/agentic-cleanroom/dineout_srs_results_cot_deepseek.csv
+  wrote cot_deepseek_results.csv  (11/18 cells with data)
+>>> [07:55:04] SRS: kinmail_srs
+      start   kinmail_srs/python
+      start   kinmail_srs/java
+      start   kinmail_srs/javascript
+      done    kinmail_srs/javascript
+      EXIT1   kinmail_srs/python
+      done    kinmail_srs/java
+wrote 3 run(s) -> /Users/alokthakur/agentic-cleanroom/kinmail_srs_results_cot_deepseek.csv
+  wrote cot_deepseek_results.csv  (14/18 cells with data)
+
+########## ROUND 2/4  (4 cell(s) to run) ##########
+>>> [08:18:15] SRS: 0000 - cctns
+      skip    0000 - cctns/python  (already complete)
+      start   0000 - cctns/java
+      skip    0000 - cctns/javascript  (already complete)
+      done    0000 - cctns/java
+wrote 3 run(s) -> /Users/alokthakur/agentic-cleanroom/0000 - cctns_results_cot_deepseek.csv
+  wrote cot_deepseek_results.csv  (15/18 cells with data)
+>>> [08:33:36] SRS: 0000 - gamma j
+      skip    0000 - gamma j/python  (already complete)
+      start   0000 - gamma j/java
+      skip    0000 - gamma j/javascript  (already complete)
+      done    0000 - gamma j/java
+wrote 3 run(s) -> /Users/alokthakur/agentic-cleanroom/0000 - gamma j_results_cot_deepseek.csv
+  wrote cot_deepseek_results.csv  (16/18 cells with data)
+>>> [08:53:07] SRS: 2009 - video search
+      skip    2009 - video search/python  (already complete)
+      start   2009 - video search/java
+      skip    2009 - video search/javascript  (already complete)
+      done    2009 - video search/java
+wrote 3 run(s) -> /Users/alokthakur/agentic-cleanroom/2009 - video search_results_cot_deepseek.csv
+  wrote cot_deepseek_results.csv  (17/18 cells with data)
+>>> [09:03:08] SRS: kinmail_srs
+      start   kinmail_srs/python
+      skip    kinmail_srs/java  (already complete)
+      skip    kinmail_srs/javascript  (already complete)
+      done    kinmail_srs/python
+wrote 3 run(s) -> /Users/alokthakur/agentic-cleanroom/kinmail_srs_results_cot_deepseek.csv
+  wrote cot_deepseek_results.csv  (18/18 cells with data)
+
+=== all cells complete before round 3 ===
+  wrote cot_deepseek_results.csv  (18/18 cells with data)
+
+=== CoT experiment DONE 2026-06-28 09:36:19 ===
+complete: 18/18

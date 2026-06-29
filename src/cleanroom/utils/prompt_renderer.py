@@ -5,6 +5,19 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined
 _PROMPTS_ROOT = Path(__file__).parent.parent / "agents"
 
 
+def cot_template(template_name: str, prompt_strategy: str) -> str:
+    """Map a base template name to its parallel Chain-of-Thought variant when the run uses the
+    ``cot`` prompt strategy (e.g. ``generate_code_java.j2`` -> ``generate_code_java_cot.j2``).
+
+    For the default ``baseline`` strategy (or any non-cot value) the name is returned unchanged,
+    so the baseline prompt path is byte-for-byte identical. The CoT variants are parallel files —
+    nothing is overwritten — and are resolved by the same rglob lookup as the originals.
+    """
+    if prompt_strategy != "cot" or not template_name.endswith(".j2"):
+        return template_name
+    return template_name[:-3] + "_cot.j2"
+
+
 class PromptRenderer:
     def __init__(self) -> None:
         self.env = Environment(

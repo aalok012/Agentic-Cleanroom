@@ -280,3 +280,54 @@ verification_pass_ratio	test_case_pass_ratio	avg_input_token	avg_output_token	to
 
 - proved feature ids: ['3.1.1', '3.1.10', '3.1.10_2', '3.1.11', '3.1.12', '3.1.13', '3.1.14', '3.1.15', '3.1.16', '3.1.18', '3.1.19', '3.1.2', '3.1.20', '3.1.21', '3.1.22', '3.1.23', '3.1.24', '3.1.26', '3.1.27', '3.1.28', '3.1.29', '3.1.3', '3.1.30', '3.1.32', '3.1.33', '3.1.34', '3.1.35', '3.1.4', '3.1.5', '3.1.6', '3.1.7', '3.1.8', '3.1.9']
 
+---
+
+## Run 20260628-101510-human — COMPLETE
+
+- **When**: 2026-06-28 05:15:10
+- **SRS**: Human.xml  ·  **language**: python  ·  **stack**: fastapi
+- **Command**: `python run_pipeline.py data/srs/Human.xml --prompt-strategy cot --model deepseek/deepseek-v3.2 --no-prove --no-certify --output-dir outputs/smoke_cot`
+
+### Models used (per stage)
+
+| stage | model |
+|---|---|
+| spec | `deepseek/deepseek-v3.2` |
+| dependency | `deepseek/deepseek-v3.2` |
+| planning | `deepseek/deepseek-v3.2` |
+| code | `deepseek/deepseek-v3.2` |
+| test | `deepseek/deepseek-v3.2` |
+| proof | `deepseek/deepseek-v3.2` |
+| cert | `deepseek/deepseek-v3.2` |
+
+### Pipeline flags
+
+- agents: spec=on, dependency=on, planning=on, proof=off, code=on, test=on, certify=off, recovery=off, compile_repair=off
+- certify=False · samples=1 · k=[1] · prove=False · max_cert_loops=2 · max_compile_repair_loops=2
+- temperature=0.0 · cert_temperature=0.4 · prove_rounds=6 · baseline=False
+
+### Run metrics (summary)
+
+| metric | value |
+|---|---|
+| PassVer@1 | 0.0 |
+| verification_pass_ratio | 0.0 |
+| test_case_pass_ratio | 0.0 |
+| avg_verification_iteration | 0.0 |
+| avg_test_iteration | 0.0 |
+| avg_input_token | 1909.1 |
+| avg_output_token | 861.2 |
+| total_time (s) | 188.57 |
+
+#### Copy-paste row (TSV — paste directly under your spreadsheet header)
+
+```text
+verification_pass_ratio	test_case_pass_ratio	avg_input_token	avg_output_token	total_time	avg_verification_iter	avg_test_iter	PassVer@1
+0.0	0.0	1909.1	861.2	188.57	0.0	0.0	0.0
+```
+
+- tokens: 22,163 (in 15,273 / out 6,890) · calls 8
+- estimated cost: $0.0059
+
+- proved feature ids: (none)
+
