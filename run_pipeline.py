@@ -373,8 +373,6 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
     if "proof" in done:
         # Reconstruct the proof-stage locals from the persisted IR/metrics (NO tokens): the proved
         # set + Dafny sources live in ir['generated_dafny']; the compiled set in metrics['compile'].
-        # The on-disk dafny project is re-scaffolded (mkdir + copy kernel — no LLM) so adapter
-        # staging / cert can still reach the translated cores.
         _banner("[4a]", "Dafny Proof Agent — [skip — resumed]")
         gdaf = ir.get("generated_dafny")
         if gdaf:
@@ -384,7 +382,10 @@ def run(srs_path: Path, output_dir: Path, cfg: RunConfig) -> tuple[dict, dict]:
             proved_sources = {f["feature_id"]: f.get("dafny_source", "") for f in feats if f.get("verified")}
             proved_compiled_ids = {c["feature_id"] for c in (metrics.get("compile") or {}).get("compiled", [])}
             project_dir = output_dir / "generated" / ir["project_name"] / "dafny_proof"
-            proj = scaffold_dafny_project(project_dir)
+            # Reuse the EXISTING dafny project if present — scaffold_dafny_project() rmtree's it,
+            # which would destroy the already-compiled cores (out/<module>-*) that adapter staging
+            # and certification need. Only scaffold from scratch when nothing is there.
+            proj = project_dir if project_dir.exists() else scaffold_dafny_project(project_dir)
             if prove_target == "java":
                 proved_java_apis = {fid: summarize_dafny_java_api(proj, proved_modules[fid])
                                     for fid in sorted(proved_compiled_ids) if fid in proved_modules}

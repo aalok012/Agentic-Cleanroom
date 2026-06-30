@@ -172,8 +172,14 @@ def _row(rec: dict, path_hint: dict) -> dict:
     }
 
 
-def collect(root: Path, out: Path) -> int:
-    rows: dict[str, dict] = {}  # run_id -> row (dedupe; last write wins)
+def _cell_key(row: dict) -> str:
+    """Cell identity used to dedupe/update: language/srs/model."""
+    return f"{row.get('language','')}/{row.get('srs','')}/{row.get('model','')}"
+
+
+def _scan_rows(root: Path) -> dict[str, dict]:
+    """Build {cell_key -> row} from every run JSON under ``root`` (latest per cell wins)."""
+    rows: dict[str, dict] = {}
     for json_path in sorted(root.glob("**/runs/*.json")):
         try:
             rec = json.loads(json_path.read_text(encoding="utf-8"))
@@ -183,36 +189,71 @@ def collect(root: Path, out: Path) -> int:
         row = _row(rec, _derive_from_path(json_path, root))
         row["n_frs"] = _n_frs(row.get("srs", ""))
         row.update(_summary_fields(json_path, rec))
-        # Dedupe by CELL identity (language/srs/model from the path), NOT run_id: run_id is
-        # timestamp+srs (no model), so parallel cells of the same SRS finishing in the same second
-        # would collide and overwrite each other. Keep the latest run per cell.
         try:
             key = "/".join(json_path.parent.parent.relative_to(root).parts)  # lang/srs/model
         except ValueError:
-            key = row["run_id"] or json_path.stem
+            key = _cell_key(row) if any((row.get("language"), row.get("srs"))) else (row["run_id"] or json_path.stem)
         prev = rows.get(key)
         if prev is None or (row.get("timestamp") or "") >= (prev.get("timestamp") or ""):
             rows[key] = row
+    return rows
 
+
+def _write(rows: dict[str, dict], out: Path) -> int:
     ordered = sorted(rows.values(), key=lambda r: (r.get("timestamp") or "", r.get("run_id") or ""))
     with out.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=COLUMNS)
+        writer = csv.DictWriter(f, fieldnames=COLUMNS, extrasaction="ignore")
         writer.writeheader()
         writer.writerows(ordered)
     return len(ordered)
+
+
+def collect(root: Path, out: Path) -> int:
+    """Rebuild ``out`` from scratch from every run JSON under ``root``."""
+    return _write(_scan_rows(root), out)
+
+
+def append(root: Path, out: Path) -> tuple[int, int, int]:
+    """Non-destructive update: keep every existing row in ``out``, then ADD new cells and
+    UPDATE re-run cells (newer timestamp wins) from the scan of ``root``. Existing rows that
+    aren't re-scanned are preserved verbatim. Returns (preserved, added, updated)."""
+    existing: dict[str, dict] = {}
+    if out.exists():
+        with out.open(newline="", encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                existing[_cell_key(r)] = r
+    preserved = len(existing)
+    added = updated = 0
+    for key, row in _scan_rows(root).items():
+        if key in existing:
+            if (row.get("timestamp") or "") >= (existing[key].get("timestamp") or ""):
+                existing[key] = row
+                updated += 1
+        else:
+            existing[key] = row
+            added += 1
+    _write(existing, out)
+    return preserved, added, updated
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Aggregate per-run metrics JSON into one CSV.")
     ap.add_argument("--root", type=Path, default=Path("outputs"), help="Dir to scan (default: outputs)")
     ap.add_argument("--out", type=Path, default=Path("experiment_metrics.csv"), help="CSV path (default: experiment_metrics.csv)")
+    ap.add_argument("--append", action="store_true",
+                    help="Non-destructive: keep existing rows, only ADD new cells / UPDATE re-run "
+                         "cells (don't rebuild the whole CSV from scratch).")
     args = ap.parse_args()
 
     if not args.root.exists():
         print(f"root {args.root} does not exist — nothing to collect")
         return
-    n = collect(args.root, args.out)
-    print(f"wrote {n} run(s) -> {args.out}")
+    if args.append:
+        preserved, added, updated = append(args.root, args.out)
+        print(f"append -> {args.out}: {preserved} preserved, {added} added, {updated} updated")
+    else:
+        n = collect(args.root, args.out)
+        print(f"wrote {n} run(s) -> {args.out}")
 
 
 if __name__ == "__main__":
