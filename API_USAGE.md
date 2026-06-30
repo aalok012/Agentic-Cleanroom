@@ -7,12 +7,12 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 
 | metric | value |
 |---|---:|
-| runs logged | 255 |
-| LLM calls | 11,218 |
-| input tokens | 39,084,826 |
-| output tokens | 14,494,711 |
-| total tokens | 53,579,537 |
-| estimated cost (USD) | $83.3912 |
+| runs logged | 275 |
+| LLM calls | 13,257 |
+| input tokens | 45,640,475 |
+| output tokens | 16,772,177 |
+| total tokens | 62,412,652 |
+| estimated cost (USD) | $85.6727 |
 
 ## Run history
 
@@ -273,6 +273,26 @@ Updated automatically at the end of each `run_pipeline.py` invocation (including
 | 2026-06-29 17:32:03 | `20260629-173203-foodsaver` | failed | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 229 | 626,479 | 190,491 | 816,970 | $0.2087 | 0.0 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/foodsaver/python/runs/20260629-173203-foodsaver.md) |
 | 2026-06-29 18:28:41 | `20260629-182841-foodsaver` | complete | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 194 | 534,933 | 186,493 | 721,426 | $0.1864 | 5724.8 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/foodsaver/java/runs/20260629-182841-foodsaver.md) |
 | 2026-06-29 18:52:51 | `20260629-185251-foodsaver` | complete | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 325 | 1,074,413 | 290,789 | 1,365,202 | $0.3456 | 9304.7 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/foodsaver/python/runs/20260629-185251-foodsaver.md) |
+| 2026-06-30 01:02:53 | `20260630-010253-event-management` | complete | Event Management.xml | deepseek/deepseek-v3.2-20251201 | 7 | 18,878 | 9,457 | 28,335 | $0.0076 | 252.7 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/Event Management/java/runs/20260630-010253-event-management.md) |
+| 2026-06-30 01:04:24 | `20260630-010424-event-management` | complete | Event Management.xml | deepseek/deepseek-v3.2-20251201 | 13 | 34,195 | 11,628 | 45,823 | $0.0118 | 344.1 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/Event Management/javascript/runs/20260630-010424-event-management.md) |
+| 2026-06-30 01:05:15 | `20260630-010515-event-management` | complete | Event Management.xml | deepseek/deepseek-v3.2-20251201 | 17 | 40,046 | 15,377 | 55,423 | $0.0144 | 396.9 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/Event Management/javascript/runs/20260630-010515-event-management.md) |
+| 2026-06-30 01:08:21 | `20260630-010821-event-management` | complete | Event Management.xml | deepseek/deepseek-v3.2-20251201 | 17 | 46,252 | 19,538 | 65,790 | $0.0173 | 582.3 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/Event Management/java/runs/20260630-010821-event-management.md) |
+| 2026-06-30 01:15:08 | `20260630-011508-event-management` | complete | Event Management.xml | deepseek/deepseek-v3.2-20251201 | 33 | 66,103 | 31,156 | 97,259 | $0.0258 | 987.9 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/Event Management/python/runs/20260630-011508-event-management.md) |
+| 2026-06-30 01:19:59 | `20260630-011959-event-management` | complete | Event Management.xml | deepseek/deepseek-v3.2-20251201 | 33 | 79,131 | 44,255 | 123,386 | $0.0333 | 1280.4 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/Event Management/python/runs/20260630-011959-event-management.md) |
+| 2026-06-30 02:12:12 | `20260630-021212-trading-software` | complete | TRADING SOFTWARE.xml | deepseek/deepseek-v3.2-20251201 | 8 | 21,849 | 10,059 | 31,908 | $0.0085 | 299.6 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/TRADING SOFTWARE/java/runs/20260630-021212-trading-software.md) |
+| 2026-06-30 02:12:43 | `20260630-021243-trading-software` | complete | TRADING SOFTWARE.xml | deepseek/deepseek-v3.2-20251201 | 7 | 17,171 | 8,710 | 25,881 | $0.0069 | 331.2 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/TRADING SOFTWARE/python/runs/20260630-021243-trading-software.md) |
+| 2026-06-30 02:13:48 | `20260630-021348-trading-software` | complete | TRADING SOFTWARE.xml | deepseek/deepseek-v3.2-20251201 | 12 | 22,625 | 11,580 | 34,205 | $0.0092 | 395.5 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/TRADING SOFTWARE/javascript/runs/20260630-021348-trading-software.md) |
+| 2026-06-30 02:48:48 | `20260630-024848-shoten-srs` | complete | Shoten_SRS.xml | deepseek/deepseek-v3.2-20251201 | 177 | 463,217 | 187,507 | 650,724 | $0.1703 | 4895.4 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/Shoten_SRS/javascript/runs/20260630-024848-shoten-srs.md) |
+| 2026-06-30 03:02:49 | `20260630-030249-shoten-srs` | complete | Shoten_SRS.xml | deepseek/deepseek-v3.2-20251201 | 165 | 463,251 | 263,391 | 726,642 | $0.1964 | 5711.2 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/Shoten_SRS/java/runs/20260630-030249-shoten-srs.md) |
+| 2026-06-30 03:07:42 | `20260630-030742-trading-software` | complete | TRADING SOFTWARE.xml | deepseek/deepseek-v3.2-20251201 | 38 | 88,309 | 40,888 | 129,197 | $0.0342 | 1132.3 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/TRADING SOFTWARE/python/runs/20260630-030742-trading-software.md) |
+| 2026-06-30 03:12:11 | `20260630-031211-trading-software` | complete | TRADING SOFTWARE.xml | deepseek/deepseek-v3.2-20251201 | 16 | 46,774 | 23,337 | 70,111 | $0.0187 | 560.2 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/TRADING SOFTWARE/java/runs/20260630-031211-trading-software.md) |
+| 2026-06-30 03:14:40 | `20260630-031440-trading-software` | complete | TRADING SOFTWARE.xml | deepseek/deepseek-v3.2-20251201 | 12 | 20,746 | 10,767 | 31,513 | $0.0084 | 417.3 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/TRADING SOFTWARE/javascript/runs/20260630-031440-trading-software.md) |
+| 2026-06-30 03:36:11 | `20260630-033611-foodsaver` | complete | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 237 | 596,901 | 162,660 | 759,561 | $0.1924 | 4938.6 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/foodsaver/javascript/runs/20260630-033611-foodsaver.md) |
+| 2026-06-30 03:57:45 | `20260630-035745-foodsaver` | complete | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 256 | 787,704 | 228,721 | 1,016,425 | $0.2587 | 6232.7 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/foodsaver/java/runs/20260630-035745-foodsaver.md) |
+| 2026-06-30 04:24:07 | `20260630-042407-shoten-srs` | complete | Shoten_SRS.xml | deepseek/deepseek-v3.2-20251201 | 173 | 431,974 | 180,762 | 612,736 | $0.1609 | 3911.7 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/Shoten_SRS/javascript/runs/20260630-042407-shoten-srs.md) |
+| 2026-06-30 04:35:57 | `20260630-043557-foodsaver` | complete | foodsaver.xml | deepseek/deepseek-v3.2-20251201 | 306 | 984,808 | 296,829 | 1,281,637 | $0.3272 | 8524.3 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/foodsaver/python/runs/20260630-043557-foodsaver.md) |
+| 2026-06-30 04:48:49 | `20260630-044849-shoten-srs` | complete | Shoten_SRS.xml | deepseek/deepseek-v3.2-20251201 | 146 | 424,237 | 195,469 | 619,706 | $0.1641 | 5393.6 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/cot/Shoten_SRS/java/runs/20260630-044849-shoten-srs.md) |
+| 2026-06-30 04:50:53 | `20260630-045053-shoten-srs` | complete | Shoten_SRS.xml | deepseek/deepseek-v3.2-20251201 | 366 | 1,901,478 | 525,375 | 2,426,853 | $0.6154 | 12492.3 | [detail](/Users/alokthakur/agentic-cleanroom MoT/outputs/mot/Shoten_SRS/python/runs/20260630-045053-shoten-srs.md) |
 
 ## Notes
 
