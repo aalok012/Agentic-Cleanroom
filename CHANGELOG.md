@@ -1321,3 +1321,22 @@ from `README.md` and the existing code:
   `certification/`). `run_pipeline.py` runs them on real-LLM runs; stub runs stop
   after Planning.
 - **Isolation guarantee** between Code and Test agents is enforced structurally.
+
+## 2026-06-29 — Fix Shoten FR subsection split (srs_reader)
+
+- **Bug**: `_IEEE_SUBSEC` required whitespace after the section number
+  (`\d+\.\d+...\.?\s+`). Shoten's PDF exported two titles as `4.12.View Delivery
+  Status` / `4.13.View Account Purchase History` (dot, **no space**), so they were
+  not recognized as feature markers. Their `REQ-*` paragraphs were absorbed into
+  `4.11 Update Account Information` → only 15 features, with 4.11 wrongly carrying 9
+  reqs; features 4.12 and 4.13 were missing.
+- **Fix**: separator now accepts a dot OR whitespace:
+  `^(\d+\.\d+(?:\.\d+)*)(?:\.\s*|\s+)(.+)$`. Shoten now yields **17 features /
+  54 reqs** (4.11/4.12/4.13 each 3 reqs).
+- **Verified text-level (not just counts)** against the raw XML for the 5 audited SRS:
+  Trading 6/6, G16 5/5, Shoten all 53 source `REQ-N` sentences + 1 feature-intro
+  prose, foodsaver all 37 use-case description clauses match source verbatim.
+- **Regression**: all other SRS unchanged (cctns 7, gamma 6, video-search 7, Human 2,
+  dineout 10/26, kinmail 13). Branch only affects Tagged-PDF IEEE-830 docs.
+- **Follow-up**: Shoten experiment-matrix runs predate this and used 15 features —
+  re-run to refresh `experiment_metrics.csv` if Shoten numbers are reported.

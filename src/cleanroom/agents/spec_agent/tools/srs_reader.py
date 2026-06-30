@@ -490,6 +490,122 @@ def _is_usecase_marker(tag: str, text: str):
     return None
 
 
+# --------------------------------------------------------------------------
+# Tagged-PDF IEEE-830 SRS: a "System Features" / "Functional Requirements" section
+# whose requirements are either per-feature "REQ-N. The system shall ..." paragraphs
+# (e.g. Shoten) or a flat bullet list (e.g. G16, the trading SRS). Distinct from the
+# use-case branch below, which keys on "3. Specific Requirements" / "3.1.<n>" (foodsaver).
+# --------------------------------------------------------------------------
+_IEEE_FR_ANCHOR = re.compile(r"system features|functional requirements", re.I)
+_IEEE_NONFUNC = re.compile(r"non[\s\-]*functional", re.I)          # exclude "Non-Functional Requirements"
+_IEEE_SUBSEC = re.compile(r"^(\d+\.\d+(?:\.\d+)*)(?:\.\s*|\s+)(.+)$")  # "4.1 Title" / "4.1. Title" / "4.12.Title"
+_IEEE_REQ = re.compile(r"\bREQ[-\s]?\d+\b\.?\s*", re.I)            # "REQ-1." markers within a body
+_IEEE_BULLET_LBL = re.compile(r"^[•●▪◦‣·•·◦‣*\-o]+$")  # pure bullet labels
+_IEEE_STOP = re.compile(
+    r"non[\s\-]*functional|external interface|use[\s\-]*case|other (?:expected )?requirements?|"
+    r"requirement traceability|performance requirements|safety|appendix|business rules|"
+    r"references|glossary|design and implementation", re.I)
+_IEEE_LEAF = {"H1", "H2", "H3", "H4", "H5", "H6", "P", "LBody", "Lbl", "TD"}
+
+
+def _ieee_stream(elem, out: list) -> None:
+    """Flatten the doc to an ordered (tag, text) stream of text-bearing LEAF blocks.
+
+    Emits each leaf (heading / P / Lbl / LBody / TD) once via itertext() and does NOT recurse
+    into it (so a nested P inside an LBody isn't double-counted), while recursing through every
+    structural container (Sect, Part, L, LI, Table, …) so individual list bullets survive."""
+    for ch in elem:
+        n = _strip_ns(ch.tag)
+        if n in _IEEE_LEAF:
+            t = _clean("".join(ch.itertext()))
+            if t:
+                out.append((n, t))
+        else:
+            _ieee_stream(ch, out)
+
+
+def _ieee_anchor_num(text: str) -> str:
+    m = re.match(r"^(\d+(?:\.\d+)*)", text.strip())
+    return m.group(1) if m else ""
+
+
+def _ieee_frs_from_body(fid: str, body: list[tuple[str, str]]) -> list[dict]:
+    """Turn one feature's body blocks into functional requirements.
+
+    Priority: explicit ``REQ-N.`` markers (split the joined text on them) → flat bullet
+    ``LBody`` items → the whole body as a single requirement. Guarantees every feature with
+    any requirement text yields at least one FR."""
+    joined = " ".join(t for n, t in body if n in ("P", "LBody", "Lbl", "TD"))
+    frs: list[dict] = []
+    if _IEEE_REQ.search(joined):
+        items = [p.strip() for p in _IEEE_REQ.split(joined)[1:] if p.strip()]
+        for j, it in enumerate(items, 1):
+            frs.append({"id": f"{fid}.REQ-{j}", "text": _clean(it)})
+        if frs:
+            return frs
+    items = [t for n, t in body if n == "LBody" and t and not _IEEE_BULLET_LBL.match(t)]
+    if not items:  # some exports carry list items as plain <P>
+        items = [t for n, t in body if n == "P" and len(t) > 15 and not _IEEE_SUBSEC.match(t)]
+    items = [it for it in items if _clean(it)]
+    if items:
+        return [{"id": f"{fid}.REQ-{j}", "text": _clean(it)} for j, it in enumerate(items, 1)]
+    if _clean(joined):
+        return [{"id": f"{fid}.REQ-1", "text": _clean(joined)}]
+    return []
+
+
+def build_tagged_pdf_ieee_features(root) -> list[dict]:
+    """Parse Tagged-PDF IEEE-830 SRS whose FRs live under a "System Features" /
+    "Functional Requirements" section (e.g. Shoten, G16, the trading SRS).
+
+    Two sub-shapes, handled uniformly: (a) per-feature subsections ``N.N <Title>`` each with
+    ``REQ-N. The system shall …`` paragraphs, and (b) a flat bullet list directly under the
+    section. The anchor explicitly EXCLUDES "Non-Functional Requirements", so foodsaver (which
+    has no such heading) falls through untouched to the use-case branch."""
+    stream: list[tuple[str, str]] = []
+    _ieee_stream(root, stream)
+
+    anchor = None
+    for i, (n, t) in enumerate(stream):
+        if n in _TAGGED_PDF_HEADINGS and _IEEE_FR_ANCHOR.search(t) and not _IEEE_NONFUNC.search(t):
+            anchor = i
+            break
+    if anchor is None:
+        return []
+
+    region: list[tuple[str, str]] = []
+    for n, t in stream[anchor + 1:]:
+        is_markerish = n in _TAGGED_PDF_HEADINGS or len(t) <= 80 or bool(_IEEE_SUBSEC.match(t))
+        if is_markerish and _IEEE_STOP.search(t):
+            break
+        region.append((n, t))
+
+    markers = [
+        (i, m.group(1), m.group(2).strip())
+        for i, (n, t) in enumerate(region)
+        for m in [_IEEE_SUBSEC.match(t)]
+        if m and (n in _TAGGED_PDF_HEADINGS or len(t) <= 80)
+    ]
+
+    features: list[dict] = []
+    if markers:
+        bounds = [mi for mi, _, _ in markers] + [len(region)]
+        for k, (mi, num, title) in enumerate(markers):
+            body = region[mi + 1: bounds[k + 1]]
+            frs = _ieee_frs_from_body(num, body)
+            if frs:
+                features.append({"id": num, "name": title or num,
+                                 "description": title, "functional_requirements": frs})
+    else:
+        num = _ieee_anchor_num(stream[anchor][1]) or "3"
+        title = re.sub(r"^\d+(?:\.\d+)*\.?\s*", "", stream[anchor][1]).strip() or stream[anchor][1]
+        frs = _ieee_frs_from_body(num, region)
+        if frs:
+            features.append({"id": num, "name": title,
+                             "description": stream[anchor][1], "functional_requirements": frs})
+    return features
+
+
 def build_tagged_pdf_usecase_features(root) -> list[dict]:
     """Parse Acrobat "SaveAsXML" Tagged-PDF exports (``<TaggedPDF-doc>``, e.g. foodsaver).
 
@@ -596,6 +712,13 @@ class SRSReader:
         if features:
             return features
         features = build_peppol_normative_features(tree)
+        if features:
+            return features
+        # Tagged-PDF IEEE-830 SRS with a "System Features"/"Functional Requirements" section
+        # (e.g. Shoten, G16, trading SRS). Runs BEFORE the use-case branch because that branch's
+        # "3.1.<n>" marker would otherwise mis-grab these docs' "3.1.x External Interface" items.
+        # The anchor excludes "Non-Functional", so foodsaver returns [] here and falls through.
+        features = build_tagged_pdf_ieee_features(root)
         if features:
             return features
         # Acrobat "SaveAsXML" Tagged-PDF exports (<TaggedPDF-doc>, e.g. foodsaver): 3.1.x
