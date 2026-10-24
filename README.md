@@ -4,10 +4,6 @@
 
 CLEANROOM-AGENT adapts the *certify-rather-than-debug* orientation of Cleanroom software engineering to LLM-based code generation. Code, tests, and a formal model are derived **independently** from the same frozen requirement-level specification, and each requirement is routed to the strongest available evidence: behavior that can be modeled is **proved** by an external Dafny verifier over all reachable states; behavior that cannot be modeled falls back to **independently generated black-box tests**.
 
-<p align="center">
-  <img src="assets/architecture.png" alt="CLEANROOM-AGENT architecture" width="100%">
-</p>
-
 ---
 
 ## Contents
