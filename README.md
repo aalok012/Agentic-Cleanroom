@@ -2,7 +2,7 @@
 
 **Generate application code from a Software Requirements Specification (SRS) and record per-requirement evidence from generated feature models and tests.**
 
-This README documents the implementation and available materials for **CLEANROOM-AGENT: Per-Requirement Evidence for LLM-Generated Applications**, submitted to **ICSE 2027 SEIP**. The system attempts verification and testing; it does not promise a working or fully verified application. Evidence labels describe the checks obtained, subject to the proof and reporting limits below.
+This README documents the implementation and available materials for **CLEANROOM-AGENT: Per-Requirement Evidence for LLM-Generated Applications**, submitted to **ICSE 2027 SEIP**. The system attempts verification and testing; it does not promise a fully working application. Evidence labels describe the checks obtained, subject to the proof and reporting limits below.
 
 ## Contents
 
