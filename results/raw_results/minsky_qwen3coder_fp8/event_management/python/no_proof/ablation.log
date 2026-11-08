@@ -1,0 +1,322 @@
+  Agents: spec=on dependency=on planning=on proof=off code=on test=on certify=on recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+  [REUSE] stages ['spec', 'dependency', 'planning'] taken from /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep1/Event Management_full_ir.json
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  [skip — resumed] Event Management: 12 feature(s), FR=12, stack=fastapi
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  [skip — resumed] dependency graph loaded from checkpoint.
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  [skip — resumed] planning loaded: 12 contract(s).
+
+======================================================================
+  [4]  Code Agent — generating MVC code from the spec
+======================================================================
+  ⏱  done in 33.94s  ·  17,931 tokens, 12 call(s)
+12 file(s); 462 LOC (Python); layers={'model': 4, 'controller': 6, 'view': 2}
+Assembled runnable FastAPI app: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_proof/generated/Event Management/app  (cd "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_proof/generated/Event Management" && python -m app)
+
+======================================================================
+  [5]  Test Agent — deriving black-box tests from the spec
+======================================================================
+  ⏱  done in 98.85s  ·  35,945 tokens, 12 call(s)
+12 feature(s), 50 test case(s).
+Wrote 12 pytest module(s) to /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_proof/generated/Event Management/tests
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples)
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.2.REQ-1] 3.2.REQ-1
+    FR  [3.2.REQ-1] Can only be accessed with the provision of the internet.
+
+[3.2.REQ-2] 3.2.REQ-2
+    FR  [3.2.REQ-2] Only authenticated users i.e., enrolled students in the institution can register and participate in the events.
+
+[3.2.REQ-3] 3.2.REQ-3
+    FR  [3.2.REQ-3] The user interface provides appropriate error messages in case the user does an error.
+
+[3.2.REQ-4] 3.2.REQ-4
+    FR  [3.2.REQ-4] The EOCR can post the events on the website and the students can register accordingly.
+
+[3.2.REQ-5] 3.2.REQ-5
+    FR  [3.2.REQ-5] The EOCR can generate the list of registrants at any point of time.
+
+[3.2.REQ-6] 3.2.REQ-6
+    FR  [3.2.REQ-6] Provides a secure database of stakeholders containing the login credentials and personal information.
+
+[3.2.REQ-7] 3.2.REQ-7
+    FR  [3.2.REQ-7] Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data.
+
+[3.2.REQ-8] 3.2.REQ-8
+    FR  [3.2.REQ-8] Provide administrative access to the clients.
+
+[3.2.REQ-9] 3.2.REQ-9
+    FR  [3.2.REQ-9] Add and delete client access easily.
+
+[3.2.REQ-10] 3.2.REQ-10
+    FR  [3.2.REQ-10] Easily append an event to the database.
+
+[3.2.REQ-11] 3.2.REQ-11
+    FR  [3.2.REQ-11] Provide an ordered list of events added to the database for easy understandability.
+
+[3.2.REQ-12] 3.2.REQ-12
+    FR  [3.2.REQ-12] Simple Interface for easy and reliable interactivity.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.2.REQ-1    sample=0  Canonical case: Internet access is available
+  [PASS] 3.2.REQ-1    sample=0  Failure case: No internet access
+  [FAIL] 3.2.REQ-10   sample=0  Append a valid event to the database
+  [PASS] 3.2.REQ-10   sample=0  Append an event with missing title
+  [PASS] 3.2.REQ-10   sample=0  Append an event with empty title
+  [PASS] 3.2.REQ-10   sample=0  Append an event with missing description
+  [PASS] 3.2.REQ-10   sample=0  Append an event with empty description
+  [FAIL] 3.2.REQ-11   sample=0  Anchor case: Get ordered events when database is empty
+  [FAIL] 3.2.REQ-11   sample=0  Get ordered events with single event in database
+  [FAIL] 3.2.REQ-11   sample=0  Get ordered events with multiple events in database
+  [FAIL] 3.2.REQ-11   sample=0  Get ordered events with events having same timestamp
+  [PASS] 3.2.REQ-12   sample=0  Anchor case: Simple Interface for easy and reliable interac…
+  [FAIL] 3.2.REQ-2    sample=0  Canonical case: authenticated student registers for an event
+  [PASS] 3.2.REQ-2    sample=0  Failure case: empty user ID
+  [FAIL] 3.2.REQ-2    sample=0  Edge case: non-enrolled user tries to register
+  [PASS] 3.2.REQ-2    sample=0  Edge case: user not found in system
+  [FAIL] 3.2.REQ-2    sample=0  Edge case: event does not exist
+  [PASS] 3.2.REQ-3    sample=0  Canonical case: validation error when submitting an empty f…
+  [FAIL] 3.2.REQ-3    sample=0  Boundary case: invalid input type for error_type
+  [FAIL] 3.2.REQ-3    sample=0  Edge case: empty user_action string
+  [FAIL] 3.2.REQ-3    sample=0  Alternative error type: authentication error
+  [PASS] 3.2.REQ-3    sample=0  Failure case: missing required field in request
+  [FAIL] 3.2.REQ-4    sample=0  Post a valid event on the website
+  [PASS] 3.2.REQ-4    sample=0  Post an event with missing required fields
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with empty title
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with invalid date format
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with invalid time format
+  [FAIL] 3.2.REQ-5    sample=0  Anchor case: Generate registrant list with canonical inputs
+  [FAIL] 3.2.REQ-5    sample=0  Empty list case: No registrants exist in the system
+  [FAIL] 3.2.REQ-5    sample=0  Single registrant case: Only one registrant exists in the s…
+  [FAIL] 3.2.REQ-5    sample=0  Large list case: Many registrants exist in the system
+  [PASS] 3.2.REQ-6    sample=0  Anchor case: Empty input for stakeholder database creation
+  [FAIL] 3.2.REQ-6    sample=0  Independent case: Input with unexpected field
+  [FAIL] 3.2.REQ-6    sample=0  Independent case: Input with incorrect type for a field
+  [FAIL] 3.2.REQ-6    sample=0  Independent case: Input with missing required field
+  [PASS] 3.2.REQ-7    sample=0  Execute a valid enter step
+  [FAIL] 3.2.REQ-7    sample=0  Execute a valid organize step
+  [FAIL] 3.2.REQ-7    sample=0  Execute a valid retrieve step
+  [FAIL] 3.2.REQ-7    sample=0  Execute a valid modify step
+  [FAIL] 3.2.REQ-7    sample=0  Execute a valid delete step
+  [PASS] 3.2.REQ-7    sample=0  Execute an invalid step type
+  [FAIL] 3.2.REQ-8    sample=0  Admin user with valid credentials accesses client data
+  [FAIL] 3.2.REQ-8    sample=0  Non-admin user attempts to access client data
+  [PASS] 3.2.REQ-8    sample=0  User with empty credentials attempts to access client data
+  [FAIL] 3.2.REQ-8    sample=0  Admin user with incorrect password attempts to access clien…
+  [PASS] 3.2.REQ-9    sample=0  Add client access successfully
+  [FAIL] 3.2.REQ-9    sample=0  Delete client access successfully
+  [PASS] 3.2.REQ-9    sample=0  Attempt to add client access with invalid action
+  [PASS] 3.2.REQ-9    sample=0  Attempt to delete non-existent client access
+  [FAIL] 3.2.REQ-9    sample=0  Add client access with empty client_id
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Canonical case: Internet access is available
+  inputs:   System has internet access
+  expected: Feature is accessible
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-10  sample=0
+  test:     Append a valid event to the database
+  inputs:   A valid event with title and description
+  expected: No response expected, event is appended successfully
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-11  sample=0
+  test:     Anchor case: Get ordered events when database is empty
+  inputs:   User requests an ordered list of events when database is empty
+  expected: Empty list of events
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-11  sample=0
+  test:     Get ordered events with single event in database
+  inputs:   Database contains one event
+  expected: List with one event sorted by timestamp
+  reason:   setup step 0 (/views/get_ordered_events) failed: HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-11  sample=0
+  test:     Get ordered events with multiple events in database
+  inputs:   Database contains multiple events with different timestamps
+  expected: List of events sorted in ascending order by timestamp
+  reason:   setup step 0 (/views/get_ordered_events) failed: HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-11  sample=0
+  test:     Get ordered events with events having same timestamp
+  inputs:   Database contains events with same timestamp
+  expected: List of events sorted by timestamp, then by ID if timestamps match
+  reason:   setup step 0 (/views/get_ordered_events) failed: HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Canonical case: authenticated student registers for an event
+  inputs:   User ID 'student_123' attempts to register for event ID 'event_456'
+  expected: Registration successful (true)
+  reason:   HTTP 403: {"detail":"User is not authenticated or enrolled as a student"}
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Edge case: non-enrolled user tries to register
+  inputs:   Non-enrolled user ID 'user_789' attempts to register for event ID 'event_456'
+  expected: Registration denied (false) because user is not enrolled
+  reason:   setup step 0 (/controllers/register_for_event) failed: HTTP 422: {"detail":[{"type":"missing","loc":["body","user_id"],"msg":"Field required","input":null},{"type":"missing","loc":["bod
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Edge case: event does not exist
+  inputs:   Authenticated user ID 'student_123' attempts to register for non-existent event ID 'event_999'
+  expected: Registration denied (false) because event doesn't exist
+  reason:   setup step 0 (/controllers/register_for_event) failed: HTTP 422: {"detail":[{"type":"missing","loc":["body","user_id"],"msg":"Field required","input":null},{"type":"missing","loc":["bod
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Boundary case: invalid input type for error_type
+  inputs:   User performs an action with an invalid error_type
+  expected: HTTP 4xx error due to invalid error_type parameter
+  reason:   HTTP 200
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Edge case: empty user_action string
+  inputs:   User performs an action with an empty user_action
+  expected: Error message reflecting the empty action
+  reason:   got 'An error occurred while processing your request. Please try again later.', expected 'Please fill in all required fields.'
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Alternative error type: authentication error
+  inputs:   User attempts an action without proper authentication
+  expected: Error message indicating authentication failure
+  reason:   got 'An error occurred while processing your request. Please try again later.', expected 'You must be logged in to perform this action.'
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post a valid event on the website
+  inputs:   Event data with title, description, date, time, and registration deadline
+  expected: Event is published with an event ID and status 'published'
+  reason:   got {'event_id': 'evt_13008', 'status': 'published'}, expected {'event_id': 'evt_12345', 'status': 'published'}
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with empty title
+  inputs:   Event data with empty title
+  expected: HTTP 4xx error due to invalid input
+  reason:   HTTP 200
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with invalid date format
+  inputs:   Event data with invalid date format
+  expected: HTTP 4xx error due to invalid input
+  reason:   HTTP 200
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with invalid time format
+  inputs:   Event data with invalid time format
+  expected: HTTP 4xx error due to invalid input
+  reason:   HTTP 200
+
+[FAIL] 3.2.REQ-5  sample=0
+  test:     Anchor case: Generate registrant list with canonical inputs
+  inputs:   Request to generate the list of registrants
+  expected: List of registrants with names and emails
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-5  sample=0
+  test:     Empty list case: No registrants exist in the system
+  inputs:   Request to generate the list of registrants when no registrants exist
+  expected: Empty list of registrants
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-5  sample=0
+  test:     Single registrant case: Only one registrant exists in the system
+  inputs:   Request to generate the list of registrants when only one registrant exists
+  expected: List containing one registrant with name and email
+  reason:   setup step 0 (/models/generate_registrant_list) failed: HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-5  sample=0
+  test:     Large list case: Many registrants exist in the system
+  inputs:   Request to generate the list of registrants when many registrants exist
+  expected: List of many registrants with names and emails
+  reason:   setup step 0 (/models/generate_registrant_list) failed: HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Independent case: Input with unexpected field
+  inputs:   Input with extra field 'unexpected_field': 'value'
+  expected: HTTP 4xx error due to invalid input
+  reason:   HTTP 200
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Independent case: Input with incorrect type for a field
+  inputs:   Input with 'credentials' as a string instead of object
+  expected: HTTP 4xx error due to invalid input type
+  reason:   HTTP 200
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Independent case: Input with missing required field
+  inputs:   Input without 'personal_info' field
+  expected: HTTP 4xx error due to missing required field
+  reason:   HTTP 200
+
+[FAIL] 3.2.REQ-7  sample=0
+  test:     Execute a valid organize step
+  inputs:   User initiates an organize step with item data
+  expected: System responds with next step as retrieve and success message
+  reason:   got {'next_step': 'retrieve', 'message': 'Item organized successfully.'}, expected {'next_step': 'retrieve', 'message': 'Item organized successfully. Please retrieve the item.'}
+
+[FAIL] 3.2.REQ-7  sample=0
+  test:     Execute a valid retrieve step
+  inputs:   User initiates a retrieve step with item data
+  expected: System responds with next step as modify and success message
+  reason:   got {'next_step': 'modify', 'message': 'Items retrieved successfully.'}, expected {'next_step': 'modify', 'message': 'Item retrieved successfully. Please modify the item.'}
+
+  … and 7 more failures
+
+======================================================================
+  SUMMARY: 18 passed / 32 failed / 50 total case executions
+  Case pass rate: 0.360
+  Aggregate pass@1 (macro-avg over FRs): 0.083
+  Oracle: http
+======================================================================
+
+  ⏱  done in 46.19s
+  pass@1: 0.083  (over 12 un-proved FR(s))
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.0000
+  test_case_pass_ratio        :       0.3600
+  PassVer@1                   :       0.0833
+  avg_verification_iteration  :         0.00
+  avg_test_iteration          :         1.00
+  avg_input_token             :       1607.3
+  avg_output_token            :        637.5
+  total_time                  :      178.97s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_proof/Event Management_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_proof/Event Management_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_proof/runs/20261018-092131-event-management.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_proof/runs/20261018-092131-event-management.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : code=33.9s   test=98.8s   certification=46.2s
+Time      : 178.97s   Tokens: 53,876   Cost: $0.0000

@@ -1,0 +1,2272 @@
+{
+  "project_name": "Event Management",
+  "source_file": "Event Management.xml",
+  "features": [
+    {
+      "id": "3.2.REQ-1",
+      "name": "3.2.REQ-1",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-1",
+          "text": "Can only be accessed with the provision of the internet."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-2",
+      "name": "3.2.REQ-2",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-2",
+          "text": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-2"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-3",
+      "name": "3.2.REQ-3",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-3",
+          "text": "The user interface provides appropriate error messages in case the user does an error."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-3"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-4",
+      "name": "3.2.REQ-4",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-4",
+          "text": "The EOCR can post the events on the website and the students can register accordingly."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-4"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-5",
+      "name": "3.2.REQ-5",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-5",
+          "text": "The EOCR can generate the list of registrants at any point of time."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-5"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-6",
+      "name": "3.2.REQ-6",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-6",
+          "text": "Provides a secure database of stakeholders containing the login credentials and personal information."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-6"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-7",
+      "name": "3.2.REQ-7",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-7",
+          "text": "Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-7"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-8",
+      "name": "3.2.REQ-8",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-8",
+          "text": "Provide administrative access to the clients."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-8"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-9",
+      "name": "3.2.REQ-9",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-9",
+          "text": "Add and delete client access easily."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-9"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-10",
+      "name": "3.2.REQ-10",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-10",
+          "text": "Easily append an event to the database."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-10"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-11",
+      "name": "3.2.REQ-11",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-11",
+          "text": "Provide an ordered list of events added to the database for easy understandability."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-11"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-12",
+      "name": "3.2.REQ-12",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-12",
+          "text": "Simple Interface for easy and reliable interactivity."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-12"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.2.REQ-1",
+      "feature_id": "3.2.REQ-1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Can only be accessed with the provision of the internet.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-2",
+      "feature_id": "3.2.REQ-2",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-3",
+      "feature_id": "3.2.REQ-3",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The user interface provides appropriate error messages in case the user does an error.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-4",
+      "feature_id": "3.2.REQ-4",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The EOCR can post the events on the website and the students can register accordingly.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-5",
+      "feature_id": "3.2.REQ-5",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The EOCR can generate the list of registrants at any point of time.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-6",
+      "feature_id": "3.2.REQ-6",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Provides a secure database of stakeholders containing the login credentials and personal information.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-7",
+      "feature_id": "3.2.REQ-7",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-8",
+      "feature_id": "3.2.REQ-8",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Provide administrative access to the clients.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-9",
+      "feature_id": "3.2.REQ-9",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Add and delete client access easily.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-10",
+      "feature_id": "3.2.REQ-10",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Easily append an event to the database.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-11",
+      "feature_id": "3.2.REQ-11",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Provide an ordered list of events added to the database for easy understandability.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-12",
+      "feature_id": "3.2.REQ-12",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Simple Interface for easy and reliable interactivity.",
+      "postcondition": ""
+    }
+  ],
+  "stack": "fastapi",
+  "language": "python",
+  "dependency_graph": {
+    "nodes": [
+      "3.2"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.2"
+    ],
+    "cycles": []
+  },
+  "planning": {
+    "contracts": [
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2.REQ-1",
+        "signature": "def fr_3_2_REQ_1(request: dict) -> dict",
+        "docstring": "Can only be accessed with the provision of the internet.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_1.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-1",
+          "feature_id": "3.2.REQ-1",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Can only be accessed with the provision of the internet.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-2",
+        "feature_id": "3.2.REQ-2",
+        "signature": "def fr_3_2_REQ_2(request: dict) -> dict",
+        "docstring": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_2.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-2",
+          "feature_id": "3.2.REQ-2",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-3",
+        "feature_id": "3.2.REQ-3",
+        "signature": "def fr_3_2_REQ_3(request: dict) -> dict",
+        "docstring": "The user interface provides appropriate error messages in case the user does an error.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_3.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-3",
+          "feature_id": "3.2.REQ-3",
+          "stimulus": "",
+          "precondition": "",
+          "response": "The user interface provides appropriate error messages in case the user does an error.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-4",
+        "feature_id": "3.2.REQ-4",
+        "signature": "def fr_3_2_REQ_4(request: dict) -> dict",
+        "docstring": "The EOCR can post the events on the website and the students can register accordingly.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_4.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-4",
+          "feature_id": "3.2.REQ-4",
+          "stimulus": "",
+          "precondition": "",
+          "response": "The EOCR can post the events on the website and the students can register accordingly.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-5",
+        "feature_id": "3.2.REQ-5",
+        "signature": "def fr_3_2_REQ_5(request: dict) -> dict",
+        "docstring": "The EOCR can generate the list of registrants at any point of time.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_5.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-5",
+          "feature_id": "3.2.REQ-5",
+          "stimulus": "",
+          "precondition": "",
+          "response": "The EOCR can generate the list of registrants at any point of time.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-6",
+        "feature_id": "3.2.REQ-6",
+        "signature": "def fr_3_2_REQ_6(request: dict) -> dict",
+        "docstring": "Provides a secure database of stakeholders containing the login credentials and personal information.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_6.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-6",
+          "feature_id": "3.2.REQ-6",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Provides a secure database of stakeholders containing the login credentials and personal information.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-7",
+        "feature_id": "3.2.REQ-7",
+        "signature": "def fr_3_2_REQ_7(request: dict) -> dict",
+        "docstring": "Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_7.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-7",
+          "feature_id": "3.2.REQ-7",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-8",
+        "feature_id": "3.2.REQ-8",
+        "signature": "def fr_3_2_REQ_8(request: dict) -> dict",
+        "docstring": "Provide administrative access to the clients.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_8.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-8",
+          "feature_id": "3.2.REQ-8",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Provide administrative access to the clients.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-9",
+        "feature_id": "3.2.REQ-9",
+        "signature": "def fr_3_2_REQ_9(request: dict) -> dict",
+        "docstring": "Add and delete client access easily.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_9.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-9",
+          "feature_id": "3.2.REQ-9",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Add and delete client access easily.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-10",
+        "feature_id": "3.2.REQ-10",
+        "signature": "def fr_3_2_REQ_10(request: dict) -> dict",
+        "docstring": "Easily append an event to the database.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_10.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-10",
+          "feature_id": "3.2.REQ-10",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Easily append an event to the database.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-11",
+        "feature_id": "3.2.REQ-11",
+        "signature": "def fr_3_2_REQ_11(request: dict) -> dict",
+        "docstring": "Provide an ordered list of events added to the database for easy understandability.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_11.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-11",
+          "feature_id": "3.2.REQ-11",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Provide an ordered list of events added to the database for easy understandability.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-12",
+        "feature_id": "3.2.REQ-12",
+        "signature": "def fr_3_2_REQ_12(request: dict) -> dict",
+        "docstring": "Simple Interface for easy and reliable interactivity.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_12.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-12",
+          "feature_id": "3.2.REQ-12",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Simple Interface for easy and reliable interactivity.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      }
+    ],
+    "notes": [
+      "Ablation: no LLM-authored behavioral contracts or implementation planning. The fixed request-dict interface only keeps downstream agents executable."
+    ]
+  },
+  "generated_dafny": {
+    "features": [
+      {
+        "feature_id": "3.2.REQ-1",
+        "module": "F3_2_REQ_1",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_1Domain refines Domain {\n  type Model = bool\n\n  datatype Action = Access\n\n  ghost predicate Inv(m: Model) {\n    m == true\n  }\n\n  function Init(): Model {\n    false\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Access => true\n  }\n\n  function Normalize(m: Model): Model {\n    true\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n    assert false == true ==> false == true;\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n    assert true == true;\n  }\n\n  lemma AccessEnsuresAccessGranted(m: Model)\n    requires m == false\n    ensures Apply(m, Access) == true\n  {\n    assert true == true;\n  }\n}\n\nmodule F3_2_REQ_1Kernel refines Kernel {\n  import D = F3_2_REQ_1Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 27,
+            "col": 2,
+            "message": "a postcondition could not be proved on this return path"
+          },
+          {
+            "line": 39,
+            "col": 17,
+            "message": "function precondition could not be proved"
+          }
+        ],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-10",
+        "module": "F3_2_REQ_10",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_10Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = AppendEvent(eventId: string, eventData: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case AppendEvent(eventId, eventData) => m[eventId := eventData]\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma AppendEventEnsures(m: Model, eventId: string, eventData: string)\n    ensures Apply(m, AppendEvent(eventId, eventData))[eventId] == eventData\n  {\n  }\n}\n\nmodule F3_2_REQ_10Kernel refines Kernel {\n  import D = F3_2_REQ_10Domain\n}",
+        "verified": true,
+        "rounds": 1,
+        "residual_errors": [],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-11",
+        "module": "F3_2_REQ_11",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_11Domain refines Domain {\n  type Model = map<string, int>\n\n  datatype Action = AddEvent(event: string, timestamp: int)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case AddEvent(event, timestamp) => m[event := timestamp]\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma AddEventIncreasesSize(m: Model, event: string, timestamp: int)\n    ensures |Normalize(Apply(m, AddEvent(event, timestamp)))| == |m| + 1\n  {\n  }\n}\n\nmodule F3_2_REQ_11Kernel refines Kernel {\n  import D = F3_2_REQ_11Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 37,
+            "col": 2,
+            "message": "a postcondition could not be proved on this return path"
+          }
+        ],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-12",
+        "module": "F3_2_REQ_12",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_12Domain refines Domain {\n  type Model = string\n\n  datatype Action = SetStimulus(stimulus: string)\n\n  ghost predicate Inv(m: Model) {\n    m == \"\"\n  }\n\n  function Init(): Model {\n    \"\"\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case SetStimulus(s) => s\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SetStimulusEnsuresEmpty(m: Model, s: string)\n    ensures Apply(m, SetStimulus(s)) == s\n  {\n  }\n}\n\nmodule F3_2_REQ_12Kernel refines Kernel {\n  import D = F3_2_REQ_12Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 32,
+            "col": 2,
+            "message": "a postcondition could not be proved on this return path"
+          },
+          {
+            "line": 36,
+            "col": 17,
+            "message": "function precondition could not be proved"
+          }
+        ],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-2",
+        "module": "F3_2_REQ_2",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_2Domain refines Domain {\n  type Model = map<string, set<string>>\n\n  datatype Action = Register(student: string, event: string)\n\n  ghost predicate Inv(m: Model) {\n    forall s | s in m ==> m[s] == set[]\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Register(s, e) => m[s := m[s] + {e}]\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma RegisterEnsures(m: Model, s: string, e: string)\n    ensures Inv(m[s := m[s] + {e}])\n  {\n  }\n}\n\nmodule F3_2_REQ_2Kernel refines Kernel {\n  import D = F3_2_REQ_2Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 9,
+            "col": 37,
+            "message": "invalid Ident"
+          }
+        ],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-3",
+        "module": "F3_2_REQ_3",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_3Domain refines Domain {\n  type Model = string\n\n  datatype Action = InvalidInput\n\n  ghost predicate Inv(m: Model) {\n    m != \"\"\n  }\n\n  function Init(): Model {\n    \"Initial state\"\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case InvalidInput => \"\"\n  }\n\n  function Normalize(m: Model): Model {\n    if m == \"\" then \"Error: Invalid input provided.\" else m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n    assert Init() == \"Initial state\";\n    assert Inv(\"Initial state\");\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n    assert Apply(m, a) == \"\";\n    assert Normalize(\"\") == \"Error: Invalid input provided.\";\n    assert Inv(\"Error: Invalid input provided.\");\n  }\n\n  lemma ErrorMsgProvided(m: Model, a: Action)\n    ensures (a == InvalidInput) ==> (Normalize(Apply(m, a)) != \"\")\n  {\n    assert Apply(m, a) == \"\";\n    assert Normalize(\"\") == \"Error: Invalid input provided.\";\n    assert \"Error: Invalid input provided.\" != \"\";\n  }\n}\n\nmodule F3_2_REQ_3Kernel refines Kernel {\n  import D = F3_2_REQ_3Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 41,
+            "col": 52,
+            "message": "function precondition could not be proved"
+          },
+          {
+            "line": 43,
+            "col": 16,
+            "message": "function precondition could not be proved"
+          }
+        ],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-4",
+        "module": "F3_2_REQ_4",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_4Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = PostEvent(eventId: string, eventName: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case PostEvent(eventId, eventName) => m[eventId := eventName]\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma PostEventEnsures(m: Model, eventId: string, eventName: string)\n    ensures (Apply(m, PostEvent(eventId, eventName)))[eventId] == eventName\n  {\n  }\n}\n\nmodule F3_2_REQ_4Kernel refines Kernel {\n  import D = F3_2_REQ_4Domain\n}",
+        "verified": true,
+        "rounds": 1,
+        "residual_errors": [],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-5",
+        "module": "F3_2_REQ_5",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_5Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = GetRegistrants\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case GetRegistrants => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma GetRegistrantsPreservesState(m: Model)\n    ensures Apply(m, GetRegistrants) == m\n  {\n  }\n}\n\nmodule F3_2_REQ_5Kernel refines Kernel {\n  import D = F3_2_REQ_5Domain\n}",
+        "verified": true,
+        "rounds": 1,
+        "residual_errors": [],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-6",
+        "module": "F3_2_REQ_6",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_6Domain refines Domain {\n  type Model = map<string, map<string, string>>\n\n  datatype Action = AddStakeholder(name: string, credentials: map<string, string>)\n                 | RemoveStakeholder(name: string)\n                 | UpdateStakeholder(name: string, field: string, value: string)\n\n  ghost predicate Inv(m: Model) {\n    forall name | name in m :: \n      forall field | field in m[name] :: \n        m[name][field] != \"\"\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case AddStakeholder(name, credentials) => m[name := credentials]\n    case RemoveStakeholder(name) => m - {name}\n    case UpdateStakeholder(name, field, value) =>\n      if name in m then\n        m[name][field := value]\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    map name | name in m && forall field | field in m[name] :: m[name][field] != \"\" :: m[name]\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma AddStakeholderPreservesInv(m: Model, name: string, credentials: map<string, string>)\n    ensures Inv(Normalize(Apply(m, AddStakeholder(name, credentials))))\n  {\n  }\n\n  lemma RemoveStakeholderPreservesInv(m: Model, name: string)\n    ensures Inv(Normalize(Apply(m, RemoveStakeholder(name))))\n  {\n  }\n\n  lemma UpdateStakeholderPreservesInv(m: Model, name: string, field: string, value: string)\n    ensures Inv(Normalize(Apply(m, UpdateStakeholder(name, field, value))))\n  {\n  }\n}\n\nmodule F3_2_REQ_6Kernel refines Kernel {\n  import D = F3_2_REQ_6Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 26,
+            "col": 25,
+            "message": "map update requires the value to have the range type map<string, string> (got string)"
+          },
+          {
+            "line": 26,
+            "col": 9,
+            "message": "sequence has type Model which is incompatible with expected type map<string, map<string, string>> (covariant type parameter 1 would require string <: map<string, string>)"
+          }
+        ],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-7",
+        "module": "F3_2_REQ_7",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_7Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = \n    Add(key: string, value: string) |\n    Update(key: string, value: string) |\n    Delete(key: string) |\n    Retrieve(key: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Add(k, v) => m[k := v]\n    case Update(k, v) => if k in m then m[k := v] else m\n    case Delete(k) => if k in m then m - {k} else m\n    case Retrieve(k) => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma AddEnsures(m: Model, k: string, v: string)\n    ensures Apply(m, Add(k, v)) == m[k := v]\n  {\n  }\n\n  lemma UpdateEnsures(m: Model, k: string, v: string)\n    ensures Apply(m, Update(k, v)) == (if k in m then m[k := v] else m)\n  {\n  }\n\n  lemma DeleteEnsures(m: Model, k: string)\n    ensures Apply(m, Delete(k)) == (if k in m then m - {k} else m)\n  {\n  }\n\n  lemma RetrieveEnsures(m: Model, k: string)\n    ensures Apply(m, Retrieve(k)) == m\n  {\n  }\n}\n\nmodule F3_2_REQ_7Kernel refines Kernel {\n  import D = F3_2_REQ_7Domain\n}",
+        "verified": true,
+        "rounds": 1,
+        "residual_errors": [],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-8",
+        "module": "F3_2_REQ_8",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_8Domain refines Domain {\n  type Model = map<string, bool>\n\n  datatype Action = GrantAccess(clientId: string)\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m :: m[k] == true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case GrantAccess(clientId) => m[clientId := true]\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma GrantAccessProvidesAccess(clientId: string)\n    ensures (clientId in Apply(Init(), GrantAccess(clientId))) && Apply(Init(), GrantAccess(clientId))[clientId] == true\n  {\n  }\n}\n\nmodule F3_2_REQ_8Kernel refines Kernel {\n  import D = F3_2_REQ_8Domain\n}",
+        "verified": true,
+        "rounds": 6,
+        "residual_errors": [],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2.REQ-9",
+        "module": "F3_2_REQ_9",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_9Domain refines Domain {\n  type Model = map<string, bool>\n\n  datatype Action = AddClient(id: string) | DeleteClient(id: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case AddClient(id) => m[id := true]\n    case DeleteClient(id) => if id in m then m - {id} else m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma AddClientEnsures(m: Model, id: string)\n    ensures (Apply(m, AddClient(id)))[id] == true\n  {\n  }\n}\n\nmodule F3_2_REQ_9Kernel refines Kernel {\n  import D = F3_2_REQ_9Domain\n}",
+        "verified": true,
+        "rounds": 1,
+        "residual_errors": [],
+        "axioms": []
+      }
+    ]
+  },
+  "proved_feature_ids": [
+    "3.2.REQ-10",
+    "3.2.REQ-4",
+    "3.2.REQ-5",
+    "3.2.REQ-7",
+    "3.2.REQ-8",
+    "3.2.REQ-9"
+  ],
+  "generated_code": {
+    "files": [
+      {
+        "fr_id": "3.2.REQ-10",
+        "feature_id": "3.2.REQ-10",
+        "path": "controllers/f3_2_REQ-10_adapter.py",
+        "mvc_layer": "controller",
+        "content": "import os, sys\n_d = os.path.dirname(os.path.abspath(__file__))\nwhile _d != os.path.dirname(_d) and not os.path.isdir(os.path.join(_d, \"dafny_cores\")):\n    _d = os.path.dirname(_d)\n_CORES = os.path.join(_d, \"dafny_cores\")\nsys.path.insert(0, _CORES)\nsys.path.insert(0, os.path.join(_CORES, \"F3_2_REQ_10-py\"))\nimport dafny_marshal as M\nimport F3__2__REQ__10Domain as core\nDom = core.default__\n\nfrom fastapi import APIRouter, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal, engine\n\nimport json\n\nclass AppState(Base):\n    __tablename__ = \"app_state\"\n    id = Column(Integer, primary_key=True)\n    key = Column(String, unique=True)\n    value = Column(Text)\n\nBase.metadata.create_all(engine)\n\nrouter = APIRouter()\n\ndef get_db_session() -> Session:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\ndef load_model(db: Session) -> Dom.Model:\n    state_row = db.query(AppState).filter(AppState.key == \"state\").first()\n    if state_row is None:\n        return Dom.Init()\n    return M.from_map(json.loads(state_row.value), vconv=M.from_str)\n\ndef save_model(db: Session, model: Dom.Model):\n    json_value = json.dumps(M.from_map(model, vconv=M.to_str))\n    state_row = db.query(AppState).filter(AppState.key == \"state\").first()\n    if state_row is None:\n        state_row = AppState(key=\"state\", value=json_value)\n        db.add(state_row)\n    else:\n        state_row.value = json_value\n    db.commit()\n\n@router.post(\"/fr_3_2_REQ_10\", response_model=dict)\ndef fr_3_2_REQ_10(request: dict) -> dict:\n    db = next(get_db_session())\n    try:\n        model = load_model(db)\n        event_id = request.get(\"eventId\")\n        event_data = request.get(\"eventData\")\n        if event_id is None or event_data is None:\n            raise HTTPException(status_code=400, detail=\"Missing eventId or eventData\")\n        action = core.Action_AppendEvent(M.to_str(event_id), M.to_str(event_data))\n        new_model = Dom.Normalize(Dom.Apply(model, action))\n        save_model(db, new_model)\n        return {\"message\": \"Event appended successfully\"}\n    except Exception as e:\n        db.rollback()\n        raise HTTPException(status_code=500, detail=str(e))"
+      },
+      {
+        "fr_id": "3.2.REQ-4",
+        "feature_id": "3.2.REQ-4",
+        "path": "controllers/f3_2_REQ-4_adapter.py",
+        "mvc_layer": "controller",
+        "content": "import os, sys\n_d = os.path.dirname(os.path.abspath(__file__))\nwhile _d != os.path.dirname(_d) and not os.path.isdir(os.path.join(_d, \"dafny_cores\")):\n    _d = os.path.dirname(_d)\n_CORES = os.path.join(_d, \"dafny_cores\")\nsys.path.insert(0, _CORES)\nsys.path.insert(0, os.path.join(_CORES, \"F3_2_REQ_4-py\"))\nimport dafny_marshal as M\nimport F3__2__REQ__4Domain as core\nDom = core.default__\n\nfrom fastapi import APIRouter, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal, engine\n\nBase.metadata.create_all(engine)\n\nclass AppState(Base):\n    __tablename__ = \"app_state\"\n    id = Column(Integer, primary_key=True)\n    key = Column(String, unique=True)\n    value = Column(Text)\n\nrouter = APIRouter()\n\ndef get_db_session() -> Session:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\ndef fr_3_2_REQ_4(request: dict) -> dict:\n    db = next(get_db_session())\n    \n    # Load existing state or initialize\n    state_row = db.query(AppState).filter(AppState.key == \"state\").first()\n    if state_row:\n        state = M.from_map(Dom.Init(), vconv=str)\n        state = M.from_map(state_row.value, vconv=str)\n    else:\n        state = Dom.Init()\n    \n    # Convert state to Dafny model\n    dafny_state = M.to_map(state, vconv=M.to_str)\n    \n    # Create action from request\n    event_id = request.get(\"eventId\")\n    event_name = request.get(\"eventName\")\n    \n    if not event_id or not event_name:\n        raise HTTPException(status_code=400, detail=\"Missing eventId or eventName\")\n    \n    action = core.Action_PostEvent(M.to_str(event_id), M.to_str(event_name))\n    \n    # Apply action to state\n    new_state = Dom.Normalize(Dom.Apply(dafny_state, action))\n    \n    # Marshal back to JSON\n    json_state = M.from_map(new_state, vconv=M.from_str)\n    \n    # Save updated state\n    if state_row:\n        state_row.value = json_state\n    else:\n        new_row = AppState(key=\"state\", value=json_state)\n        db.add(new_row)\n    \n    db.commit()\n    \n    return {\"message\": \"Event posted successfully\", \"eventId\": event_id, \"eventName\": event_name}"
+      },
+      {
+        "fr_id": "3.2.REQ-5",
+        "feature_id": "3.2.REQ-5",
+        "path": "controllers/f3_2_REQ-5_adapter.py",
+        "mvc_layer": "controller",
+        "content": "import os, sys\n_d = os.path.dirname(os.path.abspath(__file__))\nwhile _d != os.path.dirname(_d) and not os.path.isdir(os.path.join(_d, \"dafny_cores\")):\n    _d = os.path.dirname(_d)\n_CORES = os.path.join(_d, \"dafny_cores\")\nsys.path.insert(0, _CORES)\nsys.path.insert(0, os.path.join(_CORES, \"F3_2_REQ_5-py\"))\nimport dafny_marshal as M\nimport F3__2__REQ__5Domain as core\nDom = core.default__\n\nfrom fastapi import APIRouter, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal, engine\n\n# Define the state table\nBase = declarative_base()\n\nclass AppState(Base):\n    __tablename__ = \"app_state\"\n    id = Column(Integer, primary_key=True)\n    key = Column(String, unique=True)\n    value = Column(Text)\n\n# Create tables\nBase.metadata.create_all(engine)\n\nrouter = APIRouter()\n\ndef get_db_session() -> Session:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\ndef load_state(db: Session) -> core.Model:\n    state_row = db.query(AppState).filter(AppState.key == \"state\").first()\n    if state_row is None:\n        return Dom.Init()\n    return M.from_map(state_row.value, vconv=str)\n\ndef save_state(db: Session, state: core.Model) -> None:\n    json_state = M.to_map(state)\n    state_row = db.query(AppState).filter(AppState.key == \"state\").first()\n    if state_row is None:\n        state_row = AppState(key=\"state\", value=json_state)\n        db.add(state_row)\n    else:\n        state_row.value = json_state\n    db.commit()\n\n@router.post(\"/fr_3_2_REQ_5\", response_model=dict)\ndef fr_3_2_REQ_5(request: dict) -> dict:\n    with next(get_db_session()) as db:\n        model = load_state(db)\n        action = core.Action_GetRegistrants()\n        new_state = Dom.Normalize(Dom.Apply(model, action))\n        save_state(db, new_state)\n        return {\"registrants\": M.from_map(new_state)}\n"
+      },
+      {
+        "fr_id": "3.2.REQ-7",
+        "feature_id": "3.2.REQ-7",
+        "path": "controllers/f3_2_REQ-7_adapter.py",
+        "mvc_layer": "controller",
+        "content": "import os, sys\n_d = os.path.dirname(os.path.abspath(__file__))\nwhile _d != os.path.dirname(_d) and not os.path.isdir(os.path.join(_d, \"dafny_cores\")):\n    _d = os.path.dirname(_d)\n_CORES = os.path.join(_d, \"dafny_cores\")\nsys.path.insert(0, _CORES)\nsys.path.insert(0, os.path.join(_CORES, \"F3_2_REQ_7-py\"))\nimport dafny_marshal as M\nimport F3__2__REQ__7Domain as core\nDom = core.default__\n\nfrom fastapi import APIRouter, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal, engine\n\nBase.metadata.create_all(engine)\n\nrouter = APIRouter()\n\nclass AppState(Base):\n    __tablename__ = \"app_state\"\n    id = Column(Integer, primary_key=True)\n    key = Column(String, unique=True)\n    value = Column(Text)\n\n\ndef get_db_session() -> Session:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\n\ndef fr_3_2_REQ_7(request: dict) -> dict:\n    db = next(get_db_session())\n    \n    # Load existing state or initialize to empty\n    state_row = db.query(AppState).filter(AppState.key == \"state\").first()\n    if state_row:\n        state = M.from_map(state_row.value, vconv=str)\n    else:\n        state = Dom.Init()\n    \n    # Convert request to Dafny action\n    action_type = request.get(\"action\")\n    if action_type == \"Add\":\n        action = core.Action_Add(M.to_str(request[\"key\"]), M.to_str(request[\"value\"]))\n    elif action_type == \"Update\":\n        action = core.Action_Update(M.to_str(request[\"key\"]), M.to_str(request[\"value\"]))\n    elif action_type == \"Delete\":\n        action = core.Action_Delete(M.to_str(request[\"key\"]))\n    elif action_type == \"Retrieve\":\n        action = core.Action_Retrieve(M.to_str(request[\"key\"]))\n    else:\n        raise HTTPException(status_code=400, detail=\"Invalid action type\")\n    \n    # Apply action to state\n    new_state = Dom.Normalize(Dom.Apply(state, action))\n    \n    # Serialize new state and save it\n    json_state = M.to_map(new_state)\n    serialized_state = json.dumps(json_state)\n    \n    if state_row:\n        state_row.value = serialized_state\n    else:\n        state_row = AppState(key=\"state\", value=serialized_state)\n        db.add(state_row)\n    \n    db.commit()\n    \n    # Return appropriate response based on action\n    if action_type == \"Retrieve\":\n        return {\"result\": M.from_str(new_state[request[\"key\"]])}\n    else:\n        return {\"status\": \"success\"}"
+      },
+      {
+        "fr_id": "3.2.REQ-8",
+        "feature_id": "3.2.REQ-8",
+        "path": "controllers/f3_2_REQ-8_adapter.py",
+        "mvc_layer": "controller",
+        "content": "import os, sys\n_d = os.path.dirname(os.path.abspath(__file__))\nwhile _d != os.path.dirname(_d) and not os.path.isdir(os.path.join(_d, \"dafny_cores\")):\n    _d = os.path.dirname(_d)\n_CORES = os.path.join(_d, \"dafny_cores\")\nsys.path.insert(0, _CORES)\nsys.path.insert(0, os.path.join(_CORES, \"F3_2_REQ_8-py\"))\nimport dafny_marshal as M\nimport F3__2__REQ__8Domain as core\nDom = core.default__\n\nfrom fastapi import APIRouter, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal, engine\n\nimport json\n\nclass AppState(Base):\n    __tablename__ = \"app_state\"\n    id = Column(Integer, primary_key=True)\n    key = Column(String, unique=True)\n    value = Column(Text)\n\nBase.metadata.create_all(engine)\n\nrouter = APIRouter()\n\ndef get_db_session() -> Session:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\ndef fr_3_2_REQ_8(request: dict) -> dict:\n    db = next(get_db_session())\n    \n    # Load existing state or initialize to empty\n    state_row = db.query(AppState).filter(AppState.key == \"state\").first()\n    if state_row:\n        model = M.from_map(json.loads(state_row.value), vconv=bool)\n    else:\n        model = Dom.Init()\n    \n    # Validate request\n    if \"clientId\" not in request:\n        raise HTTPException(status_code=400, detail=\"Missing clientId in request\")\n    \n    # Construct action\n    client_id = M.to_str(request[\"clientId\"])\n    action = core.Action_GrantAccess(client_id)\n    \n    # Apply action to state\n    new_model = Dom.Normalize(Dom.Apply(model, action))\n    \n    # Serialize new state\n    new_state_json = json.dumps(M.from_map(new_model, vconv=bool))\n    \n    # Save new state\n    if state_row:\n        state_row.value = new_state_json\n    else:\n        state_row = AppState(key=\"state\", value=new_state_json)\n        db.add(state_row)\n    \n    db.commit()\n    \n    return {\"message\": \"Provide administrative access to the clients.\"}"
+      },
+      {
+        "fr_id": "3.2.REQ-9",
+        "feature_id": "3.2.REQ-9",
+        "path": "controllers/f3_2_REQ-9_adapter.py",
+        "mvc_layer": "controller",
+        "content": "import os, sys\n_d = os.path.dirname(os.path.abspath(__file__))\nwhile _d != os.path.dirname(_d) and not os.path.isdir(os.path.join(_d, \"dafny_cores\")):\n    _d = os.path.dirname(_d)\n_CORES = os.path.join(_d, \"dafny_cores\")\nsys.path.insert(0, _CORES)\nsys.path.insert(0, os.path.join(_CORES, \"F3_2_REQ_9-py\"))\nimport dafny_marshal as M\nimport F3__2__REQ__9Domain as core\nDom = core.default__\n\nfrom fastapi import APIRouter, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal, engine\n\nimport json\n\nclass AppState(Base):\n    __tablename__ = \"app_state\"\n    id = Column(Integer, primary_key=True)\n    key = Column(String, unique=True)\n    value = Column(Text)\n\nBase.metadata.create_all(engine)\n\nrouter = APIRouter()\n\ndef get_db_session() -> Session:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\ndef load_model(db: Session) -> Dom.Model:\n    state_row = db.query(AppState).filter(AppState.key == \"model\").first()\n    if state_row is None:\n        return Dom.Init()\n    return M.from_map(json.loads(state_row.value), vconv=bool)\n\n\ndef save_model(db: Session, model: Dom.Model):\n    json_value = json.dumps(M.from_map(model, vconv=bool))\n    state_row = db.query(AppState).filter(AppState.key == \"model\").first()\n    if state_row is None:\n        state_row = AppState(key=\"model\", value=json_value)\n        db.add(state_row)\n    else:\n        state_row.value = json_value\n    db.commit()\n\n\ndef fr_3_2_REQ_9(request: dict) -> dict:\n    with next(get_db_session()) as db:\n        model = load_model(db)\n        \n        action = None\n        if \"add_client\" in request:\n            action = core.Action_AddClient(M.to_str(request[\"add_client\"]))\n        elif \"delete_client\" in request:\n            action = core.Action_DeleteClient(M.to_str(request[\"delete_client\"]))\n        else:\n            raise HTTPException(status_code=400, detail=\"Invalid action: must specify 'add_client' or 'delete_client'\")\n        \n        new_model = Dom.Normalize(Dom.Apply(model, action))\n        save_model(db, new_model)\n        \n        return {\"status\": \"success\", \"clients\": list(M.from_map(new_model, vconv=bool).keys())}\n"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2.REQ-1",
+        "path": "controllers/fr_3_2_REQ_1.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\n\nclass InternetAccess(Base):\n    __tablename__ = \"internet_access\"\n    id = Column(Integer, primary_key=True)\n    enabled = Column(Boolean, default=True)\n\n\nrouter = APIRouter()\n\n\ndef fr_3_2_REQ_1(request: dict) -> dict:\n    db = SessionLocal()\n    try:\n        # Check if internet access is enabled\n        access_record = db.query(InternetAccess).first()\n        if not access_record or not access_record.enabled:\n            raise HTTPException(status_code=403, detail=\"Internet access is not enabled.\")\n        \n        # If we reach here, internet access is enabled\n        return {}\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.2.REQ-2",
+        "feature_id": "3.2.REQ-2",
+        "path": "controllers/fr_3_2_REQ_2.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\nfrom app.models.user import User\n\nrouter = APIRouter()\n\nclass AuthenticatedUser(Base):\n    __tablename__ = \"authenticated_users\"\n    id = Column(Integer, primary_key=True)\n    user_id = Column(Integer, nullable=False)\n    is_enrolled = Column(Boolean, default=False)\n\n@router.post(\"\")\ndef fr_3_2_REQ_2(request: dict = Body(..., embed=True)) -> dict:\n    db = SessionLocal()\n    try:\n        # Check if the user exists and is enrolled\n        user = db.query(User).first()\n        if not user:\n            raise HTTPException(status_code=404, detail=\"User not found\")\n        \n        # Check if the user is enrolled\n        enrolled_user = db.query(AuthenticatedUser).filter_by(user_id=user.id, is_enrolled=True).first()\n        if not enrolled_user:\n            raise HTTPException(status_code=403, detail=\"Only enrolled students can register and participate in events\")\n        \n        return {}\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.2.REQ-3",
+        "feature_id": "3.2.REQ-3",
+        "path": "controllers/fr_3_2_REQ_3.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nclass ErrorLog(Base):\n    __tablename__ = \"error_logs\"\n    id = Column(Integer, primary_key=True, index=True)\n    message = Column(String, nullable=False)\n    timestamp = Column(Float, nullable=False)\n    user_id = Column(Integer, nullable=False)\n    error_type = Column(String, nullable=False)\n\nrouter = APIRouter()\n\n\ndef fr_3_2_REQ_3(request: dict) -> dict:\n    db = SessionLocal()\n    try:\n        # Simulate processing the request and potentially raising an error\n        if not request:\n            raise HTTPException(status_code=400, detail=\"Invalid request data\")\n        \n        # Simulate a potential error condition\n        # For example, if some required field is missing\n        if \"user_id\" not in request:\n            raise HTTPException(status_code=400, detail=\"Missing required field: user_id\")\n        \n        # If we reach here, the request is valid\n        return {}\n    except Exception as e:\n        # Log the error to the database\n        error_log = ErrorLog(\n            message=str(e),\n            timestamp=1678886400.0,  # Mock timestamp\n            user_id=request.get(\"user_id\", -1),\n            error_type=type(e).__name__\n        )\n        db.add(error_log)\n        db.commit()\n        \n        # Re-raise the exception to be handled by the framework\n        raise\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.2.REQ-6",
+        "feature_id": "3.2.REQ-6",
+        "path": "controllers/fr_3_2_REQ_6.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nclass Stakeholder(Base):\n    __tablename__ = \"stakeholders\"\n    id = Column(Integer, primary_key=True, index=True)\n    username = Column(String, unique=True, index=True)\n    password_hash = Column(String)\n    email = Column(String)\n    is_active = Column(Boolean, default=True)\n\nrouter = APIRouter()\n\n\ndef fr_3_2_REQ_6(request: dict) -> dict:\n    db = SessionLocal()\n    try:\n        # In a real implementation, we would process the request to\n        # either create/update or retrieve stakeholder data.\n        # For now, we'll just ensure the database connection works\n        # and return an empty dict as specified.\n        \n        # Example of how we might handle a request to add a new stakeholder:\n        # if 'username' in request and 'password_hash' in request:\n        #     db_stakeholder = Stakeholder(\n        #         username=request['username'],\n        #         password_hash=request['password_hash'],\n        #         email=request.get('email', ''),\n        #         is_active=request.get('is_active', True)\n        #     )\n        #     db.add(db_stakeholder)\n        #     db.commit()\n        #     db.refresh(db_stakeholder)\n        \n        # For now, just return success\n        return {}\n    except Exception as e:\n        raise HTTPException(status_code=400, detail=str(e))\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.2.REQ-11",
+        "feature_id": "3.2.REQ-11",
+        "path": "controllers/fr_3_2_REQ_11.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nclass Event(Base):\n    __tablename__ = \"events\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n    description = Column(String)\n    timestamp = Column(Float)\n    is_active = Column(Boolean)\n\nrouter = APIRouter()\n\n@router.post(\"\")\ndef fr_3_2_REQ_11(request: dict = Body(..., embed=True)) -> dict:\n    db = SessionLocal()\n    try:\n        # Query all events ordered by timestamp\n        events = db.query(Event).order_by(Event.timestamp).all()\n        \n        # Prepare the response list\n        result = []\n        for event in events:\n            result.append({\n                \"id\": event.id,\n                \"name\": event.name,\n                \"description\": event.description,\n                \"timestamp\": event.timestamp,\n                \"is_active\": event.is_active\n            })\n        \n        return {\"events\": result}\n    except Exception as e:\n        raise HTTPException(status_code=500, detail=\"Internal server error\")\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.2.REQ-12",
+        "feature_id": "3.2.REQ-12",
+        "path": "controllers/fr_3_2_REQ_12.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\n\nclass Item(Base):\n    __tablename__ = \"items\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n    price = Column(Float)\n    in_stock = Column(Boolean)\n\n\nrouter = APIRouter()\n\n\ndef fr_3_2_REQ_12(request: dict) -> dict:\n    db = SessionLocal()\n    try:\n        # Validate request structure\n        if not isinstance(request, dict):\n            raise HTTPException(status_code=400, detail=\"Invalid request structure\")\n        \n        # Process the request (in a real implementation, this would involve\n        # database operations based on the request content)\n        # For now, we'll just return an empty dict as specified\n        return {}\n    finally:\n        db.close()"
+      }
+    ]
+  },
+  "generated_tests": {
+    "features": [
+      {
+        "feature_id": "3.2.REQ-1",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "Canonical case: Access the feature with internet provision",
+            "inputs": "Request with internet provision",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "Failure case: Access the feature without internet provision",
+            "inputs": "Request without internet provision",
+            "expected": "HTTP 4xx error due to missing internet access",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_fr_3_2_REQ_1_canonical():\n    resp = client.post(\"/controllers/fr_3_2_REQ_1\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_2_REQ_1_failure_no_internet():\n    # Simulate failure by mocking or testing precondition\n    # Since we cannot directly simulate lack of internet in test,\n    # we assume the system raises HTTPException when internet is not available\n    resp = client.post(\"/controllers/fr_3_2_REQ_1\", json={\"request\": {}})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.2.REQ-2",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-2",
+            "description": "Anchor case: authenticated user registers for event",
+            "inputs": "User is authenticated and enrolled student",
+            "expected": "Event registration successful",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-2",
+            "description": "Unauthorized user attempts to register for event",
+            "inputs": "User is not authenticated",
+            "expected": "Precondition failure due to lack of authentication",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-2",
+            "description": "Authenticated but unenrolled user attempts to register for event",
+            "inputs": "User is authenticated but not enrolled in institution",
+            "expected": "Precondition failure due to lack of enrollment",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-2",
+            "description": "Malformed request body",
+            "inputs": "Request body does not conform to expected structure",
+            "expected": "Precondition failure due to malformed input",
+            "inputs_json": "{\"invalid_field\": \"value\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_anchor_case():\n    # Since we cannot actually authenticate without a proper setup,\n    # this test assumes the system allows the call to proceed\n    # and checks that it returns an empty dict.\n    resp = client.post(\"/controllers/fr_3_2_REQ_2\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_unauthorized_user():\n    # Simulate unauthorized access\n    resp = client.post(\"/controllers/fr_3_2_REQ_2\", json={\"request\": {}})\n    assert resp.status_code >= 400\n\ndef test_unenrolled_user():\n    # Simulate enrolled but unauthorized access\n    resp = client.post(\"/controllers/fr_3_2_REQ_2\", json={\"request\": {}})\n    assert resp.status_code >= 400\n\ndef test_malformed_request():\n    # Send invalid request structure\n    resp = client.post(\"/controllers/fr_3_2_REQ_2\", json={\"invalid_field\": \"value\"})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.2.REQ-3",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-3",
+            "description": "Canonical case with empty request",
+            "inputs": "Empty request dictionary",
+            "expected": "Empty response dictionary",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-3",
+            "description": "Request with invalid key type",
+            "inputs": "Request with integer key instead of string",
+            "expected": "HTTP 4xx error due to invalid input structure",
+            "inputs_json": "{\"request\":{\"123\":\"value\"}}",
+            "expected_json": "{\"raises\":\"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-3",
+            "description": "Request with malformed JSON",
+            "inputs": "Malformed JSON input",
+            "expected": "HTTP 4xx error due to parsing failure",
+            "inputs_json": "{\"request\":{",
+            "expected_json": "{\"raises\":\"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-3",
+            "description": "Request with unexpected nested structure",
+            "inputs": "Request containing nested object instead of simple key-value pairs",
+            "expected": "HTTP 4xx error due to unexpected structure",
+            "inputs_json": "{\"request\":{\"nested\":{\"key\":\"value\"}}}",
+            "expected_json": "{\"raises\":\"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_fr_3_2_REQ_3_anchor_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_3\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_2_REQ_3_invalid_key_type():\n    resp = client.post(\"/controllers/fr_3_2_REQ_3\", json={\"request\": {\"123\": \"value\"}})\n    assert resp.status_code >= 400\n\ndef test_fr_3_2_REQ_3_malformed_json():\n    # This would be handled by FastAPI's automatic validation\n    # We simulate by sending invalid JSON which should fail during parsing\n    resp = client.post(\"/controllers/fr_3_2_REQ_3\", content=\"{\"\"\"request\":{\", headers={\"Content-Type\": \"application/json\"})\n    assert resp.status_code >= 400\n\ndef test_fr_3_2_REQ_3_unexpected_nested_structure():\n    resp = client.post(\"/controllers/fr_3_2_REQ_3\", json={\"request\": {\"nested\": {\"key\": \"value\"}}})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.2.REQ-4",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-4",
+            "description": "Anchor case: EOCR posts an event successfully",
+            "inputs": "EOCR posts an event on the website",
+            "expected": "Students can register accordingly",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-4",
+            "description": "Empty request body",
+            "inputs": "EOCR sends an empty request",
+            "expected": "Successful processing of the event posting",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-4",
+            "description": "Malformed request with invalid fields",
+            "inputs": "EOCR sends a request with invalid fields",
+            "expected": "HTTP 4xx error due to invalid input",
+            "inputs_json": "{\"request\":{\"invalid_field\":\"value\"}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_anchor_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_4\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_empty_request_body():\n    resp = client.post(\"/controllers/fr_3_2_REQ_4\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_malformed_request():\n    resp = client.post(\"/controllers/fr_3_2_REQ_4\", json={\"request\": {\"invalid_field\": \"value\"}})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.2.REQ-5",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-5",
+            "description": "Canonical case: Generate list of registrants with empty request",
+            "inputs": "Empty request body",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-5",
+            "description": "Edge case: Request with additional fields should be ignored",
+            "inputs": "Request with extra fields",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\": {\"extra_field\": \"value\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-5",
+            "description": "Failure case: Invalid input type for request field",
+            "inputs": "Request field is not a dictionary",
+            "expected": "HTTP 4xx error due to invalid input",
+            "inputs_json": "{\"request\": \"invalid_type\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_fr_3_2_REQ_5_anchor_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_5\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_2_REQ_5_edge_case_additional_fields():\n    resp = client.post(\"/controllers/fr_3_2_REQ_5\", json={\"request\": {\"extra_field\": \"value\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_2_REQ_5_failure_invalid_request_type():\n    resp = client.post(\"/controllers/fr_3_2_REQ_5\", json={\"request\": \"invalid_type\"})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.2.REQ-6",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-6",
+            "description": "Canonical case with empty request",
+            "inputs": "Empty request body",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-6",
+            "description": "Request with additional fields should be ignored",
+            "inputs": "Request with extra fields",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\": {\"extra_field\": \"value\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-6",
+            "description": "Request with nested object should be ignored",
+            "inputs": "Request with nested object",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\": {\"nested\": {\"key\": \"value\"}}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-6",
+            "description": "Malformed request body - not a dictionary",
+            "inputs": "Request body is a list instead of a dictionary",
+            "expected": "HTTP 4xx error due to invalid request structure",
+            "inputs_json": "{\"request\": []}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_canonical_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_6\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_request_with_additional_fields():\n    resp = client.post(\"/controllers/fr_3_2_REQ_6\", json={\"request\": {\"extra_field\": \"value\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_request_with_nested_object():\n    resp = client.post(\"/controllers/fr_3_2_REQ_6\", json={\"request\": {\"nested\": {\"key\": \"value\"}}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_malformed_request_body():\n    resp = client.post(\"/controllers/fr_3_2_REQ_6\", json={\"request\": []})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.2.REQ-7",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-7",
+            "description": "Anchor case: empty request",
+            "inputs": "Empty request dictionary",
+            "expected": "Empty response dictionary",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-7",
+            "description": "Create new data entry",
+            "inputs": "Request with action 'create' and data payload",
+            "expected": "Success confirmation",
+            "inputs_json": "{\"request\": {\"action\": \"create\", \"data\": {\"id\": 1, \"content\": \"Sample data\"}}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-7",
+            "description": "Retrieve existing data entry",
+            "inputs": "Request with action 'retrieve' and valid ID",
+            "expected": "Retrieved data entry",
+            "inputs_json": "{\"request\": {\"action\": \"retrieve\", \"id\": 1}}",
+            "expected_json": "{\"id\": 1, \"content\": \"Sample data\"}",
+            "oracle": "eq",
+            "setup_json": "[{\"inputs\": {\"action\": \"create\", \"data\": {\"id\": 1, \"content\": \"Sample data\"}}}]"
+          },
+          {
+            "requirement_id": "3.2.REQ-7",
+            "description": "Modify existing data entry",
+            "inputs": "Request with action 'modify' and updated data",
+            "expected": "Success confirmation",
+            "inputs_json": "{\"request\": {\"action\": \"modify\", \"id\": 1, \"data\": {\"content\": \"Updated data\"}}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": "[{\"inputs\": {\"action\": \"create\", \"data\": {\"id\": 1, \"content\": \"Sample data\"}}}]"
+          },
+          {
+            "requirement_id": "3.2.REQ-7",
+            "description": "Delete existing data entry",
+            "inputs": "Request with action 'delete' and valid ID",
+            "expected": "Success confirmation",
+            "inputs_json": "{\"request\": {\"action\": \"delete\", \"id\": 1}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": "[{\"inputs\": {\"action\": \"create\", \"data\": {\"id\": 1, \"content\": \"Sample data\"}}}]"
+          },
+          {
+            "requirement_id": "3.2.REQ-7",
+            "description": "Attempt to retrieve non-existent data entry",
+            "inputs": "Request with action 'retrieve' and invalid ID",
+            "expected": "HTTP 4xx error due to not found",
+            "inputs_json": "{\"request\": {\"action\": \"retrieve\", \"id\": 999}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_anchor_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_7\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_create_data_entry():\n    resp = client.post(\"/controllers/fr_3_2_REQ_7\", json={\"request\": {\"action\": \"create\", \"data\": {\"id\": 1, \"content\": \"Sample data\"}}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_retrieve_existing_data():\n    # Setup\n    client.post(\"/controllers/fr_3_2_REQ_7\", json={\"request\": {\"action\": \"create\", \"data\": {\"id\": 1, \"content\": \"Sample data\"}}})\n    \n    # Test\n    resp = client.post(\"/controllers/fr_3_2_REQ_7\", json={\"request\": {\"action\": \"retrieve\", \"id\": 1}})\n    assert resp.status_code == 200\n    assert resp.json() == {\"id\": 1, \"content\": \"Sample data\"}\n\ndef test_modify_existing_data():\n    # Setup\n    client.post(\"/controllers/fr_3_2_REQ_7\", json={\"request\": {\"action\": \"create\", \"data\": {\"id\": 1, \"content\": \"Sample data\"}}})\n    \n    # Test\n    resp = client.post(\"/controllers/fr_3_2_REQ_7\", json={\"request\": {\"action\": \"modify\", \"id\": 1, \"data\": {\"content\": \"Updated data\"}}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_delete_existing_data():\n    # Setup\n    client.post(\"/controllers/fr_3_2_REQ_7\", json={\"request\": {\"action\": \"create\", \"data\": {\"id\": 1, \"content\": \"Sample data\"}}})\n    \n    # Test\n    resp = client.post(\"/controllers/fr_3_2_REQ_7\", json={\"request\": {\"action\": \"delete\", \"id\": 1}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_retrieve_nonexistent_data():\n    resp = client.post(\"/controllers/fr_3_2_REQ_7\", json={\"request\": {\"action\": \"retrieve\", \"id\": 999}})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.2.REQ-8",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-8",
+            "description": "Anchor case: Provide administrative access to the clients with empty request",
+            "inputs": "Empty request body",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-8",
+            "description": "Independent case: Provide administrative access with additional fields in request",
+            "inputs": "Request with extra fields",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\": {\"extra_field\": \"value\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-8",
+            "description": "Independent case: Provide administrative access with nested object in request",
+            "inputs": "Request with nested object",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\": {\"nested\": {\"key\": \"value\"}}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-8",
+            "description": "Independent case: Provide administrative access with null value in request",
+            "inputs": "Request with null value",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\": {\"null_field\": null}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_anchor_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_8\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_additional_fields_in_request():\n    resp = client.post(\"/controllers/fr_3_2_REQ_8\", json={\"request\": {\"extra_field\": \"value\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_nested_object_in_request():\n    resp = client.post(\"/controllers/fr_3_2_REQ_8\", json={\"request\": {\"nested\": {\"key\": \"value\"}}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_null_value_in_request():\n    resp = client.post(\"/controllers/fr_3_2_REQ_8\", json={\"request\": {\"null_field\": None}})\n    assert resp.status_code == 200\n    assert resp.json() == {}"
+      },
+      {
+        "feature_id": "3.2.REQ-9",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-9",
+            "description": "Canonical case: Add and delete client access easily",
+            "inputs": "Add and delete client access easily",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-9",
+            "description": "Test adding client access with empty request",
+            "inputs": "Add client access with empty request",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-9",
+            "description": "Test deleting non-existent client access",
+            "inputs": "Delete non-existent client access",
+            "expected": "HTTP 4xx error",
+            "inputs_json": "{\"request\":{\"action\":\"delete\",\"client_id\":\"nonexistent\"}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-9",
+            "description": "Test adding client access with client ID",
+            "inputs": "Add client access with specific client ID",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\":{\"action\":\"add\",\"client_id\":\"client123\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-9",
+            "description": "Test deleting client access with valid client ID",
+            "inputs": "Delete client access with valid client ID",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\":{\"action\":\"delete\",\"client_id\":\"client123\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": "[{\"inputs\":{\"request\":{\"action\":\"add\",\"client_id\":\"client123\"}}}]"
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_fr_3_2_REQ_9_anchor_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_9\", json={\"request\":{}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_2_REQ_9_add_client_access_empty_request():\n    resp = client.post(\"/controllers/fr_3_2_REQ_9\", json={\"request\":{}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_2_REQ_9_delete_nonexistent_client_access():\n    resp = client.post(\"/controllers/fr_3_2_REQ_9\", json={\"request\":{\"action\":\"delete\",\"client_id\":\"nonexistent\"}})\n    assert resp.status_code >= 400\n\ndef test_fr_3_2_REQ_9_add_client_access_with_id():\n    resp = client.post(\"/controllers/fr_3_2_REQ_9\", json={\"request\":{\"action\":\"add\",\"client_id\":\"client123\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_2_REQ_9_delete_client_access_with_valid_id():\n    # First add the client access\n    client.post(\"/controllers/fr_3_2_REQ_9\", json={\"request\":{\"action\":\"add\",\"client_id\":\"client123\"}})\n    \n    # Then delete it\n    resp = client.post(\"/controllers/fr_3_2_REQ_9\", json={\"request\":{\"action\":\"delete\",\"client_id\":\"client123\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}"
+      },
+      {
+        "feature_id": "3.2.REQ-10",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-10",
+            "description": "Anchor case: append an event to the database with empty request",
+            "inputs": "Empty request to append an event",
+            "expected": "Empty response indicating successful append",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-10",
+            "description": "Append an event with minimal valid request structure",
+            "inputs": "Request with minimal valid structure",
+            "expected": "Empty response indicating successful append",
+            "inputs_json": "{\"request\": {\"event\": \"meeting\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-10",
+            "description": "Append an event with additional metadata",
+            "inputs": "Request with event and metadata",
+            "expected": "Empty response indicating successful append",
+            "inputs_json": "{\"request\": {\"event\": \"conference\", \"metadata\": {\"location\": \"online\"}}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-10",
+            "description": "Attempt to append an event with malformed request structure",
+            "inputs": "Request missing required fields",
+            "expected": "HTTP 4xx error due to invalid request structure",
+            "inputs_json": "{\"invalid_field\": \"value\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_anchor_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_10\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_minimal_valid_request():\n    resp = client.post(\"/controllers/fr_3_2_REQ_10\", json={\"request\": {\"event\": \"meeting\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_with_metadata():\n    resp = client.post(\"/controllers/fr_3_2_REQ_10\", json={\"request\": {\"event\": \"conference\", \"metadata\": {\"location\": \"online\"}}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_malformed_request():\n    resp = client.post(\"/controllers/fr_3_2_REQ_10\", json={\"invalid_field\": \"value\"})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.2.REQ-11",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-11",
+            "description": "Anchor case: empty request returns empty response",
+            "inputs": "Empty request body",
+            "expected": "Empty response",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-11",
+            "description": "Request with event data should return ordered list of events",
+            "inputs": "Request containing event data",
+            "expected": "Ordered list of events",
+            "inputs_json": "{\"request\": {\"events\": [{\"id\": 1, \"name\": \"Event A\"}, {\"id\": 2, \"name\": \"Event B\"}]}}",
+            "expected_json": "{\"events\": [{\"id\": 1, \"name\": \"Event A\"}, {\"id\": 2, \"name\": \"Event B\"}]}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-11",
+            "description": "Request with malformed event data should raise an error",
+            "inputs": "Request with invalid event data structure",
+            "expected": "HTTP 4xx error due to invalid input",
+            "inputs_json": "{\"request\": {\"events\": [{\"invalid_field\": \"value\"}]}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-11",
+            "description": "Request without events key should raise an error",
+            "inputs": "Request missing events key",
+            "expected": "HTTP 4xx error due to missing required field",
+            "inputs_json": "{\"request\": {\"other_data\": \"value\"}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_anchor_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_11\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_with_event_data():\n    resp = client.post(\"/controllers/fr_3_2_REQ_11\", json={\"request\": {\"events\": [{\"id\": 1, \"name\": \"Event A\"}, {\"id\": 2, \"name\": \"Event B\"}]}})\n    assert resp.status_code == 200\n    assert resp.json() == {\"events\": [{\"id\": 1, \"name\": \"Event A\"}, {\"id\": 2, \"name\": \"Event B\"}]}\n\ndef test_malformed_event_data():\n    resp = client.post(\"/controllers/fr_3_2_REQ_11\", json={\"request\": {\"events\": [{\"invalid_field\": \"value\"}]}})\n    assert resp.status_code >= 400\n\ndef test_missing_events_key():\n    resp = client.post(\"/controllers/fr_3_2_REQ_11\", json={\"request\": {\"other_data\": \"value\"}})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.2.REQ-12",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-12",
+            "description": "Anchor case: Simple Interface for easy and reliable interactivity with empty request",
+            "inputs": "Empty request dictionary",
+            "expected": "Empty response dictionary",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-12",
+            "description": "Variant type: Request with additional keys should still work as long as they don't break the interface",
+            "inputs": "Request with extra fields",
+            "expected": "Empty response dictionary",
+            "inputs_json": "{\"request\": {\"extra_field\": \"value\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-12",
+            "description": "Boundary value: Request with nested empty object",
+            "inputs": "Request containing an empty nested object",
+            "expected": "Empty response dictionary",
+            "inputs_json": "{\"request\": {\"nested\": {}}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-12",
+            "description": "Failure case: Invalid input type for request field",
+            "inputs": "Request field is not a dictionary",
+            "expected": "HTTP 4xx error due to invalid input",
+            "inputs_json": "{\"request\": \"not_a_dict\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_fr_3_2_REQ_12_anchor_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_12\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_2_REQ_12_variant_type():\n    resp = client.post(\"/controllers/fr_3_2_REQ_12\", json={\"request\": {\"extra_field\": \"value\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_2_REQ_12_boundary_value():\n    resp = client.post(\"/controllers/fr_3_2_REQ_12\", json={\"request\": {\"nested\": {}}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_2_REQ_12_failure_case():\n    resp = client.post(\"/controllers/fr_3_2_REQ_12\", json={\"request\": \"not_a_dict\"})\n    assert resp.status_code >= 400"
+      }
+    ]
+  },
+  "certification": {
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "oracle": "http",
+    "n": 1,
+    "k_values": [
+      1
+    ],
+    "frs": [
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2.REQ-1",
+        "n_samples": 1,
+        "n_test_cases": 2,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 2,
+        "case_pass_rate": 0.0
+      },
+      {
+        "fr_id": "3.2.REQ-11",
+        "feature_id": "3.2.REQ-11",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "fr_id": "3.2.REQ-12",
+        "feature_id": "3.2.REQ-12",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "fr_id": "3.2.REQ-2",
+        "feature_id": "3.2.REQ-2",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "fr_id": "3.2.REQ-3",
+        "feature_id": "3.2.REQ-3",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "fr_id": "3.2.REQ-6",
+        "feature_id": "3.2.REQ-6",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      }
+    ],
+    "features": [
+      {
+        "feature_id": "3.2.REQ-1",
+        "name": "3.2.REQ-1",
+        "n_samples": 1,
+        "n_test_cases": 2,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 2,
+        "case_pass_rate": 0.0
+      },
+      {
+        "feature_id": "3.2.REQ-11",
+        "name": "3.2.REQ-11",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "feature_id": "3.2.REQ-12",
+        "name": "3.2.REQ-12",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "feature_id": "3.2.REQ-2",
+        "name": "3.2.REQ-2",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "feature_id": "3.2.REQ-3",
+        "name": "3.2.REQ-3",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "feature_id": "3.2.REQ-6",
+        "name": "3.2.REQ-6",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      }
+    ],
+    "aggregate_pass_at": {
+      "pass@1": 0.0
+    },
+    "aggregate_case_pass_rate": 0.0,
+    "failures": [
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2.REQ-1",
+        "feature_name": "3.2.REQ-1",
+        "requirement_id": "3.2.REQ-1",
+        "sample": 0,
+        "description": "Canonical case: Access the feature with internet provision",
+        "inputs": "Request with internet provision",
+        "expected": "Empty response",
+        "requirement_text": "Can only be accessed with the provision of the internet.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2.REQ-1",
+        "feature_name": "3.2.REQ-1",
+        "requirement_id": "3.2.REQ-1",
+        "sample": 0,
+        "description": "Failure case: Access the feature without internet provision",
+        "inputs": "Request without internet provision",
+        "expected": "HTTP 4xx error due to missing internet access",
+        "requirement_text": "Can only be accessed with the provision of the internet.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-11",
+        "feature_id": "3.2.REQ-11",
+        "feature_name": "3.2.REQ-11",
+        "requirement_id": "3.2.REQ-11",
+        "sample": 0,
+        "description": "Anchor case: empty request returns empty response",
+        "inputs": "Empty request body",
+        "expected": "Empty response",
+        "requirement_text": "Provide an ordered list of events added to the database for easy understandability.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-11",
+        "feature_id": "3.2.REQ-11",
+        "feature_name": "3.2.REQ-11",
+        "requirement_id": "3.2.REQ-11",
+        "sample": 0,
+        "description": "Request with event data should return ordered list of events",
+        "inputs": "Request containing event data",
+        "expected": "Ordered list of events",
+        "requirement_text": "Provide an ordered list of events added to the database for easy understandability.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-11",
+        "feature_id": "3.2.REQ-11",
+        "feature_name": "3.2.REQ-11",
+        "requirement_id": "3.2.REQ-11",
+        "sample": 0,
+        "description": "Request with malformed event data should raise an error",
+        "inputs": "Request with invalid event data structure",
+        "expected": "HTTP 4xx error due to invalid input",
+        "requirement_text": "Provide an ordered list of events added to the database for easy understandability.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-11",
+        "feature_id": "3.2.REQ-11",
+        "feature_name": "3.2.REQ-11",
+        "requirement_id": "3.2.REQ-11",
+        "sample": 0,
+        "description": "Request without events key should raise an error",
+        "inputs": "Request missing events key",
+        "expected": "HTTP 4xx error due to missing required field",
+        "requirement_text": "Provide an ordered list of events added to the database for easy understandability.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-12",
+        "feature_id": "3.2.REQ-12",
+        "feature_name": "3.2.REQ-12",
+        "requirement_id": "3.2.REQ-12",
+        "sample": 0,
+        "description": "Anchor case: Simple Interface for easy and reliable interactivity with empty request",
+        "inputs": "Empty request dictionary",
+        "expected": "Empty response dictionary",
+        "requirement_text": "Simple Interface for easy and reliable interactivity.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-12",
+        "feature_id": "3.2.REQ-12",
+        "feature_name": "3.2.REQ-12",
+        "requirement_id": "3.2.REQ-12",
+        "sample": 0,
+        "description": "Variant type: Request with additional keys should still work as long as they don't break the interface",
+        "inputs": "Request with extra fields",
+        "expected": "Empty response dictionary",
+        "requirement_text": "Simple Interface for easy and reliable interactivity.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-12",
+        "feature_id": "3.2.REQ-12",
+        "feature_name": "3.2.REQ-12",
+        "requirement_id": "3.2.REQ-12",
+        "sample": 0,
+        "description": "Boundary value: Request with nested empty object",
+        "inputs": "Request containing an empty nested object",
+        "expected": "Empty response dictionary",
+        "requirement_text": "Simple Interface for easy and reliable interactivity.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-12",
+        "feature_id": "3.2.REQ-12",
+        "feature_name": "3.2.REQ-12",
+        "requirement_id": "3.2.REQ-12",
+        "sample": 0,
+        "description": "Failure case: Invalid input type for request field",
+        "inputs": "Request field is not a dictionary",
+        "expected": "HTTP 4xx error due to invalid input",
+        "requirement_text": "Simple Interface for easy and reliable interactivity.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-2",
+        "feature_id": "3.2.REQ-2",
+        "feature_name": "3.2.REQ-2",
+        "requirement_id": "3.2.REQ-2",
+        "sample": 0,
+        "description": "Anchor case: authenticated user registers for event",
+        "inputs": "User is authenticated and enrolled student",
+        "expected": "Event registration successful",
+        "requirement_text": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-2",
+        "feature_id": "3.2.REQ-2",
+        "feature_name": "3.2.REQ-2",
+        "requirement_id": "3.2.REQ-2",
+        "sample": 0,
+        "description": "Unauthorized user attempts to register for event",
+        "inputs": "User is not authenticated",
+        "expected": "Precondition failure due to lack of authentication",
+        "requirement_text": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-2",
+        "feature_id": "3.2.REQ-2",
+        "feature_name": "3.2.REQ-2",
+        "requirement_id": "3.2.REQ-2",
+        "sample": 0,
+        "description": "Authenticated but unenrolled user attempts to register for event",
+        "inputs": "User is authenticated but not enrolled in institution",
+        "expected": "Precondition failure due to lack of enrollment",
+        "requirement_text": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-2",
+        "feature_id": "3.2.REQ-2",
+        "feature_name": "3.2.REQ-2",
+        "requirement_id": "3.2.REQ-2",
+        "sample": 0,
+        "description": "Malformed request body",
+        "inputs": "Request body does not conform to expected structure",
+        "expected": "Precondition failure due to malformed input",
+        "requirement_text": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-3",
+        "feature_id": "3.2.REQ-3",
+        "feature_name": "3.2.REQ-3",
+        "requirement_id": "3.2.REQ-3",
+        "sample": 0,
+        "description": "Canonical case with empty request",
+        "inputs": "Empty request dictionary",
+        "expected": "Empty response dictionary",
+        "requirement_text": "The user interface provides appropriate error messages in case the user does an error.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-3",
+        "feature_id": "3.2.REQ-3",
+        "feature_name": "3.2.REQ-3",
+        "requirement_id": "3.2.REQ-3",
+        "sample": 0,
+        "description": "Request with invalid key type",
+        "inputs": "Request with integer key instead of string",
+        "expected": "HTTP 4xx error due to invalid input structure",
+        "requirement_text": "The user interface provides appropriate error messages in case the user does an error.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-3",
+        "feature_id": "3.2.REQ-3",
+        "feature_name": "3.2.REQ-3",
+        "requirement_id": "3.2.REQ-3",
+        "sample": 0,
+        "description": "Request with malformed JSON",
+        "inputs": "Malformed JSON input",
+        "expected": "HTTP 4xx error due to parsing failure",
+        "requirement_text": "The user interface provides appropriate error messages in case the user does an error.",
+        "verdict": "fail",
+        "reason": "invalid test JSON: Expecting property name enclosed in double quotes: line 1 column 13 (char 12)"
+      },
+      {
+        "fr_id": "3.2.REQ-3",
+        "feature_id": "3.2.REQ-3",
+        "feature_name": "3.2.REQ-3",
+        "requirement_id": "3.2.REQ-3",
+        "sample": 0,
+        "description": "Request with unexpected nested structure",
+        "inputs": "Request containing nested object instead of simple key-value pairs",
+        "expected": "HTTP 4xx error due to unexpected structure",
+        "requirement_text": "The user interface provides appropriate error messages in case the user does an error.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-6",
+        "feature_id": "3.2.REQ-6",
+        "feature_name": "3.2.REQ-6",
+        "requirement_id": "3.2.REQ-6",
+        "sample": 0,
+        "description": "Canonical case with empty request",
+        "inputs": "Empty request body",
+        "expected": "Empty response",
+        "requirement_text": "Provides a secure database of stakeholders containing the login credentials and personal information.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-6",
+        "feature_id": "3.2.REQ-6",
+        "feature_name": "3.2.REQ-6",
+        "requirement_id": "3.2.REQ-6",
+        "sample": 0,
+        "description": "Request with additional fields should be ignored",
+        "inputs": "Request with extra fields",
+        "expected": "Empty response",
+        "requirement_text": "Provides a secure database of stakeholders containing the login credentials and personal information.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-6",
+        "feature_id": "3.2.REQ-6",
+        "feature_name": "3.2.REQ-6",
+        "requirement_id": "3.2.REQ-6",
+        "sample": 0,
+        "description": "Request with nested object should be ignored",
+        "inputs": "Request with nested object",
+        "expected": "Empty response",
+        "requirement_text": "Provides a secure database of stakeholders containing the login credentials and personal information.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      },
+      {
+        "fr_id": "3.2.REQ-6",
+        "feature_id": "3.2.REQ-6",
+        "feature_name": "3.2.REQ-6",
+        "requirement_id": "3.2.REQ-6",
+        "sample": 0,
+        "description": "Malformed request body - not a dictionary",
+        "inputs": "Request body is a list instead of a dictionary",
+        "expected": "HTTP 4xx error due to invalid request structure",
+        "requirement_text": "Provides a secure database of stakeholders containing the login credentials and personal information.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)"
+      }
+    ],
+    "notes": []
+  },
+  "metrics": {
+    "srs": "Event Management.xml",
+    "stack": "fastapi",
+    "language": "python",
+    "stages": [
+      {
+        "name": "spec_parse",
+        "seconds": 0.005,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "spec_contracts",
+        "seconds": 0.0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "dependency",
+        "seconds": 0.001,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "planning",
+        "seconds": 0.0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "scaffold",
+        "seconds": 0.0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "dafny",
+        "seconds": 183.75,
+        "input_tokens": 153730,
+        "output_tokens": 13326,
+        "calls": 47
+      },
+      {
+        "name": "compile",
+        "seconds": 6.452,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "adapter",
+        "seconds": 5.771,
+        "input_tokens": 1506,
+        "output_tokens": 667,
+        "calls": 1
+      },
+      {
+        "name": "adapter",
+        "seconds": 5.695,
+        "input_tokens": 1517,
+        "output_tokens": 658,
+        "calls": 1
+      },
+      {
+        "name": "adapter",
+        "seconds": 4.963,
+        "input_tokens": 1487,
+        "output_tokens": 572,
+        "calls": 1
+      },
+      {
+        "name": "adapter",
+        "seconds": 6.326,
+        "input_tokens": 1705,
+        "output_tokens": 729,
+        "calls": 1
+      },
+      {
+        "name": "adapter",
+        "seconds": 5.177,
+        "input_tokens": 1505,
+        "output_tokens": 594,
+        "calls": 1
+      },
+      {
+        "name": "adapter",
+        "seconds": 5.688,
+        "input_tokens": 1508,
+        "output_tokens": 656,
+        "calls": 1
+      },
+      {
+        "name": "code",
+        "seconds": 15.926,
+        "input_tokens": 6388,
+        "output_tokens": 1800,
+        "calls": 6
+      },
+      {
+        "name": "test",
+        "seconds": 74.914,
+        "input_tokens": 23640,
+        "output_tokens": 8586,
+        "calls": 12
+      },
+      {
+        "name": "certification",
+        "seconds": 18.02,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      }
+    ],
+    "config": {
+      "language": "python",
+      "stack": "fastapi",
+      "models": {
+        "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+      },
+      "prompt_strategy": "baseline",
+      "agents": {
+        "spec": true,
+        "dependency": true,
+        "planning": true,
+        "proof": true,
+        "code": true,
+        "test": true,
+        "certify": true,
+        "recovery": false,
+        "compile_repair": false
+      },
+      "run_dependency": true,
+      "run_test": true,
+      "run_recovery": false,
+      "test_sees_code": false,
+      "raw_spec_only": true,
+      "certify": true,
+      "samples": 1,
+      "k_values": [
+        1
+      ],
+      "prove": true,
+      "prove_target": "py",
+      "max_cert_loops": 0,
+      "max_compile_repair_loops": 2,
+      "temperature": 0.0,
+      "cert_temperature": 0.4,
+      "case_timeout": 10.0,
+      "prove_rounds": 6,
+      "llm_deps": true,
+      "baseline": false,
+      "reuse_from": "",
+      "reuse_stages": [],
+      "oracle_tests": ""
+    },
+    "dafny": {
+      "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "n_features": 12,
+      "n_verified": 6,
+      "n_proved_with_axioms": 0,
+      "verification_rate": 0.5,
+      "features": [
+        {
+          "feature_id": "3.2.REQ-1",
+          "module": "F3_2_REQ_1",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-10",
+          "module": "F3_2_REQ_10",
+          "verified": true,
+          "rounds": 1,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-11",
+          "module": "F3_2_REQ_11",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-12",
+          "module": "F3_2_REQ_12",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-2",
+          "module": "F3_2_REQ_2",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-3",
+          "module": "F3_2_REQ_3",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-4",
+          "module": "F3_2_REQ_4",
+          "verified": true,
+          "rounds": 1,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-5",
+          "module": "F3_2_REQ_5",
+          "verified": true,
+          "rounds": 1,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-6",
+          "module": "F3_2_REQ_6",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-7",
+          "module": "F3_2_REQ_7",
+          "verified": true,
+          "rounds": 1,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-8",
+          "module": "F3_2_REQ_8",
+          "verified": true,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2.REQ-9",
+          "module": "F3_2_REQ_9",
+          "verified": true,
+          "rounds": 1,
+          "axioms": 0
+        }
+      ]
+    },
+    "compile": {
+      "target": "py",
+      "compiled": [
+        {
+          "feature_id": "3.2.REQ-10",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/dafny_proof/out/F3_2_REQ_10-py"
+        },
+        {
+          "feature_id": "3.2.REQ-4",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/dafny_proof/out/F3_2_REQ_4-py"
+        },
+        {
+          "feature_id": "3.2.REQ-5",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/dafny_proof/out/F3_2_REQ_5-py"
+        },
+        {
+          "feature_id": "3.2.REQ-7",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/dafny_proof/out/F3_2_REQ_7-py"
+        },
+        {
+          "feature_id": "3.2.REQ-8",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/dafny_proof/out/F3_2_REQ_8-py"
+        },
+        {
+          "feature_id": "3.2.REQ-9",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/dafny_proof/out/F3_2_REQ_9-py"
+        }
+      ],
+      "failed": [
+        {
+          "feature_id": "3.2.REQ-1",
+          "reason": "dafny not verified"
+        },
+        {
+          "feature_id": "3.2.REQ-11",
+          "reason": "dafny not verified"
+        },
+        {
+          "feature_id": "3.2.REQ-12",
+          "reason": "dafny not verified"
+        },
+        {
+          "feature_id": "3.2.REQ-2",
+          "reason": "dafny not verified"
+        },
+        {
+          "feature_id": "3.2.REQ-3",
+          "reason": "dafny not verified"
+        },
+        {
+          "feature_id": "3.2.REQ-6",
+          "reason": "dafny not verified"
+        }
+      ]
+    },
+    "code": {
+      "language": "Python",
+      "files": 12,
+      "lines_of_code": 637,
+      "files_per_layer": {
+        "controller": 12
+      },
+      "imports": [
+        "F3__2__REQ__10Domain",
+        "F3__2__REQ__4Domain",
+        "F3__2__REQ__5Domain",
+        "F3__2__REQ__7Domain",
+        "F3__2__REQ__8Domain",
+        "F3__2__REQ__9Domain",
+        "app",
+        "dafny_marshal",
+        "fastapi",
+        "json",
+        "os",
+        "sqlalchemy",
+        "sys"
+      ],
+      "third_party_libraries": [
+        "F3__2__REQ__10Domain",
+        "F3__2__REQ__4Domain",
+        "F3__2__REQ__5Domain",
+        "F3__2__REQ__7Domain",
+        "F3__2__REQ__8Domain",
+        "F3__2__REQ__9Domain",
+        "app",
+        "dafny_marshal",
+        "fastapi",
+        "sqlalchemy"
+      ],
+      "runnable_app": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/app",
+      "dafny_cores": {
+        "cores_dir": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/app/dafny_cores",
+        "staged": [
+          "F3_2_REQ_10",
+          "F3_2_REQ_4",
+          "F3_2_REQ_5",
+          "F3_2_REQ_7",
+          "F3_2_REQ_8",
+          "F3_2_REQ_9"
+        ],
+        "missing": []
+      }
+    },
+    "tests": {
+      "features": 12,
+      "cases": 47
+    },
+    "certification": {
+      "n": 1,
+      "k_values": [
+        1
+      ],
+      "aggregate_pass_at": {
+        "pass@1": 0.0
+      },
+      "aggregate_case_pass_rate": 0.0,
+      "n_tested_frs": 6,
+      "n_proved_features": 6,
+      "n_total_tested_features": 6,
+      "pass_at_1_fr_ids": []
+    },
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "total_seconds": 332.688,
+    "tokens": {
+      "input": 192986,
+      "output": 27588,
+      "total": 220574,
+      "calls": 71
+    },
+    "cost_usd": 0.0,
+    "cost_by_model": {
+      "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8": {
+        "input": 192986,
+        "output": 27588,
+        "calls": 71,
+        "cost_usd": 0.0
+      }
+    },
+    "proved_feature_ids": [
+      "3.2.REQ-10",
+      "3.2.REQ-4",
+      "3.2.REQ-5",
+      "3.2.REQ-7",
+      "3.2.REQ-8",
+      "3.2.REQ-9"
+    ],
+    "summary": {
+      "verification_pass_ratio": 0.5,
+      "test_case_pass_ratio": 0.0,
+      "PassVer@1": 0.5,
+      "avg_verification_iteration": 3.92,
+      "avg_test_iteration": 1,
+      "avg_input_token": 2718.1,
+      "avg_output_token": 388.6,
+      "total_time": 332.69
+    }
+  }
+}

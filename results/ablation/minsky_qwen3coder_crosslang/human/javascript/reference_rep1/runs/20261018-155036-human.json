@@ -1,0 +1,203 @@
+{
+  "run_id": "20261018-155036-human",
+  "timestamp_utc": "2026-10-18T15:50:36.978755+00:00",
+  "status": "complete",
+  "srs": "Human.xml",
+  "stack": "express",
+  "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+  "total_seconds": 58.911,
+  "tokens": {
+    "input": 37081,
+    "output": 5086,
+    "total": 42167,
+    "calls": 15
+  },
+  "cost_usd": 0.0,
+  "config": {
+    "language": "javascript",
+    "stack": "express",
+    "models": {
+      "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+    },
+    "prompt_strategy": "baseline",
+    "agents": {
+      "spec": true,
+      "dependency": true,
+      "planning": true,
+      "proof": true,
+      "code": true,
+      "test": true,
+      "certify": true,
+      "recovery": false,
+      "compile_repair": false
+    },
+    "run_dependency": true,
+    "run_test": true,
+    "run_recovery": false,
+    "test_sees_code": false,
+    "raw_spec_only": false,
+    "certify": true,
+    "samples": 1,
+    "k_values": [
+      1
+    ],
+    "prove": true,
+    "prove_target": "py",
+    "max_cert_loops": 0,
+    "max_compile_repair_loops": 2,
+    "temperature": 0.0,
+    "cert_temperature": 0.4,
+    "case_timeout": 10.0,
+    "prove_rounds": 6,
+    "llm_deps": true,
+    "baseline": false,
+    "reuse_from": "",
+    "reuse_stages": [],
+    "oracle_tests": ""
+  },
+  "stages": [
+    {
+      "name": "spec_parse",
+      "seconds": 0.001,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    },
+    {
+      "name": "spec_contracts",
+      "seconds": 1.917,
+      "input_tokens": 1929,
+      "output_tokens": 211,
+      "calls": 2
+    },
+    {
+      "name": "dependency",
+      "seconds": 0.001,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    },
+    {
+      "name": "planning",
+      "seconds": 3.576,
+      "input_tokens": 4868,
+      "output_tokens": 399,
+      "calls": 2
+    },
+    {
+      "name": "scaffold",
+      "seconds": 0.001,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    },
+    {
+      "name": "dafny",
+      "seconds": 33.563,
+      "input_tokens": 24571,
+      "output_tokens": 2356,
+      "calls": 7
+    },
+    {
+      "name": "compile",
+      "seconds": 1.11,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    },
+    {
+      "name": "code",
+      "seconds": 3.522,
+      "input_tokens": 2193,
+      "output_tokens": 390,
+      "calls": 2
+    },
+    {
+      "name": "test",
+      "seconds": 15.045,
+      "input_tokens": 3520,
+      "output_tokens": 1730,
+      "calls": 2
+    },
+    {
+      "name": "certification",
+      "seconds": 0.175,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    }
+  ],
+  "code": {
+    "language": "JavaScript",
+    "files": 2,
+    "lines_of_code": 42,
+    "files_per_layer": {
+      "controller": 2
+    },
+    "imports": [],
+    "third_party_libraries": []
+  },
+  "tests": {
+    "features": 2,
+    "cases": 8
+  },
+  "dafny": {
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "n_features": 2,
+    "n_verified": 1,
+    "n_proved_with_axioms": 0,
+    "verification_rate": 0.5,
+    "features": [
+      {
+        "feature_id": "3.1",
+        "module": "F3_1",
+        "verified": false,
+        "rounds": 6,
+        "axioms": 0
+      },
+      {
+        "feature_id": "3.2",
+        "module": "F3_2",
+        "verified": true,
+        "rounds": 1,
+        "axioms": 0
+      }
+    ]
+  },
+  "compile": {
+    "target": "py",
+    "compiled": [
+      {
+        "feature_id": "3.2",
+        "target": "py",
+        "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_crosslang/human/javascript/reference_rep1/generated/Human/dafny_proof/out/F3_2-py"
+      }
+    ],
+    "failed": [
+      {
+        "feature_id": "3.1",
+        "reason": "dafny not verified"
+      }
+    ]
+  },
+  "certification": {
+    "n": 1,
+    "k_values": [
+      1
+    ],
+    "aggregate_pass_at": {
+      "pass@1": 0.0
+    },
+    "aggregate_case_pass_rate": 0.75,
+    "n_tested_frs": 1,
+    "n_proved_features": 1,
+    "n_total_tested_features": 1,
+    "pass_at_1_fr_ids": []
+  }
+}

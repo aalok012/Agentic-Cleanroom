@@ -1,0 +1,1087 @@
+{
+  "project_name": "Shoten_SRS",
+  "source_file": "Shoten_SRS.xml",
+  "features": [
+    {
+      "id": "4.1",
+      "name": "Account Registration",
+      "description": "Account Registration",
+      "functional_requirements": [
+        {
+          "id": "4.1.REQ-1",
+          "text": "The system shall allow a non-registered user to create a secure account."
+        },
+        {
+          "id": "4.1.REQ-2",
+          "text": "The system shall require the following information from the user: Name, Institute Roll Number (in case of Students only),Shop ID(In case of Bookstores) , Mobile Number , Email ID."
+        },
+        {
+          "id": "4.1.REQ-3",
+          "text": "The system shall assign the user a username and ask for a password."
+        },
+        {
+          "id": "4.1.REQ-4",
+          "text": "The system shall con\ufb01rm the password is acceptable."
+        },
+        {
+          "id": "4.1.REQ-5",
+          "text": "The system shall store the information in the database."
+        }
+      ],
+      "fr_order": [
+        "4.1.REQ-1",
+        "4.1.REQ-2",
+        "4.1.REQ-3",
+        "4.1.REQ-4",
+        "4.1.REQ-5"
+      ],
+      "fr_edges": [
+        {
+          "source": "4.1.REQ-5",
+          "target": "4.1.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.1.REQ-5",
+          "target": "4.1.REQ-2",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.1.REQ-5",
+          "target": "4.1.REQ-3",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.1.REQ-5",
+          "target": "4.1.REQ-4",
+          "reason": "Inferred prerequisite (semantic)"
+        }
+      ],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.2",
+      "name": "Account Login",
+      "description": "Account Login",
+      "functional_requirements": [
+        {
+          "id": "4.2.REQ-1",
+          "text": "The system shall allow a registered user to log-in to their account."
+        },
+        {
+          "id": "4.2.REQ-2",
+          "text": "The system shall require a username and password from the user."
+        },
+        {
+          "id": "4.2.REQ-3",
+          "text": "The system will verify the username and password, and the user will be considered \u201clogged-in\u201d."
+        }
+      ],
+      "fr_order": [
+        "4.2.REQ-1",
+        "4.2.REQ-2",
+        "4.2.REQ-3"
+      ],
+      "fr_edges": [
+        {
+          "source": "4.2.REQ-3",
+          "target": "4.2.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.2.REQ-3",
+          "target": "4.2.REQ-2",
+          "reason": "Inferred prerequisite (semantic)"
+        }
+      ],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.3",
+      "name": "Search",
+      "description": "Search",
+      "functional_requirements": [
+        {
+          "id": "4.3.REQ-1",
+          "text": "The users can search for the book of their choice as well as a print shop."
+        }
+      ],
+      "fr_order": [
+        "4.3.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.3.1",
+      "name": "Search a Book Stimulus: Click \"Search a Book\" Button",
+      "description": "Search a Book Stimulus: Click \"Search a Book\" Button",
+      "functional_requirements": [
+        {
+          "id": "4.3.1.REQ-1",
+          "text": "The system shall allow a user to search for books by title, author or ISBN number."
+        },
+        {
+          "id": "4.3.1.REQ-2",
+          "text": "The search results will include a list of matching books with picture of the front cover, along with the title, author, price, availability, and condition of the book."
+        }
+      ],
+      "fr_order": [
+        "4.3.1.REQ-1",
+        "4.3.1.REQ-2"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.3.2",
+      "name": "Search a Print Shop Stimulus: Click \"Search a Print Shop\" Button",
+      "description": "Search a Print Shop Stimulus: Click \"Search a Print Shop\" Button",
+      "functional_requirements": [
+        {
+          "id": "4.3.2.REQ-1",
+          "text": "The system shall allow a user to search for print shops."
+        },
+        {
+          "id": "4.3.2.REQ-2",
+          "text": "The search results will include a list of available print shops with there opening time , closing time and rates."
+        }
+      ],
+      "fr_order": [
+        "4.3.2.REQ-1",
+        "4.3.2.REQ-2"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.4",
+      "name": "Add to Shopping Cart",
+      "description": "Add to Shopping Cart",
+      "functional_requirements": [
+        {
+          "id": "4.4.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to temporarily save books that are being considered for purchase into a list associated with their account"
+        },
+        {
+          "id": "4.4.REQ-2",
+          "text": "When viewing the shopping cart list, the system shall display the total price of the books in the cart."
+        }
+      ],
+      "fr_order": [
+        "4.4.REQ-1",
+        "4.4.REQ-2"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.5",
+      "name": "Delete",
+      "description": "Delete",
+      "functional_requirements": [
+        {
+          "id": "4.5.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to remove any unwanted books from their shopping cart."
+        },
+        {
+          "id": "4.5.REQ-2",
+          "text": "The system shall provide the user a way to select one of the books in his/ her cart for deletion."
+        },
+        {
+          "id": "4.5.REQ-3",
+          "text": "After the user has indicated the particular book to be deleted from their shopping cart, the stored list representing the shopping cart should be updated by removing the list, and the display should be updated to show only the books remaining in the cart."
+        }
+      ],
+      "fr_order": [
+        "4.5.REQ-1",
+        "4.5.REQ-2",
+        "4.5.REQ-3"
+      ],
+      "fr_edges": [
+        {
+          "source": "4.5.REQ-3",
+          "target": "4.5.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.5.REQ-3",
+          "target": "4.5.REQ-2",
+          "reason": "Inferred prerequisite (semantic)"
+        }
+      ],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.6",
+      "name": "Rent",
+      "description": "Rent",
+      "functional_requirements": [
+        {
+          "id": "4.6.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to rent-out books that are in their shopping cart."
+        },
+        {
+          "id": "4.6.REQ-2",
+          "text": "The system shall prompt the user to enter time period for renting out the books in the cart."
+        },
+        {
+          "id": "4.6.REQ-3",
+          "text": "The system shall display rent charged for the period of rental and individual rent of the books in the shopping cart."
+        },
+        {
+          "id": "4.6.REQ-4",
+          "text": "The system shall allow the user to enter their delivery information."
+        },
+        {
+          "id": "4.6.REQ-5",
+          "text": "After a successful transaction user system shall prompt the user to enter their payment information."
+        },
+        {
+          "id": "4.6.REQ-6",
+          "text": "On a successful transaction the books (titles and prices and quantities) will be displayed to the screen."
+        }
+      ],
+      "fr_order": [
+        "4.6.REQ-1",
+        "4.6.REQ-2",
+        "4.6.REQ-3",
+        "4.6.REQ-4",
+        "4.6.REQ-5",
+        "4.6.REQ-6"
+      ],
+      "fr_edges": [
+        {
+          "source": "4.6.REQ-2",
+          "target": "4.6.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.6.REQ-3",
+          "target": "4.6.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.6.REQ-4",
+          "target": "4.6.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.6.REQ-5",
+          "target": "4.6.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.6.REQ-6",
+          "target": "4.6.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        }
+      ],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.7",
+      "name": "Purchase",
+      "description": "Purchase",
+      "functional_requirements": [
+        {
+          "id": "4.7.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to purchase books that are in their shopping cart."
+        },
+        {
+          "id": "4.7.REQ-2",
+          "text": "The system shall display total cost of the books in the shopping cart."
+        },
+        {
+          "id": "4.7.REQ-3",
+          "text": "The system shall allow the user to enter their delivery information."
+        },
+        {
+          "id": "4.7.REQ-4",
+          "text": "After a successful transaction user system shall prompt the user to enter their payment information."
+        },
+        {
+          "id": "4.7.REQ-5",
+          "text": "On a successful transaction the books (titles and prices and quantities) will be displayed to the screen."
+        }
+      ],
+      "fr_order": [
+        "4.7.REQ-2",
+        "4.7.REQ-1",
+        "4.7.REQ-3",
+        "4.7.REQ-4",
+        "4.7.REQ-5"
+      ],
+      "fr_edges": [
+        {
+          "source": "4.7.REQ-1",
+          "target": "4.7.REQ-2",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.7.REQ-4",
+          "target": "4.7.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.7.REQ-5",
+          "target": "4.7.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        }
+      ],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.8",
+      "name": "Print",
+      "description": "Print",
+      "functional_requirements": [
+        {
+          "id": "4.8.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to request a print from a chosen print shop."
+        },
+        {
+          "id": "4.8.REQ-2",
+          "text": "The system shall prompt the user to enter the url of the google drive link of the soft copy to be printed."
+        },
+        {
+          "id": "4.8.REQ-3",
+          "text": "The system shall display the total cost of printing the soft copy."
+        },
+        {
+          "id": "4.8.REQ-4",
+          "text": "The system shall allow the user to enter their delivery information."
+        },
+        {
+          "id": "4.8.REQ-5",
+          "text": "After a successful transaction user system shall prompt the user to enter their payment information."
+        },
+        {
+          "id": "4.8.REQ-6",
+          "text": "On a successful transaction the delivery status will the displayed."
+        }
+      ],
+      "fr_order": [
+        "4.8.REQ-1",
+        "4.8.REQ-2",
+        "4.8.REQ-3",
+        "4.8.REQ-4",
+        "4.8.REQ-5",
+        "4.8.REQ-6"
+      ],
+      "fr_edges": [
+        {
+          "source": "4.8.REQ-2",
+          "target": "4.8.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.8.REQ-3",
+          "target": "4.8.REQ-2",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.8.REQ-4",
+          "target": "4.8.REQ-3",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.8.REQ-5",
+          "target": "4.8.REQ-4",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.8.REQ-6",
+          "target": "4.8.REQ-5",
+          "reason": "Inferred prerequisite (semantic)"
+        }
+      ],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.9",
+      "name": "Add Book",
+      "description": "Add Book",
+      "functional_requirements": [
+        {
+          "id": "4.9.REQ-1",
+          "text": "The system shall allow a registered and logged-in user , bookstores and printing stores to add books they want to sell / print / rent-out."
+        },
+        {
+          "id": "4.9.REQ-2",
+          "text": "The user shall be prompted to \ufb01ll in a form with all details associated with the class \u2018Book\u2019 : name , quantity , options for lending or selling , ISBN number , author , price on rental basis , price for selling."
+        },
+        {
+          "id": "4.9.REQ-3",
+          "text": "The system shall allow the user to enter their payment acceptance details like bank account number , IFSC Code etc."
+        }
+      ],
+      "fr_order": [
+        "4.9.REQ-1",
+        "4.9.REQ-2",
+        "4.9.REQ-3"
+      ],
+      "fr_edges": [
+        {
+          "source": "4.9.REQ-2",
+          "target": "4.9.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.9.REQ-3",
+          "target": "4.9.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        }
+      ],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.10",
+      "name": "Request a Restock",
+      "description": "Request a Restock",
+      "functional_requirements": [
+        {
+          "id": "4.10.REQ-1",
+          "text": "The system shall allow a user to view various methods of contacting the sellers(bookstore ,printstore or the student sharing the book)."
+        },
+        {
+          "id": "4.10.REQ-2",
+          "text": "The system shall display the store address, telephone number, email address, and directions on how to get to the the sellers(bookstore ,printstore or the student sharing the book)."
+        },
+        {
+          "id": "4.10.REQ-3",
+          "text": "The system should also display a map showing the location of the bookstores and printing stores."
+        }
+      ],
+      "fr_order": [
+        "4.10.REQ-1",
+        "4.10.REQ-2",
+        "4.10.REQ-3"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.11",
+      "name": "Update Account Information",
+      "description": "Update Account Information",
+      "functional_requirements": [
+        {
+          "id": "4.11.REQ-1",
+          "text": "The system shall allow a user to update the information in their account."
+        },
+        {
+          "id": "4.11.REQ-2",
+          "text": "The user shall be allowed to view and change their name, mailing address, billing address, payment information."
+        },
+        {
+          "id": "4.11.REQ-3",
+          "text": "The user shall be able to change their password by entering the old one once, and a new one twice."
+        }
+      ],
+      "fr_order": [
+        "4.11.REQ-1",
+        "4.11.REQ-2",
+        "4.11.REQ-3"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.12",
+      "name": "View Delivery Status",
+      "description": "View Delivery Status",
+      "functional_requirements": [
+        {
+          "id": "4.12.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to view the shipping status of orders they have placed within the last 30 days."
+        },
+        {
+          "id": "4.12.REQ-2",
+          "text": "The user must enter a con\ufb01rmation number to view the shipping status of their order."
+        },
+        {
+          "id": "4.12.REQ-3",
+          "text": "The system shall then display the shipping date, mailing address, projected delivery date, and status (in transit, delivered, etc.)"
+        }
+      ],
+      "fr_order": [
+        "4.12.REQ-1",
+        "4.12.REQ-2",
+        "4.12.REQ-3"
+      ],
+      "fr_edges": [
+        {
+          "source": "4.12.REQ-2",
+          "target": "4.12.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.12.REQ-3",
+          "target": "4.12.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        }
+      ],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.13",
+      "name": "View Account Purchase History",
+      "description": "View Account Purchase History",
+      "functional_requirements": [
+        {
+          "id": "4.13.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to view purchases made with their account within the last two years."
+        },
+        {
+          "id": "4.13.REQ-2",
+          "text": "The system shall display the date of purchase, payment mode."
+        },
+        {
+          "id": "4.13.REQ-3",
+          "text": "The system shall display the title of the book, price, and quantity for each book purchased in a given order."
+        }
+      ],
+      "fr_order": [
+        "4.13.REQ-1",
+        "4.13.REQ-2",
+        "4.13.REQ-3"
+      ],
+      "fr_edges": [
+        {
+          "source": "4.13.REQ-2",
+          "target": "4.13.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        },
+        {
+          "source": "4.13.REQ-3",
+          "target": "4.13.REQ-1",
+          "reason": "Inferred prerequisite (semantic)"
+        }
+      ],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.14",
+      "name": "Account Logout",
+      "description": "Account Logout",
+      "functional_requirements": [
+        {
+          "id": "4.14.REQ-1",
+          "text": "The system shall allow the registered and logged-in user to exit his/her account, so that access to operations requiring a user to be logged in are now disabled."
+        }
+      ],
+      "fr_order": [
+        "4.14.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "4.15",
+      "name": "Help",
+      "description": "Help",
+      "functional_requirements": [
+        {
+          "id": "4.15.REQ-1",
+          "text": "The system shall allow the user to view an overview of how to use the various operations de\ufb01ned above."
+        },
+        {
+          "id": "4.15.REQ-2",
+          "text": "The system must allow the user to select one of the operations by name."
+        },
+        {
+          "id": "4.15.REQ-3",
+          "text": "The system shall then display information on how to use that operation."
+        }
+      ],
+      "fr_order": [
+        "4.15.REQ-1",
+        "4.15.REQ-2",
+        "4.15.REQ-3"
+      ],
+      "fr_edges": [
+        {
+          "source": "4.15.REQ-3",
+          "target": "4.15.REQ-2",
+          "reason": "Inferred prerequisite (semantic)"
+        }
+      ],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "4.1.REQ-1",
+      "feature_id": "4.1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a non-registered user to create a secure account.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.1.REQ-2",
+      "feature_id": "4.1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall require the following information from the user: Name, Institute Roll Number (in case of Students only),Shop ID(In case of Bookstores) , Mobile Number , Email ID.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.1.REQ-3",
+      "feature_id": "4.1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall assign the user a username and ask for a password.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.1.REQ-4",
+      "feature_id": "4.1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall con\ufb01rm the password is acceptable.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.1.REQ-5",
+      "feature_id": "4.1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall store the information in the database.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.2.REQ-1",
+      "feature_id": "4.2",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a registered user to log-in to their account.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.2.REQ-2",
+      "feature_id": "4.2",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall require a username and password from the user.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.2.REQ-3",
+      "feature_id": "4.2",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system will verify the username and password, and the user will be considered \u201clogged-in\u201d.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.3.REQ-1",
+      "feature_id": "4.3",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The users can search for the book of their choice as well as a print shop.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.3.1.REQ-1",
+      "feature_id": "4.3.1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a user to search for books by title, author or ISBN number.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.3.1.REQ-2",
+      "feature_id": "4.3.1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The search results will include a list of matching books with picture of the front cover, along with the title, author, price, availability, and condition of the book.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.3.2.REQ-1",
+      "feature_id": "4.3.2",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a user to search for print shops.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.3.2.REQ-2",
+      "feature_id": "4.3.2",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The search results will include a list of available print shops with there opening time , closing time and rates.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.4.REQ-1",
+      "feature_id": "4.4",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a registered and logged-in user to temporarily save books that are being considered for purchase into a list associated with their account",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.4.REQ-2",
+      "feature_id": "4.4",
+      "stimulus": "",
+      "precondition": "",
+      "response": "When viewing the shopping cart list, the system shall display the total price of the books in the cart.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.5.REQ-1",
+      "feature_id": "4.5",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a registered and logged-in user to remove any unwanted books from their shopping cart.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.5.REQ-2",
+      "feature_id": "4.5",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall provide the user a way to select one of the books in his/ her cart for deletion.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.5.REQ-3",
+      "feature_id": "4.5",
+      "stimulus": "",
+      "precondition": "",
+      "response": "After the user has indicated the particular book to be deleted from their shopping cart, the stored list representing the shopping cart should be updated by removing the list, and the display should be updated to show only the books remaining in the cart.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.6.REQ-1",
+      "feature_id": "4.6",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a registered and logged-in user to rent-out books that are in their shopping cart.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.6.REQ-2",
+      "feature_id": "4.6",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall prompt the user to enter time period for renting out the books in the cart.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.6.REQ-3",
+      "feature_id": "4.6",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall display rent charged for the period of rental and individual rent of the books in the shopping cart.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.6.REQ-4",
+      "feature_id": "4.6",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow the user to enter their delivery information.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.6.REQ-5",
+      "feature_id": "4.6",
+      "stimulus": "",
+      "precondition": "",
+      "response": "After a successful transaction user system shall prompt the user to enter their payment information.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.6.REQ-6",
+      "feature_id": "4.6",
+      "stimulus": "",
+      "precondition": "",
+      "response": "On a successful transaction the books (titles and prices and quantities) will be displayed to the screen.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.7.REQ-1",
+      "feature_id": "4.7",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a registered and logged-in user to purchase books that are in their shopping cart.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.7.REQ-2",
+      "feature_id": "4.7",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall display total cost of the books in the shopping cart.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.7.REQ-3",
+      "feature_id": "4.7",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow the user to enter their delivery information.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.7.REQ-4",
+      "feature_id": "4.7",
+      "stimulus": "",
+      "precondition": "",
+      "response": "After a successful transaction user system shall prompt the user to enter their payment information.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.7.REQ-5",
+      "feature_id": "4.7",
+      "stimulus": "",
+      "precondition": "",
+      "response": "On a successful transaction the books (titles and prices and quantities) will be displayed to the screen.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.8.REQ-1",
+      "feature_id": "4.8",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a registered and logged-in user to request a print from a chosen print shop.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.8.REQ-2",
+      "feature_id": "4.8",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall prompt the user to enter the url of the google drive link of the soft copy to be printed.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.8.REQ-3",
+      "feature_id": "4.8",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall display the total cost of printing the soft copy.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.8.REQ-4",
+      "feature_id": "4.8",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow the user to enter their delivery information.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.8.REQ-5",
+      "feature_id": "4.8",
+      "stimulus": "",
+      "precondition": "",
+      "response": "After a successful transaction user system shall prompt the user to enter their payment information.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.8.REQ-6",
+      "feature_id": "4.8",
+      "stimulus": "",
+      "precondition": "",
+      "response": "On a successful transaction the delivery status will the displayed.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.9.REQ-1",
+      "feature_id": "4.9",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a registered and logged-in user , bookstores and printing stores to add books they want to sell / print / rent-out.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.9.REQ-2",
+      "feature_id": "4.9",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The user shall be prompted to \ufb01ll in a form with all details associated with the class \u2018Book\u2019 : name , quantity , options for lending or selling , ISBN number , author , price on rental basis , price for selling.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.9.REQ-3",
+      "feature_id": "4.9",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow the user to enter their payment acceptance details like bank account number , IFSC Code etc.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.10.REQ-1",
+      "feature_id": "4.10",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a user to view various methods of contacting the sellers(bookstore ,printstore or the student sharing the book).",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.10.REQ-2",
+      "feature_id": "4.10",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall display the store address, telephone number, email address, and directions on how to get to the the sellers(bookstore ,printstore or the student sharing the book).",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.10.REQ-3",
+      "feature_id": "4.10",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system should also display a map showing the location of the bookstores and printing stores.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.11.REQ-1",
+      "feature_id": "4.11",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a user to update the information in their account.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.11.REQ-2",
+      "feature_id": "4.11",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The user shall be allowed to view and change their name, mailing address, billing address, payment information.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.11.REQ-3",
+      "feature_id": "4.11",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The user shall be able to change their password by entering the old one once, and a new one twice.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.12.REQ-1",
+      "feature_id": "4.12",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a registered and logged-in user to view the shipping status of orders they have placed within the last 30 days.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.12.REQ-2",
+      "feature_id": "4.12",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The user must enter a con\ufb01rmation number to view the shipping status of their order.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.12.REQ-3",
+      "feature_id": "4.12",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall then display the shipping date, mailing address, projected delivery date, and status (in transit, delivered, etc.)",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.13.REQ-1",
+      "feature_id": "4.13",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow a registered and logged-in user to view purchases made with their account within the last two years.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.13.REQ-2",
+      "feature_id": "4.13",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall display the date of purchase, payment mode.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.13.REQ-3",
+      "feature_id": "4.13",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall display the title of the book, price, and quantity for each book purchased in a given order.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.14.REQ-1",
+      "feature_id": "4.14",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow the registered and logged-in user to exit his/her account, so that access to operations requiring a user to be logged in are now disabled.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.15.REQ-1",
+      "feature_id": "4.15",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall allow the user to view an overview of how to use the various operations de\ufb01ned above.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.15.REQ-2",
+      "feature_id": "4.15",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system must allow the user to select one of the operations by name.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "4.15.REQ-3",
+      "feature_id": "4.15",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The system shall then display information on how to use that operation.",
+      "postcondition": ""
+    }
+  ],
+  "stack": "fastapi",
+  "language": "python",
+  "dependency_graph": {
+    "nodes": [
+      "4.1",
+      "4.2",
+      "4.3",
+      "4.4",
+      "4.5",
+      "4.6",
+      "4.7",
+      "4.8",
+      "4.9",
+      "4.10",
+      "4.11",
+      "4.12",
+      "4.13",
+      "4.14",
+      "4.15"
+    ],
+    "edges": [],
+    "build_order": [
+      "4.1",
+      "4.2",
+      "4.3",
+      "4.4",
+      "4.5",
+      "4.6",
+      "4.7",
+      "4.8",
+      "4.9",
+      "4.10",
+      "4.11",
+      "4.12",
+      "4.13",
+      "4.14",
+      "4.15"
+    ],
+    "cycles": []
+  }
+}

@@ -1,0 +1,241 @@
+{
+  "completed": [
+    "spec",
+    "dependency",
+    "planning"
+  ],
+  "ir": {
+    "project_name": "Human",
+    "source_file": "Human.xml",
+    "features": [
+      {
+        "id": "3.1",
+        "name": "Proposing an Event",
+        "description": "To allow coordinators/heads of various clubs to propose the organization of events. [cite: 160] This is handled by Club Coordinators/Heads. [cite: 159]",
+        "functional_requirements": [
+          {
+            "id": "3.1.REQ-1",
+            "text": "While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]"
+          }
+        ],
+        "fr_order": [
+          "3.1.REQ-1"
+        ],
+        "fr_edges": [],
+        "fr_cycles": []
+      },
+      {
+        "id": "3.2",
+        "name": "Registering for Events",
+        "description": "To allow users to register for upcoming events. [cite: 114] This involves student actors. [cite: 112]",
+        "functional_requirements": [
+          {
+            "id": "3.2.REQ-1",
+            "text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]"
+          }
+        ],
+        "fr_order": [
+          "3.2.REQ-1"
+        ],
+        "fr_edges": [],
+        "fr_cycles": []
+      }
+    ],
+    "contracts": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "stimulus": "User initiates the process of editing event details and registration requirements for an event they are applying for",
+        "precondition": "none",
+        "response": "System allows the user to modify the event details and registration requirements",
+        "postcondition": "The modifications made by the user are applied to the event being applied for, and the updated information reflects in the system"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "stimulus": "User attempts to register for an event without being authenticated",
+        "precondition": "User is not currently logged into the system",
+        "response": "System prompts the user to log in before proceeding with event registration",
+        "postcondition": "The user is directed to the login interface and must successfully authenticate before continuing with the registration process"
+      }
+    ],
+    "stack": "spring",
+    "language": "java",
+    "dependency_graph": {
+      "nodes": [
+        "3.1",
+        "3.2"
+      ],
+      "edges": [],
+      "build_order": [
+        "3.1",
+        "3.2"
+      ],
+      "cycles": []
+    },
+    "planning": {
+      "contracts": [
+        {
+          "fr_id": "3.1.REQ-1",
+          "feature_id": "3.1",
+          "signature": "def edit_event_details_and_registration(event_id: str, updated_details: dict, updated_registration_requirements: dict) -> bool:",
+          "docstring": "System allows the user to modify the event details and registration requirements.\n\nArgs:\n    event_id: Unique identifier for the event being edited\n    updated_details: Dictionary containing updated event details such as title, description, date, time, location\n    updated_registration_requirements: Dictionary containing updated registration requirements such as age limits, prerequisites, etc.\n\nReturns:\n    True if the event details and registration requirements were successfully updated, False otherwise\n\nNotes:\n    Postcondition: The modifications made by the user are applied to the event being applied for, and the updated information reflects in the system",
+          "mvc_layer": "controller",
+          "file_path": "controllers/edit_event_details_and_registration.py",
+          "prerequisite_fr_ids": [],
+          "contract": {
+            "fr_id": "3.1.REQ-1",
+            "feature_id": "3.1",
+            "stimulus": "User initiates the process of editing event details and registration requirements for an event they are applying for",
+            "precondition": "none",
+            "response": "System allows the user to modify the event details and registration requirements",
+            "postcondition": "The modifications made by the user are applied to the event being applied for, and the updated information reflects in the system"
+          },
+          "example_inputs_json": "{\"event_id\":\"evt-12345\",\"updated_details\":{\"title\":\"Updated Workshop\",\"description\":\"An updated workshop description\"},\"updated_registration_requirements\":{\"age_limit\":18,\"prerequisites\":[\"Basic Knowledge\"]}}",
+          "expected_return_json": "true",
+          "error_mode": "raise",
+          "failure_inputs_json": "{\"event_id\":\"\",\"updated_details\":{},\"updated_registration_requirements\":{}}",
+          "entity_identifier": "event_id"
+        },
+        {
+          "fr_id": "3.2.REQ-1",
+          "feature_id": "3.2",
+          "signature": "def prompt_user_to_log_in() -> None:",
+          "docstring": "System prompts the user to log in before proceeding with event registration.\n\nReturns:\n    System prompts the user to log in before proceeding with event registration\n\nRaises:\n    ValueError: If the precondition is violated (User is not currently logged into the system).\n\nNotes:\n    Precondition: User is not currently logged into the system\n    Postcondition: The user is directed to the login interface and must successfully authenticate before continuing with the registration process",
+          "mvc_layer": "controller",
+          "file_path": "controllers/prompt_user_to_log_in.py",
+          "prerequisite_fr_ids": [],
+          "contract": {
+            "fr_id": "3.2.REQ-1",
+            "feature_id": "3.2",
+            "stimulus": "User attempts to register for an event without being authenticated",
+            "precondition": "User is not currently logged into the system",
+            "response": "System prompts the user to log in before proceeding with event registration",
+            "postcondition": "The user is directed to the login interface and must successfully authenticate before continuing with the registration process"
+          },
+          "example_inputs_json": "{}",
+          "expected_return_json": "null",
+          "error_mode": "raise",
+          "failure_inputs_json": "",
+          "entity_identifier": ""
+        }
+      ],
+      "notes": []
+    }
+  },
+  "metrics": {
+    "srs": "Human.xml",
+    "stack": "spring",
+    "language": "java",
+    "stages": [
+      {
+        "name": "spec_parse",
+        "seconds": 0.001,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "spec_contracts",
+        "seconds": 1.926,
+        "input_tokens": 1929,
+        "output_tokens": 211,
+        "calls": 2
+      },
+      {
+        "name": "dependency",
+        "seconds": 0.001,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "planning",
+        "seconds": 3.689,
+        "input_tokens": 4868,
+        "output_tokens": 411,
+        "calls": 2
+      }
+    ],
+    "config": {
+      "language": "java",
+      "stack": "spring",
+      "models": {
+        "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+      },
+      "prompt_strategy": "baseline",
+      "agents": {
+        "spec": true,
+        "dependency": true,
+        "planning": true,
+        "proof": true,
+        "code": true,
+        "test": true,
+        "certify": true,
+        "recovery": false,
+        "compile_repair": true
+      },
+      "run_dependency": true,
+      "run_test": true,
+      "run_recovery": false,
+      "test_sees_code": false,
+      "raw_spec_only": false,
+      "certify": true,
+      "samples": 1,
+      "k_values": [
+        1
+      ],
+      "prove": true,
+      "prove_target": "java",
+      "max_cert_loops": 0,
+      "max_compile_repair_loops": 2,
+      "temperature": 0.0,
+      "cert_temperature": 0.4,
+      "case_timeout": 10.0,
+      "prove_rounds": 6,
+      "llm_deps": true,
+      "baseline": false,
+      "reuse_from": "",
+      "reuse_stages": [],
+      "oracle_tests": ""
+    }
+  },
+  "global_metrics": {
+    "input_tokens": 6797,
+    "output_tokens": 622,
+    "latency_ms": 5512.132551055402,
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "calls": [
+      {
+        "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "input_tokens": 954,
+        "output_tokens": 109,
+        "latency_ms": 988.7280700495467
+      },
+      {
+        "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "input_tokens": 975,
+        "output_tokens": 102,
+        "latency_ms": 894.4334490224719
+      },
+      {
+        "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "input_tokens": 2427,
+        "output_tokens": 300,
+        "latency_ms": 2621.2413540342823
+      },
+      {
+        "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "input_tokens": 2441,
+        "output_tokens": 111,
+        "latency_ms": 1007.7296779491007
+      }
+    ]
+  }
+}

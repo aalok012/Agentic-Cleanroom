@@ -1,0 +1,141 @@
+{
+  "project_name": "2009 - video search",
+  "source_file": "2009 - video search.xml",
+  "features": [
+    {
+      "id": "3.1.REQ-1",
+      "name": "Torrent Search: 3.1.REQ-1",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-1",
+          "text": "Torrent search will share the same search bar with the streaming search."
+        }
+      ]
+    },
+    {
+      "id": "3.1.REQ-2",
+      "name": "Torrent Search: 3.1.REQ-2",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-2",
+          "text": "Database of torrent sites can be updated via the internet."
+        }
+      ]
+    },
+    {
+      "id": "3.1.REQ-3",
+      "name": "Torrent Search: 3.1.REQ-3",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-3",
+          "text": "There will be a tick box to allow the user to choose to include torrent searching in the search."
+        }
+      ]
+    },
+    {
+      "id": "3.1.REQ-4",
+      "name": "Torrent Search: 3.1.REQ-4",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-4",
+          "text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself."
+        }
+      ]
+    },
+    {
+      "id": "3.1.REQ-5",
+      "name": "Torrent Search: 3.1.REQ-5",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-5",
+          "text": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d"
+        }
+      ]
+    },
+    {
+      "id": "3.1.REQ-6",
+      "name": "Torrent Search: 3.1.REQ-6",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-6",
+          "text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers."
+        }
+      ]
+    },
+    {
+      "id": "3.1.REQ-7",
+      "name": "Torrent Search: 3.1.REQ-7",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-7",
+          "text": "There will be page button for the user to navigate the results."
+        }
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.1.REQ-1",
+      "feature_id": "3.1.REQ-1",
+      "stimulus": "User types a query string into the shared search bar",
+      "precondition": "none",
+      "response": "The system processes the query string and returns search results relevant to the query from both torrent and streaming sources",
+      "postcondition": "The search results displayed reflect the query entered by the user and include items from both torrent and streaming databases"
+    },
+    {
+      "fr_id": "3.1.REQ-2",
+      "feature_id": "3.1.REQ-2",
+      "stimulus": "An internet connection is established and a request to update the database of torrent sites is initiated",
+      "precondition": "none",
+      "response": "The database of torrent sites is updated with the latest information retrieved from the internet",
+      "postcondition": "The database contains the most recent information regarding torrent sites obtained through internet connectivity"
+    },
+    {
+      "fr_id": "3.1.REQ-3",
+      "feature_id": "3.1.REQ-3",
+      "stimulus": "The user interacts with a tick box UI element to enable or disable torrent searching functionality.",
+      "precondition": "none",
+      "response": "The system updates the search configuration to reflect whether torrent searching is enabled or disabled based on the tick box state.",
+      "postcondition": "The search configuration accurately reflects the user's selection such that if the tick box is checked, torrent searching is included in the search, and if unchecked, it is excluded."
+    },
+    {
+      "fr_id": "3.1.REQ-4",
+      "feature_id": "3.1.REQ-4",
+      "stimulus": "A search query for a torrent file",
+      "precondition": "none",
+      "response": "The number of seeders, the number of leechers, the size of the file, the date it was posted, and a hyperlink to the torrent's webpage",
+      "postcondition": "The response contains accurate information corresponding to the search query, specifically detailing the torrent's seeding statistics, file size, posting date, and a valid link to the source webpage"
+    },
+    {
+      "fr_id": "3.1.REQ-5",
+      "feature_id": "3.1.REQ-5",
+      "stimulus": "A search operation is performed with no matching results",
+      "precondition": "none",
+      "response": "Display the message \"No results were found for this search.\"",
+      "postcondition": "The message \"No results were found for this search.\" is shown to the user as a result of the search operation"
+    },
+    {
+      "fr_id": "3.1.REQ-6",
+      "feature_id": "3.1.REQ-6",
+      "stimulus": "User clicks on a column header (size, date, or alphabetical) in the torrent search results table.",
+      "precondition": "none",
+      "response": "The torrent search results table is reordered according to the selected column header (size, date, or alphabetical).",
+      "postcondition": "The order of the torrent search results reflects the sorting criteria associated with the clicked column header, and the visual representation of the table updates accordingly."
+    },
+    {
+      "fr_id": "3.1.REQ-7",
+      "feature_id": "3.1.REQ-7",
+      "stimulus": "User clicks a page button in the torrent search results interface",
+      "precondition": "none",
+      "response": "The system displays the next set of search results corresponding to the selected page number",
+      "postcondition": "The displayed search results are consistent with the requested page number and the original search query"
+    }
+  ]
+}

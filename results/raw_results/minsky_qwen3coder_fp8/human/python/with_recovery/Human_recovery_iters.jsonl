@@ -1,0 +1,1 @@
+{"loop": 1, "dafny_rounds": 6, "code_temp": 0.4, "targeted": ["3.2"], "reproved": ["3.2"], "still_failing": [], "pass_at_1": 0.0, "pass_at": {"pass@1": 0.0}, "case_pass_rate": 0.0, "proved_frs": 2, "certified_frs": 2, "total_frs": 2, "passver_at_1": 1.0}

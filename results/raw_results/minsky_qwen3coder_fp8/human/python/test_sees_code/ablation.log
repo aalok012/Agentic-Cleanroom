@@ -1,0 +1,121 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=on certify=on recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+  [REUSE] stages ['spec', 'dependency', 'planning', 'proof', 'code'] taken from /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep1/Human_full_ir.json
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  [skip — resumed] Human: 2 feature(s), FR=2, stack=fastapi
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  [skip — resumed] dependency graph loaded from checkpoint.
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  [skip — resumed] planning loaded: 2 contract(s).
+
+======================================================================
+  [4a]  Dafny Proof Agent — [skip — resumed]
+======================================================================
+  proved 1, compiled 1; dafny project re-scaffolded at /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/test_sees_code/generated/Human/dafny_proof
+
+======================================================================
+  [4]  Code Agent — [skip — resumed]
+======================================================================
+  loaded 2 generated file(s) from checkpoint (packaged app already on disk).
+
+======================================================================
+  [5]  Test Agent — deriving black-box tests from the spec
+======================================================================
+  ⏱  done in 21.92s  ·  7,530 tokens, 2 call(s)
+2 feature(s), 9 test case(s).
+Wrote 2 pytest module(s) to /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/test_sees_code/generated/Human/tests
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples) · skipping 1 proved
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.1] Proposing an Event
+    FR  [3.1.REQ-1] While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]
+
+[3.2] Registering for Events
+    FR  [3.2.REQ-1] If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. …
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.2.REQ-1    sample=0  Anchor case: User attempts to register for an event without…
+  [FAIL] 3.2.REQ-1    sample=0  Independent case: User is logged in, should still get the l…
+  [FAIL] 3.2.REQ-1    sample=0  Independent case: User is not logged in, should get login p…
+  [FAIL] 3.2.REQ-1    sample=0  Independent case: No user exists in the system
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Anchor case: User attempts to register for an event without being authenticated
+  inputs:   User attempts to register for an event without being logged in
+  expected: System prompts the user to log in before proceeding with event registration
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Independent case: User is logged in, should still get the login prompt
+  inputs:   User is logged in but tries to register for an event
+  expected: System prompts the user to log in before proceeding with event registration
+  reason:   setup step 0 (/controllers/prompt_user_to_log_in) failed: HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Independent case: User is not logged in, should get login prompt
+  inputs:   User is not logged in and attempts to register for an event
+  expected: System prompts the user to log in before proceeding with event registration
+  reason:   setup step 0 (/controllers/prompt_user_to_log_in) failed: HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Independent case: No user exists in the system
+  inputs:   No user exists in the system and user attempts to register for an event
+  expected: System prompts the user to log in before proceeding with event registration
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+======================================================================
+  SUMMARY: 0 passed / 4 failed / 4 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+  ⏱  done in 3.47s
+  pass@1: 0.000  (over 1 un-proved FR(s))
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.5000
+  test_case_pass_ratio        :       0.0000
+  PassVer@1                   :       0.5000
+  avg_verification_iteration  :         6.00
+  avg_test_iteration          :         1.00
+  avg_input_token             :       2509.0
+  avg_output_token            :       1256.0
+  total_time                  :       25.39s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/test_sees_code/Human_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/test_sees_code/Human_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/test_sees_code/runs/20261018-090003-human.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/test_sees_code/runs/20261018-090003-human.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : test=21.9s   certification=3.5s
+Time      : 25.39s   Tokens: 7,530   Cost: $0.0000

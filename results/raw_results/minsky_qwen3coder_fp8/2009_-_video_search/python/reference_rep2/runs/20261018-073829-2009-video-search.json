@@ -1,0 +1,301 @@
+{
+  "run_id": "20261018-073829-2009-video-search",
+  "timestamp_utc": "2026-10-18T07:38:29.783481+00:00",
+  "status": "complete",
+  "srs": "2009 - video search.xml",
+  "stack": "fastapi",
+  "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+  "total_seconds": 289.12,
+  "tokens": {
+    "input": 166645,
+    "output": 25162,
+    "total": 191807,
+    "calls": 60
+  },
+  "cost_usd": 0.0,
+  "config": {
+    "language": "python",
+    "stack": "fastapi",
+    "models": {
+      "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+    },
+    "prompt_strategy": "baseline",
+    "agents": {
+      "spec": true,
+      "dependency": true,
+      "planning": true,
+      "proof": true,
+      "code": true,
+      "test": true,
+      "certify": true,
+      "recovery": false,
+      "compile_repair": false
+    },
+    "run_dependency": true,
+    "run_test": true,
+    "run_recovery": false,
+    "test_sees_code": false,
+    "raw_spec_only": false,
+    "certify": true,
+    "samples": 1,
+    "k_values": [
+      1
+    ],
+    "prove": true,
+    "prove_target": "py",
+    "max_cert_loops": 0,
+    "max_compile_repair_loops": 2,
+    "temperature": 0.0,
+    "cert_temperature": 0.4,
+    "case_timeout": 10.0,
+    "prove_rounds": 6,
+    "llm_deps": true,
+    "baseline": false,
+    "reuse_from": "",
+    "reuse_stages": [],
+    "oracle_tests": ""
+  },
+  "stages": [
+    {
+      "name": "spec_parse",
+      "seconds": 0.001,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    },
+    {
+      "name": "spec_contracts",
+      "seconds": 6.7,
+      "input_tokens": 6696,
+      "output_tokens": 751,
+      "calls": 7
+    },
+    {
+      "name": "dependency",
+      "seconds": 0.001,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    },
+    {
+      "name": "planning",
+      "seconds": 13.316,
+      "input_tokens": 17251,
+      "output_tokens": 1495,
+      "calls": 7
+    },
+    {
+      "name": "scaffold",
+      "seconds": 0.001,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    },
+    {
+      "name": "dafny",
+      "seconds": 168.542,
+      "input_tokens": 118960,
+      "output_tokens": 13513,
+      "calls": 32
+    },
+    {
+      "name": "compile",
+      "seconds": 1.566,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    },
+    {
+      "name": "adapter",
+      "seconds": 5.075,
+      "input_tokens": 1561,
+      "output_tokens": 588,
+      "calls": 1
+    },
+    {
+      "name": "adapter",
+      "seconds": 4.699,
+      "input_tokens": 1538,
+      "output_tokens": 540,
+      "calls": 1
+    },
+    {
+      "name": "code",
+      "seconds": 18.9,
+      "input_tokens": 6076,
+      "output_tokens": 2165,
+      "calls": 5
+    },
+    {
+      "name": "test",
+      "seconds": 53.24,
+      "input_tokens": 14563,
+      "output_tokens": 6110,
+      "calls": 7
+    },
+    {
+      "name": "certification",
+      "seconds": 17.079,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    }
+  ],
+  "code": {
+    "language": "Python",
+    "files": 7,
+    "lines_of_code": 367,
+    "files_per_layer": {
+      "controller": 4,
+      "model": 1,
+      "view": 2
+    },
+    "imports": [
+      "F3__1__REQ__3Domain",
+      "F3__1__REQ__5Domain",
+      "app",
+      "dafny_marshal",
+      "fastapi",
+      "json",
+      "os",
+      "sqlalchemy",
+      "sys"
+    ],
+    "third_party_libraries": [
+      "F3__1__REQ__3Domain",
+      "F3__1__REQ__5Domain",
+      "app",
+      "dafny_marshal",
+      "fastapi",
+      "sqlalchemy"
+    ],
+    "runnable_app": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/generated/2009 - video search/app",
+    "dafny_cores": {
+      "cores_dir": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/generated/2009 - video search/app/dafny_cores",
+      "staged": [
+        "F3_1_REQ_3",
+        "F3_1_REQ_5"
+      ],
+      "missing": []
+    }
+  },
+  "tests": {
+    "features": 7,
+    "cases": 27
+  },
+  "dafny": {
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "n_features": 7,
+    "n_verified": 2,
+    "n_proved_with_axioms": 0,
+    "verification_rate": 0.286,
+    "features": [
+      {
+        "feature_id": "3.1.REQ-1",
+        "module": "F3_1_REQ_1",
+        "verified": false,
+        "rounds": 6,
+        "axioms": 0
+      },
+      {
+        "feature_id": "3.1.REQ-2",
+        "module": "F3_1_REQ_2",
+        "verified": false,
+        "rounds": 6,
+        "axioms": 0
+      },
+      {
+        "feature_id": "3.1.REQ-3",
+        "module": "F3_1_REQ_3",
+        "verified": true,
+        "rounds": 1,
+        "axioms": 0
+      },
+      {
+        "feature_id": "3.1.REQ-4",
+        "module": "F3_1_REQ_4",
+        "verified": false,
+        "rounds": 6,
+        "axioms": 0
+      },
+      {
+        "feature_id": "3.1.REQ-5",
+        "module": "F3_1_REQ_5",
+        "verified": true,
+        "rounds": 1,
+        "axioms": 0
+      },
+      {
+        "feature_id": "3.1.REQ-6",
+        "module": "F3_1_REQ_6",
+        "verified": false,
+        "rounds": 6,
+        "axioms": 0
+      },
+      {
+        "feature_id": "3.1.REQ-7",
+        "module": "F3_1_REQ_7",
+        "verified": false,
+        "rounds": 6,
+        "axioms": 0
+      }
+    ]
+  },
+  "compile": {
+    "target": "py",
+    "compiled": [
+      {
+        "feature_id": "3.1.REQ-3",
+        "target": "py",
+        "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/generated/2009 - video search/dafny_proof/out/F3_1_REQ_3-py"
+      },
+      {
+        "feature_id": "3.1.REQ-5",
+        "target": "py",
+        "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/generated/2009 - video search/dafny_proof/out/F3_1_REQ_5-py"
+      }
+    ],
+    "failed": [
+      {
+        "feature_id": "3.1.REQ-1",
+        "reason": "dafny not verified"
+      },
+      {
+        "feature_id": "3.1.REQ-2",
+        "reason": "dafny not verified"
+      },
+      {
+        "feature_id": "3.1.REQ-4",
+        "reason": "dafny not verified"
+      },
+      {
+        "feature_id": "3.1.REQ-6",
+        "reason": "dafny not verified"
+      },
+      {
+        "feature_id": "3.1.REQ-7",
+        "reason": "dafny not verified"
+      }
+    ]
+  },
+  "certification": {
+    "n": 1,
+    "k_values": [
+      1
+    ],
+    "aggregate_pass_at": {
+      "pass@1": 0.0
+    },
+    "aggregate_case_pass_rate": 0.0,
+    "n_tested_frs": 5,
+    "n_proved_features": 2,
+    "n_total_tested_features": 5,
+    "pass_at_1_fr_ids": []
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "3.1.REQ-1": {
+    "sig": "a1ecd59ce37e5697a3c710704e908a41bc2d2096799fca6814890d74aaa24882",
+    "data": {
+      "feature_id": "3.1.REQ-1",
+      "module": "F3_1_REQ_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_1Domain refines Domain {\n  type Model = (string, set<string>, set<string>)\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    var (q, t, s) := m;\n    q == \"\" || q != \"\"\n  }\n\n  function Init(): Model {\n    (\"\", {}, {})\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(q) => \n      var (oldQuery, torrents, streams) := m;\n      (q, torrents, streams)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchResultsAccurate(m: Model, a: Action)\n    ensures (match a\n             case Search(q) => \n               var (query, torrents, streams) := Apply(m, a);\n               query == q\n             case _ => true)\n  {\n  }\n}\n\nmodule F3_1_REQ_1Kernel refines Kernel {\n  import D = F3_1_REQ_1Domain\n}",
+      "verified": true,
+      "rounds": 4,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-2": {
+    "sig": "dd8cbaa3d462c9d083c041cb79bf686b6a2bafa8aa6b8281d8fd394e21ae3eb9",
+    "data": {
+      "feature_id": "3.1.REQ-2",
+      "module": "F3_1_REQ_2",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_2Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = UpdateDB\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case UpdateDB => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma UpdateDBEnsures(m: Model)\n    ensures Apply(m, UpdateDB) == m\n  {\n  }\n}\n\nmodule F3_1_REQ_2Kernel refines Kernel {\n  import D = F3_1_REQ_2Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-3": {
+    "sig": "cfd7c0fa2c4e6c025e6dc142b6ea1d7095e385e3c5b3016ec968a55820ff9ddd",
+    "data": {
+      "feature_id": "3.1.REQ-3",
+      "module": "F3_1_REQ_3",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_3Domain refines Domain {\n  type Model = bool\n\n  datatype Action = ToggleTorrentSearch\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    false\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case ToggleTorrentSearch => !m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma ToggleTorrentSearchEnsures(m: Model)\n    ensures Apply(m, ToggleTorrentSearch) == !m\n  {\n  }\n}\n\nmodule F3_1_REQ_3Kernel refines Kernel {\n  import D = F3_1_REQ_3Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-4": {
+    "sig": "370f0717d1428857e6e585edfdf7f935609e106a76c4aa4079c5c583361b9a35",
+    "data": {
+      "feature_id": "3.1.REQ-4",
+      "module": "F3_1_REQ_4",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_4Domain refines Domain {\n  type Model = map<string, TorrentResult>\n\n  datatype Action = Search(query: string)\n\n  datatype TorrentResult = TorrentResult(\n    seeds: int,\n    peers: int,\n    fileSize: int,\n    datePosted: string,\n    url: string\n  )\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m :: \n      m[k].seeds >= 0 && \n      m[k].peers >= 0 && \n      m[k].fileSize >= 0 &&\n      m[k].datePosted != \"\" &&\n      m[k].url != \"\"\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(query) => \n      // Simulate search results by creating mock data\n      // In a real system, this would query a torrent database\n      if query == \"test\" then\n        m[\"test_torrent\"] := TorrentResult(10, 5, 1024, \"2023-01-01\", \"http://example.com/test\")\n      else if query == \"movie\" then\n        m[\"movie_torrent\"] := TorrentResult(100, 25, 1024000, \"2023-01-02\", \"http://example.com/movie\")\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchEnsuresCorrectMetadata(m: Model, query: string)\n    ensures forall k | k in Apply(m, Search(query)) :: \n      Apply(m, Search(query))[k].seeds >= 0 &&\n      Apply(m, Search(query))[k].peers >= 0 &&\n      Apply(m, Search(query))[k].fileSize >= 0 &&\n      Apply(m, Search(query))[k].datePosted != \"\" &&\n      Apply(m, Search(query))[k].url != \"\"\n  {\n  }\n}\n\nmodule F3_1_REQ_4Kernel refines Kernel {\n  import D = F3_1_REQ_4Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 35,
+          "col": 26,
+          "message": "else expected"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-5": {
+    "sig": "aac3a1feaa5e7ac9550111ffdbffce176ffbbe66677df2c22aeb9de86101f381",
+    "data": {
+      "feature_id": "3.1.REQ-5",
+      "module": "F3_1_REQ_5",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_5Domain refines Domain {\n  type Model = string\n\n  datatype Action = SearchNoResults\n\n  ghost predicate Inv(m: Model) {\n    m == \"No results were found for this search.\" || m == \"\"\n  }\n\n  function Init(): Model {\n    \"\"\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case SearchNoResults => \"No results were found for this search.\"\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchNoResultsShowsMessage(m: Model)\n    requires Inv(m)\n    ensures Apply(m, SearchNoResults) == \"No results were found for this search.\"\n  {\n  }\n}\n\nmodule F3_1_REQ_5Kernel refines Kernel {\n  import D = F3_1_REQ_5Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-6": {
+    "sig": "07ffbdc90f6a50638af02a8cb497b3c541c67e0162e8cede2f21c1a24ee6fc27",
+    "data": {
+      "feature_id": "3.1.REQ-6",
+      "module": "F3_1_REQ_6",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_6Domain refines Domain {\n  type Model = map<string, Torrent>\n\n  datatype Action = SortBySize | SortByDate | SortByAlpha\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case SortBySize => m\n    case SortByDate => m\n    case SortByAlpha => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  datatype Torrent = Torrent(name: string, size: int, date: int)\n\n  function SortTorrentsByName(torrents: seq<Torrent>): seq<Torrent> {\n    torrents\n  }\n\n  function SortTorrentsBySize(torrents: seq<Torrent>): seq<Torrent> {\n    torrents\n  }\n\n  function SortTorrentsByDate(torrents: seq<Torrent>): seq<Torrent> {\n    torrents\n  }\n\n  lemma SortByNamePreservesOrdering(t: seq<Torrent>)\n    ensures |SortTorrentsByName(t)| == |t|\n    ensures forall i, j | 0 <= i < j < |t| :: SortTorrentsByName(t)[i].name <= SortTorrentsByName(t)[j].name\n  {\n    assert true;\n  }\n\n  lemma SortBySizePreservesOrdering(t: seq<Torrent>)\n    ensures |SortTorrentsBySize(t)| == |t|\n    ensures forall i, j | 0 <= i < j < |t| :: SortTorrentsBySize(t)[i].size <= SortTorrentsBySize(t)[j].size\n  {\n    assert true;\n  }\n\n  lemma SortByDatePreservesOrdering(t: seq<Torrent>)\n    ensures |SortTorrentsByDate(t)| == |t|\n    ensures forall i, j | 0 <= i < j < |t| :: SortTorrentsByDate(t)[i].date <= SortTorrentsByDate(t)[j].date\n  {\n    assert true;\n  }\n}\n\nmodule F3_1_REQ_6Kernel refines Kernel {\n  import D = F3_1_REQ_6Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 54,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 61,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 68,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-7": {
+    "sig": "1c1e1dd1f3be05684237406eba2e3657067e2a2fdfe7e066b6dfd5833b9abd7f",
+    "data": {
+      "feature_id": "3.1.REQ-7",
+      "module": "F3_1_REQ_7",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_7Domain refines Domain {\n  type Model = (string, int, map<int, seq<string>>)\n\n  datatype Action = PageClick(page: int)\n\n  ghost predicate Inv(m: Model) {\n    var (query, currentPage, results) := m;\n    currentPage >= 1 && currentPage <= TotalPages(query, results)\n  }\n\n  function Init(): Model {\n    (\"\", 1, map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case PageClick(page) =>\n      var (query, currentPage, results) := m;\n      if page > 0 && page <= TotalPages(query, results) then\n        (query, page, results)\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    var (query, currentPage, results) := m;\n    var totalPages := TotalPages(query, results);\n    if currentPage < 1 then\n      (query, 1, results)\n    else if currentPage > totalPages then\n      (query, totalPages, results)\n    else\n      m\n  }\n\n  function TotalPages(query: string, results: map<int, seq<string>>): int {\n    if query == \"\" then 1 else |results|\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma PageClickPreservesQuery(m: Model, page: int)\n    ensures var (query, _, _) := Normalize(Apply(m, PageClick(page))); query == m.0\n  {\n  }\n}\n\nmodule F3_1_REQ_7Kernel refines Kernel {\n  import D = F3_1_REQ_7Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 53,
+          "col": 48,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  }
+}

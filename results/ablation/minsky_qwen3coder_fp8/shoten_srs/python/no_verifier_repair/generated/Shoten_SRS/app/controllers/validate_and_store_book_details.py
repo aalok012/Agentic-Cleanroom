@@ -1,0 +1,82 @@
+from fastapi import APIRouter, Body, HTTPException
+from sqlalchemy import Column, Integer, String, Float, Boolean
+from sqlalchemy.orm import Session
+from results.ablation.minsky_qwen3coder_fp8.shoten_srs.python.no_verifier_repair.generated.Shoten_SRS.app.extensions import Base, SessionLocal
+
+class Book(Base):
+    __tablename__ = "books"
+    __table_args__ = {"extend_existing": True}
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    quantity = Column(Integer, nullable=False)
+    lending_option = Column(Boolean, nullable=False)
+    selling_option = Column(Boolean, nullable=False)
+    isbn = Column(String, nullable=False)
+    author = Column(String, nullable=False)
+    rental_price = Column(Float, nullable=False)
+    selling_price = Column(Float, nullable=False)
+
+router = APIRouter()
+
+@router.post("")
+def validate_and_store_book_details(book_data: dict = Body(..., embed=True)) -> dict:
+    # Validate the book data
+    errors = []
+    
+    # Check required fields
+    required_fields = ["name", "quantity", "lending_option", "selling_option", "isbn", "author", "rental_price", "selling_price"]
+    for field in required_fields:
+        if field not in book_data or book_data[field] is None:
+            errors.append(f"{field} is required")
+    
+    # Validate specific field types and values
+    if not isinstance(book_data["name"], str) or not book_data["name"].strip():
+        errors.append("name must be a non-empty string")
+    
+    if not isinstance(book_data["quantity"], int) or book_data["quantity"] <= 0:
+        errors.append("quantity must be a positive integer")
+    
+    if not isinstance(book_data["lending_option"], bool):
+        errors.append("lending_option must be a boolean")
+    
+    if not isinstance(book_data["selling_option"], bool):
+        errors.append("selling_option must be a boolean")
+    
+    if not isinstance(book_data["isbn"], str) or not book_data["isbn"].strip():
+        errors.append("isbn must be a non-empty string")
+    
+    if not isinstance(book_data["author"], str) or not book_data["author"].strip():
+        errors.append("author must be a non-empty string")
+    
+    if not isinstance(book_data["rental_price"], (int, float)) or book_data["rental_price"] < 0:
+        errors.append("rental_price must be a non-negative number")
+    
+    if not isinstance(book_data["selling_price"], (int, float)) or book_data["selling_price"] < 0:
+        errors.append("selling_price must be a non-negative number")
+    
+    # If there are errors, raise an HTTPException
+    if errors:
+        raise HTTPException(status_code=400, detail={"success": False, "errors": errors})
+    
+    # If validation passes, store the book details in the database
+    db = SessionLocal()
+    try:
+        new_book = Book(
+            name=book_data["name"],
+            quantity=book_data["quantity"],
+            lending_option=book_data["lending_option"],
+            selling_option=book_data["selling_option"],
+            isbn=book_data["isbn"],
+            author=book_data["author"],
+            rental_price=book_data["rental_price"],
+            selling_price=book_data["selling_price"]
+        )
+        db.add(new_book)
+        db.commit()
+        db.refresh(new_book)
+        return {"success": True, "errors": []}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to store book details")
+    finally:
+        db.close()

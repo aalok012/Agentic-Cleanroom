@@ -1,0 +1,308 @@
+{
+  "project_name": "Event Management",
+  "source_file": "Event Management.xml",
+  "features": [
+    {
+      "id": "3.2.REQ-1",
+      "name": "3.2.REQ-1",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-1",
+          "text": "Can only be accessed with the provision of the internet."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-2",
+      "name": "3.2.REQ-2",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-2",
+          "text": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-2"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-3",
+      "name": "3.2.REQ-3",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-3",
+          "text": "The user interface provides appropriate error messages in case the user does an error."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-3"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-4",
+      "name": "3.2.REQ-4",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-4",
+          "text": "The EOCR can post the events on the website and the students can register accordingly."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-4"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-5",
+      "name": "3.2.REQ-5",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-5",
+          "text": "The EOCR can generate the list of registrants at any point of time."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-5"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-6",
+      "name": "3.2.REQ-6",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-6",
+          "text": "Provides a secure database of stakeholders containing the login credentials and personal information."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-6"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-7",
+      "name": "3.2.REQ-7",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-7",
+          "text": "Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-7"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-8",
+      "name": "3.2.REQ-8",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-8",
+          "text": "Provide administrative access to the clients."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-8"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-9",
+      "name": "3.2.REQ-9",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-9",
+          "text": "Add and delete client access easily."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-9"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-10",
+      "name": "3.2.REQ-10",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-10",
+          "text": "Easily append an event to the database."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-10"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-11",
+      "name": "3.2.REQ-11",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-11",
+          "text": "Provide an ordered list of events added to the database for easy understandability."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-11"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-12",
+      "name": "3.2.REQ-12",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-12",
+          "text": "Simple Interface for easy and reliable interactivity."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-12"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.2.REQ-1",
+      "feature_id": "3.2.REQ-1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Can only be accessed with the provision of the internet.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-2",
+      "feature_id": "3.2.REQ-2",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-3",
+      "feature_id": "3.2.REQ-3",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The user interface provides appropriate error messages in case the user does an error.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-4",
+      "feature_id": "3.2.REQ-4",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The EOCR can post the events on the website and the students can register accordingly.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-5",
+      "feature_id": "3.2.REQ-5",
+      "stimulus": "",
+      "precondition": "",
+      "response": "The EOCR can generate the list of registrants at any point of time.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-6",
+      "feature_id": "3.2.REQ-6",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Provides a secure database of stakeholders containing the login credentials and personal information.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-7",
+      "feature_id": "3.2.REQ-7",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-8",
+      "feature_id": "3.2.REQ-8",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Provide administrative access to the clients.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-9",
+      "feature_id": "3.2.REQ-9",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Add and delete client access easily.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-10",
+      "feature_id": "3.2.REQ-10",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Easily append an event to the database.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-11",
+      "feature_id": "3.2.REQ-11",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Provide an ordered list of events added to the database for easy understandability.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.2.REQ-12",
+      "feature_id": "3.2.REQ-12",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Simple Interface for easy and reliable interactivity.",
+      "postcondition": ""
+    }
+  ],
+  "stack": "fastapi",
+  "language": "python",
+  "dependency_graph": {
+    "nodes": [
+      "3.2"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.2"
+    ],
+    "cycles": []
+  }
+}

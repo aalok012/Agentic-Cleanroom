@@ -1,0 +1,483 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=on certify=on recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 47.83s  ·  22,860 tokens, 17 call(s)
+Project   : Shoten_SRS
+Features  : 17  (FR=54)
+Contracts : 54
+Stack     : fastapi  (pinned via --stack)
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  ⏱  done in 9.17s  ·  13,655 tokens, 15 call(s)
+Outer nodes : 15  edges: 0
+Build order : 4.1 -> 4.2 -> 4.3 -> 4.4 -> 4.5 -> 4.6 -> 4.7 -> 4.8 -> 4.9 -> 4.10 -> 4.11 -> 4.12 -> 4.13 -> 4.14 -> 4.15
+Cycles      : none
+Inner (FR)  : 28 edge(s), 0 cycle(s) across features
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  ⏱  done in 104.86s  ·  57,601 tokens, 17 call(s)
+Contracts   : 54  (in dependency order)
+  [4.1.REQ-1] (controller) def initiate_account_creation(user_type: str) -> dict[str, str]:
+        -> controllers/initiate_account_creation.py   prereqs=[]
+  [4.1.REQ-2] (controller) def collect_user_information(name: str, user_type: str, roll_number: str, shop_id: str, mobile_number: str, email_id: str) -> dict[str, str]:
+        -> controllers/collect_user_information.py   prereqs=[]
+  [4.1.REQ-3] (controller) def assign_username_and_prompt_password(name: str, user_type: str, roll_number: str, shop_id: str, mobile_number: str, email_id: str) -> dict[str, str]:
+        -> controllers/assign_username_and_prompt_password.py   prereqs=[]
+  [4.1.REQ-4] (controller) def confirm_password_acceptability(password: str) -> bool:
+        -> controllers/confirm_password_acceptability.py   prereqs=[]
+  [4.1.REQ-5] (model) def store_user_information(username: str, password: str, name: str, user_type: str, roll_number: str, shop_id: str, mobile_number: str, email_id: str) -> dict[str, str]:
+        -> models/store_user_information.py   prereqs=['4.1.REQ-1', '4.1.REQ-2', '4.1.REQ-3', '4.1.REQ-4']
+  [4.2.REQ-1] (controller) def login_user(username: str, password: str) -> bool
+        -> controllers/login_user.py   prereqs=[]
+  [4.2.REQ-2] (controller) def validate_login_credentials(username: str, password: str) -> bool
+        -> controllers/validate_login_credentials.py   prereqs=[]
+  [4.2.REQ-3] (model) def authenticate_user(username: str, password: str) -> dict[str, str]
+        -> models/authenticate_user.py   prereqs=['4.2.REQ-1', '4.2.REQ-2']
+  [4.3.REQ-1] (model) def search_books_and_print_shops(query: str) -> list[dict[str, str]]
+        -> models/search_books_and_print_shops.py   prereqs=[]
+  [4.4.REQ-1] (controller) def add_book_to_cart(user_id: str, book_id: str) -> None:
+        -> controllers/add_book_to_cart.py   prereqs=[]
+  [4.4.REQ-2] (view) def get_cart_total_price(user_id: str) -> float:
+        -> views/get_cart_total_price.py   prereqs=[]
+  [4.5.REQ-1] (controller) def remove_book_from_cart(user_id: str, book_id: str) -> None:
+        -> controllers/remove_book_from_cart.py   prereqs=[]
+  … and 42 more (see Shoten_SRS_planning.json)
+
+======================================================================
+  [4a]  Dafny Proof Agent — proving feature logic (formal verification)
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 500.58s  ·  410,686 tokens, 92 call(s)
+Proved    : 3/17 features  →  ['4.11', '4.13', '4.3.1']
+  [4.1] unproved  F4_1  (6r)
+  [4.10] unproved  F4_10  (6r)
+  [4.11] PROVED   F4_11  (3r)
+  [4.12] unproved  F4_12  (6r)
+  [4.13] PROVED   F4_13  (3r)
+  [4.14] unproved  F4_14  (6r)
+  [4.15] unproved  F4_15  (6r)
+  [4.2] unproved  F4_2  (6r)
+  [4.3] unproved  F4_3  (6r)
+  [4.3.1] PROVED   F4_3_1  (2r)
+  [4.3.2] unproved  F4_3_2  (6r)
+  [4.4] unproved  F4_4  (6r)
+  [4.5] unproved  F4_5  (6r)
+  [4.6] unproved  F4_6  (6r)
+  [4.7] unproved  F4_7  (6r)
+  [4.8] unproved  F4_8  (6r)
+  [4.9] unproved  F4_9  (6r)
+  ⏱  done in 3.00s
+Compiled  : 3/3 proved features to py
+
+======================================================================
+  [4]  Code Agent — generating MVC code from the spec
+======================================================================
+  ⏱  done in 8.69s  ·  3,151 tokens, 1 call(s)
+  ⏱  done in 6.66s  ·  2,606 tokens, 1 call(s)
+  ⏱  done in 6.98s  ·  2,565 tokens, 1 call(s)
+  ⏱  done in 158.06s  ·  78,728 tokens, 46 call(s)
+  3 proved feature(s) shipped as Dafny-core adapters; 46 file(s) generated for the rest.
+  Staged proved Dafny cores ['F4_11', 'F4_13', 'F4_3_1'] + shim into /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep2/generated/Shoten_SRS/app/dafny_cores
+49 file(s); 2332 LOC (Python); layers={'controller': 26, 'model': 7, 'view': 16}
+Assembled runnable FastAPI app: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep2/generated/Shoten_SRS/app  (cd "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep2/generated/Shoten_SRS" && python -m app)
+
+======================================================================
+  [5]  Test Agent — deriving black-box tests from the spec
+======================================================================
+  ⏱  done in 218.57s  ·  69,848 tokens, 17 call(s)
+17 feature(s), 115 test case(s).
+Wrote 17 pytest module(s) to /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep2/generated/Shoten_SRS/tests
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples) · skipping 3 proved
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[4.1] Account Registration
+    FR  [4.1.REQ-1] The system shall allow a non-registered user to create a secure account.
+    FR  [4.1.REQ-2] The system shall require the following information from the user: Name, Institute Roll Number (in case of Students only),Shop ID(In case of Bookstores) , Mobil…
+    FR  [4.1.REQ-3] The system shall assign the user a username and ask for a password.
+    FR  [4.1.REQ-4] The system shall conﬁrm the password is acceptable.
+    FR  [4.1.REQ-5] The system shall store the information in the database.
+
+[4.2] Account Login
+    FR  [4.2.REQ-1] The system shall allow a registered user to log-in to their account.
+    FR  [4.2.REQ-2] The system shall require a username and password from the user.
+    FR  [4.2.REQ-3] The system will verify the username and password, and the user will be considered “logged-in”.
+
+[4.3] Search
+    FR  [4.3.REQ-1] The users can search for the book of their choice as well as a print shop.
+
+[4.3.1] Search a Book Stimulus: Click "Search a Book" Button
+    FR  [4.3.1.REQ-1] The system shall allow a user to search for books by title, author or ISBN number.
+    FR  [4.3.1.REQ-2] The search results will include a list of matching books with picture of the front cover, along with the title, author, price, availability, and condition of t…
+
+[4.3.2] Search a Print Shop Stimulus: Click "Search a Print Shop" Button
+    FR  [4.3.2.REQ-1] The system shall allow a user to search for print shops.
+    FR  [4.3.2.REQ-2] The search results will include a list of available print shops with there opening time , closing time and rates.
+
+[4.4] Add to Shopping Cart
+    FR  [4.4.REQ-1] The system shall allow a registered and logged-in user to temporarily save books that are being considered for purchase into a list associated with their accou…
+    FR  [4.4.REQ-2] When viewing the shopping cart list, the system shall display the total price of the books in the cart.
+
+[4.5] Delete
+    FR  [4.5.REQ-1] The system shall allow a registered and logged-in user to remove any unwanted books from their shopping cart.
+    FR  [4.5.REQ-2] The system shall provide the user a way to select one of the books in his/ her cart for deletion.
+    FR  [4.5.REQ-3] After the user has indicated the particular book to be deleted from their shopping cart, the stored list representing the shopping cart should be updated by re…
+
+[4.6] Rent
+    FR  [4.6.REQ-1] The system shall allow a registered and logged-in user to rent-out books that are in their shopping cart.
+    FR  [4.6.REQ-2] The system shall prompt the user to enter time period for renting out the books in the cart.
+    FR  [4.6.REQ-3] The system shall display rent charged for the period of rental and individual rent of the books in the shopping cart.
+    FR  [4.6.REQ-4] The system shall allow the user to enter their delivery information.
+    FR  [4.6.REQ-5] After a successful transaction user system shall prompt the user to enter their payment information.
+    FR  [4.6.REQ-6] On a successful transaction the books (titles and prices and quantities) will be displayed to the screen.
+
+[4.7] Purchase
+    FR  [4.7.REQ-1] The system shall allow a registered and logged-in user to purchase books that are in their shopping cart.
+    FR  [4.7.REQ-2] The system shall display total cost of the books in the shopping cart.
+    FR  [4.7.REQ-3] The system shall allow the user to enter their delivery information.
+    FR  [4.7.REQ-4] After a successful transaction user system shall prompt the user to enter their payment information.
+    FR  [4.7.REQ-5] On a successful transaction the books (titles and prices and quantities) will be displayed to the screen.
+
+[4.8] Print
+    FR  [4.8.REQ-1] The system shall allow a registered and logged-in user to request a print from a chosen print shop.
+    FR  [4.8.REQ-2] The system shall prompt the user to enter the url of the google drive link of the soft copy to be printed.
+    FR  [4.8.REQ-3] The system shall display the total cost of printing the soft copy.
+    FR  [4.8.REQ-4] The system shall allow the user to enter their delivery information.
+    FR  [4.8.REQ-5] After a successful transaction user system shall prompt the user to enter their payment information.
+    FR  [4.8.REQ-6] On a successful transaction the delivery status will the displayed.
+
+[4.9] Add Book
+    FR  [4.9.REQ-1] The system shall allow a registered and logged-in user , bookstores and printing stores to add books they want to sell / print / rent-out.
+    FR  [4.9.REQ-2] The user shall be prompted to ﬁll in a form with all details associated with the class ‘Book’ : name , quantity , options for lending or selling , ISBN number …
+    FR  [4.9.REQ-3] The system shall allow the user to enter their payment acceptance details like bank account number , IFSC Code etc.
+
+[4.10] Request a Restock
+    FR  [4.10.REQ-1] The system shall allow a user to view various methods of contacting the sellers(bookstore ,printstore or the student sharing the book).
+    FR  [4.10.REQ-2] The system shall display the store address, telephone number, email address, and directions on how to get to the the sellers(bookstore ,printstore or the stude…
+    FR  [4.10.REQ-3] The system should also display a map showing the location of the bookstores and printing stores.
+
+[4.11] Update Account Information
+    FR  [4.11.REQ-1] The system shall allow a user to update the information in their account.
+    FR  [4.11.REQ-2] The user shall be allowed to view and change their name, mailing address, billing address, payment information.
+    FR  [4.11.REQ-3] The user shall be able to change their password by entering the old one once, and a new one twice.
+
+[4.12] View Delivery Status
+    FR  [4.12.REQ-1] The system shall allow a registered and logged-in user to view the shipping status of orders they have placed within the last 30 days.
+    FR  [4.12.REQ-2] The user must enter a conﬁrmation number to view the shipping status of their order.
+    FR  [4.12.REQ-3] The system shall then display the shipping date, mailing address, projected delivery date, and status (in transit, delivered, etc.)
+
+[4.13] View Account Purchase History
+    FR  [4.13.REQ-1] The system shall allow a registered and logged-in user to view purchases made with their account within the last two years.
+    FR  [4.13.REQ-2] The system shall display the date of purchase, payment mode.
+    FR  [4.13.REQ-3] The system shall display the title of the book, price, and quantity for each book purchased in a given order.
+
+[4.14] Account Logout
+    FR  [4.14.REQ-1] The system shall allow the registered and logged-in user to exit his/her account, so that access to operations requiring a user to be logged in are now disable…
+
+[4.15] Help
+    FR  [4.15.REQ-1] The system shall allow the user to view an overview of how to use the various operations deﬁned above.
+    FR  [4.15.REQ-2] The system must allow the user to select one of the operations by name.
+    FR  [4.15.REQ-3] The system shall then display information on how to use that operation.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [PASS] 4.1.REQ-1    sample=0  Anchor case for initiating account creation for a student
+  [PASS] 4.1.REQ-1    sample=0  Failure case for invalid user type during account initiation
+  [PASS] 4.1.REQ-2    sample=0  Anchor case for collecting user information for a student
+  [PASS] 4.1.REQ-2    sample=0  Failure case for missing name when collecting user informat…
+  [FAIL] 4.1.REQ-3    sample=0  Anchor case for assigning username and prompting for passwo…
+  [PASS] 4.1.REQ-3    sample=0  Failure case for missing name when assigning username
+  [FAIL] 4.1.REQ-4    sample=0  Anchor case for confirming password acceptability with stro…
+  [PASS] 4.1.REQ-4    sample=0  Failure case for weak password during confirmation
+  [PASS] 4.1.REQ-5    sample=0  Anchor case for storing user information in the database
+  [PASS] 4.1.REQ-5    sample=0  Failure case for storing user information with unacceptable…
+  [FAIL] 4.10.REQ-1   sample=0  Anchor case: Get seller contact methods with canonical inpu…
+  [FAIL] 4.10.REQ-1   sample=0  Independent case: Get seller contact methods with empty res…
+  [FAIL] 4.10.REQ-2   sample=0  Anchor case: Get seller details with canonical inputs
+  [FAIL] 4.10.REQ-2   sample=0  Independent case: Get seller details with missing fields
+  [FAIL] 4.10.REQ-3   sample=0  Anchor case: Get seller locations map with canonical inputs
+  [FAIL] 4.10.REQ-3   sample=0  Independent case: Get seller locations map with invalid map…
+  [FAIL] 4.12.REQ-1   sample=0  Anchor case: User views orders placed within the last 30 da…
+  [FAIL] 4.12.REQ-1   sample=0  Independent case: User with no recent orders views status
+  [PASS] 4.12.REQ-1   sample=0  Failure case: User ID is empty
+  [FAIL] 4.12.REQ-2   sample=0  Anchor case: User views shipping status using confirmation …
+  [PASS] 4.12.REQ-2   sample=0  Independent case: User enters invalid confirmation number
+  [FAIL] 4.12.REQ-3   sample=0  Anchor case: System displays shipping details for an order
+  [PASS] 4.12.REQ-3   sample=0  Failure case: Order ID does not exist
+  [FAIL] 4.14.REQ-1   sample=0  Canonical case for successful user logout
+  [FAIL] 4.14.REQ-1   sample=0  Logout without active session
+  [PASS] 4.14.REQ-1   sample=0  Logout with invalid authentication token
+  [FAIL] 4.15.REQ-1   sample=0  Anchor case for viewing help overview
+  [FAIL] 4.15.REQ-2   sample=0  Anchor case for selecting an operation by name
+  [PASS] 4.15.REQ-2   sample=0  Failure case for selecting a nonexistent operation
+  [FAIL] 4.15.REQ-3   sample=0  Anchor case for getting details of a selected operation
+  [PASS] 4.15.REQ-3   sample=0  Failure case for getting details of a non-existent operation
+  [FAIL] 4.2.REQ-1    sample=0  Canonical case for successful user login
+  [PASS] 4.2.REQ-1    sample=0  Login attempt with invalid credentials
+  [FAIL] 4.2.REQ-2    sample=0  Canonical case for validating login credentials
+  [PASS] 4.2.REQ-2    sample=0  Login attempt without username
+  [FAIL] 4.2.REQ-3    sample=0  Canonical case for authenticating user
+  [PASS] 4.2.REQ-3    sample=0  Authentication attempt with wrong password
+  [FAIL] 4.3.2.REQ-1  sample=0  Anchor case: Initiate search for print shops with no inputs
+  [FAIL] 4.3.2.REQ-2  sample=0  Anchor case: Get search results with default sample data
+  [FAIL] 4.3.2.REQ-2  sample=0  Edge case: No print shops available in the system
+  [FAIL] 4.3.REQ-1    sample=0  Search for books and print shops with a valid query
+  [FAIL] 4.3.REQ-1    sample=0  Search with an empty query string
+  [FAIL] 4.3.REQ-1    sample=0  Search for a non-existent term
+  [FAIL] 4.3.REQ-1    sample=0  Search with special characters in query
+  [FAIL] 4.4.REQ-1    sample=0  Add a book to the shopping cart with valid user and book IDs
+  [PASS] 4.4.REQ-1    sample=0  Attempt to add a book to the shopping cart with an empty us…
+  [FAIL] 4.4.REQ-1    sample=0  Add multiple books to the shopping cart for the same user
+  [FAIL] 4.4.REQ-2    sample=0  View the total price of books in the shopping cart with val…
+  [PASS] 4.4.REQ-2    sample=0  Attempt to view the total price of books in the shopping ca…
+  [FAIL] 4.5.REQ-1    sample=0  Anchor case: Remove a book from cart successfully
+  [PASS] 4.5.REQ-1    sample=0  Failure case: User ID is empty
+  [FAIL] 4.5.REQ-2    sample=0  Anchor case: Select a book for deletion
+  [PASS] 4.5.REQ-2    sample=0  Failure case: User ID is empty
+  [FAIL] 4.5.REQ-3    sample=0  Anchor case: Update cart after deletion
+  [PASS] 4.5.REQ-3    sample=0  Failure case: User ID is empty
+  [FAIL] 4.6.REQ-1    sample=0  Anchor case: User rents books in shopping cart
+  [PASS] 4.6.REQ-1    sample=0  Failure case: User ID is empty
+  [FAIL] 4.6.REQ-2    sample=0  Anchor case: System prompts user for rental period
+  [PASS] 4.6.REQ-2    sample=0  Failure case: User ID is empty
+  [FAIL] 4.6.REQ-3    sample=0  Anchor case: System calculates and displays rent for 1 week
+  [PASS] 4.6.REQ-3    sample=0  Failure case: Invalid rental period
+  [FAIL] 4.6.REQ-4    sample=0  Anchor case: System collects delivery information
+  [PASS] 4.6.REQ-4    sample=0  Failure case: Delivery details are missing
+  [FAIL] 4.6.REQ-5    sample=0  Anchor case: System prompts user for payment information
+  [FAIL] 4.6.REQ-5    sample=0  Failure case: User ID is empty
+  [FAIL] 4.6.REQ-6    sample=0  Anchor case: System displays rented books after successful …
+  [PASS] 4.6.REQ-6    sample=0  Failure case: User ID is empty
+  [FAIL] 4.7.REQ-1    sample=0  Anchor case: Process purchase with valid user and cart items
+  [PASS] 4.7.REQ-1    sample=0  Failure case: Empty user ID when processing purchase
+  [FAIL] 4.7.REQ-2    sample=0  Anchor case: Calculate total cost of books in cart
+  [PASS] 4.7.REQ-2    sample=0  Failure case: Empty cart items list when calculating total
+  [PASS] 4.7.REQ-3    sample=0  Anchor case: Save delivery information for user
+  [PASS] 4.7.REQ-3    sample=0  Failure case: Empty delivery info dictionary
+  [FAIL] 4.7.REQ-4    sample=0  Anchor case: Prompt user for payment information after succ…
+  [PASS] 4.7.REQ-4    sample=0  Failure case: Empty user ID when prompting for payment info
+  [FAIL] 4.7.REQ-5    sample=0  Anchor case: Display purchased books after successful trans…
+  [PASS] 4.7.REQ-5    sample=0  Failure case: Missing purchased items in purchase details
+  [FAIL] 4.8.REQ-1    sample=0  Anchor case for initiating a print request
+  [FAIL] 4.8.REQ-1    sample=0  Failure case when user ID is empty
+  [FAIL] 4.8.REQ-2    sample=0  Anchor case for prompting Google Drive URL
+  [PASS] 4.8.REQ-2    sample=0  Failure case when print job ID is empty
+  [FAIL] 4.8.REQ-3    sample=0  Anchor case for calculating print cost
+  [PASS] 4.8.REQ-3    sample=0  Failure case when Google Drive URL is invalid
+  [FAIL] 4.8.REQ-4    sample=0  Anchor case for collecting delivery information
+  [PASS] 4.8.REQ-4    sample=0  Failure case when delivery info is empty
+  [FAIL] 4.8.REQ-5    sample=0  Anchor case for prompting payment information
+  [PASS] 4.8.REQ-5    sample=0  Failure case when print job ID is empty
+  [FAIL] 4.8.REQ-6    sample=0  Anchor case for displaying delivery status
+  [PASS] 4.8.REQ-6    sample=0  Failure case when print job ID is empty
+  [FAIL] 4.9.REQ-1    sample=0  Anchor case: Registered and logged-in user adds a book
+  [FAIL] 4.9.REQ-1    sample=0  Failure case: Empty user_id provided
+  [FAIL] 4.9.REQ-2    sample=0  Anchor case: Valid book details are submitted
+  [PASS] 4.9.REQ-2    sample=0  Failure case: Missing book name
+  [FAIL] 4.9.REQ-3    sample=0  Anchor case: Valid payment details are submitted
+  [PASS] 4.9.REQ-3    sample=0  Failure case: Empty bank account number
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 4.1.REQ-3  sample=0
+  test:     Anchor case for assigning username and prompting for password
+  inputs:   User has completed providing required information
+  expected: The system assigns a username and prompts for a password
+  reason:   app boot/request error: IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: users.password [SQL: INSERT INTO users (username, password, name, user_type, roll_number, shop_id, mobile_…
+
+[FAIL] 4.1.REQ-4  sample=0
+  test:     Anchor case for confirming password acceptability with strong password
+  inputs:   User provides a strong password meeting security requirements
+  expected: The system confirms the password is acceptable
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.10.REQ-1  sample=0
+  test:     Anchor case: Get seller contact methods with canonical inputs
+  inputs:   User requests to view contact methods for sellers
+  expected: System displays bookstore and printstore contact methods
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.10.REQ-1  sample=0
+  test:     Independent case: Get seller contact methods with empty response
+  inputs:   System has no seller contact data configured
+  expected: Empty list of contact methods
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.10.REQ-2  sample=0
+  test:     Anchor case: Get seller details with canonical inputs
+  inputs:   User requests to view seller details
+  expected: System displays store address, phone, email, and directions for bookstore
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.10.REQ-2  sample=0
+  test:     Independent case: Get seller details with missing fields
+  inputs:   Seller details contain missing fields
+  expected: System returns details with default or placeholder values
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.10.REQ-3  sample=0
+  test:     Anchor case: Get seller locations map with canonical inputs
+  inputs:   User requests to view a map showing locations of bookstores and printing stores
+  expected: System displays a map URL
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.10.REQ-3  sample=0
+  test:     Independent case: Get seller locations map with invalid map URL
+  inputs:   Map URL is malformed or inaccessible
+  expected: System returns a fallback or error message
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.12.REQ-1  sample=0
+  test:     Anchor case: User views orders placed within the last 30 days
+  inputs:   User with ID user123 views orders placed within the last 30 days
+  expected: List of orders placed by user123 within the last 30 days
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.12.REQ-1  sample=0
+  test:     Independent case: User with no recent orders views status
+  inputs:   User with ID user456 views orders placed within the last 30 days, but has none
+  expected: Empty list of orders
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.12.REQ-2  sample=0
+  test:     Anchor case: User views shipping status using confirmation number
+  inputs:   User with ID user123 enters valid confirmation number CONF123456
+  expected: Order details for order associated with confirmation number CONF123456
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.12.REQ-3  sample=0
+  test:     Anchor case: System displays shipping details for an order
+  inputs:   System displays shipping details for order with ID order001
+  expected: Shipping date, mailing address, projected delivery date, and status for order001
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.14.REQ-1  sample=0
+  test:     Canonical case for successful user logout
+  inputs:   User initiates logout action
+  expected: System terminates session and redirects to login page with success message
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.14.REQ-1  sample=0
+  test:     Logout without active session
+  inputs:   User attempts to logout when not logged in
+  expected: System handles logout gracefully and returns success message
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.15.REQ-1  sample=0
+  test:     Anchor case for viewing help overview
+  inputs:   User requests to view an overview of how to use the various operations defined above
+  expected: System displays an overview of how to use the various operations defined above
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.15.REQ-2  sample=0
+  test:     Anchor case for selecting an operation by name
+  inputs:   User selects one of the operations by name
+  expected: System acknowledges the selection of the operation by name
+  reason:   HTTP 404: {"detail":"Operation not found"}
+
+[FAIL] 4.15.REQ-3  sample=0
+  test:     Anchor case for getting details of a selected operation
+  inputs:   System displays information on how to use the selected operation
+  expected: System presents detailed information on how to use the selected operation
+  reason:   setup step 0 (/views/get_operation_details) failed: HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.2.REQ-1  sample=0
+  test:     Canonical case for successful user login
+  inputs:   A registered user provides valid username and password
+  expected: System grants access to the user's account
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.2.REQ-2  sample=0
+  test:     Canonical case for validating login credentials
+  inputs:   User provides both username and password
+  expected: System accepts the login credentials
+  reason:   HTTP 404: {"detail":"User not found."}
+
+[FAIL] 4.2.REQ-3  sample=0
+  test:     Canonical case for authenticating user
+  inputs:   Valid username and password are provided
+  expected: System returns session token and user ID
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.3.2.REQ-1  sample=0
+  test:     Anchor case: Initiate search for print shops with no inputs
+  inputs:   No inputs required
+  expected: System initiates search process
+  reason:   HTTP 404: {"detail":"No active print shops found"}
+
+[FAIL] 4.3.2.REQ-2  sample=0
+  test:     Anchor case: Get search results with default sample data
+  inputs:   No inputs required
+  expected: List of two print shops with opening time, closing time, and rates
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.3.2.REQ-2  sample=0
+  test:     Edge case: No print shops available in the system
+  inputs:   No print shops exist in the database
+  expected: Empty list of print shops
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.3.REQ-1  sample=0
+  test:     Search for books and print shops with a valid query
+  inputs:   A search query for 'fantasy novels'
+  expected: A list of search results including books and print shops
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 4.3.REQ-1  sample=0
+  test:     Search with an empty query string
+  inputs:   An empty search query
+  expected: An empty list of search results
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+  … and 30 more failures
+
+======================================================================
+  SUMMARY: 40 passed / 55 failed / 95 total case executions
+  Case pass rate: 0.421
+  Aggregate pass@1 (macro-avg over FRs): 0.087
+  Oracle: http
+======================================================================
+
+  ⏱  done in 108.84s
+  pass@1: 0.087  (over 46 un-proved FR(s))
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.1481
+  test_case_pass_ratio        :       0.4211
+  PassVer@1                   :       0.2222
+  avg_verification_iteration  :         5.52
+  avg_test_iteration          :         1.00
+  avg_input_token             :       2677.0
+  avg_output_token            :        519.6
+  total_time                  :     1173.25s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep2/Shoten_SRS_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep2/Shoten_SRS_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep2/runs/20261018-083959-shoten-srs.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep2/runs/20261018-083959-shoten-srs.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : spec_contracts=47.8s   dependency=9.2s   planning=104.9s   dafny=500.6s   compile=3.0s   adapter=8.7s   adapter=6.7s   adapter=7.0s   code=158.1s   test=218.6s   certification=108.8s
+Time      : 1173.25s   Tokens: 661,700   Cost: $0.0000

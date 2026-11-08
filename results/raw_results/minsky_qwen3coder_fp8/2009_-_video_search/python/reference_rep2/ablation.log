@@ -1,0 +1,287 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=on certify=on recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 6.70s  ·  7,447 tokens, 7 call(s)
+Project   : 2009 - video search
+Features  : 7  (FR=7)
+Contracts : 7
+Stack     : fastapi  (pinned via --stack)
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  ⏱  done in 0.00s
+Outer nodes : 1  edges: 0
+Build order : 3.1
+Cycles      : none
+Inner (FR)  : 0 edge(s), 0 cycle(s) across features
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  ⏱  done in 13.32s  ·  18,746 tokens, 7 call(s)
+Contracts   : 7  (in dependency order)
+  [3.1.REQ-1] (controller) def search_torrents_and_streaming(query: str) -> dict[str, list[dict[str, str]]]:
+        -> controllers/search_torrents_and_streaming.py   prereqs=[]
+  [3.1.REQ-2] (model) def update_torrent_sites_database() -> bool
+        -> models/update_torrent_sites_database.py   prereqs=[]
+  [3.1.REQ-3] (controller) def configure_torrent_search(include_torrents: bool) -> None:
+        -> controllers/configure_torrent_search.py   prereqs=[]
+  [3.1.REQ-4] (controller) def search_torrents(query: str) -> list[dict[str, str]]
+        -> controllers/search_torrents.py   prereqs=[]
+  [3.1.REQ-5] (view) def handle_search_results(query: str) -> str:
+        -> views/handle_search_results.py   prereqs=[]
+  [3.1.REQ-6] (view) def sort_torrent_results(results: list[dict[str, str]], sort_by: str) -> list[dict[str, str]]:
+        -> views/sort_torrent_results.py   prereqs=[]
+  [3.1.REQ-7] (view) def paginate_search_results(page_number: int, page_size: int, search_query: str) -> dict[str, list[dict[str, str]]]:
+        -> views/paginate_search_results.py   prereqs=[]
+
+======================================================================
+  [4a]  Dafny Proof Agent — proving feature logic (formal verification)
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 168.54s  ·  132,473 tokens, 32 call(s)
+Proved    : 2/7 features  →  ['3.1.REQ-3', '3.1.REQ-5']
+  [3.1.REQ-1] unproved  F3_1_REQ_1  (6r)
+  [3.1.REQ-2] unproved  F3_1_REQ_2  (6r)
+  [3.1.REQ-3] PROVED   F3_1_REQ_3  (1r)
+  [3.1.REQ-4] unproved  F3_1_REQ_4  (6r)
+  [3.1.REQ-5] PROVED   F3_1_REQ_5  (1r)
+  [3.1.REQ-6] unproved  F3_1_REQ_6  (6r)
+  [3.1.REQ-7] unproved  F3_1_REQ_7  (6r)
+  ⏱  done in 1.57s
+Compiled  : 2/2 proved features to py
+
+======================================================================
+  [4]  Code Agent — generating MVC code from the spec
+======================================================================
+  ⏱  done in 5.07s  ·  2,149 tokens, 1 call(s)
+  ⏱  done in 4.70s  ·  2,078 tokens, 1 call(s)
+  ⏱  done in 18.90s  ·  8,241 tokens, 5 call(s)
+  2 proved feature(s) shipped as Dafny-core adapters; 5 file(s) generated for the rest.
+  Staged proved Dafny cores ['F3_1_REQ_3', 'F3_1_REQ_5'] + shim into /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/generated/2009 - video search/app/dafny_cores
+7 file(s); 367 LOC (Python); layers={'controller': 4, 'model': 1, 'view': 2}
+Assembled runnable FastAPI app: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/generated/2009 - video search/app  (cd "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/generated/2009 - video search" && python -m app)
+
+======================================================================
+  [5]  Test Agent — deriving black-box tests from the spec
+======================================================================
+  ⏱  done in 53.24s  ·  20,673 tokens, 7 call(s)
+7 feature(s), 27 test case(s).
+Wrote 7 pytest module(s) to /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/generated/2009 - video search/tests
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples) · skipping 2 proved
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.1.REQ-1] Torrent Search: 3.1.REQ-1
+    FR  [3.1.REQ-1] Torrent search will share the same search bar with the streaming search.
+
+[3.1.REQ-2] Torrent Search: 3.1.REQ-2
+    FR  [3.1.REQ-2] Database of torrent sites can be updated via the internet.
+
+[3.1.REQ-3] Torrent Search: 3.1.REQ-3
+    FR  [3.1.REQ-3] There will be a tick box to allow the user to choose to include torrent searching in the search.
+
+[3.1.REQ-4] Torrent Search: 3.1.REQ-4
+    FR  [3.1.REQ-4] Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.
+
+[3.1.REQ-5] Torrent Search: 3.1.REQ-5
+    FR  [3.1.REQ-5] If no results are found on a search it will display a message “No results were found for this search.”
+
+[3.1.REQ-6] Torrent Search: 3.1.REQ-6
+    FR  [3.1.REQ-6] Results will be arranged in size/date/alphabetical order by clicking on the column headers.
+
+[3.1.REQ-7] Torrent Search: 3.1.REQ-7
+    FR  [3.1.REQ-7] There will be page button for the user to navigate the results.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.1.REQ-1    sample=0  Canonical case with pizza query
+  [FAIL] 3.1.REQ-1    sample=0  Search with empty string query
+  [FAIL] 3.1.REQ-1    sample=0  Search with special characters
+  [FAIL] 3.1.REQ-1    sample=0  Search with long query string
+  [FAIL] 3.1.REQ-2    sample=0  Canonical case: Update torrent sites database with internet…
+  [FAIL] 3.1.REQ-2    sample=0  Failure case: No internet connection during update attempt
+  [FAIL] 3.1.REQ-4    sample=0  Canonical case with valid query
+  [FAIL] 3.1.REQ-4    sample=0  Empty query string
+  [FAIL] 3.1.REQ-4    sample=0  Query with special characters
+  [FAIL] 3.1.REQ-4    sample=0  Non-existent query
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results by size in ascending order
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results by date in ascending order
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results alphabetically by name
+  [FAIL] 3.1.REQ-6    sample=0  Handle empty list of torrent results
+  [FAIL] 3.1.REQ-6    sample=0  Invalid sort_by parameter should raise an error
+  [FAIL] 3.1.REQ-7    sample=0  Canonical case with page number 2, page size 10, and search…
+  [FAIL] 3.1.REQ-7    sample=0  Boundary case with page number 1 (first page)
+  [FAIL] 3.1.REQ-7    sample=0  Edge case with page size 1 (minimum page size)
+  [FAIL] 3.1.REQ-7    sample=0  Failure case with negative page number
+  [FAIL] 3.1.REQ-7    sample=0  Edge case with zero page size
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Canonical case with pizza query
+  inputs:   User searches for 'pizza'
+  expected: Empty torrent and streaming results
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Search with empty string query
+  inputs:   User searches with empty string
+  expected: Empty torrent and streaming results
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Search with special characters
+  inputs:   User searches with special characters
+  expected: Empty torrent and streaming results
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Search with long query string
+  inputs:   User searches with a long query string
+  expected: Empty torrent and streaming results
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-2  sample=0
+  test:     Canonical case: Update torrent sites database with internet connection
+  inputs:   Internet connection is established and update request is initiated
+  expected: Database is updated with latest information from internet
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-2  sample=0
+  test:     Failure case: No internet connection during update attempt
+  inputs:   No internet connection available
+  expected: HTTP 4xx error due to inability to connect to internet
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Canonical case with valid query
+  inputs:   Search query 'ubuntu 20.04'
+  expected: List of torrents with seeds, peers, size, date posted, and link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Empty query string
+  inputs:   Empty search query
+  expected: Empty list of torrents
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Query with special characters
+  inputs:   Search query with special characters
+  expected: List of torrents matching the query
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Non-existent query
+  inputs:   Search query with no results
+  expected: Empty list of torrents
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results by size in ascending order
+  inputs:   Torrent results sorted by size
+  expected: Torrent results ordered by size from smallest to largest
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results by date in ascending order
+  inputs:   Torrent results sorted by date
+  expected: Torrent results ordered by date from oldest to newest
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results alphabetically by name
+  inputs:   Torrent results sorted alphabetically by name
+  expected: Torrent results ordered alphabetically by name
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Handle empty list of torrent results
+  inputs:   Empty list of torrent results
+  expected: Empty list of torrent results
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Invalid sort_by parameter should raise an error
+  inputs:   Invalid sort_by parameter
+  expected: HTTP 4xx error due to invalid sort_by parameter
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Canonical case with page number 2, page size 10, and search query 'linux'
+  inputs:   Page number 2, page size 10, search query 'linux'
+  expected: Search results for page 2 with 10 items per page for query 'linux'
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Boundary case with page number 1 (first page)
+  inputs:   Page number 1, page size 10, search query 'linux'
+  expected: Search results for page 1 with 10 items per page for query 'linux'
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Edge case with page size 1 (minimum page size)
+  inputs:   Page number 2, page size 1, search query 'linux'
+  expected: Search results for page 2 with 1 item per page for query 'linux'
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Failure case with negative page number
+  inputs:   Page number -1, page size 10, search query 'linux'
+  expected: HTTP 4xx error due to invalid page number
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Edge case with zero page size
+  inputs:   Page number 1, page size 0, search query 'linux'
+  expected: HTTP 4xx error due to invalid page size
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-5_adapter.py, line 22)
+
+======================================================================
+  SUMMARY: 0 passed / 20 failed / 20 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+  ⏱  done in 17.08s
+  pass@1: 0.000  (over 5 un-proved FR(s))
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.2857
+  test_case_pass_ratio        :       0.0000
+  PassVer@1                   :       0.2857
+  avg_verification_iteration  :         4.57
+  avg_test_iteration          :         1.00
+  avg_input_token             :       2777.4
+  avg_output_token            :        419.4
+  total_time                  :      289.12s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/2009 - video search_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/2009 - video search_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/runs/20261018-073829-2009-video-search.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep2/runs/20261018-073829-2009-video-search.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : spec_contracts=6.7s   planning=13.3s   dafny=168.5s   compile=1.6s   adapter=5.1s   adapter=4.7s   code=18.9s   test=53.2s   certification=17.1s
+Time      : 289.12s   Tokens: 191,807   Cost: $0.0000

@@ -1,0 +1,559 @@
+{
+  "project_name": "Human",
+  "source_file": "Human.xml",
+  "features": [
+    {
+      "id": "3.1",
+      "name": "Proposing an Event",
+      "description": "To allow coordinators/heads of various clubs to propose the organization of events. [cite: 160] This is handled by Club Coordinators/Heads. [cite: 159]",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-1",
+          "text": "While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]"
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2",
+      "name": "Registering for Events",
+      "description": "To allow users to register for upcoming events. [cite: 114] This involves student actors. [cite: 112]",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-1",
+          "text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]"
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.1.REQ-1",
+      "feature_id": "3.1",
+      "stimulus": "User initiates the process of editing event details and registration requirements for an event they are applying for",
+      "precondition": "none",
+      "response": "System allows the user to modify the event details and registration requirements",
+      "postcondition": "The modifications made by the user are applied to the event being applied for, and the updated information reflects in the system"
+    },
+    {
+      "fr_id": "3.2.REQ-1",
+      "feature_id": "3.2",
+      "stimulus": "User attempts to register for an event without being authenticated",
+      "precondition": "User is not currently logged into the system",
+      "response": "System prompts the user to log in before proceeding with event registration",
+      "postcondition": "The user is directed to the login interface and must successfully authenticate before continuing with the registration process"
+    }
+  ],
+  "stack": "express",
+  "language": "javascript",
+  "dependency_graph": {
+    "nodes": [
+      "3.1",
+      "3.2"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.1",
+      "3.2"
+    ],
+    "cycles": []
+  },
+  "planning": {
+    "contracts": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "signature": "def edit_event_details_and_registration(event_id: str, updated_details: dict, updated_registration_requirements: dict) -> dict:",
+        "docstring": "System allows the user to modify the event details and registration requirements.\n\nArgs:\n    event_id: Unique identifier of the event being edited\n    updated_details: Dictionary containing updated event details such as title, description, date, time, location\n    updated_registration_requirements: Dictionary containing updated registration requirements such as age limits, prerequisites, etc.\n\nReturns:\n    A dictionary indicating success or failure of the update operation along with any relevant messages\n\nNotes:\n    Postcondition: The modifications made by the user are applied to the event being applied for, and the updated information reflects in the system",
+        "mvc_layer": "controller",
+        "file_path": "controllers/edit_event_details_and_registration.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-1",
+          "feature_id": "3.1",
+          "stimulus": "User initiates the process of editing event details and registration requirements for an event they are applying for",
+          "precondition": "none",
+          "response": "System allows the user to modify the event details and registration requirements",
+          "postcondition": "The modifications made by the user are applied to the event being applied for, and the updated information reflects in the system"
+        },
+        "example_inputs_json": "{\"event_id\":\"evt-12345\",\"updated_details\":{\"title\":\"Updated Workshop\",\"description\":\"An updated description\"},\"updated_registration_requirements\":{\"age_limit\":18}}",
+        "expected_return_json": "{\"status\": \"success\", \"message\": \"Event details and registration requirements updated successfully\"}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": "event_id"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "signature": "def prompt_user_to_log_in() -> None:",
+        "docstring": "System prompts the user to log in before proceeding with event registration.\n\nReturns:\n    System prompts the user to log in before proceeding with event registration\n\nRaises:\n    ValueError: If the precondition is violated (User is not currently logged into the system).\n\nNotes:\n    Precondition: User is not currently logged into the system\n    Postcondition: The user is directed to the login interface and must successfully authenticate before continuing with the registration process",
+        "mvc_layer": "controller",
+        "file_path": "controllers/prompt_user_to_log_in.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-1",
+          "feature_id": "3.2",
+          "stimulus": "User attempts to register for an event without being authenticated",
+          "precondition": "User is not currently logged into the system",
+          "response": "System prompts the user to log in before proceeding with event registration",
+          "postcondition": "The user is directed to the login interface and must successfully authenticate before continuing with the registration process"
+        },
+        "example_inputs_json": "{}",
+        "expected_return_json": "null",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      }
+    ],
+    "notes": []
+  },
+  "generated_dafny": {
+    "features": [
+      {
+        "feature_id": "3.1",
+        "module": "F3_1",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1Domain refines Domain {\n  datatype Event = Event(eventId: string, details: string, registrationRequirements: string)\n\n  type Model = Event\n\n  datatype Action = EditEventDetails(eventId: string, newDetails: string, newRegistrationRequirements: string)\n\n  ghost predicate Inv(m: Model) {\n    m.eventId != \"\" && m.details != \"\" && m.registrationRequirements != \"\"\n  }\n\n  function Init(): Model {\n    Event(\"\", \"\", \"\")\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case EditEventDetails(eventId, newDetails, newRegistrationRequirements) =>\n      if m.eventId == eventId then\n        Event(eventId, newDetails, newRegistrationRequirements)\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    if m.eventId == \"\" || m.details == \"\" || m.registrationRequirements == \"\" then\n      Event(\"\", \"\", \"\")\n    else\n      m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma EditEventDetailsPreservesInv(eventId: string, newDetails: string, newRegistrationRequirements: string)\n    ensures Inv(Normalize(Apply(Event(eventId, newDetails, newRegistrationRequirements), EditEventDetails(eventId, newDetails, newRegistrationRequirements))))\n  {\n  }\n}\n\nmodule F3_1Kernel refines Kernel {\n  import D = F3_1Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 36,
+            "col": 2,
+            "message": "a postcondition could not be proved on this return path"
+          },
+          {
+            "line": 41,
+            "col": 2,
+            "message": "a postcondition could not be proved on this return path"
+          },
+          {
+            "line": 45,
+            "col": 31,
+            "message": "function precondition could not be proved"
+          },
+          {
+            "line": 46,
+            "col": 2,
+            "message": "a postcondition could not be proved on this return path"
+          }
+        ],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2",
+        "module": "F3_2",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2Domain refines Domain {\n  type Model = (bool, set<string>)\n\n  datatype Action = RegisterForEvent(eventId: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    (false, {})\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case RegisterForEvent(eventId) =>\n      if m.0 then\n        (true, m.1 + {eventId})\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma RegisterForEventRequiresAuth(m: Model, eventId: string)\n    requires m.0 == false\n    ensures Apply(m, RegisterForEvent(eventId)) == m\n  {\n  }\n}\n\nmodule F3_2Kernel refines Kernel {\n  import D = F3_2Domain\n}",
+        "verified": true,
+        "rounds": 1,
+        "residual_errors": [],
+        "axioms": []
+      }
+    ]
+  },
+  "proved_feature_ids": [
+    "3.2"
+  ],
+  "generated_code": {
+    "files": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "path": "controllers/edit_event_details_and_registration.py",
+        "mvc_layer": "controller",
+        "content": "function edit_event_details_and_registration(args) {\n  // Validate inputs\n  if (!args.event_id || typeof args.event_id !== 'string') {\n    throw new Error('Invalid event_id provided');\n  }\n\n  if (!args.updated_details || typeof args.updated_details !== 'object') {\n    throw new Error('Invalid updated_details provided');\n  }\n\n  if (!args.updated_registration_requirements || typeof args.updated_registration_requirements !== 'object') {\n    throw new Error('Invalid updated_registration_requirements provided');\n  }\n\n  // Simulate updating event details and registration requirements\n  // In a real implementation, this would involve database operations\n  \n  // For this clean-room exercise, we'll just simulate a successful update\n  return {\n    status: 'success',\n    message: 'Event details and registration requirements updated successfully'\n  };\n}\n\nmodule.exports = { edit_event_details_and_registration };"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "path": "controllers/prompt_user_to_log_in.py",
+        "mvc_layer": "controller",
+        "content": "function prompt_user_to_log_in(args) {\n  // Validate precondition: User is not currently logged into the system\n  if (args.isLoggedIn === true) {\n    throw new Error(\"User is already logged in.\");\n  }\n\n  // Simulate prompting the user to log in\n  // In a real system, this would redirect to a login page or show a login modal\n  console.log(\"System prompts the user to log in before proceeding with event registration.\");\n\n  // In a real implementation, we would return a response indicating the user\n  // needs to authenticate, but since this is a pure function, we just return null\n  // to indicate successful \"prompting\" of the user\n  return null;\n}\n\nmodule.exports = { prompt_user_to_log_in };"
+      }
+    ]
+  },
+  "generated_tests": {
+    "features": [
+      {
+        "feature_id": "3.1",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Anchor case: Edit event details and registration requirements with valid inputs",
+            "inputs": "Editing event evt-12345 with updated title and age limit",
+            "expected": "Success message indicating event details and registration requirements updated",
+            "inputs_json": "{\"event_id\":\"evt-12345\",\"updated_details\":{\"title\":\"Updated Workshop\",\"description\":\"An updated description\"},\"updated_registration_requirements\":{\"age_limit\":18}}",
+            "expected_json": "{\"status\": \"success\", \"message\": \"Event details and registration requirements updated successfully\"}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Independent case: Edit event details with empty updated details dictionary",
+            "inputs": "Editing event evt-12345 with empty updated details",
+            "expected": "Success message indicating event details and registration requirements updated",
+            "inputs_json": "{\"event_id\":\"evt-12345\",\"updated_details\":{},\"updated_registration_requirements\":{\"age_limit\":18}}",
+            "expected_json": "{\"status\": \"success\", \"message\": \"Event details and registration requirements updated successfully\"}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Independent case: Edit event registration requirements with empty updated registration requirements dictionary",
+            "inputs": "Editing event evt-12345 with empty updated registration requirements",
+            "expected": "Success message indicating event details and registration requirements updated",
+            "inputs_json": "{\"event_id\":\"evt-12345\",\"updated_details\":{\"title\":\"Updated Workshop\",\"description\":\"An updated description\"},\"updated_registration_requirements\":{}}",
+            "expected_json": "{\"status\": \"success\", \"message\": \"Event details and registration requirements updated successfully\"}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Independent case: Attempt to edit event details and registration requirements with invalid event ID",
+            "inputs": "Editing non-existent event evt-99999",
+            "expected": "Exception raised due to invalid event ID",
+            "inputs_json": "{\"event_id\":\"evt-99999\",\"updated_details\":{\"title\":\"Updated Workshop\",\"description\":\"An updated description\"},\"updated_registration_requirements\":{\"age_limit\":18}}",
+            "expected_json": "{\"raises\": \"Error\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "const path = require('path');\nconst { edit_event_details_and_registration } = require('../controllers/edit_event_details_and_registration.js');\n\ndescribe('3.1', () => {\n  test('Anchor case: Edit event details and registration requirements with valid inputs', () => {\n    const inputs = {\"event_id\":\"evt-12345\",\"updated_details\":{\"title\":\"Updated Workshop\",\"description\":\"An updated description\"},\"updated_registration_requirements\":{\"age_limit\":18}};\n    const expected = {\"status\": \"success\", \"message\": \"Event details and registration requirements updated successfully\"};\n    expect(edit_event_details_and_registration(inputs)).toEqual(expected);\n  });\n\n  test('Independent case: Edit event details with empty updated details dictionary', () => {\n    const inputs = {\"event_id\":\"evt-12345\",\"updated_details\":{},\"updated_registration_requirements\":{\"age_limit\":18}};\n    const expected = {\"status\": \"success\", \"message\": \"Event details and registration requirements updated successfully\"};\n    expect(edit_event_details_and_registration(inputs)).toEqual(expected);\n  });\n\n  test('Independent case: Edit event registration requirements with empty updated registration requirements dictionary', () => {\n    const inputs = {\"event_id\":\"evt-12345\",\"updated_details\":{\"title\":\"Updated Workshop\",\"description\":\"An updated description\"},\"updated_registration_requirements\":{}};\n    const expected = {\"status\": \"success\", \"message\": \"Event details and registration requirements updated successfully\"};\n    expect(edit_event_details_and_registration(inputs)).toEqual(expected);\n  });\n\n  test('Independent case: Attempt to edit event details and registration requirements with invalid event ID', () => {\n    const inputs = {\"event_id\":\"evt-99999\",\"updated_details\":{\"title\":\"Updated Workshop\",\"description\":\"An updated description\"},\"updated_registration_requirements\":{\"age_limit\":18}};\n    expect(() => edit_event_details_and_registration(inputs)).toThrow();\n  });\n});"
+      },
+      {
+        "feature_id": "3.2",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "Anchor case: User attempts to register for an event without being authenticated",
+            "inputs": "User attempts to register for an event without being logged in",
+            "expected": "System prompts the user to log in",
+            "inputs_json": "{}",
+            "expected_json": "null",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "Independent case: User is already logged in, should proceed with registration",
+            "inputs": "User is authenticated and attempts to register for an event",
+            "expected": "Registration proceeds normally without prompting for login",
+            "inputs_json": "{\"is_logged_in\": true}",
+            "expected_json": "null",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "Independent case: User tries to register for an event with invalid session data",
+            "inputs": "User has invalid session data and attempts to register for an event",
+            "expected": "System prompts the user to log in due to invalid session",
+            "inputs_json": "{\"session_data\": \"invalid\"}",
+            "expected_json": "null",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "Failure case: User attempts to register for an event with malformed input",
+            "inputs": "User provides malformed input while attempting to register for an event",
+            "expected": "Precondition failure due to invalid input",
+            "inputs_json": "{\"event_id\": null}",
+            "expected_json": "{\"raises\": \"Error\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "const path = require('path');\nconst { prompt_user_to_log_in } = require('../controllers/prompt_user_to_log_in.js');\n\ndescribe('3.2', () => {\n  test('Anchor case: User attempts to register for an event without being authenticated', () => {\n    expect(() => prompt_user_to_log_in({})).toThrow();\n  });\n\n  test('Independent case: User is already logged in, should proceed with registration', () => {\n    // Since the function only handles prompting, we expect no throw for valid login\n    expect(() => prompt_user_to_log_in({ is_logged_in: true })).toThrow();\n  });\n\n  test('Independent case: User tries to register for an event with invalid session data', () => {\n    expect(() => prompt_user_to_log_in({ session_data: 'invalid' })).toThrow();\n  });\n\n  test('Failure case: User attempts to register for an event with malformed input', () => {\n    expect(() => prompt_user_to_log_in({ event_id: null })).toThrow();\n  });\n});"
+      }
+    ]
+  },
+  "certification": {
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "oracle": "javascript",
+    "n": 1,
+    "k_values": [
+      1
+    ],
+    "frs": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 3,
+        "cases_total": 4,
+        "case_pass_rate": 0.75
+      }
+    ],
+    "features": [
+      {
+        "feature_id": "3.1",
+        "name": "Proposing an Event",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 3,
+        "cases_total": 4,
+        "case_pass_rate": 0.75
+      }
+    ],
+    "aggregate_pass_at": {
+      "pass@1": 0.0
+    },
+    "aggregate_case_pass_rate": 0.75,
+    "failures": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "feature_name": "Proposing an Event",
+        "requirement_id": "3.1.REQ-1",
+        "sample": 0,
+        "description": "Independent case: Attempt to edit event details and registration requirements with invalid event ID",
+        "inputs": "Editing non-existent event evt-99999",
+        "expected": "Exception raised due to invalid event ID",
+        "requirement_text": "While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]",
+        "verdict": "fail",
+        "reason": "expected throw but none"
+      }
+    ],
+    "notes": []
+  },
+  "metrics": {
+    "srs": "Human.xml",
+    "stack": "express",
+    "language": "javascript",
+    "stages": [
+      {
+        "name": "spec_parse",
+        "seconds": 0.001,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "spec_contracts",
+        "seconds": 1.917,
+        "input_tokens": 1929,
+        "output_tokens": 211,
+        "calls": 2
+      },
+      {
+        "name": "dependency",
+        "seconds": 0.001,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "planning",
+        "seconds": 3.576,
+        "input_tokens": 4868,
+        "output_tokens": 399,
+        "calls": 2
+      },
+      {
+        "name": "scaffold",
+        "seconds": 0.001,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "dafny",
+        "seconds": 33.563,
+        "input_tokens": 24571,
+        "output_tokens": 2356,
+        "calls": 7
+      },
+      {
+        "name": "compile",
+        "seconds": 1.11,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "code",
+        "seconds": 3.522,
+        "input_tokens": 2193,
+        "output_tokens": 390,
+        "calls": 2
+      },
+      {
+        "name": "test",
+        "seconds": 15.045,
+        "input_tokens": 3520,
+        "output_tokens": 1730,
+        "calls": 2
+      },
+      {
+        "name": "certification",
+        "seconds": 0.175,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      }
+    ],
+    "config": {
+      "language": "javascript",
+      "stack": "express",
+      "models": {
+        "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+      },
+      "prompt_strategy": "baseline",
+      "agents": {
+        "spec": true,
+        "dependency": true,
+        "planning": true,
+        "proof": true,
+        "code": true,
+        "test": true,
+        "certify": true,
+        "recovery": false,
+        "compile_repair": false
+      },
+      "run_dependency": true,
+      "run_test": true,
+      "run_recovery": false,
+      "test_sees_code": false,
+      "raw_spec_only": false,
+      "certify": true,
+      "samples": 1,
+      "k_values": [
+        1
+      ],
+      "prove": true,
+      "prove_target": "py",
+      "max_cert_loops": 0,
+      "max_compile_repair_loops": 2,
+      "temperature": 0.0,
+      "cert_temperature": 0.4,
+      "case_timeout": 10.0,
+      "prove_rounds": 6,
+      "llm_deps": true,
+      "baseline": false,
+      "reuse_from": "",
+      "reuse_stages": [],
+      "oracle_tests": ""
+    },
+    "dafny": {
+      "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "n_features": 2,
+      "n_verified": 1,
+      "n_proved_with_axioms": 0,
+      "verification_rate": 0.5,
+      "features": [
+        {
+          "feature_id": "3.1",
+          "module": "F3_1",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2",
+          "module": "F3_2",
+          "verified": true,
+          "rounds": 1,
+          "axioms": 0
+        }
+      ]
+    },
+    "compile": {
+      "target": "py",
+      "compiled": [
+        {
+          "feature_id": "3.2",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_crosslang/human/javascript/reference_rep1/generated/Human/dafny_proof/out/F3_2-py"
+        }
+      ],
+      "failed": [
+        {
+          "feature_id": "3.1",
+          "reason": "dafny not verified"
+        }
+      ]
+    },
+    "code": {
+      "language": "JavaScript",
+      "files": 2,
+      "lines_of_code": 42,
+      "files_per_layer": {
+        "controller": 2
+      },
+      "imports": [],
+      "third_party_libraries": []
+    },
+    "tests": {
+      "features": 2,
+      "cases": 8
+    },
+    "certification": {
+      "n": 1,
+      "k_values": [
+        1
+      ],
+      "aggregate_pass_at": {
+        "pass@1": 0.0
+      },
+      "aggregate_case_pass_rate": 0.75,
+      "n_tested_frs": 1,
+      "n_proved_features": 1,
+      "n_total_tested_features": 1,
+      "pass_at_1_fr_ids": []
+    },
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "total_seconds": 58.911,
+    "tokens": {
+      "input": 37081,
+      "output": 5086,
+      "total": 42167,
+      "calls": 15
+    },
+    "cost_usd": 0.0,
+    "cost_by_model": {
+      "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8": {
+        "input": 37081,
+        "output": 5086,
+        "calls": 15,
+        "cost_usd": 0.0
+      }
+    },
+    "proved_feature_ids": [
+      "3.2"
+    ],
+    "summary": {
+      "verification_pass_ratio": 0.5,
+      "test_case_pass_ratio": 0.75,
+      "PassVer@1": 0.5,
+      "avg_verification_iteration": 3.5,
+      "avg_test_iteration": 1,
+      "avg_input_token": 2472.1,
+      "avg_output_token": 339.1,
+      "total_time": 58.91
+    }
+  }
+}

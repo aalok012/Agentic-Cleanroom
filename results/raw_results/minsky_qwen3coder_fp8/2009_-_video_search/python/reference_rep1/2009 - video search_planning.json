@@ -1,0 +1,347 @@
+{
+  "project_name": "2009 - video search",
+  "source_file": "2009 - video search.xml",
+  "features": [
+    {
+      "id": "3.1.REQ-1",
+      "name": "Torrent Search: 3.1.REQ-1",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-1",
+          "text": "Torrent search will share the same search bar with the streaming search."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-2",
+      "name": "Torrent Search: 3.1.REQ-2",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-2",
+          "text": "Database of torrent sites can be updated via the internet."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-2"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-3",
+      "name": "Torrent Search: 3.1.REQ-3",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-3",
+          "text": "There will be a tick box to allow the user to choose to include torrent searching in the search."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-3"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-4",
+      "name": "Torrent Search: 3.1.REQ-4",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-4",
+          "text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-4"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-5",
+      "name": "Torrent Search: 3.1.REQ-5",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-5",
+          "text": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d"
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-5"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-6",
+      "name": "Torrent Search: 3.1.REQ-6",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-6",
+          "text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-6"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-7",
+      "name": "Torrent Search: 3.1.REQ-7",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-7",
+          "text": "There will be page button for the user to navigate the results."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-7"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.1.REQ-1",
+      "feature_id": "3.1.REQ-1",
+      "stimulus": "User types a query string into the shared search bar",
+      "precondition": "none",
+      "response": "The system processes the query string and displays search results from both torrent and streaming sources in a unified result set",
+      "postcondition": "The displayed results accurately reflect the query string entered by the user, showing torrents and streaming content matching the search criteria"
+    },
+    {
+      "fr_id": "3.1.REQ-2",
+      "feature_id": "3.1.REQ-2",
+      "stimulus": "An internet connection is established and a request to update the database of torrent sites is made",
+      "precondition": "none",
+      "response": "The database of torrent sites is updated with the latest information available from the internet",
+      "postcondition": "The database contains the most recent information regarding torrent sites obtained through the internet connection"
+    },
+    {
+      "fr_id": "3.1.REQ-3",
+      "feature_id": "3.1.REQ-3",
+      "stimulus": "The user clicks the tick box to include torrent searching in the search.",
+      "precondition": "none",
+      "response": "The system enables or disables the torrent search functionality based on the tick box state.",
+      "postcondition": "The system's search configuration reflects the user's choice to include or exclude torrent searching."
+    },
+    {
+      "fr_id": "3.1.REQ-4",
+      "feature_id": "3.1.REQ-4",
+      "stimulus": "A search query for a torrent file, containing the name or identifier of the file being searched for",
+      "precondition": "none",
+      "response": "A list of torrent results, where each result includes the number of seeds, number of peers, file size, date posted, and a hyperlink to the webpage of the torrent",
+      "postcondition": "Each result in the response corresponds to a torrent matching the query, and contains the specified metadata: number of seeds, number of peers, file size, date posted, and a link to the webpage"
+    },
+    {
+      "fr_id": "3.1.REQ-5",
+      "feature_id": "3.1.REQ-5",
+      "stimulus": "A search operation is performed with no matching results",
+      "precondition": "none",
+      "response": "Display the message \"No results were found for this search.\"",
+      "postcondition": "The message \"No results were found for this search.\" is shown to the user as a result of the search operation"
+    },
+    {
+      "fr_id": "3.1.REQ-6",
+      "feature_id": "3.1.REQ-6",
+      "stimulus": "User clicks on a column header (size, date, or alphabetical) in the torrent search results table.",
+      "precondition": "none",
+      "response": "The torrent search results table is re-sorted according to the selected column header (size, date, or alphabetical order).",
+      "postcondition": "The order of the torrent search results reflects the sorting criteria specified by the clicked column header, and the displayed results are consistent with the sorting applied."
+    },
+    {
+      "fr_id": "3.1.REQ-7",
+      "feature_id": "3.1.REQ-7",
+      "stimulus": "The user clicks a page button in the torrent search results interface",
+      "precondition": "none",
+      "response": "The system displays the next set of search results corresponding to the selected page number",
+      "postcondition": "The displayed search results are consistent with the requested page number and the current search query"
+    }
+  ],
+  "stack": "fastapi",
+  "language": "python",
+  "dependency_graph": {
+    "nodes": [
+      "3.1"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.1"
+    ],
+    "cycles": []
+  },
+  "planning": {
+    "contracts": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1.REQ-1",
+        "signature": "def search_torrents_and_streaming(query: str) -> dict[str, list[dict[str, str]]]:",
+        "docstring": "The system processes the query string and displays search results from both torrent and streaming sources in a unified result set.\n\nArgs:\n    query: The search query string entered by the user in the shared search bar\n\nReturns:\n    A unified result set containing both torrent and streaming search results\n\nNotes:\n    Postcondition: The displayed results accurately reflect the query string entered by the user, showing torrents and streaming content matching the search criteria",
+        "mvc_layer": "controller",
+        "file_path": "controllers/search_torrents_and_streaming.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-1",
+          "feature_id": "3.1.REQ-1",
+          "stimulus": "User types a query string into the shared search bar",
+          "precondition": "none",
+          "response": "The system processes the query string and displays search results from both torrent and streaming sources in a unified result set",
+          "postcondition": "The displayed results accurately reflect the query string entered by the user, showing torrents and streaming content matching the search criteria"
+        },
+        "example_inputs_json": "{\"query\":\"pizza\"}",
+        "expected_return_json": "{\"torrents\": [], \"streaming\": []}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-2",
+        "feature_id": "3.1.REQ-2",
+        "signature": "def update_torrent_sites_database() -> bool",
+        "docstring": "The database of torrent sites is updated with the latest information available from the internet.\n\nReturns:\n    True if the database was successfully updated, False otherwise\n\nNotes:\n    Postcondition: The database contains the most recent information regarding torrent sites obtained through the internet connection",
+        "mvc_layer": "model",
+        "file_path": "models/update_torrent_sites_database.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-2",
+          "feature_id": "3.1.REQ-2",
+          "stimulus": "An internet connection is established and a request to update the database of torrent sites is made",
+          "precondition": "none",
+          "response": "The database of torrent sites is updated with the latest information available from the internet",
+          "postcondition": "The database contains the most recent information regarding torrent sites obtained through the internet connection"
+        },
+        "example_inputs_json": "{}",
+        "expected_return_json": "true",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-3",
+        "feature_id": "3.1.REQ-3",
+        "signature": "def toggle_torrent_search(include_torrents: bool) -> None:",
+        "docstring": "The system enables or disables the torrent search functionality based on the tick box state.\n\nArgs:\n    include_torrents: A boolean flag indicating whether torrent searching should be included in the search results. True to enable, False to disable.\n\nReturns:\n    None.\n\nNotes:\n    Postcondition: The system's search configuration reflects the user's choice to include or exclude torrent searching.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/toggle_torrent_search.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-3",
+          "feature_id": "3.1.REQ-3",
+          "stimulus": "The user clicks the tick box to include torrent searching in the search.",
+          "precondition": "none",
+          "response": "The system enables or disables the torrent search functionality based on the tick box state.",
+          "postcondition": "The system's search configuration reflects the user's choice to include or exclude torrent searching."
+        },
+        "example_inputs_json": "{\"include_torrents\":true}",
+        "expected_return_json": "null",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "signature": "def search_torrents(query: str) -> list[dict[str, str]]",
+        "docstring": "A list of torrent results, where each result includes the number of seeds, number of peers, file size, date posted, and a hyperlink to the webpage of the torrent.\n\nArgs:\n    query: A search query for a torrent file, containing the name or identifier of the file being searched for\n\nReturns:\n    A list of torrent results, where each result includes the number of seeds, number of peers, file size, date posted, and a hyperlink to the webpage of the torrent\n\nNotes:\n    Postcondition: Each result in the response corresponds to a torrent matching the query, and contains the specified metadata: number of seeds, number of peers, file size, date posted, and a link to the webpage",
+        "mvc_layer": "controller",
+        "file_path": "controllers/search_torrents.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-4",
+          "feature_id": "3.1.REQ-4",
+          "stimulus": "A search query for a torrent file, containing the name or identifier of the file being searched for",
+          "precondition": "none",
+          "response": "A list of torrent results, where each result includes the number of seeds, number of peers, file size, date posted, and a hyperlink to the webpage of the torrent",
+          "postcondition": "Each result in the response corresponds to a torrent matching the query, and contains the specified metadata: number of seeds, number of peers, file size, date posted, and a link to the webpage"
+        },
+        "example_inputs_json": "{\"query\":\"ubuntu 20.04\"}",
+        "expected_return_json": "[{\"seeds\": \"150\", \"peers\": \"30\", \"size\": \"2.3 GB\", \"date_posted\": \"2023-05-15\", \"webpage_link\": \"https://example.com/torrent/ubuntu-20.04\"}]",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-5",
+        "feature_id": "3.1.REQ-5",
+        "signature": "def handle_search_results(results: list) -> str:",
+        "docstring": "Display the message \"No results were found for this search.\".\n\nArgs:\n    results: The list of search results returned by the search operation. If empty, the no-results message should be displayed.\n\nReturns:\n    The message 'No results were found for this search.' if results is empty, otherwise an empty string.\n\nNotes:\n    Postcondition: The message \"No results were found for this search.\" is shown to the user as a result of the search operation",
+        "mvc_layer": "view",
+        "file_path": "views/handle_search_results.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-5",
+          "feature_id": "3.1.REQ-5",
+          "stimulus": "A search operation is performed with no matching results",
+          "precondition": "none",
+          "response": "Display the message \"No results were found for this search.\"",
+          "postcondition": "The message \"No results were found for this search.\" is shown to the user as a result of the search operation"
+        },
+        "example_inputs_json": "{\"results\":[]}",
+        "expected_return_json": "\"No results were found for this search.\"",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "signature": "def sort_torrent_results(results: list[dict[str, str]], sort_by: str) -> list[dict[str, str]]:",
+        "docstring": "The torrent search results table is re-sorted according to the selected column header (size, date, or alphabetical order).\n\nArgs:\n    results: List of torrent search results, each result is a dictionary with keys like 'name', 'size', 'date'.\n    sort_by: The column to sort by, must be one of 'size', 'date', or 'alphabetical'.\n\nReturns:\n    A new list of torrent search results sorted according to the specified column.\n\nNotes:\n    Postcondition: The order of the torrent search results reflects the sorting criteria specified by the clicked column header, and the displayed results are consistent with the sorting applied.",
+        "mvc_layer": "view",
+        "file_path": "views/sort_torrent_results.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-6",
+          "feature_id": "3.1.REQ-6",
+          "stimulus": "User clicks on a column header (size, date, or alphabetical) in the torrent search results table.",
+          "precondition": "none",
+          "response": "The torrent search results table is re-sorted according to the selected column header (size, date, or alphabetical order).",
+          "postcondition": "The order of the torrent search results reflects the sorting criteria specified by the clicked column header, and the displayed results are consistent with the sorting applied."
+        },
+        "example_inputs_json": "{\"results\":[{\"name\":\"file1\",\"size\":\"10MB\",\"date\":\"2023-01-01\"},{\"name\":\"file2\",\"size\":\"5MB\",\"date\":\"2023-01-02\"}],\"sort_by\":\"size\"}",
+        "expected_return_json": "[{\"name\": \"file1\", \"size\": \"10MB\", \"date\": \"2023-01-01\"}, {\"name\": \"file2\", \"size\": \"5MB\", \"date\": \"2023-01-02\"}]",
+        "error_mode": "raise",
+        "failure_inputs_json": "{\"results\":[],\"sort_by\":\"invalid\"}",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "signature": "def paginate_search_results(page_number: int, page_size: int, search_query: str) -> dict[str, list[dict[str, str]]]:",
+        "docstring": "The system displays the next set of search results corresponding to the selected page number.\n\nArgs:\n    page_number: The page number to display, starting from 1\n    page_size: The number of results per page\n    search_query: The current search query used to filter results\n\nReturns:\n    A dictionary containing the paginated search results\n\nNotes:\n    Postcondition: The displayed search results are consistent with the requested page number and the current search query",
+        "mvc_layer": "view",
+        "file_path": "views/paginate_search_results.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-7",
+          "feature_id": "3.1.REQ-7",
+          "stimulus": "The user clicks a page button in the torrent search results interface",
+          "precondition": "none",
+          "response": "The system displays the next set of search results corresponding to the selected page number",
+          "postcondition": "The displayed search results are consistent with the requested page number and the current search query"
+        },
+        "example_inputs_json": "{\"page_number\":1,\"page_size\":10,\"search_query\":\"ubuntu\"}",
+        "expected_return_json": "{\"results\": [{\"name\": \"ubuntu-20.04.iso\", \"size\": \"1.5GB\"}, {\"name\": \"ubuntu-20.04-live.iso\", \"size\": \"800MB\"}]}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      }
+    ],
+    "notes": []
+  }
+}

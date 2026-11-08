@@ -1,0 +1,236 @@
+{
+  "project_name": "Event Management",
+  "source_file": "Event Management.xml",
+  "features": [
+    {
+      "id": "3.2.REQ-1",
+      "name": "3.2.REQ-1",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-1",
+          "text": "Can only be accessed with the provision of the internet."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-2",
+      "name": "3.2.REQ-2",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-2",
+          "text": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-3",
+      "name": "3.2.REQ-3",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-3",
+          "text": "The user interface provides appropriate error messages in case the user does an error."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-4",
+      "name": "3.2.REQ-4",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-4",
+          "text": "The EOCR can post the events on the website and the students can register accordingly."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-5",
+      "name": "3.2.REQ-5",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-5",
+          "text": "The EOCR can generate the list of registrants at any point of time."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-6",
+      "name": "3.2.REQ-6",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-6",
+          "text": "Provides a secure database of stakeholders containing the login credentials and personal information."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-7",
+      "name": "3.2.REQ-7",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-7",
+          "text": "Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-8",
+      "name": "3.2.REQ-8",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-8",
+          "text": "Provide administrative access to the clients."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-9",
+      "name": "3.2.REQ-9",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-9",
+          "text": "Add and delete client access easily."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-10",
+      "name": "3.2.REQ-10",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-10",
+          "text": "Easily append an event to the database."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-11",
+      "name": "3.2.REQ-11",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-11",
+          "text": "Provide an ordered list of events added to the database for easy understandability."
+        }
+      ]
+    },
+    {
+      "id": "3.2.REQ-12",
+      "name": "3.2.REQ-12",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-12",
+          "text": "Simple Interface for easy and reliable interactivity."
+        }
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.2.REQ-1",
+      "feature_id": "3.2.REQ-1",
+      "stimulus": "Attempt to access the feature",
+      "precondition": "The system has access to the internet",
+      "response": "The feature is accessible",
+      "postcondition": "The feature's accessibility is contingent upon the internet being available"
+    },
+    {
+      "fr_id": "3.2.REQ-2",
+      "feature_id": "3.2.REQ-2",
+      "stimulus": "A user attempts to register for an event",
+      "precondition": "The user is authenticated and enrolled as a student in the institution",
+      "response": "The user is allowed to register for the event",
+      "postcondition": "The user's registration is recorded in the system, provided the user meets the authentication and enrollment criteria"
+    },
+    {
+      "fr_id": "3.2.REQ-3",
+      "feature_id": "3.2.REQ-3",
+      "stimulus": "The user performs an action that results in an error within the user interface",
+      "precondition": "none",
+      "response": "The user interface displays an appropriate error message to the user",
+      "postcondition": "The error message accurately reflects the nature of the user's error and is presented in a manner consistent with the user interface's design and usability standards"
+    },
+    {
+      "fr_id": "3.2.REQ-4",
+      "feature_id": "3.2.REQ-4",
+      "stimulus": "The EOCR posts an event on the website",
+      "precondition": "none",
+      "response": "The event is published on the website for student access",
+      "postcondition": "Students can view the posted event and register for it accordingly"
+    },
+    {
+      "fr_id": "3.2.REQ-5",
+      "feature_id": "3.2.REQ-5",
+      "stimulus": "The stimulus is the request to generate the list of registrants at any point in time.",
+      "precondition": "none",
+      "response": "The response is the list of registrants generated by the EOCR.",
+      "postcondition": "The generated list of registrants is accurate and reflects the registrants at the moment the request was made."
+    },
+    {
+      "fr_id": "3.2.REQ-6",
+      "feature_id": "3.2.REQ-6",
+      "stimulus": "The system is required to provide a secure database of stakeholders containing the login credentials and personal information.",
+      "precondition": "none",
+      "response": "none (stateless)",
+      "postcondition": "none (stateless)"
+    },
+    {
+      "fr_id": "3.2.REQ-7",
+      "feature_id": "3.2.REQ-7",
+      "stimulus": "User initiates a step in the data entry, organization, retrieval, modification, or deletion process",
+      "precondition": "none",
+      "response": "System provides the next step in the process as defined by the step-by-step workflow",
+      "postcondition": "The system state reflects the progress made in the step-by-step process, ensuring that the user can continue to the subsequent steps as defined by the workflow"
+    },
+    {
+      "fr_id": "3.2.REQ-8",
+      "feature_id": "3.2.REQ-8",
+      "stimulus": "An administrative user attempts to access client data or perform client-related actions",
+      "precondition": "The user has valid administrative credentials and permissions",
+      "response": "The system grants or denies access based on the user's administrative privileges",
+      "postcondition": "If access is granted, the administrative user can view, modify, or manage client information; if denied, the user receives an appropriate error message indicating lack of permission"
+    },
+    {
+      "fr_id": "3.2.REQ-9",
+      "feature_id": "3.2.REQ-9",
+      "stimulus": "The user provides a request to add or delete client access",
+      "precondition": "none",
+      "response": "The system performs the requested addition or deletion of client access",
+      "postcondition": "The client access is successfully added or removed from the system's access control list"
+    },
+    {
+      "fr_id": "3.2.REQ-10",
+      "feature_id": "3.2.REQ-10",
+      "stimulus": "A request to append an event to the database, including the event data to be added",
+      "precondition": "none",
+      "response": "The event is successfully added to the database",
+      "postcondition": "The database now contains the new event, and the event's data is stored persistently"
+    },
+    {
+      "fr_id": "3.2.REQ-11",
+      "feature_id": "3.2.REQ-11",
+      "stimulus": "The user requests an ordered list of events added to the database",
+      "precondition": "none",
+      "response": "An ordered list of events added to the database, sorted in ascending order by their addition timestamp",
+      "postcondition": "The response contains all events stored in the database, each event appears exactly once in the list, and the list is sorted by the time each event was added to the database"
+    },
+    {
+      "fr_id": "3.2.REQ-12",
+      "feature_id": "3.2.REQ-12",
+      "stimulus": "none (requirement carries no implementable behavior)",
+      "precondition": "none",
+      "response": "none",
+      "postcondition": "none (stateless)"
+    }
+  ]
+}

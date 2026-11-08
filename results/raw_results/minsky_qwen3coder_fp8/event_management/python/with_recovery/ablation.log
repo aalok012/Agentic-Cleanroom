@@ -1,0 +1,512 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=on certify=on recovery=on compile_repair=off
+  Prompt strategy: baseline
+
+  [REUSE] stages ['spec', 'dependency', 'planning', 'proof', 'code', 'test'] taken from /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep1/Event Management_full_ir.json
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  [skip — resumed] Event Management: 12 feature(s), FR=12, stack=fastapi
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  [skip — resumed] dependency graph loaded from checkpoint.
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  [skip — resumed] planning loaded: 12 contract(s).
+
+======================================================================
+  [4a]  Dafny Proof Agent — [skip — resumed]
+======================================================================
+  proved 8, compiled 8; dafny project re-scaffolded at /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/with_recovery/generated/Event Management/dafny_proof
+
+======================================================================
+  [4]  Code Agent — [skip — resumed]
+======================================================================
+  loaded 12 generated file(s) from checkpoint (packaged app already on disk).
+
+======================================================================
+  [5]  Test Agent — [skip — resumed]
+======================================================================
+  loaded 12 tested feature(s) from checkpoint (test modules already on disk).
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples) · skipping 8 proved
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.2.REQ-1] 3.2.REQ-1
+    FR  [3.2.REQ-1] Can only be accessed with the provision of the internet.
+
+[3.2.REQ-2] 3.2.REQ-2
+    FR  [3.2.REQ-2] Only authenticated users i.e., enrolled students in the institution can register and participate in the events.
+
+[3.2.REQ-3] 3.2.REQ-3
+    FR  [3.2.REQ-3] The user interface provides appropriate error messages in case the user does an error.
+
+[3.2.REQ-4] 3.2.REQ-4
+    FR  [3.2.REQ-4] The EOCR can post the events on the website and the students can register accordingly.
+
+[3.2.REQ-5] 3.2.REQ-5
+    FR  [3.2.REQ-5] The EOCR can generate the list of registrants at any point of time.
+
+[3.2.REQ-6] 3.2.REQ-6
+    FR  [3.2.REQ-6] Provides a secure database of stakeholders containing the login credentials and personal information.
+
+[3.2.REQ-7] 3.2.REQ-7
+    FR  [3.2.REQ-7] Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data.
+
+[3.2.REQ-8] 3.2.REQ-8
+    FR  [3.2.REQ-8] Provide administrative access to the clients.
+
+[3.2.REQ-9] 3.2.REQ-9
+    FR  [3.2.REQ-9] Add and delete client access easily.
+
+[3.2.REQ-10] 3.2.REQ-10
+    FR  [3.2.REQ-10] Easily append an event to the database.
+
+[3.2.REQ-11] 3.2.REQ-11
+    FR  [3.2.REQ-11] Provide an ordered list of events added to the database for easy understandability.
+
+[3.2.REQ-12] 3.2.REQ-12
+    FR  [3.2.REQ-12] Simple Interface for easy and reliable interactivity.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.2.REQ-1    sample=0  Canonical case: System has internet access
+  [FAIL] 3.2.REQ-1    sample=0  Failure case: System does not have internet access
+  [FAIL] 3.2.REQ-2    sample=0  Canonical successful registration by an authenticated stude…
+  [FAIL] 3.2.REQ-2    sample=0  Attempted registration by a non-enrolled user
+  [FAIL] 3.2.REQ-2    sample=0  Registration with missing user ID
+  [FAIL] 3.2.REQ-2    sample=0  Registration with missing event ID
+  [FAIL] 3.2.REQ-2    sample=0  Registration by a user who is not authenticated
+  [FAIL] 3.2.REQ-3    sample=0  Display error message for validation error when submitting …
+  [FAIL] 3.2.REQ-3    sample=0  Display error message for authentication error when logging…
+  [FAIL] 3.2.REQ-3    sample=0  Display error message for permission error when trying to a…
+  [FAIL] 3.2.REQ-3    sample=0  Handle invalid error type input which should raise an excep…
+  [FAIL] 3.2.REQ-4    sample=0  Post a valid event on the website
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with missing required fields
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with empty title
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with invalid date format
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with invalid time format
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Canonical case: System has internet access
+  inputs:   System has internet access
+  expected: Feature is accessible
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Failure case: System does not have internet access
+  inputs:   System does not have internet access
+  expected: HTTP 4xx error due to lack of internet access
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Canonical successful registration by an authenticated student
+  inputs:   A valid student ID and event ID
+  expected: Registration is successful
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Attempted registration by a non-enrolled user
+  inputs:   A user ID that is not enrolled as a student
+  expected: Registration fails due to lack of enrollment
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration with missing user ID
+  inputs:   Empty user ID field
+  expected: Registration fails due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration with missing event ID
+  inputs:   Empty event ID field
+  expected: Registration fails due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration by a user who is not authenticated
+  inputs:   A user ID that does not correspond to an authenticated session
+  expected: Registration fails due to lack of authentication
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Display error message for validation error when submitting an empty form
+  inputs:   User submits an empty form resulting in a validation error
+  expected: Please fill in all required fields.
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Display error message for authentication error when logging in with invalid credentials
+  inputs:   User attempts to log in with incorrect username or password
+  expected: Invalid username or password. Please try again.
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Display error message for permission error when trying to access restricted content
+  inputs:   User tries to access a page they don't have permission for
+  expected: You do not have permission to access this resource.
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Handle invalid error type input which should raise an exception
+  inputs:   User performs an action with an unrecognized error type
+  expected: HTTPException due to invalid error type
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post a valid event on the website
+  inputs:   Event data with title, description, date, time, and registration deadline
+  expected: Event is published with an event ID and status 'published'
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with missing required fields
+  inputs:   Event data missing the title field
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with empty title
+  inputs:   Event data with empty title field
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with invalid date format
+  inputs:   Event data with incorrect date format
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with invalid time format
+  inputs:   Event data with incorrect time format
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+======================================================================
+  SUMMARY: 0 passed / 16 failed / 16 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+  ⏱  done in 13.70s
+  pass@1: 0.000  (over 4 un-proved FR(s))
+
+======================================================================
+  [6b]  Recovery loop — re-prove + test-informed regen (≤ 2 passes)
+======================================================================
+
+  ── recovery loop 1/2 · targeting ['3.2.REQ-1', '3.2.REQ-2', '3.2.REQ-3', '3.2.REQ-4'] · dafny rounds=6 · code temp=0.4 ──
+     re-proved: ['3.2.REQ-1', '3.2.REQ-3'] → shipped as Dafny-core adapter(s)
+     regenerated 2 file(s) for ['3.2.REQ-2', '3.2.REQ-4'] with test feedback
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.2.REQ-1] 3.2.REQ-1
+    FR  [3.2.REQ-1] Can only be accessed with the provision of the internet.
+
+[3.2.REQ-2] 3.2.REQ-2
+    FR  [3.2.REQ-2] Only authenticated users i.e., enrolled students in the institution can register and participate in the events.
+
+[3.2.REQ-3] 3.2.REQ-3
+    FR  [3.2.REQ-3] The user interface provides appropriate error messages in case the user does an error.
+
+[3.2.REQ-4] 3.2.REQ-4
+    FR  [3.2.REQ-4] The EOCR can post the events on the website and the students can register accordingly.
+
+[3.2.REQ-5] 3.2.REQ-5
+    FR  [3.2.REQ-5] The EOCR can generate the list of registrants at any point of time.
+
+[3.2.REQ-6] 3.2.REQ-6
+    FR  [3.2.REQ-6] Provides a secure database of stakeholders containing the login credentials and personal information.
+
+[3.2.REQ-7] 3.2.REQ-7
+    FR  [3.2.REQ-7] Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data.
+
+[3.2.REQ-8] 3.2.REQ-8
+    FR  [3.2.REQ-8] Provide administrative access to the clients.
+
+[3.2.REQ-9] 3.2.REQ-9
+    FR  [3.2.REQ-9] Add and delete client access easily.
+
+[3.2.REQ-10] 3.2.REQ-10
+    FR  [3.2.REQ-10] Easily append an event to the database.
+
+[3.2.REQ-11] 3.2.REQ-11
+    FR  [3.2.REQ-11] Provide an ordered list of events added to the database for easy understandability.
+
+[3.2.REQ-12] 3.2.REQ-12
+    FR  [3.2.REQ-12] Simple Interface for easy and reliable interactivity.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.2.REQ-2    sample=0  Canonical successful registration by an authenticated stude…
+  [FAIL] 3.2.REQ-2    sample=0  Attempted registration by a non-enrolled user
+  [FAIL] 3.2.REQ-2    sample=0  Registration with missing user ID
+  [FAIL] 3.2.REQ-2    sample=0  Registration with missing event ID
+  [FAIL] 3.2.REQ-2    sample=0  Registration by a user who is not authenticated
+  [FAIL] 3.2.REQ-4    sample=0  Post a valid event on the website
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with missing required fields
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with empty title
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with invalid date format
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with invalid time format
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Canonical successful registration by an authenticated student
+  inputs:   A valid student ID and event ID
+  expected: Registration is successful
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Attempted registration by a non-enrolled user
+  inputs:   A user ID that is not enrolled as a student
+  expected: Registration fails due to lack of enrollment
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration with missing user ID
+  inputs:   Empty user ID field
+  expected: Registration fails due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration with missing event ID
+  inputs:   Empty event ID field
+  expected: Registration fails due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration by a user who is not authenticated
+  inputs:   A user ID that does not correspond to an authenticated session
+  expected: Registration fails due to lack of authentication
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post a valid event on the website
+  inputs:   Event data with title, description, date, time, and registration deadline
+  expected: Event is published with an event ID and status 'published'
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with missing required fields
+  inputs:   Event data missing the title field
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with empty title
+  inputs:   Event data with empty title field
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with invalid date format
+  inputs:   Event data with incorrect date format
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with invalid time format
+  inputs:   Event data with incorrect time format
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+======================================================================
+  SUMMARY: 0 passed / 10 failed / 10 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+     iter 1 metrics: PassVer@1=0.833  pass@1=0.0  case_pass_rate=0.0  proved_frs=10/12  certified_frs=10/12
+
+  ── recovery loop 2/2 · targeting ['3.2.REQ-2', '3.2.REQ-4'] · dafny rounds=8 · code temp=0.6 ──
+     regenerated 2 file(s) for ['3.2.REQ-2', '3.2.REQ-4'] with test feedback
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.2.REQ-1] 3.2.REQ-1
+    FR  [3.2.REQ-1] Can only be accessed with the provision of the internet.
+
+[3.2.REQ-2] 3.2.REQ-2
+    FR  [3.2.REQ-2] Only authenticated users i.e., enrolled students in the institution can register and participate in the events.
+
+[3.2.REQ-3] 3.2.REQ-3
+    FR  [3.2.REQ-3] The user interface provides appropriate error messages in case the user does an error.
+
+[3.2.REQ-4] 3.2.REQ-4
+    FR  [3.2.REQ-4] The EOCR can post the events on the website and the students can register accordingly.
+
+[3.2.REQ-5] 3.2.REQ-5
+    FR  [3.2.REQ-5] The EOCR can generate the list of registrants at any point of time.
+
+[3.2.REQ-6] 3.2.REQ-6
+    FR  [3.2.REQ-6] Provides a secure database of stakeholders containing the login credentials and personal information.
+
+[3.2.REQ-7] 3.2.REQ-7
+    FR  [3.2.REQ-7] Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data.
+
+[3.2.REQ-8] 3.2.REQ-8
+    FR  [3.2.REQ-8] Provide administrative access to the clients.
+
+[3.2.REQ-9] 3.2.REQ-9
+    FR  [3.2.REQ-9] Add and delete client access easily.
+
+[3.2.REQ-10] 3.2.REQ-10
+    FR  [3.2.REQ-10] Easily append an event to the database.
+
+[3.2.REQ-11] 3.2.REQ-11
+    FR  [3.2.REQ-11] Provide an ordered list of events added to the database for easy understandability.
+
+[3.2.REQ-12] 3.2.REQ-12
+    FR  [3.2.REQ-12] Simple Interface for easy and reliable interactivity.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.2.REQ-2    sample=0  Canonical successful registration by an authenticated stude…
+  [FAIL] 3.2.REQ-2    sample=0  Attempted registration by a non-enrolled user
+  [FAIL] 3.2.REQ-2    sample=0  Registration with missing user ID
+  [FAIL] 3.2.REQ-2    sample=0  Registration with missing event ID
+  [FAIL] 3.2.REQ-2    sample=0  Registration by a user who is not authenticated
+  [FAIL] 3.2.REQ-4    sample=0  Post a valid event on the website
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with missing required fields
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with empty title
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with invalid date format
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with invalid time format
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Canonical successful registration by an authenticated student
+  inputs:   A valid student ID and event ID
+  expected: Registration is successful
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Attempted registration by a non-enrolled user
+  inputs:   A user ID that is not enrolled as a student
+  expected: Registration fails due to lack of enrollment
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration with missing user ID
+  inputs:   Empty user ID field
+  expected: Registration fails due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration with missing event ID
+  inputs:   Empty event ID field
+  expected: Registration fails due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration by a user who is not authenticated
+  inputs:   A user ID that does not correspond to an authenticated session
+  expected: Registration fails due to lack of authentication
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post a valid event on the website
+  inputs:   Event data with title, description, date, time, and registration deadline
+  expected: Event is published with an event ID and status 'published'
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with missing required fields
+  inputs:   Event data missing the title field
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with empty title
+  inputs:   Event data with empty title field
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with invalid date format
+  inputs:   Event data with incorrect date format
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with invalid time format
+  inputs:   Event data with incorrect time format
+  expected: HTTP 400 error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-11_adapter.py, line 22)
+
+======================================================================
+  SUMMARY: 0 passed / 10 failed / 10 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+     iter 2 metrics: PassVer@1=0.833  pass@1=0.0  case_pass_rate=0.0  proved_frs=10/12  certified_frs=10/12
+  ⏱  done in 187.80s  ·  133,635 tokens, 36 call(s)
+  recovery: +2 re-proved, +0 repaired-with-tests, 2 uncertified  ·  pass@1 now 0.000
+    [3.2.REQ-1] PROVED (recovery)
+    [3.2.REQ-10] PROVED
+    [3.2.REQ-11] PROVED
+    [3.2.REQ-12] PROVED
+    [3.2.REQ-2] UNCERTIFIED
+    [3.2.REQ-3] PROVED (recovery)
+    [3.2.REQ-4] UNCERTIFIED
+    [3.2.REQ-5] PROVED
+    [3.2.REQ-6] PROVED
+    [3.2.REQ-7] PROVED
+    [3.2.REQ-8] PROVED
+    [3.2.REQ-9] PROVED
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.8333
+  test_case_pass_ratio        :       0.0000
+  PassVer@1                   :       0.8333
+  avg_verification_iteration  :         2.75
+  avg_test_iteration          :         3.00
+  avg_input_token             :       3367.6
+  avg_output_token            :        344.5
+  total_time                  :      201.50s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/with_recovery/Event Management_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/with_recovery/Event Management_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/with_recovery/runs/20261018-093414-event-management.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/with_recovery/runs/20261018-093414-event-management.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : certification=13.7s   recovery=187.8s
+Time      : 201.50s   Tokens: 133,635   Cost: $0.0000

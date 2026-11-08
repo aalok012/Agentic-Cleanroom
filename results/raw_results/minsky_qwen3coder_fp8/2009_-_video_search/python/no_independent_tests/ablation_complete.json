@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/home/cfw36/cleanroom_ablation_20261018/.venv/bin/python",
+    "/home/cfw36/cleanroom_ablation_20261018/run_pipeline.py",
+    "/home/cfw36/cleanroom_ablation_20261018/data/srs/2009 - video search.xml",
+    "--model",
+    "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "--language",
+    "python",
+    "--stack",
+    "fastapi",
+    "--samples",
+    "1",
+    "--k",
+    "1",
+    "--output-dir",
+    "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/no_independent_tests",
+    "--prove",
+    "--no-test",
+    "--no-certify",
+    "--no-recovery",
+    "--reuse-from",
+    "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep1/2009 - video search_full_ir.json",
+    "--reuse-stages",
+    "spec,dependency,planning,proof,code"
+  ],
+  "srs_sha256": "11b11798a9dab4e09ec5f8e00e873cfb5092ae7193f42722cc9b209fc96b85ee"
+}

@@ -1,0 +1,361 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=on certify=on recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 10.05s  ·  12,514 tokens, 12 call(s)
+Project   : Event Management
+Features  : 12  (FR=12)
+Contracts : 12
+Stack     : fastapi  (pinned via --stack)
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  ⏱  done in 0.00s
+Outer nodes : 1  edges: 0
+Build order : 3.2
+Cycles      : none
+Inner (FR)  : 0 edge(s), 0 cycle(s) across features
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  ⏱  done in 21.20s  ·  31,751 tokens, 12 call(s)
+Contracts   : 12  (in dependency order)
+  [3.2.REQ-1] (controller) def check_feature_accessibility() -> bool:
+        -> controllers/check_feature_accessibility.py   prereqs=[]
+  [3.2.REQ-2] (controller) def register_for_event(user_id: str, event_id: str) -> dict[str, str]:
+        -> controllers/register_for_event.py   prereqs=[]
+  [3.2.REQ-3] (view) def display_error_message(error_type: str, details: str) -> None:
+        -> views/display_error_message.py   prereqs=[]
+  [3.2.REQ-4] (model) def post_event_on_website(event_data: dict[str, str | int | list]) -> dict[str, str | int]:
+        -> models/post_event_on_website.py   prereqs=[]
+  [3.2.REQ-5] (model) def generate_registrant_list() -> list[dict[str, str]]
+        -> models/generate_registrant_list.py   prereqs=[]
+  [3.2.REQ-6] (model) def get_stakeholder_info(stakeholder_id: str) -> dict[str, str]:
+        -> models/get_stakeholder_info.py   prereqs=[]
+  [3.2.REQ-7] (controller) def manage_data_workflow_step(action: str, data: dict) -> dict:
+        -> controllers/manage_data_workflow_step.py   prereqs=[]
+  [3.2.REQ-8] (controller) def manage_admin_client_access(admin_user_id: str, action: str, client_data: dict) -> dict:
+        -> controllers/manage_admin_client_access.py   prereqs=[]
+  [3.2.REQ-9] (controller) def manage_client_access(client_id: str, permissions: list[str], action: str) -> dict[str, str]:
+        -> controllers/manage_client_access.py   prereqs=[]
+  [3.2.REQ-10] (model) def append_event(event_data: dict[str, str]) -> None:
+        -> models/append_event.py   prereqs=[]
+  [3.2.REQ-11] (view) def get_ordered_events() -> list[dict[str, str]]
+        -> views/get_ordered_events.py   prereqs=[]
+  [3.2.REQ-12] (controller) def fr_3_2_REQ_12() -> None:
+        -> controllers/fr_3_2_REQ_12.py   prereqs=[]
+
+======================================================================
+  [4a]  Dafny Proof Agent — proving feature logic (formal verification)
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 185.56s  ·  151,001 tokens, 42 call(s)
+Proved    : 6/12 features  →  ['3.2.REQ-1', '3.2.REQ-10', '3.2.REQ-11', '3.2.REQ-12', '3.2.REQ-3', '3.2.REQ-5']
+  [3.2.REQ-1] PROVED   F3_2_REQ_1  (1r)
+  [3.2.REQ-10] PROVED   F3_2_REQ_10  (1r)
+  [3.2.REQ-11] PROVED   F3_2_REQ_11  (1r)
+  [3.2.REQ-12] PROVED   F3_2_REQ_12  (1r)
+  [3.2.REQ-2] unproved  F3_2_REQ_2  (6r)
+  [3.2.REQ-3] PROVED   F3_2_REQ_3  (1r)
+  [3.2.REQ-4] unproved  F3_2_REQ_4  (6r)
+  [3.2.REQ-5] PROVED   F3_2_REQ_5  (1r)
+  [3.2.REQ-6] unproved  F3_2_REQ_6  (6r)
+  [3.2.REQ-7] unproved  F3_2_REQ_7  (6r)
+  [3.2.REQ-8] unproved  F3_2_REQ_8  (6r)
+  [3.2.REQ-9] unproved  F3_2_REQ_9  (6r)
+  ⏱  done in 6.59s
+Compiled  : 6/6 proved features to py
+
+======================================================================
+  [4]  Code Agent — generating MVC code from the spec
+======================================================================
+  ⏱  done in 4.66s  ·  2,020 tokens, 1 call(s)
+  ⏱  done in 5.60s  ·  2,195 tokens, 1 call(s)
+  ⏱  done in 5.15s  ·  2,141 tokens, 1 call(s)
+  ⏱  done in 4.74s  ·  2,020 tokens, 1 call(s)
+  ⏱  done in 4.95s  ·  2,172 tokens, 1 call(s)
+  ⏱  done in 5.03s  ·  2,122 tokens, 1 call(s)
+  ⏱  done in 29.03s  ·  11,146 tokens, 6 call(s)
+  6 proved feature(s) shipped as Dafny-core adapters; 6 file(s) generated for the rest.
+  Staged proved Dafny cores ['F3_2_REQ_1', 'F3_2_REQ_10', 'F3_2_REQ_11', 'F3_2_REQ_12', 'F3_2_REQ_3', 'F3_2_REQ_5'] + shim into /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep3/generated/Event Management/app/dafny_cores
+12 file(s); 736 LOC (Python); layers={'controller': 10, 'model': 2}
+Assembled runnable FastAPI app: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep3/generated/Event Management/app  (cd "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep3/generated/Event Management" && python -m app)
+
+======================================================================
+  [5]  Test Agent — deriving black-box tests from the spec
+======================================================================
+  ⏱  done in 100.72s  ·  36,397 tokens, 12 call(s)
+12 feature(s), 48 test case(s).
+Wrote 12 pytest module(s) to /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep3/generated/Event Management/tests
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples) · skipping 6 proved
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.2.REQ-1] 3.2.REQ-1
+    FR  [3.2.REQ-1] Can only be accessed with the provision of the internet.
+
+[3.2.REQ-2] 3.2.REQ-2
+    FR  [3.2.REQ-2] Only authenticated users i.e., enrolled students in the institution can register and participate in the events.
+
+[3.2.REQ-3] 3.2.REQ-3
+    FR  [3.2.REQ-3] The user interface provides appropriate error messages in case the user does an error.
+
+[3.2.REQ-4] 3.2.REQ-4
+    FR  [3.2.REQ-4] The EOCR can post the events on the website and the students can register accordingly.
+
+[3.2.REQ-5] 3.2.REQ-5
+    FR  [3.2.REQ-5] The EOCR can generate the list of registrants at any point of time.
+
+[3.2.REQ-6] 3.2.REQ-6
+    FR  [3.2.REQ-6] Provides a secure database of stakeholders containing the login credentials and personal information.
+
+[3.2.REQ-7] 3.2.REQ-7
+    FR  [3.2.REQ-7] Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data.
+
+[3.2.REQ-8] 3.2.REQ-8
+    FR  [3.2.REQ-8] Provide administrative access to the clients.
+
+[3.2.REQ-9] 3.2.REQ-9
+    FR  [3.2.REQ-9] Add and delete client access easily.
+
+[3.2.REQ-10] 3.2.REQ-10
+    FR  [3.2.REQ-10] Easily append an event to the database.
+
+[3.2.REQ-11] 3.2.REQ-11
+    FR  [3.2.REQ-11] Provide an ordered list of events added to the database for easy understandability.
+
+[3.2.REQ-12] 3.2.REQ-12
+    FR  [3.2.REQ-12] Simple Interface for easy and reliable interactivity.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.2.REQ-2    sample=0  Successful registration by an authenticated student
+  [FAIL] 3.2.REQ-2    sample=0  Attempted registration with empty user ID
+  [FAIL] 3.2.REQ-2    sample=0  Registration by a non-enrolled user
+  [FAIL] 3.2.REQ-2    sample=0  Registration for a non-existent event
+  [FAIL] 3.2.REQ-4    sample=0  Post a valid event on the website
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with missing fields in event data
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with empty title
+  [FAIL] 3.2.REQ-4    sample=0  Post an event with invalid date format
+  [FAIL] 3.2.REQ-6    sample=0  Retrieve stakeholder information with valid ID
+  [FAIL] 3.2.REQ-6    sample=0  Attempt to retrieve stakeholder info with empty ID
+  [FAIL] 3.2.REQ-6    sample=0  Retrieve stakeholder information with non-existent ID
+  [FAIL] 3.2.REQ-6    sample=0  Retrieve stakeholder information with special characters in…
+  [FAIL] 3.2.REQ-7    sample=0  Anchor case: Enter new data and proceed to organize step
+  [FAIL] 3.2.REQ-7    sample=0  Organize data step
+  [FAIL] 3.2.REQ-7    sample=0  Retrieve data step
+  [FAIL] 3.2.REQ-7    sample=0  Modify data step
+  [FAIL] 3.2.REQ-7    sample=0  Delete data step
+  [FAIL] 3.2.REQ-7    sample=0  Invalid action input
+  [FAIL] 3.2.REQ-8    sample=0  Admin user views client info successfully
+  [FAIL] 3.2.REQ-8    sample=0  Admin user modifies client info successfully
+  [FAIL] 3.2.REQ-8    sample=0  Admin user attempts to access non-existent client
+  [FAIL] 3.2.REQ-8    sample=0  Admin user with invalid credentials attempts access
+  [FAIL] 3.2.REQ-8    sample=0  Admin user attempts unauthorized action
+  [FAIL] 3.2.REQ-9    sample=0  Add client access with valid inputs
+  [FAIL] 3.2.REQ-9    sample=0  Attempt to add access for a client that already has access
+  [FAIL] 3.2.REQ-9    sample=0  Delete client access with valid inputs
+  [FAIL] 3.2.REQ-9    sample=0  Attempt to delete access for a client that does not have ac…
+  [FAIL] 3.2.REQ-9    sample=0  Add client access with empty client ID
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Successful registration by an authenticated student
+  inputs:   A valid user ID and event ID for an enrolled student
+  expected: Registration confirmation with user and event IDs
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Attempted registration with empty user ID
+  inputs:   An empty user ID but valid event ID
+  expected: HTTP 4xx error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration by a non-enrolled user
+  inputs:   A user ID that is not enrolled as a student
+  expected: HTTP 4xx error indicating unauthorized access
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Registration for a non-existent event
+  inputs:   Valid user ID but non-existent event ID
+  expected: HTTP 4xx error indicating event not found
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post a valid event on the website
+  inputs:   Event data with title, description, date, time, location, and registration details
+  expected: Event ID and status as published
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with missing fields in event data
+  inputs:   Event data missing description field
+  expected: HTTP 4xx error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with empty title
+  inputs:   Event data with empty title
+  expected: HTTP 4xx error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-4  sample=0
+  test:     Post an event with invalid date format
+  inputs:   Event data with invalid date format
+  expected: HTTP 4xx error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Retrieve stakeholder information with valid ID
+  inputs:   A valid stakeholder ID
+  expected: Stakeholder information including encrypted credentials
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Attempt to retrieve stakeholder info with empty ID
+  inputs:   An empty stakeholder ID
+  expected: HTTP 4xx error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Retrieve stakeholder information with non-existent ID
+  inputs:   A stakeholder ID that does not exist in the database
+  expected: HTTP 4xx error indicating stakeholder not found
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Retrieve stakeholder information with special characters in ID
+  inputs:   A stakeholder ID containing special characters
+  expected: Stakeholder information including encrypted credentials
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-7  sample=0
+  test:     Anchor case: Enter new data and proceed to organize step
+  inputs:   User enters new data to be organized
+  expected: System responds with next step as organize and success message
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-7  sample=0
+  test:     Organize data step
+  inputs:   User organizes existing data
+  expected: System responds with next step as retrieve and success message
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-7  sample=0
+  test:     Retrieve data step
+  inputs:   User retrieves existing data
+  expected: System responds with next step as modify and success message
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-7  sample=0
+  test:     Modify data step
+  inputs:   User modifies existing data
+  expected: System responds with next step as delete and success message
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-7  sample=0
+  test:     Delete data step
+  inputs:   User deletes existing data
+  expected: System responds with completion message
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-7  sample=0
+  test:     Invalid action input
+  inputs:   User provides invalid action type
+  expected: System raises an error due to invalid action
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-8  sample=0
+  test:     Admin user views client info successfully
+  inputs:   Admin user with valid ID attempts to view client data
+  expected: Access granted with client information returned
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-8  sample=0
+  test:     Admin user modifies client info successfully
+  inputs:   Admin user with valid ID attempts to modify client data
+  expected: Access granted and client information updated
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-8  sample=0
+  test:     Admin user attempts to access non-existent client
+  inputs:   Admin user attempts to view a client that does not exist
+  expected: Error response indicating client not found
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-8  sample=0
+  test:     Admin user with invalid credentials attempts access
+  inputs:   Admin user with empty admin_user_id attempts to access client data
+  expected: Error response due to invalid credentials
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-8  sample=0
+  test:     Admin user attempts unauthorized action
+  inputs:   Admin user attempts an unsupported action type
+  expected: Error response for unsupported action
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-9  sample=0
+  test:     Add client access with valid inputs
+  inputs:   A client ID, permissions list, and add action
+  expected: Success status and message
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+[FAIL] 3.2.REQ-9  sample=0
+  test:     Attempt to add access for a client that already has access
+  inputs:   A client ID that already has access, permissions list, and add action
+  expected: Error message indicating client already has access
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-10_adapter.py, line 19)
+
+  … and 3 more failures
+
+======================================================================
+  SUMMARY: 0 passed / 28 failed / 28 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+  ⏱  done in 23.69s
+  pass@1: 0.000  (over 6 un-proved FR(s))
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.5000
+  test_case_pass_ratio        :       0.0000
+  PassVer@1                   :       0.5000
+  avg_verification_iteration  :         3.50
+  avg_test_iteration          :         1.00
+  avg_input_token             :       2453.4
+  avg_output_token            :        385.2
+  total_time                  :      406.99s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep3/Event Management_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep3/Event Management_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep3/runs/20261018-080107-event-management.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep3/runs/20261018-080107-event-management.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : spec_contracts=10.0s   planning=21.2s   dafny=185.6s   compile=6.6s   adapter=4.7s   adapter=5.6s   adapter=5.2s   adapter=4.7s   adapter=5.0s   adapter=5.0s   code=29.0s   test=100.7s   certification=23.7s
+Time      : 406.99s   Tokens: 255,479   Cost: $0.0000

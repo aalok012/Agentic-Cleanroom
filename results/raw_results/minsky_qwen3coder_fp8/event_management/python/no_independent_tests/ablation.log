@@ -1,0 +1,59 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=off certify=off recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+  [REUSE] stages ['spec', 'dependency', 'planning', 'proof', 'code'] taken from /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep1/Event Management_full_ir.json
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  [skip — resumed] Event Management: 12 feature(s), FR=12, stack=fastapi
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  [skip — resumed] dependency graph loaded from checkpoint.
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  [skip — resumed] planning loaded: 12 contract(s).
+
+======================================================================
+  [4a]  Dafny Proof Agent — [skip — resumed]
+======================================================================
+  proved 8, compiled 8; dafny project re-scaffolded at /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_independent_tests/generated/Event Management/dafny_proof
+
+======================================================================
+  [4]  Code Agent — [skip — resumed]
+======================================================================
+  loaded 12 generated file(s) from checkpoint (packaged app already on disk).
+
+======================================================================
+  [5]  Test Agent — SKIPPED (--no-test)
+======================================================================
+  Test agent OFF — no test modules written.  (no certification will run.)
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.6667
+  test_case_pass_ratio        :       0.0000
+  PassVer@1                   :       0.6667
+  avg_verification_iteration  :         2.75
+  avg_test_iteration          :         0.00
+  avg_input_token             :          0.0
+  avg_output_token            :          0.0
+  total_time                  :        0.00s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_independent_tests/Event Management_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_independent_tests/Event Management_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_independent_tests/runs/20261018-091831-event-management.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_independent_tests/runs/20261018-091831-event-management.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : 
+Time      : 0.00s   Tokens: 0   Cost: $0.0000

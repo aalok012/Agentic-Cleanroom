@@ -1,0 +1,371 @@
+subject,model,language,arm,rep,stage,seconds,input_tokens,output_tokens,llm_calls,reused
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,spec_contracts,4.54,1929,199,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,dependency,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,planning,3.732,4930,377,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,scaffold,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,dafny,51.261,40687,3434,12,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,compile,1.067,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,6.757,1605,628,1,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,code,2.273,1171,252,1,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,test,18.256,4198,2094,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,certification,3.54,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,spec_contracts,3.294,1929,199,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,dependency,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,planning,3.561,4930,377,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,scaffold,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,dafny,50.665,40687,3434,12,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,compile,0.885,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,5.455,1605,628,1,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,code,2.277,1171,252,1,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,test,18.209,4198,2094,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,certification,3.48,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,spec_contracts,1.929,1929,211,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,dependency,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,planning,3.632,4942,408,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,scaffold,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,dafny,33.451,24571,2356,7,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,compile,1.106,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,6.536,1565,759,1,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,code,3.8,1338,433,1,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,test,14.873,4239,1704,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,certification,4.373,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,test,21.916,5018,2512,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,certification,3.474,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,proof,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,code,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,proof,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,code,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,code,6.474,2444,737,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,test,20.868,4198,2425,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,certification,7.322,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,dependency,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,planning,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,scaffold,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,dafny,51.494,41774,4184,12,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,compile,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,code,5.836,2210,668,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,test,19.071,4092,2198,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,certification,8.112,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,scaffold,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,dafny,6.386,4641,566,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,compile,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,code,6.071,2444,707,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,test,15.037,4198,1748,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,certification,6.909,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,certification,3.459,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,recovery,11.322,3907,931,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,proof,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,code,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,test,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,spec_contracts,6.675,6696,739,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,dependency,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,planning,13.331,17253,1491,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,scaffold,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,dafny,124.07,89248,10357,25,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,compile,4.348,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,6.505,1607,754,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,5.174,1507,596,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,7.302,1523,848,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,4.641,1547,533,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,code,10.132,3822,1154,3,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,test,54.906,14546,6304,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,certification,10.994,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,spec_contracts,6.7,6696,751,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,dependency,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,planning,13.316,17251,1495,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,scaffold,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,dafny,168.542,118960,13513,32,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,compile,1.566,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,5.075,1561,588,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,4.699,1538,540,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,code,18.9,6076,2165,5,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,test,53.24,14563,6110,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,certification,17.079,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,spec_contracts,6.716,6696,751,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,dependency,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,planning,13.888,17251,1566,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,scaffold,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,dafny,118.589,80512,8561,22,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,compile,3.976,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,6.104,1604,706,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,5.167,1545,595,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,4.937,1538,578,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,6.104,1686,703,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,code,9.527,3630,1083,3,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,test,53.467,14609,6149,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,certification,8.581,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,test,59.041,18108,6722,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,certification,12.256,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,proof,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,code,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,proof,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,code,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,code,22.846,8353,2603,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,test,51.747,14546,5999,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,certification,23.91,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,dependency,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,planning,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,scaffold,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,dafny,101.007,71397,6569,22,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,compile,4.525,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,5.796,1492,671,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,4.797,1476,552,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,4.939,1490,570,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,5.192,1552,599,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,code,9.915,3222,1134,3,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,test,41.027,13896,4701,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,certification,10.211,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,scaffold,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,dafny,32.65,16470,2495,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,compile,2.805,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,5.192,1608,597,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,4.84,1523,557,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,6.042,1547,699,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,code,12.833,4912,1500,4,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,test,55.918,14546,6491,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,certification,13.587,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,certification,10.932,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,recovery,297.915,200912,27793,48,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,proof,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,code,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,test,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,spec_contracts,9.416,11400,1030,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,planning,18.592,29339,2060,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,scaffold,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,dafny,142.032,103105,8941,33,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,compile,8.928,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,5.344,1537,618,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,4.925,1548,567,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,5.251,1478,607,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,4.842,1519,558,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,3.206,1514,363,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,7.102,1585,822,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,6.099,1648,704,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,6.274,1572,726,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,code,12.639,4793,1437,4,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,test,89.895,24490,10323,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,certification,13.818,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,spec_contracts,10.031,11400,1114,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,planning,21.128,29368,2373,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,scaffold,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,dafny,149.296,111266,10739,35,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,compile,8.784,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,5.545,1484,642,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,4.933,1538,568,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,4.475,1527,514,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,5.756,1474,666,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,5.541,1552,640,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,5.227,1533,602,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,6.202,1591,716,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,6.619,1631,765,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,code,16.867,5114,1937,4,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,test,101.026,24726,11614,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,certification,14.444,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,spec_contracts,10.049,11400,1114,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,planning,21.203,29368,2383,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,scaffold,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,dafny,185.562,138322,12679,42,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,compile,6.593,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,4.665,1484,536,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,5.601,1538,657,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,5.151,1547,594,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,4.745,1474,546,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,4.95,1602,570,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,5.029,1533,589,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,code,29.029,7791,3355,6,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,test,100.717,24748,11649,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,certification,23.687,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,test,95.746,30387,10894,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,certification,14.586,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,proof,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,code,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,proof,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,code,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,code,33.94,14085,3846,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,test,98.847,24490,11455,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,certification,46.188,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,planning,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,scaffold,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,dafny,183.75,153730,13326,47,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,compile,6.452,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,5.771,1506,667,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,5.695,1517,658,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,4.963,1487,572,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,6.326,1705,729,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,5.177,1505,594,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,5.688,1508,656,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,code,15.926,6388,1800,6,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,test,74.914,23640,8586,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,certification,18.02,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,scaffold,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,dafny,46.128,28059,3055,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,compile,8.942,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,5.572,1542,644,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,5.228,1548,606,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,5.282,1478,609,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,5.408,1523,624,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,4.616,1592,529,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,7.372,1585,854,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,6.136,1638,708,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,5.827,1573,672,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,code,12.143,4793,1417,4,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,test,95.887,24490,11137,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,certification,13.307,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,certification,13.699,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,recovery,187.797,121234,12401,36,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,proof,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,code,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,test,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,spec_parse,0.002,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,spec_contracts,47.88,17281,5578,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,dependency,9.22,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,planning,98.617,45643,11251,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,dafny,497.84,367466,43322,92,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,compile,2.709,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,6.697,2154,770,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,15.625,1841,1809,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,adapter,7.494,1752,866,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,code,154.912,60147,17655,46,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,test,210.873,44661,24011,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,1,certification,102.738,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,spec_contracts,47.828,17281,5579,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,dependency,9.175,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,planning,104.856,45644,11957,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,dafny,500.582,367042,43644,92,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,compile,3.002,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,8.693,2154,997,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,6.657,1839,767,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,adapter,6.978,1760,805,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,code,158.064,60720,18008,46,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,test,218.566,45013,24835,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,2,certification,108.842,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,spec_contracts,47.872,17281,5579,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,dependency,9.179,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,planning,104.869,45644,11957,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,dafny,500.193,367042,43644,92,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,compile,3.187,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,8.695,2154,997,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,6.668,1839,767,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,adapter,6.973,1760,805,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,code,157.907,60720,18008,46,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,test,218.204,45013,24835,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,reference,3,certification,109.384,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,test,261.817,63667,29042,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,certification,115.273,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,proof,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,test_sees_code,,code,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,proof,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_independent_tests,,code,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,code,176.466,70498,20114,54,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,test,214.581,44661,24541,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,certification,108.155,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_proof,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,dependency,9.212,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,planning,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,dafny,441.77,315073,34804,86,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,compile,4.53,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,11.128,2209,1281,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,6.028,1521,696,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,8.417,1761,973,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,adapter,10.516,2266,1208,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,code,119.721,43967,13626,41,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,test,194.378,39264,22271,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,raw_spec_only,,certification,93.217,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,scaffold,0.0,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,dafny,85.548,42638,7583,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,compile,0.734,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,adapter,6.443,1789,744,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,code,168.226,66743,19160,51,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,test,215.427,44661,24521,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,certification,101.603,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,no_verifier_repair,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,certification,102.086,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,recovery,1578.064,819854,117169,230,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,proof,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,code,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,python,with_recovery,,test,,,,,1

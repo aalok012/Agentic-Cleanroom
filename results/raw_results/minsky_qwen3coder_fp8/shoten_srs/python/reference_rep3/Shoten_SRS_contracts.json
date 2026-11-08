@@ -1,0 +1,775 @@
+{
+  "project_name": "Shoten_SRS",
+  "source_file": "Shoten_SRS.xml",
+  "features": [
+    {
+      "id": "4.1",
+      "name": "Account Registration",
+      "description": "Account Registration",
+      "functional_requirements": [
+        {
+          "id": "4.1.REQ-1",
+          "text": "The system shall allow a non-registered user to create a secure account."
+        },
+        {
+          "id": "4.1.REQ-2",
+          "text": "The system shall require the following information from the user: Name, Institute Roll Number (in case of Students only),Shop ID(In case of Bookstores) , Mobile Number , Email ID."
+        },
+        {
+          "id": "4.1.REQ-3",
+          "text": "The system shall assign the user a username and ask for a password."
+        },
+        {
+          "id": "4.1.REQ-4",
+          "text": "The system shall con\ufb01rm the password is acceptable."
+        },
+        {
+          "id": "4.1.REQ-5",
+          "text": "The system shall store the information in the database."
+        }
+      ]
+    },
+    {
+      "id": "4.2",
+      "name": "Account Login",
+      "description": "Account Login",
+      "functional_requirements": [
+        {
+          "id": "4.2.REQ-1",
+          "text": "The system shall allow a registered user to log-in to their account."
+        },
+        {
+          "id": "4.2.REQ-2",
+          "text": "The system shall require a username and password from the user."
+        },
+        {
+          "id": "4.2.REQ-3",
+          "text": "The system will verify the username and password, and the user will be considered \u201clogged-in\u201d."
+        }
+      ]
+    },
+    {
+      "id": "4.3",
+      "name": "Search",
+      "description": "Search",
+      "functional_requirements": [
+        {
+          "id": "4.3.REQ-1",
+          "text": "The users can search for the book of their choice as well as a print shop."
+        }
+      ]
+    },
+    {
+      "id": "4.3.1",
+      "name": "Search a Book Stimulus: Click \"Search a Book\" Button",
+      "description": "Search a Book Stimulus: Click \"Search a Book\" Button",
+      "functional_requirements": [
+        {
+          "id": "4.3.1.REQ-1",
+          "text": "The system shall allow a user to search for books by title, author or ISBN number."
+        },
+        {
+          "id": "4.3.1.REQ-2",
+          "text": "The search results will include a list of matching books with picture of the front cover, along with the title, author, price, availability, and condition of the book."
+        }
+      ]
+    },
+    {
+      "id": "4.3.2",
+      "name": "Search a Print Shop Stimulus: Click \"Search a Print Shop\" Button",
+      "description": "Search a Print Shop Stimulus: Click \"Search a Print Shop\" Button",
+      "functional_requirements": [
+        {
+          "id": "4.3.2.REQ-1",
+          "text": "The system shall allow a user to search for print shops."
+        },
+        {
+          "id": "4.3.2.REQ-2",
+          "text": "The search results will include a list of available print shops with there opening time , closing time and rates."
+        }
+      ]
+    },
+    {
+      "id": "4.4",
+      "name": "Add to Shopping Cart",
+      "description": "Add to Shopping Cart",
+      "functional_requirements": [
+        {
+          "id": "4.4.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to temporarily save books that are being considered for purchase into a list associated with their account"
+        },
+        {
+          "id": "4.4.REQ-2",
+          "text": "When viewing the shopping cart list, the system shall display the total price of the books in the cart."
+        }
+      ]
+    },
+    {
+      "id": "4.5",
+      "name": "Delete",
+      "description": "Delete",
+      "functional_requirements": [
+        {
+          "id": "4.5.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to remove any unwanted books from their shopping cart."
+        },
+        {
+          "id": "4.5.REQ-2",
+          "text": "The system shall provide the user a way to select one of the books in his/ her cart for deletion."
+        },
+        {
+          "id": "4.5.REQ-3",
+          "text": "After the user has indicated the particular book to be deleted from their shopping cart, the stored list representing the shopping cart should be updated by removing the list, and the display should be updated to show only the books remaining in the cart."
+        }
+      ]
+    },
+    {
+      "id": "4.6",
+      "name": "Rent",
+      "description": "Rent",
+      "functional_requirements": [
+        {
+          "id": "4.6.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to rent-out books that are in their shopping cart."
+        },
+        {
+          "id": "4.6.REQ-2",
+          "text": "The system shall prompt the user to enter time period for renting out the books in the cart."
+        },
+        {
+          "id": "4.6.REQ-3",
+          "text": "The system shall display rent charged for the period of rental and individual rent of the books in the shopping cart."
+        },
+        {
+          "id": "4.6.REQ-4",
+          "text": "The system shall allow the user to enter their delivery information."
+        },
+        {
+          "id": "4.6.REQ-5",
+          "text": "After a successful transaction user system shall prompt the user to enter their payment information."
+        },
+        {
+          "id": "4.6.REQ-6",
+          "text": "On a successful transaction the books (titles and prices and quantities) will be displayed to the screen."
+        }
+      ]
+    },
+    {
+      "id": "4.7",
+      "name": "Purchase",
+      "description": "Purchase",
+      "functional_requirements": [
+        {
+          "id": "4.7.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to purchase books that are in their shopping cart."
+        },
+        {
+          "id": "4.7.REQ-2",
+          "text": "The system shall display total cost of the books in the shopping cart."
+        },
+        {
+          "id": "4.7.REQ-3",
+          "text": "The system shall allow the user to enter their delivery information."
+        },
+        {
+          "id": "4.7.REQ-4",
+          "text": "After a successful transaction user system shall prompt the user to enter their payment information."
+        },
+        {
+          "id": "4.7.REQ-5",
+          "text": "On a successful transaction the books (titles and prices and quantities) will be displayed to the screen."
+        }
+      ]
+    },
+    {
+      "id": "4.8",
+      "name": "Print",
+      "description": "Print",
+      "functional_requirements": [
+        {
+          "id": "4.8.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to request a print from a chosen print shop."
+        },
+        {
+          "id": "4.8.REQ-2",
+          "text": "The system shall prompt the user to enter the url of the google drive link of the soft copy to be printed."
+        },
+        {
+          "id": "4.8.REQ-3",
+          "text": "The system shall display the total cost of printing the soft copy."
+        },
+        {
+          "id": "4.8.REQ-4",
+          "text": "The system shall allow the user to enter their delivery information."
+        },
+        {
+          "id": "4.8.REQ-5",
+          "text": "After a successful transaction user system shall prompt the user to enter their payment information."
+        },
+        {
+          "id": "4.8.REQ-6",
+          "text": "On a successful transaction the delivery status will the displayed."
+        }
+      ]
+    },
+    {
+      "id": "4.9",
+      "name": "Add Book",
+      "description": "Add Book",
+      "functional_requirements": [
+        {
+          "id": "4.9.REQ-1",
+          "text": "The system shall allow a registered and logged-in user , bookstores and printing stores to add books they want to sell / print / rent-out."
+        },
+        {
+          "id": "4.9.REQ-2",
+          "text": "The user shall be prompted to \ufb01ll in a form with all details associated with the class \u2018Book\u2019 : name , quantity , options for lending or selling , ISBN number , author , price on rental basis , price for selling."
+        },
+        {
+          "id": "4.9.REQ-3",
+          "text": "The system shall allow the user to enter their payment acceptance details like bank account number , IFSC Code etc."
+        }
+      ]
+    },
+    {
+      "id": "4.10",
+      "name": "Request a Restock",
+      "description": "Request a Restock",
+      "functional_requirements": [
+        {
+          "id": "4.10.REQ-1",
+          "text": "The system shall allow a user to view various methods of contacting the sellers(bookstore ,printstore or the student sharing the book)."
+        },
+        {
+          "id": "4.10.REQ-2",
+          "text": "The system shall display the store address, telephone number, email address, and directions on how to get to the the sellers(bookstore ,printstore or the student sharing the book)."
+        },
+        {
+          "id": "4.10.REQ-3",
+          "text": "The system should also display a map showing the location of the bookstores and printing stores."
+        }
+      ]
+    },
+    {
+      "id": "4.11",
+      "name": "Update Account Information",
+      "description": "Update Account Information",
+      "functional_requirements": [
+        {
+          "id": "4.11.REQ-1",
+          "text": "The system shall allow a user to update the information in their account."
+        },
+        {
+          "id": "4.11.REQ-2",
+          "text": "The user shall be allowed to view and change their name, mailing address, billing address, payment information."
+        },
+        {
+          "id": "4.11.REQ-3",
+          "text": "The user shall be able to change their password by entering the old one once, and a new one twice."
+        }
+      ]
+    },
+    {
+      "id": "4.12",
+      "name": "View Delivery Status",
+      "description": "View Delivery Status",
+      "functional_requirements": [
+        {
+          "id": "4.12.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to view the shipping status of orders they have placed within the last 30 days."
+        },
+        {
+          "id": "4.12.REQ-2",
+          "text": "The user must enter a con\ufb01rmation number to view the shipping status of their order."
+        },
+        {
+          "id": "4.12.REQ-3",
+          "text": "The system shall then display the shipping date, mailing address, projected delivery date, and status (in transit, delivered, etc.)"
+        }
+      ]
+    },
+    {
+      "id": "4.13",
+      "name": "View Account Purchase History",
+      "description": "View Account Purchase History",
+      "functional_requirements": [
+        {
+          "id": "4.13.REQ-1",
+          "text": "The system shall allow a registered and logged-in user to view purchases made with their account within the last two years."
+        },
+        {
+          "id": "4.13.REQ-2",
+          "text": "The system shall display the date of purchase, payment mode."
+        },
+        {
+          "id": "4.13.REQ-3",
+          "text": "The system shall display the title of the book, price, and quantity for each book purchased in a given order."
+        }
+      ]
+    },
+    {
+      "id": "4.14",
+      "name": "Account Logout",
+      "description": "Account Logout",
+      "functional_requirements": [
+        {
+          "id": "4.14.REQ-1",
+          "text": "The system shall allow the registered and logged-in user to exit his/her account, so that access to operations requiring a user to be logged in are now disabled."
+        }
+      ]
+    },
+    {
+      "id": "4.15",
+      "name": "Help",
+      "description": "Help",
+      "functional_requirements": [
+        {
+          "id": "4.15.REQ-1",
+          "text": "The system shall allow the user to view an overview of how to use the various operations de\ufb01ned above."
+        },
+        {
+          "id": "4.15.REQ-2",
+          "text": "The system must allow the user to select one of the operations by name."
+        },
+        {
+          "id": "4.15.REQ-3",
+          "text": "The system shall then display information on how to use that operation."
+        }
+      ]
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "4.1.REQ-1",
+      "feature_id": "4.1",
+      "stimulus": "A non-registered user attempts to create a secure account",
+      "precondition": "none",
+      "response": "The system initiates the account creation process for the user",
+      "postcondition": "The user is guided through the registration steps to complete account creation"
+    },
+    {
+      "fr_id": "4.1.REQ-2",
+      "feature_id": "4.1",
+      "stimulus": "User provides information during account creation",
+      "precondition": "The user has initiated the account creation process",
+      "response": "The system requests the following information from the user: Name, Institute Roll Number (if student), Shop ID (if bookstore), Mobile Number, Email ID",
+      "postcondition": "The system collects the required information from the user to proceed with registration"
+    },
+    {
+      "fr_id": "4.1.REQ-3",
+      "feature_id": "4.1",
+      "stimulus": "User completes providing required information",
+      "precondition": "All required information has been collected from the user",
+      "response": "The system assigns a username to the user and prompts the user to set a password",
+      "postcondition": "The user is assigned a unique username and is prompted to enter a password"
+    },
+    {
+      "fr_id": "4.1.REQ-4",
+      "feature_id": "4.1",
+      "stimulus": "User provides a password",
+      "precondition": "The user has been prompted to enter a password",
+      "response": "The system confirms whether the entered password meets the security requirements",
+      "postcondition": "The system verifies the password's acceptability based on defined criteria"
+    },
+    {
+      "fr_id": "4.1.REQ-5",
+      "feature_id": "4.1",
+      "stimulus": "User successfully completes registration with valid information and accepted password",
+      "precondition": "All required information is provided and the password is acceptable",
+      "response": "The system stores the user's information in the database",
+      "postcondition": "The user's information is securely stored in the database for future authentication and use"
+    },
+    {
+      "fr_id": "4.2.REQ-1",
+      "feature_id": "4.2",
+      "stimulus": "A registered user attempts to log in to their account by providing login credentials.",
+      "precondition": "none",
+      "response": "The system grants access to the user's account if the credentials are valid.",
+      "postcondition": "The user is authenticated and allowed to proceed with account-related activities."
+    },
+    {
+      "fr_id": "4.2.REQ-2",
+      "feature_id": "4.2",
+      "stimulus": "The system prompts the user for login credentials including a username and password.",
+      "precondition": "none",
+      "response": "The system requires both a username and a password from the user before proceeding.",
+      "postcondition": "The system will not accept login without both required fields provided."
+    },
+    {
+      "fr_id": "4.2.REQ-3",
+      "feature_id": "4.2",
+      "stimulus": "The system verifies the provided username and password against stored credentials.",
+      "precondition": "The username and password are provided by the user.",
+      "response": "The system confirms the validity of the credentials and marks the user as logged-in.",
+      "postcondition": "Upon successful verification, the user's session is established and they are granted access to their account."
+    },
+    {
+      "fr_id": "4.3.REQ-1",
+      "feature_id": "4.3",
+      "stimulus": "User submits a search query string containing keywords related to a book or a print shop",
+      "precondition": "none",
+      "response": "System returns a list of search results matching the query, including books and print shops",
+      "postcondition": "Each result in the response corresponds to an item (book or print shop) that matches the keywords provided in the stimulus query"
+    },
+    {
+      "fr_id": "4.3.1.REQ-1",
+      "feature_id": "4.3.1",
+      "stimulus": "Click \"Search a Book\" Button",
+      "precondition": "none",
+      "response": "Display interface for entering search criteria (title, author, or ISBN)",
+      "postcondition": "The system provides an interactive search input area where the user can enter search terms for books by title, author, or ISBN number."
+    },
+    {
+      "fr_id": "4.3.1.REQ-2",
+      "feature_id": "4.3.1",
+      "stimulus": "Click \"Search a Book\" Button",
+      "precondition": "none",
+      "response": "Display list of matching books with picture of the front cover, along with the title, author, price, availability, and condition of the book",
+      "postcondition": "The system presents a list of books that match the search criteria, including visual representation (front cover image), title, author, price, availability status, and condition details."
+    },
+    {
+      "fr_id": "4.3.2.REQ-1",
+      "feature_id": "4.3.2",
+      "stimulus": "Click \"Search a Print Shop\" Button",
+      "precondition": "none",
+      "response": "Initiate search process for print shops",
+      "postcondition": "The system begins processing the search request and prepares to return results"
+    },
+    {
+      "fr_id": "4.3.2.REQ-2",
+      "feature_id": "4.3.2",
+      "stimulus": "Search results display",
+      "precondition": "Search has been initiated and results are ready to be shown",
+      "response": "List of available print shops with their opening time, closing time and rates",
+      "postcondition": "Each print shop in the list includes accurate opening time, closing time and rates information"
+    },
+    {
+      "fr_id": "4.4.REQ-1",
+      "feature_id": "4.4",
+      "stimulus": "A registered and logged-in user requests to add a book to their shopping cart",
+      "precondition": "The user is authenticated and the book exists in the system",
+      "response": "The book is added to the user's shopping cart list",
+      "postcondition": "The user's shopping cart contains the added book and the system retains this information for the duration of the session"
+    },
+    {
+      "fr_id": "4.4.REQ-2",
+      "feature_id": "4.4",
+      "stimulus": "A user views their shopping cart list",
+      "precondition": "The user has items in their shopping cart",
+      "response": "The system displays the total price of all books currently in the shopping cart",
+      "postcondition": "The displayed total price accurately reflects the sum of individual book prices in the cart"
+    },
+    {
+      "fr_id": "4.5.REQ-1",
+      "feature_id": "4.5",
+      "stimulus": "A registered and logged-in user requests to remove a book from their shopping cart",
+      "precondition": "The user is registered and logged-in; the book exists in the user's shopping cart",
+      "response": "The book is removed from the user's shopping cart",
+      "postcondition": "The stored list representing the shopping cart no longer includes the specified book; the display reflects the updated list of books in the cart"
+    },
+    {
+      "fr_id": "4.5.REQ-2",
+      "feature_id": "4.5",
+      "stimulus": "The user selects a book in their shopping cart for deletion",
+      "precondition": "The user is registered and logged-in; the selected book exists in the user's shopping cart",
+      "response": "The system identifies the selected book for deletion",
+      "postcondition": "The system prepares to remove the selected book from the stored list representing the shopping cart"
+    },
+    {
+      "fr_id": "4.5.REQ-3",
+      "feature_id": "4.5",
+      "stimulus": "The user indicates the particular book to be deleted from their shopping cart",
+      "precondition": "The user is registered and logged-in; the specified book exists in the user's shopping cart",
+      "response": "The stored list representing the shopping cart is updated by removing the specified book, and the display is updated to show only the remaining books in the cart",
+      "postcondition": "The stored list representing the shopping cart no longer includes the specified book; the display reflects the updated list of books in the cart"
+    },
+    {
+      "fr_id": "4.6.REQ-1",
+      "feature_id": "4.6",
+      "stimulus": "A registered and logged-in user initiates the rent-out process for books in their shopping cart",
+      "precondition": "The user is registered and logged into the system; the shopping cart contains at least one book",
+      "response": "The system allows the user to proceed with renting the books in the shopping cart",
+      "postcondition": "The books in the shopping cart are marked as rented and the system prepares for further steps in the rental process"
+    },
+    {
+      "fr_id": "4.6.REQ-2",
+      "feature_id": "4.6",
+      "stimulus": "The system prompts the user to enter a time period for renting the books in the cart",
+      "precondition": "The user has initiated the rent-out process and the system has confirmed the presence of books in the shopping cart",
+      "response": "The system displays a form or interface requesting the user to specify the rental duration",
+      "postcondition": "The system waits for the user to input the rental period before proceeding to the next step"
+    },
+    {
+      "fr_id": "4.6.REQ-3",
+      "feature_id": "4.6",
+      "stimulus": "The system calculates and displays the total rent and individual rent of the books in the shopping cart based on the selected rental period",
+      "precondition": "The user has entered a valid rental period for the books in the shopping cart",
+      "response": "The system shows the total rent amount and the individual rent amounts for each book in the shopping cart",
+      "postcondition": "The displayed rent information accurately reflects the selected rental period and the contents of the shopping cart"
+    },
+    {
+      "fr_id": "4.6.REQ-4",
+      "feature_id": "4.6",
+      "stimulus": "The system prompts the user to enter delivery information",
+      "precondition": "The user has entered the rental period and the system has calculated the rent charges",
+      "response": "The system presents a form or interface for the user to input delivery details such as address and contact information",
+      "postcondition": "The system collects the delivery information provided by the user for use in the subsequent transaction steps"
+    },
+    {
+      "fr_id": "4.6.REQ-5",
+      "feature_id": "4.6",
+      "stimulus": "After a successful transaction, the system prompts the user to enter their payment information",
+      "precondition": "The user has completed the rental period selection and delivery information entry, and the system has verified all necessary details",
+      "response": "The system displays a form or interface requesting the user to provide payment details such as credit card number or other payment method",
+      "postcondition": "The system awaits the user's payment information to finalize the transaction"
+    },
+    {
+      "fr_id": "4.6.REQ-6",
+      "feature_id": "4.6",
+      "stimulus": "On a successful transaction, the system displays the books (titles, prices, and quantities) that were rented",
+      "precondition": "The user has successfully completed the payment process and the transaction is finalized",
+      "response": "The system presents a list of rented books including their titles, prices, and quantities",
+      "postcondition": "The displayed list of rented books matches the items in the shopping cart and the transaction details"
+    },
+    {
+      "fr_id": "4.7.REQ-1",
+      "feature_id": "4.7",
+      "stimulus": "User initiates a purchase action while logged in and has items in the shopping cart",
+      "precondition": "User is registered and logged in; shopping cart contains at least one book",
+      "response": "System processes the purchase of all books in the shopping cart",
+      "postcondition": "All books in the shopping cart are removed from the cart and marked as purchased"
+    },
+    {
+      "fr_id": "4.7.REQ-2",
+      "feature_id": "4.7",
+      "stimulus": "User requests to view the total cost of books in the shopping cart",
+      "precondition": "Shopping cart contains at least one book",
+      "response": "System displays the total cost of all books in the shopping cart",
+      "postcondition": "The displayed total cost accurately reflects the sum of (price * quantity) for all books in the shopping cart"
+    },
+    {
+      "fr_id": "4.7.REQ-3",
+      "feature_id": "4.7",
+      "stimulus": "User provides delivery information during the checkout process",
+      "precondition": "User has initiated the purchase process and is in the delivery information step",
+      "response": "System accepts and stores the provided delivery information",
+      "postcondition": "Delivery information is correctly saved for use in the subsequent steps of the transaction"
+    },
+    {
+      "fr_id": "4.7.REQ-4",
+      "feature_id": "4.7",
+      "stimulus": "User completes the purchase process successfully",
+      "precondition": "Purchase process is completed without errors and user has entered delivery information",
+      "response": "System prompts the user to enter their payment information",
+      "postcondition": "Payment information entry interface is displayed to the user"
+    },
+    {
+      "fr_id": "4.7.REQ-5",
+      "feature_id": "4.7",
+      "stimulus": "User completes a successful transaction",
+      "precondition": "Transaction is successfully processed and payment information is entered",
+      "response": "System displays the titles, prices, and quantities of all books purchased",
+      "postcondition": "The displayed information accurately reflects the books purchased, including their respective titles, prices, and quantities"
+    },
+    {
+      "fr_id": "4.8.REQ-1",
+      "feature_id": "4.8",
+      "stimulus": "A registered and logged-in user requests a print from a chosen print shop",
+      "precondition": "The user is registered and logged into the system, and has selected a print shop",
+      "response": "The system initiates the print request process for the chosen print shop",
+      "postcondition": "The system transitions to a state where it awaits further input for the print job details"
+    },
+    {
+      "fr_id": "4.8.REQ-2",
+      "feature_id": "4.8",
+      "stimulus": "The system prompts the user to enter the URL of the Google Drive link of the soft copy to be printed",
+      "precondition": "The user has initiated a print request and is in the process of providing document details",
+      "response": "The system displays a prompt asking the user to input the Google Drive link URL",
+      "postcondition": "The system waits for the user to provide the Google Drive link URL"
+    },
+    {
+      "fr_id": "4.8.REQ-3",
+      "feature_id": "4.8",
+      "stimulus": "The system displays the total cost of printing the soft copy",
+      "precondition": "The user has provided the Google Drive link URL for the document to be printed",
+      "response": "The system calculates and shows the total cost associated with printing the document",
+      "postcondition": "The system presents the calculated cost to the user for confirmation before proceeding"
+    },
+    {
+      "fr_id": "4.8.REQ-4",
+      "feature_id": "4.8",
+      "stimulus": "The system allows the user to enter their delivery information",
+      "precondition": "The user has entered the Google Drive link and confirmed the printing cost",
+      "response": "The system prompts the user to input their delivery address and related information",
+      "postcondition": "The system collects and stores the delivery information provided by the user"
+    },
+    {
+      "fr_id": "4.8.REQ-5",
+      "feature_id": "4.8",
+      "stimulus": "After a successful transaction, the user system prompts the user to enter their payment information",
+      "precondition": "The user has completed the document upload, cost confirmation, and delivery information entry",
+      "response": "The system displays a prompt requesting the user to provide payment details",
+      "postcondition": "The system prepares to process the payment based on the provided information"
+    },
+    {
+      "fr_id": "4.8.REQ-6",
+      "feature_id": "4.8",
+      "stimulus": "On a successful transaction, the delivery status is displayed",
+      "precondition": "The user has successfully completed all steps including payment processing",
+      "response": "The system displays the delivery status of the printed document",
+      "postcondition": "The system confirms the successful completion of the transaction and provides delivery tracking information"
+    },
+    {
+      "fr_id": "4.9.REQ-1",
+      "feature_id": "4.9",
+      "stimulus": "A registered and logged-in user, bookstore, or printing store attempts to add a book they want to sell/print/rent-out",
+      "precondition": "The user is registered and logged into the system; the user is either a bookstore or a printing store",
+      "response": "The system allows the user to proceed to the book addition process",
+      "postcondition": "The system has initiated the book addition workflow for the user, enabling them to input book details"
+    },
+    {
+      "fr_id": "4.9.REQ-2",
+      "feature_id": "4.9",
+      "stimulus": "The user fills in a form with all details associated with the class 'Book': name, quantity, options for lending or selling, ISBN number, author, price on rental basis, price for selling",
+      "precondition": "The user has successfully started the book addition process and is ready to input book details",
+      "response": "The system accepts the entered book details and validates them according to the defined schema",
+      "postcondition": "The system has validated the book details provided by the user and is prepared to store or process the book information accordingly"
+    },
+    {
+      "fr_id": "4.9.REQ-3",
+      "feature_id": "4.9",
+      "stimulus": "The user enters their payment acceptance details like bank account number, IFSC Code etc.",
+      "precondition": "The user has completed the book details entry and is now entering payment information",
+      "response": "The system accepts the payment details and stores them securely for future transactions",
+      "postcondition": "The system has securely stored the payment acceptance details provided by the user for processing future sales or rentals"
+    },
+    {
+      "fr_id": "4.10.REQ-1",
+      "feature_id": "4.10",
+      "stimulus": "User requests to view contact methods for sellers (bookstore, printstore, or student sharing the book)",
+      "precondition": "none",
+      "response": "System displays various methods of contacting the sellers including bookstore, printstore, or the student sharing the book",
+      "postcondition": "The displayed contact methods accurately reflect the available ways to reach the respective sellers"
+    },
+    {
+      "fr_id": "4.10.REQ-2",
+      "feature_id": "4.10",
+      "stimulus": "User requests to view seller details (store address, telephone number, email address, and directions)",
+      "precondition": "none",
+      "response": "System displays the store address, telephone number, email address, and directions on how to get to the sellers (bookstore, printstore, or student sharing the book)",
+      "postcondition": "The displayed information includes all required details: store address, telephone number, email address, and directions to reach the sellers"
+    },
+    {
+      "fr_id": "4.10.REQ-3",
+      "feature_id": "4.10",
+      "stimulus": "User requests to view a map showing locations of bookstores and printing stores",
+      "precondition": "none",
+      "response": "System displays a map showing the location of the bookstores and printing stores",
+      "postcondition": "The displayed map accurately represents the geographical locations of the bookstores and printing stores"
+    },
+    {
+      "fr_id": "4.11.REQ-1",
+      "feature_id": "4.11",
+      "stimulus": "A user initiates an account update operation with new account information",
+      "precondition": "none",
+      "response": "The system accepts the updated account information and begins processing the update",
+      "postcondition": "The system has received the updated account information and will proceed to validate and apply the changes"
+    },
+    {
+      "fr_id": "4.11.REQ-2",
+      "feature_id": "4.11",
+      "stimulus": "A user submits changes to their name, mailing address, billing address, or payment information",
+      "precondition": "none",
+      "response": "The system validates the submitted information and applies the changes if valid",
+      "postcondition": "The user's account details for name, mailing address, billing address, and payment information are updated to match the submitted values, assuming validation passes"
+    },
+    {
+      "fr_id": "4.11.REQ-3",
+      "feature_id": "4.11",
+      "stimulus": "A user provides the old password and two matching entries for the new password",
+      "precondition": "The old password provided matches the currently stored password for the user",
+      "response": "The system updates the user's password to the new one provided",
+      "postcondition": "The user's password is replaced with the new password, provided both new password entries match and the old password was correct"
+    },
+    {
+      "fr_id": "4.12.REQ-1",
+      "feature_id": "4.12",
+      "stimulus": "A registered and logged-in user requests to view the shipping status of orders placed within the last 30 days",
+      "precondition": "The user is registered and logged into the system; the orders were placed within the last 30 days",
+      "response": "The system provides a list of orders placed within the last 30 days for which the user is the owner",
+      "postcondition": "The list includes all orders placed by the user within the last 30 days, and the user can select one to view its shipping status"
+    },
+    {
+      "fr_id": "4.12.REQ-2",
+      "feature_id": "4.12",
+      "stimulus": "The user enters a confirmation number to view the shipping status of their order",
+      "precondition": "The user has entered a valid confirmation number associated with an order they placed",
+      "response": "The system retrieves and displays the shipping status information for the order corresponding to the confirmation number",
+      "postcondition": "The retrieved order matches the confirmation number provided by the user, and the user can see the relevant shipping details"
+    },
+    {
+      "fr_id": "4.12.REQ-3",
+      "feature_id": "4.12",
+      "stimulus": "The system displays the shipping date, mailing address, projected delivery date, and status of an order",
+      "precondition": "The order exists and the user has access to it based on the confirmation number or previous selection",
+      "response": "The system presents the shipping date, mailing address, projected delivery date, and status (in transit, delivered, etc.) for the selected order",
+      "postcondition": "The displayed information accurately reflects the shipping details and current status of the order"
+    },
+    {
+      "fr_id": "4.13.REQ-1",
+      "feature_id": "4.13",
+      "stimulus": "A registered and logged-in user requests to view their purchase history",
+      "precondition": "The user is authenticated and authorized to access their account data",
+      "response": "A list of purchases made with the user's account within the last two years",
+      "postcondition": "The list includes all purchases made by the user within the specified time frame, and only those purchases"
+    },
+    {
+      "fr_id": "4.13.REQ-2",
+      "feature_id": "4.13",
+      "stimulus": "The system displays the purchase history for a user",
+      "precondition": "none",
+      "response": "For each purchase, the system displays the date of purchase and the payment mode used",
+      "postcondition": "Each displayed purchase includes both the date of purchase and the payment mode, and nothing else"
+    },
+    {
+      "fr_id": "4.13.REQ-3",
+      "feature_id": "4.13",
+      "stimulus": "The system displays details of a specific order within the purchase history",
+      "precondition": "none",
+      "response": "For each book in the order, the system displays the title of the book, its price, and the quantity purchased",
+      "postcondition": "Each displayed book in the order includes the title, price, and quantity, and nothing else"
+    },
+    {
+      "fr_id": "4.14.REQ-1",
+      "feature_id": "4.14",
+      "stimulus": "The user initiates the logout action by selecting the 'Logout' option from the account menu",
+      "precondition": "none",
+      "response": "The system terminates the current user session and redirects the user to the login page",
+      "postcondition": "The user's authentication token is invalidated, and all subsequent requests requiring authentication will be rejected until the user logs in again"
+    },
+    {
+      "fr_id": "4.15.REQ-1",
+      "feature_id": "4.15",
+      "stimulus": "User requests to view an overview of how to use the various operations defined above",
+      "precondition": "none",
+      "response": "System displays an overview of how to use the various operations defined above",
+      "postcondition": "The displayed overview accurately reflects the set of operations and their general usage"
+    },
+    {
+      "fr_id": "4.15.REQ-2",
+      "feature_id": "4.15",
+      "stimulus": "User selects one of the operations by name",
+      "precondition": "The selected operation name corresponds to an operation defined in the system",
+      "response": "System acknowledges the selection of the operation by name",
+      "postcondition": "The system prepares to display detailed information for the selected operation"
+    },
+    {
+      "fr_id": "4.15.REQ-3",
+      "feature_id": "4.15",
+      "stimulus": "System displays information on how to use the selected operation",
+      "precondition": "An operation has been previously selected by the user",
+      "response": "System presents detailed information on how to use the selected operation",
+      "postcondition": "The displayed information correctly describes the usage of the selected operation"
+    }
+  ]
+}

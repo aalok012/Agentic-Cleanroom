@@ -1,0 +1,47 @@
+{
+  "3.1": {
+    "sig": "f202ac52501db8bf1e68d49fe5f5f0414f6db84fd3f38648564cee5f3b015f1f",
+    "data": {
+      "feature_id": "3.1",
+      "module": "F3_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1Domain refines Domain {\n  datatype Event = Event(eventId: string, details: string, registrationRequirements: string)\n\n  type Model = Event\n\n  datatype Action = EditEventDetails(eventId: string, newDetails: string, newRegistrationRequirements: string)\n\n  ghost predicate Inv(m: Model) {\n    m.eventId != \"\" && m.details != \"\" && m.registrationRequirements != \"\"\n  }\n\n  function Init(): Model {\n    Event(\"\", \"\", \"\")\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case EditEventDetails(eventId, newDetails, newRegistrationRequirements) =>\n      if m.eventId == eventId then\n        Event(eventId, newDetails, newRegistrationRequirements)\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    if m.eventId == \"\" || m.details == \"\" || m.registrationRequirements == \"\" then\n      Event(\"\", \"\", \"\")\n    else\n      m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma EditEventDetailsPreservesInv(eventId: string, newDetails: string, newRegistrationRequirements: string)\n    ensures Inv(Normalize(Apply(Event(eventId, newDetails, newRegistrationRequirements), EditEventDetails(eventId, newDetails, newRegistrationRequirements))))\n  {\n  }\n}\n\nmodule F3_1Kernel refines Kernel {\n  import D = F3_1Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 36,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 41,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 45,
+          "col": 31,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 46,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.2": {
+    "sig": "d5fa6e84c655c352e604d5a3402d584089c7905d9deb7e25abca702a31051d34",
+    "data": {
+      "feature_id": "3.2",
+      "module": "F3_2",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2Domain refines Domain {\n  type Model = (bool, set<string>)\n\n  datatype Action = RegisterForEvent(eventId: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    (false, {})\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case RegisterForEvent(eventId) =>\n      if m.0 then\n        (true, m.1 + {eventId})\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma RegisterForEventRequiresAuth(m: Model, eventId: string)\n    requires m.0 == false\n    ensures Apply(m, RegisterForEvent(eventId)) == m\n  {\n  }\n}\n\nmodule F3_2Kernel refines Kernel {\n  import D = F3_2Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  }
+}

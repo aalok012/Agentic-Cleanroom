@@ -1,0 +1,1420 @@
+{
+  "project_name": "2009 - video search",
+  "source_file": "2009 - video search.xml",
+  "features": [
+    {
+      "id": "3.1.REQ-1",
+      "name": "Torrent Search: 3.1.REQ-1",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-1",
+          "text": "Torrent search will share the same search bar with the streaming search."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-2",
+      "name": "Torrent Search: 3.1.REQ-2",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-2",
+          "text": "Database of torrent sites can be updated via the internet."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-2"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-3",
+      "name": "Torrent Search: 3.1.REQ-3",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-3",
+          "text": "There will be a tick box to allow the user to choose to include torrent searching in the search."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-3"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-4",
+      "name": "Torrent Search: 3.1.REQ-4",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-4",
+          "text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-4"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-5",
+      "name": "Torrent Search: 3.1.REQ-5",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-5",
+          "text": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d"
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-5"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-6",
+      "name": "Torrent Search: 3.1.REQ-6",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-6",
+          "text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-6"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-7",
+      "name": "Torrent Search: 3.1.REQ-7",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-7",
+          "text": "There will be page button for the user to navigate the results."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-7"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.1.REQ-1",
+      "feature_id": "3.1.REQ-1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Torrent search will share the same search bar with the streaming search.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-2",
+      "feature_id": "3.1.REQ-2",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Database of torrent sites can be updated via the internet.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-3",
+      "feature_id": "3.1.REQ-3",
+      "stimulus": "",
+      "precondition": "",
+      "response": "There will be a tick box to allow the user to choose to include torrent searching in the search.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-4",
+      "feature_id": "3.1.REQ-4",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-5",
+      "feature_id": "3.1.REQ-5",
+      "stimulus": "",
+      "precondition": "",
+      "response": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-6",
+      "feature_id": "3.1.REQ-6",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Results will be arranged in size/date/alphabetical order by clicking on the column headers.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-7",
+      "feature_id": "3.1.REQ-7",
+      "stimulus": "",
+      "precondition": "",
+      "response": "There will be page button for the user to navigate the results.",
+      "postcondition": ""
+    }
+  ],
+  "stack": "fastapi",
+  "language": "python",
+  "dependency_graph": {
+    "nodes": [
+      "3.1"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.1"
+    ],
+    "cycles": []
+  },
+  "planning": {
+    "contracts": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1.REQ-1",
+        "signature": "def fr_3_1_REQ_1(request: dict) -> dict",
+        "docstring": "Torrent search will share the same search bar with the streaming search.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_1_REQ_1.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-1",
+          "feature_id": "3.1.REQ-1",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Torrent search will share the same search bar with the streaming search.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-2",
+        "feature_id": "3.1.REQ-2",
+        "signature": "def fr_3_1_REQ_2(request: dict) -> dict",
+        "docstring": "Database of torrent sites can be updated via the internet.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_1_REQ_2.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-2",
+          "feature_id": "3.1.REQ-2",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Database of torrent sites can be updated via the internet.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-3",
+        "feature_id": "3.1.REQ-3",
+        "signature": "def fr_3_1_REQ_3(request: dict) -> dict",
+        "docstring": "There will be a tick box to allow the user to choose to include torrent searching in the search.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_1_REQ_3.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-3",
+          "feature_id": "3.1.REQ-3",
+          "stimulus": "",
+          "precondition": "",
+          "response": "There will be a tick box to allow the user to choose to include torrent searching in the search.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "signature": "def fr_3_1_REQ_4(request: dict) -> dict",
+        "docstring": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_1_REQ_4.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-4",
+          "feature_id": "3.1.REQ-4",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-5",
+        "feature_id": "3.1.REQ-5",
+        "signature": "def fr_3_1_REQ_5(request: dict) -> dict",
+        "docstring": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_1_REQ_5.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-5",
+          "feature_id": "3.1.REQ-5",
+          "stimulus": "",
+          "precondition": "",
+          "response": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "signature": "def fr_3_1_REQ_6(request: dict) -> dict",
+        "docstring": "Results will be arranged in size/date/alphabetical order by clicking on the column headers.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_1_REQ_6.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-6",
+          "feature_id": "3.1.REQ-6",
+          "stimulus": "",
+          "precondition": "",
+          "response": "Results will be arranged in size/date/alphabetical order by clicking on the column headers.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "signature": "def fr_3_1_REQ_7(request: dict) -> dict",
+        "docstring": "There will be page button for the user to navigate the results.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_1_REQ_7.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-7",
+          "feature_id": "3.1.REQ-7",
+          "stimulus": "",
+          "precondition": "",
+          "response": "There will be page button for the user to navigate the results.",
+          "postcondition": ""
+        },
+        "example_inputs_json": "{\"request\":{}}",
+        "expected_return_json": "{}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      }
+    ],
+    "notes": [
+      "Ablation: no LLM-authored behavioral contracts or implementation planning. The fixed request-dict interface only keeps downstream agents executable."
+    ]
+  },
+  "generated_dafny": {
+    "features": [
+      {
+        "feature_id": "3.1.REQ-1",
+        "module": "F3_1_REQ_1",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_1Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(query) => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchDoesNotChangeModel(m: Model, a: Action)\n    requires a == Search(\"\")\n    ensures Apply(m, a) == m\n  {\n  }\n}\n\nmodule F3_1_REQ_1Kernel refines Kernel {\n  import D = F3_1_REQ_1Domain\n}",
+        "verified": true,
+        "rounds": 1,
+        "residual_errors": [],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.1.REQ-2",
+        "module": "F3_1_REQ_2",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_2Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = UpdateSites\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case UpdateSites => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma UpdateSitesPreservesState(m: Model)\n    ensures Apply(m, UpdateSites) == m\n  {\n  }\n}\n\nmodule F3_1_REQ_2Kernel refines Kernel {\n  import D = F3_1_REQ_2Domain\n}",
+        "verified": true,
+        "rounds": 1,
+        "residual_errors": [],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.1.REQ-3",
+        "module": "F3_1_REQ_3",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_3Domain refines Domain {\n  type Model = bool\n\n  datatype Action = IncludeSearch\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    false\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case IncludeSearch => true\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma IncludeSearchEnsures(m: Model)\n    ensures Apply(m, IncludeSearch) == true\n  {\n  }\n}\n\nmodule F3_1_REQ_3Kernel refines Kernel {\n  import D = F3_1_REQ_3Domain\n}",
+        "verified": true,
+        "rounds": 1,
+        "residual_errors": [],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.1.REQ-4",
+        "module": "F3_1_REQ_4",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_4Domain refines Domain {\n  type Model = map<string, FileInfo>\n\n  datatype FileInfo = FileInfo(size: nat, seeds: nat, peers: nat, datePosted: string, link: string)\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m :: m[k].size > 0\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(q) =>\n      if q == \"\" then m else m - {q}\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchReturnsFileInfo(q: string, m: Model)\n    requires q != \"\"\n    ensures |Apply(m, Search(q))| == |m| + 1\n    ensures forall k | k in Apply(m, Search(q)) && k != q :: k in m\n    ensures Apply(m, Search(q))[q].size > 0\n  {\n  }\n}\n\nmodule F3_1_REQ_4Kernel refines Kernel {\n  import D = F3_1_REQ_4Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 40,
+            "col": 18,
+            "message": "function precondition could not be proved"
+          },
+          {
+            "line": 43,
+            "col": 2,
+            "message": "a postcondition could not be proved on this return path"
+          }
+        ],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.1.REQ-5",
+        "module": "F3_1_REQ_5",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_5Domain refines Domain {\n  type Model = (string, map<string, string>)\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    var (_, results) := m;\n    true\n  }\n\n  function Init(): Model {\n    (\"\", map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(query) =>\n      if query == \"\" then\n        (\"No results were found for this search.\", map[])\n      else\n        (query, map[])\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchEmptyQueryEnsuresNoResultsMessage(m: Model)\n    ensures Apply(m, Search(\"\")) == (\"No results were found for this search.\", map[])\n  {\n  }\n}\n\nmodule F3_1_REQ_5Kernel refines Kernel {\n  import D = F3_1_REQ_5Domain\n}",
+        "verified": true,
+        "rounds": 1,
+        "residual_errors": [],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.1.REQ-6",
+        "module": "F3_1_REQ_6",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_6Domain refines Domain {\n  type Model = (map<string, int>, string)\n\n  datatype Action = SortBySize | SortByDate | SortByAlphabetical\n\n  ghost predicate Inv(m: Model) {\n    var (results, sort) := m;\n    sort == \"size\" || sort == \"date\" || sort == \"alphabetical\"\n  }\n\n  function Init(): Model {\n    (map[], \"size\")\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    var (results, sort) := m;\n    match a\n    case SortBySize => (results, \"size\")\n    case SortByDate => (results, \"date\")\n    case SortByAlphabetical => (results, \"alphabetical\")\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SortBySizeEnsures(m: Model)\n    ensures (match Apply(m, SortBySize) {\n      case (results, sort) => sort == \"size\"\n    })\n  {\n  }\n}\n\nmodule F3_1_REQ_6Kernel refines Kernel {\n  import D = F3_1_REQ_6Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 40,
+            "col": 24,
+            "message": "function precondition could not be proved"
+          }
+        ],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.1.REQ-7",
+        "module": "F3_1_REQ_7",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_7Domain refines Domain {\n  type Model = (string, int, bool)\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    var (q, p, b) := m;\n    b ==> p >= 0\n  }\n\n  function Init(): Model {\n    (\"\", 0, false)\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(q) =>\n      (q, 0, q != \"\")\n  }\n\n  function Normalize(m: Model): Model {\n    var (q, p, b) := m;\n    if b && p < 0 then (q, 0, b) else m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchEnsuresPageButton(m: Model, a: Action)\n    requires a == Search(\"\")\n    ensures var (q, p, b) := Apply(m, a); b == true\n  {\n    assert Apply(m, a) == (\"\", 0, true);\n    assert true == true;\n  }\n}\n\nmodule F3_1_REQ_7Kernel refines Kernel {\n  import D = F3_1_REQ_7Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 40,
+            "col": 34,
+            "message": "function precondition could not be proved"
+          },
+          {
+            "line": 42,
+            "col": 4,
+            "message": "assertion might not hold"
+          },
+          {
+            "line": 42,
+            "col": 16,
+            "message": "function precondition could not be proved"
+          }
+        ],
+        "axioms": []
+      }
+    ]
+  },
+  "proved_feature_ids": [
+    "3.1.REQ-1",
+    "3.1.REQ-2",
+    "3.1.REQ-3",
+    "3.1.REQ-5"
+  ],
+  "generated_code": {
+    "files": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1.REQ-1",
+        "path": "controllers/f3_1_REQ-1_adapter.py",
+        "mvc_layer": "controller",
+        "content": "import os, sys\n_d = os.path.dirname(os.path.abspath(__file__))\nwhile _d != os.path.dirname(_d) and not os.path.isdir(os.path.join(_d, \"dafny_cores\")):\n    _d = os.path.dirname(_d)\n_CORES = os.path.join(_d, \"dafny_cores\")\nsys.path.insert(0, _CORES)\nsys.path.insert(0, os.path.join(_CORES, \"F3_1_REQ_1-py\"))\nimport dafny_marshal as M\nimport F3__1__REQ__1Domain as core\nDom = core.default__\n\nfrom fastapi import APIRouter, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal, engine\n\n# Define the state table\nBase = declarative_base()\n\nclass AppState(Base):\n    __tablename__ = \"app_state\"\n    id = Column(Integer, primary_key=True)\n    key = Column(String, unique=True)\n    value = Column(Text)\n\n# Create tables\nBase.metadata.create_all(engine)\n\nrouter = APIRouter()\n\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\ndef load_state(db: Session) -> Dom.Model:\n    state_row = db.query(AppState).filter(AppState.key == \"model\").first()\n    if state_row is None:\n        return Dom.Init()\n    return M.from_map(state_row.value, vconv=str)\n\ndef save_state(db: Session, model: Dom.Model):\n    json_value = M.to_map(model, vconv=M.to_str)\n    state_row = db.query(AppState).filter(AppState.key == \"model\").first()\n    if state_row is None:\n        state_row = AppState(key=\"model\", value=json_value)\n        db.add(state_row)\n    else:\n        state_row.value = json_value\n    db.commit()\n\n@router.post(\"/fr_3_1_REQ_1\", response_model=dict)\ndef fr_3_1_REQ_1(request: dict):\n    db = next(get_db())\n    try:\n        # Load the current state\n        state = load_state(db)\n        \n        # Extract query from request\n        query = request.get(\"query\", \"\")\n        \n        # Create the action\n        action = core.Action_Search(M.to_str(query))\n        \n        # Apply the action to the state\n        new_state = Dom.Normalize(Dom.Apply(state, action))\n        \n        # Save the new state\n        save_state(db, new_state)\n        \n        # Return the response\n        return {\"message\": \"Torrent search will share the same search bar with the streaming search.\"}\n    except Exception as e:\n        raise HTTPException(status_code=500, detail=str(e))"
+      },
+      {
+        "fr_id": "3.1.REQ-2",
+        "feature_id": "3.1.REQ-2",
+        "path": "controllers/f3_1_REQ-2_adapter.py",
+        "mvc_layer": "controller",
+        "content": "import os, sys\n_d = os.path.dirname(os.path.abspath(__file__))\nwhile _d != os.path.dirname(_d) and not os.path.isdir(os.path.join(_d, \"dafny_cores\")):\n    _d = os.path.dirname(_d)\n_CORES = os.path.join(_d, \"dafny_cores\")\nsys.path.insert(0, _CORES)\nsys.path.insert(0, os.path.join(_CORES, \"F3_1_REQ_2-py\"))\nimport dafny_marshal as M\nimport F3__1__REQ__2Domain as core\nDom = core.default__\n\nfrom fastapi import APIRouter, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal, engine\nimport json\n\nclass AppState(Base):\n    __tablename__ = \"app_state\"\n    id = Column(Integer, primary_key=True)\n    key = Column(String, unique=True)\n    value = Column(Text)\n\nBase.metadata.create_all(engine)\n\nrouter = APIRouter()\n\ndef get_db_session() -> Session:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\ndef load_state(db: Session) -> Dom.Model:\n    state_row = db.query(AppState).filter(AppState.key == \"torrent_sites\").first()\n    if state_row is None:\n        return Dom.Init()\n    return M.from_map(json.loads(state_row.value), vconv=str)\n\n\ndef save_state(db: Session, state: Dom.Model):\n    json_value = json.dumps(M.from_map(state, vconv=str))\n    state_row = db.query(AppState).filter(AppState.key == \"torrent_sites\").first()\n    if state_row is None:\n        state_row = AppState(key=\"torrent_sites\", value=json_value)\n        db.add(state_row)\n    else:\n        state_row.value = json_value\n    db.commit()\n\n\ndef fr_3_1_REQ_2(request: dict) -> dict:\n    with next(get_db_session()) as db:\n        model = load_state(db)\n        action = core.Action_UpdateSites()\n        new_model = Dom.Normalize(Dom.Apply(model, action))\n        save_state(db, new_model)\n        return {\"message\": \"Database of torrent sites can be updated via the internet.\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-3",
+        "feature_id": "3.1.REQ-3",
+        "path": "controllers/f3_1_REQ-3_adapter.py",
+        "mvc_layer": "controller",
+        "content": "import os, sys\n_d = os.path.dirname(os.path.abspath(__file__))\nwhile _d != os.path.dirname(_d) and not os.path.isdir(os.path.join(_d, \"dafny_cores\")):\n    _d = os.path.dirname(_d)\n_CORES = os.path.join(_d, \"dafny_cores\")\nsys.path.insert(0, _CORES)\nsys.path.insert(0, os.path.join(_CORES, \"F3_1_REQ_3-py\"))\nimport dafny_marshal as M\nimport F3__1__REQ__3Domain as core\nDom = core.default__\n\nfrom fastapi import APIRouter, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal, engine\nimport json\n\n# Create the table\nBase.metadata.create_all(engine)\n\nclass AppState(Base):\n    __tablename__ = \"app_state\"\n    id = Column(Integer, primary_key=True)\n    key = Column(String, unique=True)\n    value = Column(Text)\n\nrouter = APIRouter()\n\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\ndef fr_3_1_REQ_3(request: dict) -> dict:\n    # Get the database session\n    db = next(get_db())\n    \n    # Load the current state or initialize to default\n    state_row = db.query(AppState).filter(AppState.key == \"fr_3_1_REQ_3_state\").first()\n    if state_row:\n        model = M.from_str(state_row.value)\n    else:\n        model = Dom.Init()\n    \n    # Build the action from the request\n    action = core.Action_IncludeSearch()\n    \n    # Apply the action to the model\n    new_state = Dom.Normalize(Dom.Apply(model, action))\n    \n    # Marshal the new state to JSON\n    new_state_json = M.to_str(new_state)\n    \n    # Save the new state back to the database\n    if state_row:\n        state_row.value = new_state_json\n    else:\n        state_row = AppState(key=\"fr_3_1_REQ_3_state\", value=new_state_json)\n        db.add(state_row)\n    \n    db.commit()\n    \n    # Return the response\n    return {\"message\": \"Torrent search inclusion updated successfully\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-5",
+        "feature_id": "3.1.REQ-5",
+        "path": "controllers/f3_1_REQ-5_adapter.py",
+        "mvc_layer": "controller",
+        "content": "import os, sys\n_d = os.path.dirname(os.path.abspath(__file__))\nwhile _d != os.path.dirname(_d) and not os.path.isdir(os.path.join(_d, \"dafny_cores\")):\n    _d = os.path.dirname(_d)\n_CORES = os.path.join(_d, \"dafny_cores\")\nsys.path.insert(0, _CORES)\nsys.path.insert(0, os.path.join(_CORES, \"F3_1_REQ_5-py\"))\nimport dafny_marshal as M\nimport F3__1__REQ__5Domain as core\nDom = core.default__\n\nfrom fastapi import APIRouter, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal, engine\n\nimport json\n\nclass AppState(Base):\n    __tablename__ = \"app_state\"\n    id = Column(Integer, primary_key=True)\n    key = Column(String, unique=True)\n    value = Column(Text)\n\nBase.metadata.create_all(engine)\n\nrouter = APIRouter()\n\ndef get_db_session() -> Session:\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\ndef get_model(db: Session) -> Dom.Model:\n    state_row = db.query(AppState).filter(AppState.key == \"state\").first()\n    if state_row is None:\n        return Dom.Init()\n    return M.from_seq(json.loads(state_row.value), lambda x: M.from_str(x))\n\ndef set_model(db: Session, model: Dom.Model) -> None:\n    value = M.to_seq(model, M.to_str)\n    state_row = db.query(AppState).filter(AppState.key == \"state\").first()\n    if state_row is None:\n        state_row = AppState(key=\"state\", value=json.dumps(value))\n        db.add(state_row)\n    else:\n        state_row.value = json.dumps(value)\n    db.commit()\n\n@router.post(\"/fr_3_1_REQ_5\")\ndef fr_3_1_REQ_5(request: dict) -> dict:\n    with next(get_db_session()) as db:\n        model = get_model(db)\n        query = request.get(\"query\", \"\")\n        action = core.Action_Search(M.to_str(query))\n        new_model = Dom.Normalize(Dom.Apply(model, action))\n        set_model(db, new_model)\n        \n        # Extract the message from the model\n        message, _ = new_model\n        return {\"message\": M.from_str(message)}"
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "path": "controllers/fr_3_1_REQ_4.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nclass FileModel(Base):\n    __tablename__ = \"files\"\n    id = Column(Integer, primary_key=True)\n    seed_count = Column(Integer)\n    peer_count = Column(Integer)\n    file_size = Column(Float)\n    date_posted = Column(String)\n    webpage_link = Column(String)\n\nrouter = APIRouter()\n\n\ndef fr_3_1_REQ_4(request: dict) -> dict:\n    db = SessionLocal()\n    try:\n        # Assuming we're querying for a specific file ID, which should be passed in the request\n        file_id = request.get(\"file_id\")\n        if file_id is None:\n            raise HTTPException(status_code=400, detail=\"Missing file_id in request\")\n        \n        file_record = db.query(FileModel).filter(FileModel.id == file_id).first()\n        if file_record is None:\n            raise HTTPException(status_code=404, detail=\"File not found\")\n        \n        result = {\n            \"seed_count\": file_record.seed_count,\n            \"peer_count\": file_record.peer_count,\n            \"file_size\": file_record.file_size,\n            \"date_posted\": file_record.date_posted,\n            \"webpage_link\": file_record.webpage_link\n        }\n        \n        return result\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "path": "controllers/fr_3_1_REQ_6.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\n\nclass File(Base):\n    __tablename__ = \"files\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n    size = Column(Integer)\n    date = Column(String)\n\n\nrouter = APIRouter()\n\n\ndef fr_3_1_REQ_6(request: dict) -> dict:\n    db = SessionLocal()\n    try:\n        # Extract sorting parameters from request\n        sort_by = request.get(\"sort_by\", \"name\")\n        sort_order = request.get(\"sort_order\", \"asc\")\n        \n        # Validate sort_by\n        valid_columns = [\"name\", \"size\", \"date\"]\n        if sort_by not in valid_columns:\n            raise HTTPException(status_code=400, detail=\"Invalid sort column\")\n        \n        # Validate sort_order\n        if sort_order not in [\"asc\", \"desc\"]:\n            raise HTTPException(status_code=400, detail=\"Invalid sort order\")\n        \n        # Build query based on sort parameters\n        query = db.query(File)\n        \n        # Apply sorting\n        if sort_by == \"name\":\n            if sort_order == \"asc\":\n                query = query.order_by(File.name.asc())\n            else:\n                query = query.order_by(File.name.desc())\n        elif sort_by == \"size\":\n            if sort_order == \"asc\":\n                query = query.order_by(File.size.asc())\n            else:\n                query = query.order_by(File.size.desc())\n        elif sort_by == \"date\":\n            if sort_order == \"asc\":\n                query = query.order_by(File.date.asc())\n            else:\n                query = query.order_by(File.date.desc())\n        \n        # Execute query\n        results = query.all()\n        \n        # Format results\n        formatted_results = []\n        for result in results:\n            formatted_results.append({\n                \"id\": result.id,\n                \"name\": result.name,\n                \"size\": result.size,\n                \"date\": result.date\n            })\n        \n        return {\"results\": formatted_results}\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "path": "controllers/fr_3_1_REQ_7.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\n\nclass PageButton(Base):\n    __tablename__ = \"page_buttons\"\n    id = Column(Integer, primary_key=True)\n    label = Column(String(50))\n    url = Column(String(255))\n\n\nrouter = APIRouter()\n\n\n@router.post(\"\")\ndef fr_3_1_REQ_7(request: dict = Body(..., embed=True)) -> dict:\n    db = SessionLocal()\n    try:\n        # Create a new page button entry in the database\n        new_page_button = PageButton(label=\"Next\", url=\"/next\")\n        db.add(new_page_button)\n        db.commit()\n        db.refresh(new_page_button)\n        return {}\n    except Exception as e:\n        db.rollback()\n        raise HTTPException(status_code=400, detail=str(e))\n    finally:\n        db.close()"
+      }
+    ]
+  },
+  "generated_tests": {
+    "features": [
+      {
+        "feature_id": "3.1.REQ-1",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Canonical case: Torrent search with empty request",
+            "inputs": "Empty request dictionary",
+            "expected": "Empty response dictionary",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Independent case: Torrent search with additional fields in request",
+            "inputs": "Request with extra fields",
+            "expected": "Empty response dictionary",
+            "inputs_json": "{\"request\": {\"query\": \"test\", \"category\": \"movies\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Independent case: Torrent search with null request",
+            "inputs": "Null request",
+            "expected": "Empty response dictionary",
+            "inputs_json": "{\"request\": null}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Independent case: Torrent search with malformed request type",
+            "inputs": "Request is a string instead of dict",
+            "expected": "HTTP 4xx error due to invalid input type",
+            "inputs_json": "{\"request\": \"invalid\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_fr_3_1_REQ_1_canonical():\n    resp = client.post(\"/controllers/fr_3_1_REQ_1\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_1_additional_fields():\n    resp = client.post(\"/controllers/fr_3_1_REQ_1\", json={\"request\": {\"query\": \"test\", \"category\": \"movies\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_1_null_request():\n    resp = client.post(\"/controllers/fr_3_1_REQ_1\", json={\"request\": null})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_1_malformed_request_type():\n    resp = client.post(\"/controllers/fr_3_1_REQ_1\", json={\"request\": \"invalid\"})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.1.REQ-2",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-2",
+            "description": "Canonical case: Update torrent sites database via internet",
+            "inputs": "Request to update torrent sites database",
+            "expected": "Empty response indicating successful update",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-2",
+            "description": "Empty request body should still work",
+            "inputs": "Request with empty body",
+            "expected": "Empty response indicating successful update",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-2",
+            "description": "Malformed request with extra fields should fail",
+            "inputs": "Request with invalid fields",
+            "expected": "HTTP 4xx error due to invalid request structure",
+            "inputs_json": "{\"request\":{\"invalid_field\":\"value\"}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_fr_3_1_REQ_2_anchor_case():\n    resp = client.post(\"/controllers/fr_3_1_REQ_2\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_2_empty_request_body():\n    resp = client.post(\"/controllers/fr_3_1_REQ_2\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_2_malformed_request():\n    resp = client.post(\"/controllers/fr_3_1_REQ_2\", json={\"request\": {\"invalid_field\": \"value\"}})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.1.REQ-3",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-3",
+            "description": "Anchor case: User wants to include torrent searching in the search",
+            "inputs": "User checks the torrent search checkbox",
+            "expected": "Torrent search is enabled in the search",
+            "inputs_json": "{\"request\": {\"include_torrent_search\": true}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-3",
+            "description": "User does not want to include torrent searching in the search",
+            "inputs": "User unchecks the torrent search checkbox",
+            "expected": "Torrent search is disabled in the search",
+            "inputs_json": "{\"request\": {\"include_torrent_search\": false}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-3",
+            "description": "Missing include_torrent_search field in request",
+            "inputs": "Request does not contain include_torrent_search field",
+            "expected": "Precondition failure due to missing required field",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-3",
+            "description": "Invalid type for include_torrent_search field",
+            "inputs": "include_torrent_search is provided as a string instead of boolean",
+            "expected": "Precondition failure due to invalid type",
+            "inputs_json": "{\"request\": {\"include_torrent_search\": \"true\"}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_anchor_case():\n    resp = client.post(\"/controllers/fr_3_1_REQ_3\", json={\"request\": {\"include_torrent_search\": True}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_user_disables_torrent_search():\n    resp = client.post(\"/controllers/fr_3_1_REQ_3\", json={\"request\": {\"include_torrent_search\": False}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_missing_include_torrent_search_field():\n    resp = client.post(\"/controllers/fr_3_1_REQ_3\", json={\"request\": {}})\n    assert resp.status_code >= 400\n\ndef test_invalid_type_for_include_torrent_search():\n    resp = client.post(\"/controllers/fr_3_1_REQ_3\", json={\"request\": {\"include_torrent_search\": \"true\"}})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.1.REQ-4",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-4",
+            "description": "Anchor case: Query retrieves torrent details with valid request",
+            "inputs": "A valid request with no specific query parameters",
+            "expected": "Torrent details including seed count, peer count, file size, date posted, and webpage link",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-4",
+            "description": "Independent case: Query with empty request body",
+            "inputs": "Request body is empty",
+            "expected": "Torrent details retrieved successfully",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-4",
+            "description": "Independent case: Query with additional unspecified fields in request",
+            "inputs": "Request contains extra fields beyond what is defined",
+            "expected": "Torrent details retrieved successfully ignoring extra fields",
+            "inputs_json": "{\"request\": {\"extra_field\": \"value\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-4",
+            "description": "Independent case: Query with malformed request structure",
+            "inputs": "Request body is not a dictionary",
+            "expected": "HTTP 4xx error due to invalid request structure",
+            "inputs_json": "{\"request\": \"invalid_structure\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_anchor_case():\n    resp = client.post(\"/controllers/fr_3_1_REQ_4\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_empty_request_body():\n    resp = client.post(\"/controllers/fr_3_1_REQ_4\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_additional_fields_in_request():\n    resp = client.post(\"/controllers/fr_3_1_REQ_4\", json={\"request\": {\"extra_field\": \"value\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_malformed_request_structure():\n    resp = client.post(\"/controllers/fr_3_1_REQ_4\", json={\"request\": \"invalid_structure\"})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.1.REQ-5",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-5",
+            "description": "Canonical case: empty search request with no results",
+            "inputs": "Empty search request",
+            "expected": "No results message",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-5",
+            "description": "Search with non-existent query returns no results message",
+            "inputs": "Search for a term that does not exist in the database",
+            "expected": "No results were found for this search.",
+            "inputs_json": "{\"request\":{\"query\":\"nonexistentterm\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-5",
+            "description": "Search with empty query string returns no results message",
+            "inputs": "Search with an empty query string",
+            "expected": "No results were found for this search.",
+            "inputs_json": "{\"request\":{\"query\":\"\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-5",
+            "description": "Search with special characters in query returns no results message",
+            "inputs": "Search with special characters that do not match any torrents",
+            "expected": "No results were found for this search.",
+            "inputs_json": "{\"request\":{\"query\":\"!@#$%^&*()\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_fr_3_1_REQ_5_canonical_case():\n    resp = client.post(\"/controllers/fr_3_1_REQ_5\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_5_non_existent_query():\n    resp = client.post(\"/controllers/fr_3_1_REQ_5\", json={\"request\": {\"query\": \"nonexistentterm\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_5_empty_query_string():\n    resp = client.post(\"/controllers/fr_3_1_REQ_5\", json={\"request\": {\"query\": \"\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_5_special_characters():\n    resp = client.post(\"/controllers/fr_3_1_REQ_5\", json={\"request\": {\"query\": \"!@#$%^&*()\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n"
+      },
+      {
+        "feature_id": "3.1.REQ-6",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-6",
+            "description": "Canonical case: empty request returns empty response",
+            "inputs": "Empty request body",
+            "expected": "Empty response body",
+            "inputs_json": "{\"request\":{}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-6",
+            "description": "Sort by size ascending",
+            "inputs": "Request to sort torrents by size in ascending order",
+            "expected": "Torrents sorted by size in ascending order",
+            "inputs_json": "{\"request\":{\"sort_by\":\"size\",\"order\":\"asc\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-6",
+            "description": "Sort by date descending",
+            "inputs": "Request to sort torrents by date in descending order",
+            "expected": "Torrents sorted by date in descending order",
+            "inputs_json": "{\"request\":{\"sort_by\":\"date\",\"order\":\"desc\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-6",
+            "description": "Sort by name alphabetical",
+            "inputs": "Request to sort torrents alphabetically by name",
+            "expected": "Torrents sorted alphabetically by name",
+            "inputs_json": "{\"request\":{\"sort_by\":\"name\",\"order\":\"asc\"}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-6",
+            "description": "Invalid sort column should raise error",
+            "inputs": "Request to sort by invalid column",
+            "expected": "HTTP 4xx error due to invalid sort column",
+            "inputs_json": "{\"request\":{\"sort_by\":\"invalid_column\",\"order\":\"asc\"}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_fr_3_1_REQ_6_canonical_case():\n    resp = client.post(\"/controllers/fr_3_1_REQ_6\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_6_sort_by_size_asc():\n    resp = client.post(\"/controllers/fr_3_1_REQ_6\", json={\"request\": {\"sort_by\": \"size\", \"order\": \"asc\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_6_sort_by_date_desc():\n    resp = client.post(\"/controllers/fr_3_1_REQ_6\", json={\"request\": {\"sort_by\": \"date\", \"order\": \"desc\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_6_sort_by_name_alpha():\n    resp = client.post(\"/controllers/fr_3_1_REQ_6\", json={\"request\": {\"sort_by\": \"name\", \"order\": \"asc\"}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_6_invalid_sort_column():\n    resp = client.post(\"/controllers/fr_3_1_REQ_6\", json={\"request\": {\"sort_by\": \"invalid_column\", \"order\": \"asc\"}})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.1.REQ-7",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-7",
+            "description": "Canonical case: User requests page buttons for torrent search results",
+            "inputs": "User submits a request for torrent search results with no additional parameters",
+            "expected": "Response contains page navigation buttons for the search results",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-7",
+            "description": "Edge case: Request with empty request object",
+            "inputs": "User submits a request with an explicitly empty request object",
+            "expected": "Response contains page navigation buttons for the search results",
+            "inputs_json": "{\"request\": {}}",
+            "expected_json": "{}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-7",
+            "description": "Error case: Request with invalid input type",
+            "inputs": "User submits a request with a non-object type for the request field",
+            "expected": "Server returns a 4xx error indicating bad request",
+            "inputs_json": "{\"request\": \"invalid\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_fr_3_1_REQ_7_anchor_case():\n    resp = client.post(\"/controllers/fr_3_1_REQ_7\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_7_edge_case_empty_request():\n    resp = client.post(\"/controllers/fr_3_1_REQ_7\", json={\"request\": {}})\n    assert resp.status_code == 200\n    assert resp.json() == {}\n\ndef test_fr_3_1_REQ_7_error_case_invalid_input_type():\n    resp = client.post(\"/controllers/fr_3_1_REQ_7\", json={\"request\": \"invalid\"})\n    assert resp.status_code >= 400"
+      }
+    ]
+  },
+  "certification": {
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "oracle": "http",
+    "n": 1,
+    "k_values": [
+      1
+    ],
+    "frs": [
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "n_samples": 1,
+        "n_test_cases": 5,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 5,
+        "case_pass_rate": 0.0
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "n_samples": 1,
+        "n_test_cases": 3,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 3,
+        "case_pass_rate": 0.0
+      }
+    ],
+    "features": [
+      {
+        "feature_id": "3.1.REQ-4",
+        "name": "Torrent Search: 3.1.REQ-4",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "feature_id": "3.1.REQ-6",
+        "name": "Torrent Search: 3.1.REQ-6",
+        "n_samples": 1,
+        "n_test_cases": 5,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 5,
+        "case_pass_rate": 0.0
+      },
+      {
+        "feature_id": "3.1.REQ-7",
+        "name": "Torrent Search: 3.1.REQ-7",
+        "n_samples": 1,
+        "n_test_cases": 3,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 3,
+        "case_pass_rate": 0.0
+      }
+    ],
+    "aggregate_pass_at": {
+      "pass@1": 0.0
+    },
+    "aggregate_case_pass_rate": 0.0,
+    "failures": [
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "feature_name": "Torrent Search: 3.1.REQ-4",
+        "requirement_id": "3.1.REQ-4",
+        "sample": 0,
+        "description": "Anchor case: Query retrieves torrent details with valid request",
+        "inputs": "A valid request with no specific query parameters",
+        "expected": "Torrent details including seed count, peer count, file size, date posted, and webpage link",
+        "requirement_text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "feature_name": "Torrent Search: 3.1.REQ-4",
+        "requirement_id": "3.1.REQ-4",
+        "sample": 0,
+        "description": "Independent case: Query with empty request body",
+        "inputs": "Request body is empty",
+        "expected": "Torrent details retrieved successfully",
+        "requirement_text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "feature_name": "Torrent Search: 3.1.REQ-4",
+        "requirement_id": "3.1.REQ-4",
+        "sample": 0,
+        "description": "Independent case: Query with additional unspecified fields in request",
+        "inputs": "Request contains extra fields beyond what is defined",
+        "expected": "Torrent details retrieved successfully ignoring extra fields",
+        "requirement_text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "feature_name": "Torrent Search: 3.1.REQ-4",
+        "requirement_id": "3.1.REQ-4",
+        "sample": 0,
+        "description": "Independent case: Query with malformed request structure",
+        "inputs": "Request body is not a dictionary",
+        "expected": "HTTP 4xx error due to invalid request structure",
+        "requirement_text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "feature_name": "Torrent Search: 3.1.REQ-6",
+        "requirement_id": "3.1.REQ-6",
+        "sample": 0,
+        "description": "Canonical case: empty request returns empty response",
+        "inputs": "Empty request body",
+        "expected": "Empty response body",
+        "requirement_text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "feature_name": "Torrent Search: 3.1.REQ-6",
+        "requirement_id": "3.1.REQ-6",
+        "sample": 0,
+        "description": "Sort by size ascending",
+        "inputs": "Request to sort torrents by size in ascending order",
+        "expected": "Torrents sorted by size in ascending order",
+        "requirement_text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "feature_name": "Torrent Search: 3.1.REQ-6",
+        "requirement_id": "3.1.REQ-6",
+        "sample": 0,
+        "description": "Sort by date descending",
+        "inputs": "Request to sort torrents by date in descending order",
+        "expected": "Torrents sorted by date in descending order",
+        "requirement_text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "feature_name": "Torrent Search: 3.1.REQ-6",
+        "requirement_id": "3.1.REQ-6",
+        "sample": 0,
+        "description": "Sort by name alphabetical",
+        "inputs": "Request to sort torrents alphabetically by name",
+        "expected": "Torrents sorted alphabetically by name",
+        "requirement_text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "feature_name": "Torrent Search: 3.1.REQ-6",
+        "requirement_id": "3.1.REQ-6",
+        "sample": 0,
+        "description": "Invalid sort column should raise error",
+        "inputs": "Request to sort by invalid column",
+        "expected": "HTTP 4xx error due to invalid sort column",
+        "requirement_text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "feature_name": "Torrent Search: 3.1.REQ-7",
+        "requirement_id": "3.1.REQ-7",
+        "sample": 0,
+        "description": "Canonical case: User requests page buttons for torrent search results",
+        "inputs": "User submits a request for torrent search results with no additional parameters",
+        "expected": "Response contains page navigation buttons for the search results",
+        "requirement_text": "There will be page button for the user to navigate the results.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "feature_name": "Torrent Search: 3.1.REQ-7",
+        "requirement_id": "3.1.REQ-7",
+        "sample": 0,
+        "description": "Edge case: Request with empty request object",
+        "inputs": "User submits a request with an explicitly empty request object",
+        "expected": "Response contains page navigation buttons for the search results",
+        "requirement_text": "There will be page button for the user to navigate the results.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "feature_name": "Torrent Search: 3.1.REQ-7",
+        "requirement_id": "3.1.REQ-7",
+        "sample": 0,
+        "description": "Error case: Request with invalid input type",
+        "inputs": "User submits a request with a non-object type for the request field",
+        "expected": "Server returns a 4xx error indicating bad request",
+        "requirement_text": "There will be page button for the user to navigate the results.",
+        "verdict": "fail",
+        "reason": "app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 19)"
+      }
+    ],
+    "notes": []
+  },
+  "metrics": {
+    "srs": "2009 - video search.xml",
+    "stack": "fastapi",
+    "language": "python",
+    "stages": [
+      {
+        "name": "spec_parse",
+        "seconds": 0.001,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "spec_contracts",
+        "seconds": 0.0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "dependency",
+        "seconds": 0.0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "planning",
+        "seconds": 0.0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "scaffold",
+        "seconds": 0.0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "dafny",
+        "seconds": 101.007,
+        "input_tokens": 71397,
+        "output_tokens": 6569,
+        "calls": 22
+      },
+      {
+        "name": "compile",
+        "seconds": 4.525,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "adapter",
+        "seconds": 5.796,
+        "input_tokens": 1492,
+        "output_tokens": 671,
+        "calls": 1
+      },
+      {
+        "name": "adapter",
+        "seconds": 4.797,
+        "input_tokens": 1476,
+        "output_tokens": 552,
+        "calls": 1
+      },
+      {
+        "name": "adapter",
+        "seconds": 4.939,
+        "input_tokens": 1490,
+        "output_tokens": 570,
+        "calls": 1
+      },
+      {
+        "name": "adapter",
+        "seconds": 5.192,
+        "input_tokens": 1552,
+        "output_tokens": 599,
+        "calls": 1
+      },
+      {
+        "name": "code",
+        "seconds": 9.915,
+        "input_tokens": 3222,
+        "output_tokens": 1134,
+        "calls": 3
+      },
+      {
+        "name": "test",
+        "seconds": 41.027,
+        "input_tokens": 13896,
+        "output_tokens": 4701,
+        "calls": 7
+      },
+      {
+        "name": "certification",
+        "seconds": 10.211,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      }
+    ],
+    "config": {
+      "language": "python",
+      "stack": "fastapi",
+      "models": {
+        "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+      },
+      "prompt_strategy": "baseline",
+      "agents": {
+        "spec": true,
+        "dependency": true,
+        "planning": true,
+        "proof": true,
+        "code": true,
+        "test": true,
+        "certify": true,
+        "recovery": false,
+        "compile_repair": false
+      },
+      "run_dependency": true,
+      "run_test": true,
+      "run_recovery": false,
+      "test_sees_code": false,
+      "raw_spec_only": true,
+      "certify": true,
+      "samples": 1,
+      "k_values": [
+        1
+      ],
+      "prove": true,
+      "prove_target": "py",
+      "max_cert_loops": 0,
+      "max_compile_repair_loops": 2,
+      "temperature": 0.0,
+      "cert_temperature": 0.4,
+      "case_timeout": 10.0,
+      "prove_rounds": 6,
+      "llm_deps": true,
+      "baseline": false,
+      "reuse_from": "",
+      "reuse_stages": [],
+      "oracle_tests": ""
+    },
+    "dafny": {
+      "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "n_features": 7,
+      "n_verified": 4,
+      "n_proved_with_axioms": 0,
+      "verification_rate": 0.571,
+      "features": [
+        {
+          "feature_id": "3.1.REQ-1",
+          "module": "F3_1_REQ_1",
+          "verified": true,
+          "rounds": 1,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.1.REQ-2",
+          "module": "F3_1_REQ_2",
+          "verified": true,
+          "rounds": 1,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.1.REQ-3",
+          "module": "F3_1_REQ_3",
+          "verified": true,
+          "rounds": 1,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.1.REQ-4",
+          "module": "F3_1_REQ_4",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.1.REQ-5",
+          "module": "F3_1_REQ_5",
+          "verified": true,
+          "rounds": 1,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.1.REQ-6",
+          "module": "F3_1_REQ_6",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.1.REQ-7",
+          "module": "F3_1_REQ_7",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        }
+      ]
+    },
+    "compile": {
+      "target": "py",
+      "compiled": [
+        {
+          "feature_id": "3.1.REQ-1",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/raw_spec_only/generated/2009 - video search/dafny_proof/out/F3_1_REQ_1-py"
+        },
+        {
+          "feature_id": "3.1.REQ-2",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/raw_spec_only/generated/2009 - video search/dafny_proof/out/F3_1_REQ_2-py"
+        },
+        {
+          "feature_id": "3.1.REQ-3",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/raw_spec_only/generated/2009 - video search/dafny_proof/out/F3_1_REQ_3-py"
+        },
+        {
+          "feature_id": "3.1.REQ-5",
+          "target": "py",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/raw_spec_only/generated/2009 - video search/dafny_proof/out/F3_1_REQ_5-py"
+        }
+      ],
+      "failed": [
+        {
+          "feature_id": "3.1.REQ-4",
+          "reason": "dafny not verified"
+        },
+        {
+          "feature_id": "3.1.REQ-6",
+          "reason": "dafny not verified"
+        },
+        {
+          "feature_id": "3.1.REQ-7",
+          "reason": "dafny not verified"
+        }
+      ]
+    },
+    "code": {
+      "language": "Python",
+      "files": 7,
+      "lines_of_code": 408,
+      "files_per_layer": {
+        "controller": 7
+      },
+      "imports": [
+        "F3__1__REQ__1Domain",
+        "F3__1__REQ__2Domain",
+        "F3__1__REQ__3Domain",
+        "F3__1__REQ__5Domain",
+        "app",
+        "dafny_marshal",
+        "fastapi",
+        "json",
+        "os",
+        "sqlalchemy",
+        "sys"
+      ],
+      "third_party_libraries": [
+        "F3__1__REQ__1Domain",
+        "F3__1__REQ__2Domain",
+        "F3__1__REQ__3Domain",
+        "F3__1__REQ__5Domain",
+        "app",
+        "dafny_marshal",
+        "fastapi",
+        "sqlalchemy"
+      ],
+      "runnable_app": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/raw_spec_only/generated/2009 - video search/app",
+      "dafny_cores": {
+        "cores_dir": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/raw_spec_only/generated/2009 - video search/app/dafny_cores",
+        "staged": [
+          "F3_1_REQ_1",
+          "F3_1_REQ_2",
+          "F3_1_REQ_3",
+          "F3_1_REQ_5"
+        ],
+        "missing": []
+      }
+    },
+    "tests": {
+      "features": 7,
+      "cases": 27
+    },
+    "certification": {
+      "n": 1,
+      "k_values": [
+        1
+      ],
+      "aggregate_pass_at": {
+        "pass@1": 0.0
+      },
+      "aggregate_case_pass_rate": 0.0,
+      "n_tested_frs": 3,
+      "n_proved_features": 4,
+      "n_total_tested_features": 3,
+      "pass_at_1_fr_ids": []
+    },
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "total_seconds": 187.41,
+    "tokens": {
+      "input": 94525,
+      "output": 14796,
+      "total": 109321,
+      "calls": 36
+    },
+    "cost_usd": 0.0,
+    "cost_by_model": {
+      "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8": {
+        "input": 94525,
+        "output": 14796,
+        "calls": 36,
+        "cost_usd": 0.0
+      }
+    },
+    "proved_feature_ids": [
+      "3.1.REQ-1",
+      "3.1.REQ-2",
+      "3.1.REQ-3",
+      "3.1.REQ-5"
+    ],
+    "summary": {
+      "verification_pass_ratio": 0.5714,
+      "test_case_pass_ratio": 0.0,
+      "PassVer@1": 0.5714,
+      "avg_verification_iteration": 3.14,
+      "avg_test_iteration": 1,
+      "avg_input_token": 2625.7,
+      "avg_output_token": 411.0,
+      "total_time": 187.41
+    }
+  }
+}

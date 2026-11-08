@@ -1,0 +1,670 @@
+{
+  "project_name": "Human",
+  "source_file": "Human.xml",
+  "features": [
+    {
+      "id": "3.1",
+      "name": "Proposing an Event",
+      "description": "To allow coordinators/heads of various clubs to propose the organization of events. [cite: 160] This is handled by Club Coordinators/Heads. [cite: 159]",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-1",
+          "text": "While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]"
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2",
+      "name": "Registering for Events",
+      "description": "To allow users to register for upcoming events. [cite: 114] This involves student actors. [cite: 112]",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-1",
+          "text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]"
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.1.REQ-1",
+      "feature_id": "3.1",
+      "stimulus": "The user attempts to edit event details and registration requirements while applying for an event",
+      "precondition": "none",
+      "response": "The system allows the user to modify the event details and registration requirements",
+      "postcondition": "The modified event details and registration requirements are updated in the system"
+    },
+    {
+      "fr_id": "3.2.REQ-1",
+      "feature_id": "3.2",
+      "stimulus": "User attempts to register for an event without being authenticated",
+      "precondition": "User is not currently logged into the system",
+      "response": "System prompts the user to log in before proceeding with event registration",
+      "postcondition": "The user is redirected to the login interface and must successfully authenticate before they can continue with the registration process"
+    }
+  ],
+  "stack": "spring",
+  "language": "java",
+  "dependency_graph": {
+    "nodes": [
+      "3.1",
+      "3.2"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.1",
+      "3.2"
+    ],
+    "cycles": []
+  },
+  "planning": {
+    "contracts": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "signature": "def edit_event_details_and_registration(event_id: str, details: dict, registration_requirements: dict) -> bool:",
+        "docstring": "The system allows the user to modify the event details and registration requirements.\n\nArgs:\n    event_id: Unique identifier for the event being edited\n    details: Dictionary containing event details to be updated\n    registration_requirements: Dictionary containing registration requirements to be updated\n\nReturns:\n    True if the update was successful, False otherwise\n\nNotes:\n    Postcondition: The modified event details and registration requirements are updated in the system",
+        "mvc_layer": "controller",
+        "file_path": "controllers/edit_event_details_and_registration.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-1",
+          "feature_id": "3.1",
+          "stimulus": "The user attempts to edit event details and registration requirements while applying for an event",
+          "precondition": "none",
+          "response": "The system allows the user to modify the event details and registration requirements",
+          "postcondition": "The modified event details and registration requirements are updated in the system"
+        },
+        "example_inputs_json": "{\"event_id\":\"evt-123\",\"details\":{\"title\":\"Updated Title\",\"date\":\"2023-10-15\"},\"registration_requirements\":{\"max_participants\":50,\"fee\":25}}",
+        "expected_return_json": "true",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": "event_id"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "signature": "def prompt_user_to_log_in() -> None:",
+        "docstring": "System prompts the user to log in before proceeding with event registration.\n\nReturns:\n    System prompts the user to log in before proceeding with event registration\n\nRaises:\n    ValueError: If the precondition is violated (User is not currently logged into the system).\n\nNotes:\n    Precondition: User is not currently logged into the system\n    Postcondition: The user is redirected to the login interface and must successfully authenticate before they can continue with the registration process",
+        "mvc_layer": "controller",
+        "file_path": "controllers/prompt_user_to_log_in.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-1",
+          "feature_id": "3.2",
+          "stimulus": "User attempts to register for an event without being authenticated",
+          "precondition": "User is not currently logged into the system",
+          "response": "System prompts the user to log in before proceeding with event registration",
+          "postcondition": "The user is redirected to the login interface and must successfully authenticate before they can continue with the registration process"
+        },
+        "example_inputs_json": "{}",
+        "expected_return_json": "null",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      }
+    ],
+    "notes": []
+  },
+  "generated_dafny": {
+    "features": [
+      {
+        "feature_id": "3.1",
+        "module": "F3_1",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1Domain refines Domain {\n  type Model = (string, map<string, string>, map<string, string>)\n\n  datatype Action = EditEventDetails(details: map<string, string>, requirements: map<string, string>)\n\n  ghost predicate Inv(m: Model) {\n    var (event, details, requirements) := m;\n    true\n  }\n\n  function Init(): Model {\n    (\"\", map[], map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case EditEventDetails(newDetails, newRequirements) =>\n      var (event, details, requirements) := m;\n      (event, newDetails, newRequirements)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma EditEventDetailsUpdates(m: Model, newDetails: map<string, string>, newRequirements: map<string, string>)\n    ensures Apply(m, EditEventDetails(newDetails, newRequirements)) == (m.0, newDetails, newRequirements)\n  {\n  }\n}\n\nmodule F3_1Kernel refines Kernel {\n  import D = F3_1Domain\n}",
+        "verified": true,
+        "rounds": 6,
+        "residual_errors": [],
+        "axioms": []
+      },
+      {
+        "feature_id": "3.2",
+        "module": "F3_2",
+        "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2Domain refines Domain {\n  type Model = (bool, set<string>)\n\n  datatype Action = Register(event: string)\n\n  ghost predicate Inv(m: Model) {\n    m.0 ==> m.1 == {}\n  }\n\n  function Init(): Model {\n    (false, {})\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Register(event) =>\n      if m.0 then\n        (true, m.1 + {event})\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    if m.0 then m else (false, {})\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n    assert (false ==> {} == {}) == true;\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n    assert (Normalize(Apply(m, a))).0 ==> (Normalize(Apply(m, a))).1 == {};\n  }\n\n  lemma RegisterRequiresAuth(m: Model, event: string)\n    requires m.0 == false\n    ensures Apply(m, Register(event)) == m\n  {\n    assert Apply(m, Register(event)) == m;\n  }\n}\n\nmodule F3_2Kernel refines Kernel {\n  import D = F3_2Domain\n}",
+        "verified": false,
+        "rounds": 6,
+        "residual_errors": [
+          {
+            "line": 32,
+            "col": 22,
+            "message": "the type of this expression is underspecified"
+          }
+        ],
+        "axioms": []
+      }
+    ]
+  },
+  "proved_feature_ids": [
+    "3.1"
+  ],
+  "generated_code": {
+    "files": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "path": "controllers/F3_1Adapter.java",
+        "mvc_layer": "controller",
+        "content": "import com.fasterxml.jackson.databind.ObjectMapper;\nimport org.springframework.http.HttpStatus;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RestController;\nimport org.springframework.web.server.ResponseStatusException;\n\nimport java.math.BigInteger;\nimport java.util.HashMap;\nimport java.util.Map;\n\nclass F3_1Adapter {\n    private static Object model = F3__1Domain.__default.Init();\n\n    @PostMapping(\"/controllers/edit_event_details_and_registration\")\n    public Map<String, Object> edit_event_details_and_registration(@RequestBody Map<String, Object> body) {\n        // Extract event_id, details, and registration_requirements from the request body\n        String eventId = (String) body.get(\"event_id\");\n        Map<String, String> details = (Map<String, String>) body.get(\"details\");\n        Map<String, String> registrationRequirements = (Map<String, String>) body.get(\"registration_requirements\");\n\n        // Convert Java Maps to Dafny Maps\n        dafny.DafnyMap<dafny.DafnySequence<? extends dafny.CodePoint>, dafny.DafnySequence<? extends dafny.CodePoint>> dafnyDetails = convertToDafnyMap(details);\n        dafny.DafnyMap<dafny.DafnySequence<? extends dafny.CodePoint>, dafny.DafnySequence<? extends dafny.CodePoint>> dafnyRegistrationRequirements = convertToDafnyMap(registrationRequirements);\n\n        // Create the Action\n        F3__1Domain.Action action = F3__1Domain.Action.create_EditEventDetails(dafnyDetails, dafnyRegistrationRequirements);\n\n        // Apply the action to the model\n        Object newState = F3__1Domain.__default.Apply((F3__1Domain.Model) model, action);\n        model = F3__1Domain.__default.Normalize((F3__1Domain.Model) newState);\n\n        // Marshal the result back to a JSON-serializable map\n        F3__1Domain.Model normalizedModel = (F3__1Domain.Model) model;\n        Map<String, Object> response = new HashMap<>();\n        response.put(\"event_id\", normalizedModel.dtor_0().verbatimString());\n        response.put(\"details\", convertFromDafnyMap(normalizedModel.dtor_1()));\n        response.put(\"registration_requirements\", convertFromDafnyMap(normalizedModel.dtor_2()));\n\n        return response;\n    }\n\n    private dafny.DafnyMap<dafny.DafnySequence<? extends dafny.CodePoint>, dafny.DafnySequence<? extends dafny.CodePoint>> convertToDafnyMap(Map<String, String> javaMap) {\n        dafny.DafnyMap<dafny.DafnySequence<? extends dafny.CodePoint>, dafny.DafnySequence<? extends dafny.CodePoint>> dafnyMap = dafny.DafnyMap.of();\n        for (Map.Entry<String, String> entry : javaMap.entrySet()) {\n            dafny.DafnySequence<? extends dafny.CodePoint> key = dafny.DafnySequence.asUnicodeString(entry.getKey());\n            dafny.DafnySequence<? extends dafny.CodePoint> value = dafny.DafnySequence.asUnicodeString(entry.getValue());\n            dafnyMap = dafnyMap.put(key, value);\n        }\n        return dafnyMap;\n    }\n\n    private Map<String, String> convertFromDafnyMap(dafny.DafnyMap<dafny.DafnySequence<? extends dafny.CodePoint>, dafny.DafnySequence<? extends dafny.CodePoint>> dafnyMap) {\n        Map<String, String> javaMap = new HashMap<>();\n        for (dafny.DafnySequence<? extends dafny.CodePoint> key : dafnyMap.keySet().Elements()) {\n            dafny.DafnySequence<? extends dafny.CodePoint> value = dafnyMap.get(key);\n            javaMap.put(key.verbatimString(), value.verbatimString());\n        }\n        return javaMap;\n    }\n}"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "path": "controllers/prompt_user_to_log_in.py",
+        "mvc_layer": "controller",
+        "content": "import java.util.Map;\nimport java.util.concurrent.ConcurrentHashMap;\nimport org.springframework.http.HttpStatus;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.server.ResponseStatusException;\n\npublic class PromptUserToLogInController {\n    private static final Map<String, Object> loggedInUsers = new ConcurrentHashMap<>();\n\n    @PostMapping(\"/controllers/prompt_user_to_log_in\")\n    public ResponseEntity<?> promptUserToLogIn(@RequestBody Map<String, Object> body) {\n        // Check if user is logged in\n        if (loggedInUsers.containsKey(\"current_user\")) {\n            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, \"User is already logged in\");\n        }\n        \n        // Return null as per specification\n        return ResponseEntity.ok().build();\n    }\n}"
+      }
+    ]
+  },
+  "generated_tests": {
+    "features": [
+      {
+        "feature_id": "3.1",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Anchor case: Edit event details and registration requirements with valid inputs",
+            "inputs": "Event ID, updated title, date, max participants, and fee",
+            "expected": "True indicating successful update",
+            "inputs_json": "{\"event_id\":\"evt-123\",\"details\":{\"title\":\"Updated Title\",\"date\":\"2023-10-15\"},\"registration_requirements\":{\"max_participants\":50,\"fee\":25}}",
+            "expected_json": "true",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Edit event details with empty registration requirements",
+            "inputs": "Event ID, updated title, date, and empty registration requirements",
+            "expected": "True indicating successful update",
+            "inputs_json": "{\"event_id\":\"evt-123\",\"details\":{\"title\":\"Updated Title\",\"date\":\"2023-10-15\"},\"registration_requirements\":{}}",
+            "expected_json": "true",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Edit event details with minimal registration requirements",
+            "inputs": "Event ID, updated title, date, and minimal registration requirements",
+            "expected": "True indicating successful update",
+            "inputs_json": "{\"event_id\":\"evt-123\",\"details\":{\"title\":\"Updated Title\",\"date\":\"2023-10-15\"},\"registration_requirements\":{\"max_participants\":1}}",
+            "expected_json": "true",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Attempt to edit non-existent event",
+            "inputs": "Non-existent event ID",
+            "expected": "HTTP 400 Bad Request",
+            "inputs_json": "{\"event_id\":\"evt-nonexistent\",\"details\":{\"title\":\"Title\",\"date\":\"2023-10-15\"},\"registration_requirements\":{\"max_participants\":50,\"fee\":25}}",
+            "expected_json": "{\"status\": 400}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.http.MediaType;\n\n@SpringBootTest\n@AutoConfigureMockMvc\npublic class Feature3_1Test {\n    @Autowired\n    private MockMvc mockMvc;\n\n    @Test\n    public void testEditEventDetailsAndRegistrationWithValidInputs() throws Exception {\n        String json = \"{\\\"event_id\\\":\\\"evt-123\\\",\\\"details\\\":{\\\"title\\\":\\\"Updated Title\\\",\\\"date\\\":\\\"2023-10-15\\\"},\\\"registration_requirements\\\":{\\\"max_participants\\\":50,\\\"fee\\\":25}}\";\n        mockMvc.perform(post(\"/edit-event-details-and-registration\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(json))\n                .andExpect(status().isOk());\n    }\n\n    @Test\n    public void testEditEventDetailsWithEmptyRegistrationRequirements() throws Exception {\n        String json = \"{\\\"event_id\\\":\\\"evt-123\\\",\\\"details\\\":{\\\"title\\\":\\\"Updated Title\\\",\\\"date\\\":\\\"2023-10-15\\\"},\\\"registration_requirements\\\":{}}\";\n        mockMvc.perform(post(\"/edit-event-details-and-registration\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(json))\n                .andExpect(status().isOk());\n    }\n\n    @Test\n    public void testEditEventDetailsWithMinimalRegistrationRequirements() throws Exception {\n        String json = \"{\\\"event_id\\\":\\\"evt-123\\\",\\\"details\\\":{\\\"title\\\":\\\"Updated Title\\\",\\\"date\\\":\\\"2023-10-15\\\"},\\\"registration_requirements\\\":{\\\"max_participants\\\":1}}\";\n        mockMvc.perform(post(\"/edit-event-details-and-registration\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(json))\n                .andExpect(status().isOk());\n    }\n\n    @Test\n    public void testEditNonExistentEvent() throws Exception {\n        String json = \"{\\\"event_id\\\":\\\"evt-nonexistent\\\",\\\"details\\\":{\\\"title\\\":\\\"Title\\\",\\\"date\\\":\\\"2023-10-15\\\"},\\\"registration_requirements\\\":{\\\"max_participants\\\":50,\\\"fee\\\":25}}\";\n        mockMvc.perform(post(\"/edit-event-details-and-registration\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(json))\n                .andExpect(status().isBadRequest());\n    }\n}"
+      },
+      {
+        "feature_id": "3.2",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "User attempts to register for an event without being authenticated",
+            "inputs": "User is not logged in and tries to register for an event",
+            "expected": "System prompts user to log in",
+            "inputs_json": "{}",
+            "expected_json": "null",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "User is already logged in and attempts to register for an event",
+            "inputs": "User is authenticated and tries to register for an event",
+            "expected": "Registration proceeds normally",
+            "inputs_json": "{\"user_id\": 123}",
+            "expected_json": "{\"status\": \"registered\"}",
+            "oracle": "eq",
+            "setup_json": "[{\"inputs\": {\"action\": \"login\", \"user_id\": 123}}]"
+          },
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "User attempts to register for a non-existent event",
+            "inputs": "User is logged in but tries to register for an event that does not exist",
+            "expected": "Error response indicating event not found",
+            "inputs_json": "{\"user_id\": 123, \"event_id\": 999}",
+            "expected_json": "{\"error\": \"Event not found\"}",
+            "oracle": "eq",
+            "setup_json": "[{\"inputs\": {\"action\": \"login\", \"user_id\": 123}}]"
+          },
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "User attempts to register for an event that has already passed",
+            "inputs": "User is logged in and tries to register for an event that has already occurred",
+            "expected": "Error response indicating event has passed",
+            "inputs_json": "{\"user_id\": 123, \"event_id\": 456}",
+            "expected_json": "{\"error\": \"Event has already passed\"}",
+            "oracle": "eq",
+            "setup_json": "[{\"inputs\": {\"action\": \"login\", \"user_id\": 123}}]"
+          }
+        ],
+        "test_source": "import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;\nimport static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.beans.factory.annotation.Autowired;\nimport org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.http.MediaType;\n\n@SpringBootTest\n@AutoConfigureMockMvc\npublic class Feature3_2Test {\n    @Autowired\n    private MockMvc mockMvc;\n\n    @Test\n    public void testRegisterForEventNotLoggedIn() throws Exception {\n        mockMvc.perform(post(\"/events/register\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(\"{}\"))\n                .andExpect(status().isUnauthorized());\n    }\n\n    @Test\n    public void testRegisterForEventLoggedIn() throws Exception {\n        mockMvc.perform(post(\"/events/register\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(\"{\\\"user_id\\\": 123}\"))\n                .andExpect(status().isOk());\n    }\n\n    @Test\n    public void testRegisterForNonExistentEvent() throws Exception {\n        mockMvc.perform(post(\"/events/register\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(\"{\\\"user_id\\\": 123, \\\"event_id\\\": 999}\"))\n                .andExpect(status().isNotFound());\n    }\n\n    @Test\n    public void testRegisterForPassedEvent() throws Exception {\n        mockMvc.perform(post(\"/events/register\")\n                .contentType(MediaType.APPLICATION_JSON)\n                .content(\"{\\\"user_id\\\": 123, \\\"event_id\\\": 456}\"))\n                .andExpect(status().isBadRequest());\n    }\n}"
+      }
+    ]
+  },
+  "certification": {
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "oracle": "spring-build",
+    "n": 1,
+    "k_values": [
+      1
+    ],
+    "frs": [
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      }
+    ],
+    "features": [
+      {
+        "feature_id": "3.2",
+        "name": "Registering for Events",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      }
+    ],
+    "aggregate_pass_at": {
+      "pass@1": 0.0
+    },
+    "aggregate_case_pass_rate": 0.0,
+    "failures": [
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "feature_name": "Registering for Events",
+        "requirement_id": "3.2.REQ-1",
+        "sample": 0,
+        "description": "User attempts to register for an event without being authenticated",
+        "inputs": "User is not logged in and tries to register for an event",
+        "expected": "System prompts user to log in",
+        "requirement_text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]",
+        "verdict": "fail",
+        "reason": "mvn test-compile: n Maven with the -e switch.\n[ERROR] Re-run Maven using the -X switch to enable full debug logging.\n[ERROR] \n[ERROR] For more information about the errors and possible solutions, please read the following articles:\n[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "feature_name": "Registering for Events",
+        "requirement_id": "3.2.REQ-1",
+        "sample": 0,
+        "description": "User is already logged in and attempts to register for an event",
+        "inputs": "User is authenticated and tries to register for an event",
+        "expected": "Registration proceeds normally",
+        "requirement_text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]",
+        "verdict": "fail",
+        "reason": "mvn test-compile: n Maven with the -e switch.\n[ERROR] Re-run Maven using the -X switch to enable full debug logging.\n[ERROR] \n[ERROR] For more information about the errors and possible solutions, please read the following articles:\n[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "feature_name": "Registering for Events",
+        "requirement_id": "3.2.REQ-1",
+        "sample": 0,
+        "description": "User attempts to register for a non-existent event",
+        "inputs": "User is logged in but tries to register for an event that does not exist",
+        "expected": "Error response indicating event not found",
+        "requirement_text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]",
+        "verdict": "fail",
+        "reason": "mvn test-compile: n Maven with the -e switch.\n[ERROR] Re-run Maven using the -X switch to enable full debug logging.\n[ERROR] \n[ERROR] For more information about the errors and possible solutions, please read the following articles:\n[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "feature_name": "Registering for Events",
+        "requirement_id": "3.2.REQ-1",
+        "sample": 0,
+        "description": "User attempts to register for an event that has already passed",
+        "inputs": "User is logged in and tries to register for an event that has already occurred",
+        "expected": "Error response indicating event has passed",
+        "requirement_text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]",
+        "verdict": "fail",
+        "reason": "mvn test-compile: n Maven with the -e switch.\n[ERROR] Re-run Maven using the -X switch to enable full debug logging.\n[ERROR] \n[ERROR] For more information about the errors and possible solutions, please read the following articles:\n[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException"
+      }
+    ],
+    "notes": []
+  },
+  "metrics": {
+    "srs": "Human.xml",
+    "stack": "spring",
+    "language": "java",
+    "stages": [
+      {
+        "name": "spec_parse",
+        "seconds": 0.001,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "spec_contracts",
+        "seconds": 3.343,
+        "input_tokens": 1929,
+        "output_tokens": 199,
+        "calls": 2
+      },
+      {
+        "name": "dependency",
+        "seconds": 0.001,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "planning",
+        "seconds": 3.485,
+        "input_tokens": 4856,
+        "output_tokens": 369,
+        "calls": 2
+      },
+      {
+        "name": "scaffold",
+        "seconds": 0.001,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "dafny",
+        "seconds": 51.536,
+        "input_tokens": 40687,
+        "output_tokens": 3434,
+        "calls": 12
+      },
+      {
+        "name": "compile",
+        "seconds": 1.187,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      },
+      {
+        "name": "adapter",
+        "seconds": 8.42,
+        "input_tokens": 3111,
+        "output_tokens": 939,
+        "calls": 1
+      },
+      {
+        "name": "code",
+        "seconds": 1.81,
+        "input_tokens": 1240,
+        "output_tokens": 200,
+        "calls": 1
+      },
+      {
+        "name": "test",
+        "seconds": 18.41,
+        "input_tokens": 3315,
+        "output_tokens": 2126,
+        "calls": 2
+      },
+      {
+        "name": "java_compile_repair",
+        "seconds": 33.569,
+        "input_tokens": 14702,
+        "output_tokens": 2076,
+        "calls": 3
+      },
+      {
+        "name": "certification",
+        "seconds": 4.38,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      }
+    ],
+    "config": {
+      "language": "java",
+      "stack": "spring",
+      "models": {
+        "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+      },
+      "prompt_strategy": "baseline",
+      "agents": {
+        "spec": true,
+        "dependency": true,
+        "planning": true,
+        "proof": true,
+        "code": true,
+        "test": true,
+        "certify": true,
+        "recovery": false,
+        "compile_repair": true
+      },
+      "run_dependency": true,
+      "run_test": true,
+      "run_recovery": false,
+      "test_sees_code": false,
+      "raw_spec_only": false,
+      "certify": true,
+      "samples": 1,
+      "k_values": [
+        1
+      ],
+      "prove": true,
+      "prove_target": "java",
+      "max_cert_loops": 0,
+      "max_compile_repair_loops": 2,
+      "temperature": 0.0,
+      "cert_temperature": 0.4,
+      "case_timeout": 10.0,
+      "prove_rounds": 6,
+      "llm_deps": true,
+      "baseline": false,
+      "reuse_from": "",
+      "reuse_stages": [],
+      "oracle_tests": ""
+    },
+    "dafny": {
+      "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "n_features": 2,
+      "n_verified": 1,
+      "n_proved_with_axioms": 0,
+      "verification_rate": 0.5,
+      "features": [
+        {
+          "feature_id": "3.1",
+          "module": "F3_1",
+          "verified": true,
+          "rounds": 6,
+          "axioms": 0
+        },
+        {
+          "feature_id": "3.2",
+          "module": "F3_2",
+          "verified": false,
+          "rounds": 6,
+          "axioms": 0
+        }
+      ]
+    },
+    "compile": {
+      "target": "java",
+      "compiled": [
+        {
+          "feature_id": "3.1",
+          "target": "java",
+          "output": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_crosslang/human/java/reference_rep1/generated/Human/dafny_proof/out/F3_1-java"
+        }
+      ],
+      "failed": [
+        {
+          "feature_id": "3.2",
+          "reason": "dafny not verified"
+        }
+      ]
+    },
+    "code": {
+      "language": "Java",
+      "files": 2,
+      "lines_of_code": 83,
+      "files_per_layer": {
+        "controller": 2
+      },
+      "imports": [],
+      "third_party_libraries": [],
+      "runnable_app": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_crosslang/human/java/reference_rep1/generated/Human",
+      "dafny_cores": {
+        "java_src": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_crosslang/human/java/reference_rep1/generated/Human/src/main/java",
+        "staged": [
+          "F3_1"
+        ],
+        "missing": []
+      }
+    },
+    "tests": {
+      "features": 2,
+      "cases": 8
+    },
+    "java_compile_repair": {
+      "max_rounds": 2,
+      "attempts": [
+        {
+          "round": 0,
+          "ok": false,
+          "skipped": false,
+          "command": "mvn -B -q -Dstyle.color=never clean test-compile",
+          "reason": "mvn clean test-compile failed",
+          "error_count": 7,
+          "code_files": 2,
+          "test_files": 0,
+          "unmapped_errors": []
+        },
+        {
+          "round": 1,
+          "ok": false,
+          "skipped": false,
+          "command": "mvn -B -q -Dstyle.color=never clean test-compile",
+          "reason": "mvn clean test-compile failed",
+          "error_count": 6,
+          "code_files": 1,
+          "test_files": 0,
+          "unmapped_errors": []
+        },
+        {
+          "round": 2,
+          "ok": false,
+          "skipped": false,
+          "command": "mvn -B -q -Dstyle.color=never clean test-compile",
+          "reason": "mvn clean test-compile failed",
+          "error_count": 6,
+          "code_files": 1,
+          "test_files": 0,
+          "unmapped_errors": []
+        }
+      ],
+      "repaired_files": [
+        {
+          "round": 1,
+          "kind": "code",
+          "fr_id": "3.1.REQ-1",
+          "feature_id": "3.1",
+          "path": "controllers/F3_1Adapter.java"
+        },
+        {
+          "round": 1,
+          "kind": "code",
+          "fr_id": "3.2.REQ-1",
+          "feature_id": "3.2",
+          "path": "controllers/prompt_user_to_log_in.py"
+        },
+        {
+          "round": 2,
+          "kind": "code",
+          "fr_id": "3.1.REQ-1",
+          "feature_id": "3.1",
+          "path": "controllers/F3_1Adapter.java"
+        }
+      ],
+      "ok": false,
+      "skipped": false,
+      "reason": "mvn clean test-compile failed",
+      "unmapped_errors": []
+    },
+    "certification": {
+      "n": 1,
+      "k_values": [
+        1
+      ],
+      "aggregate_pass_at": {
+        "pass@1": 0.0
+      },
+      "aggregate_case_pass_rate": 0.0,
+      "n_tested_frs": 1,
+      "n_proved_features": 1,
+      "n_total_tested_features": 1,
+      "pass_at_1_fr_ids": []
+    },
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "total_seconds": 126.143,
+    "tokens": {
+      "input": 69840,
+      "output": 9343,
+      "total": 79183,
+      "calls": 23
+    },
+    "cost_usd": 0.0,
+    "cost_by_model": {
+      "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8": {
+        "input": 69840,
+        "output": 9343,
+        "calls": 23,
+        "cost_usd": 0.0
+      }
+    },
+    "proved_feature_ids": [
+      "3.1"
+    ],
+    "summary": {
+      "verification_pass_ratio": 0.5,
+      "test_case_pass_ratio": 0.0,
+      "PassVer@1": 0.5,
+      "avg_verification_iteration": 6.0,
+      "avg_test_iteration": 1,
+      "avg_input_token": 3036.5,
+      "avg_output_token": 406.2,
+      "total_time": 126.14
+    }
+  }
+}

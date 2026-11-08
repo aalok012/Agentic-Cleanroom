@@ -1,0 +1,20 @@
+{
+  "3.1": {
+    "sig": "f202ac52501db8bf1e68d49fe5f5f0414f6db84fd3f38648564cee5f3b015f1f",
+    "data": {
+      "feature_id": "3.1",
+      "module": "F3_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1Domain refines Domain {\n  datatype Event = Event(title: string, description: string, maxRegistrations: int)\n\n  type Model = Event\n\n  datatype Action = EditEvent\n\n  ghost predicate Inv(m: Model) {\n    m.title != \"\" && m.description != \"\"\n  }\n\n  function Init(): Model {\n    Event(title: \"\", description: \"\", maxRegistrations: 0)\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case EditEvent => m\n  }\n\n  function Normalize(m: Model): Model {\n    if m.title == \"\" then Event(\"Untitled Event\", m.description, m.maxRegistrations) else m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma EditEventUpdatesEvent(m: Model)\n    requires m.title != \"\" && m.description != \"\"\n    ensures Apply(m, EditEvent).title == m.title && Apply(m, EditEvent).description == m.description\n  {\n  }\n}\n\nmodule F3_1Kernel refines Kernel {\n  import D = F3_1Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 15,
+          "col": 15,
+          "message": "closeparen expected"
+        }
+      ],
+      "axioms": []
+    }
+  }
+}

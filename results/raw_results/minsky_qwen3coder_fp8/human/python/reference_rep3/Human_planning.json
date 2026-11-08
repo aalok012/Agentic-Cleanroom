@@ -1,0 +1,119 @@
+{
+  "project_name": "Human",
+  "source_file": "Human.xml",
+  "features": [
+    {
+      "id": "3.1",
+      "name": "Proposing an Event",
+      "description": "To allow coordinators/heads of various clubs to propose the organization of events. [cite: 160] This is handled by Club Coordinators/Heads. [cite: 159]",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-1",
+          "text": "While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]"
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2",
+      "name": "Registering for Events",
+      "description": "To allow users to register for upcoming events. [cite: 114] This involves student actors. [cite: 112]",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-1",
+          "text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]"
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.1.REQ-1",
+      "feature_id": "3.1",
+      "stimulus": "User initiates the process of editing event details and registration requirements for an event they are applying for",
+      "precondition": "none",
+      "response": "System allows the user to modify the event details and registration requirements",
+      "postcondition": "The modifications made by the user are applied to the event being applied for, and the updated information reflects in the system"
+    },
+    {
+      "fr_id": "3.2.REQ-1",
+      "feature_id": "3.2",
+      "stimulus": "User attempts to register for an event without being authenticated",
+      "precondition": "User is not currently logged into the system",
+      "response": "System prompts the user to log in before proceeding with event registration",
+      "postcondition": "The user is directed to the login interface and must successfully authenticate before continuing with the registration process"
+    }
+  ],
+  "stack": "fastapi",
+  "language": "python",
+  "dependency_graph": {
+    "nodes": [
+      "3.1",
+      "3.2"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.1",
+      "3.2"
+    ],
+    "cycles": []
+  },
+  "planning": {
+    "contracts": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "signature": "def edit_event_details_and_registration(event_id: str, details: dict, registration_requirements: dict) -> dict:",
+        "docstring": "System allows the user to modify the event details and registration requirements.\n\nArgs:\n    event_id: Unique identifier for the event being edited\n    details: Dictionary containing updated event details such as title, date, location, etc.\n    registration_requirements: Dictionary containing updated registration requirements such as age limits, prerequisites, etc.\n\nReturns:\n    A dictionary indicating success or failure of the update operation\n\nNotes:\n    Postcondition: The modifications made by the user are applied to the event being applied for, and the updated information reflects in the system",
+        "mvc_layer": "controller",
+        "file_path": "controllers/edit_event_details_and_registration.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-1",
+          "feature_id": "3.1",
+          "stimulus": "User initiates the process of editing event details and registration requirements for an event they are applying for",
+          "precondition": "none",
+          "response": "System allows the user to modify the event details and registration requirements",
+          "postcondition": "The modifications made by the user are applied to the event being applied for, and the updated information reflects in the system"
+        },
+        "example_inputs_json": "{\"event_id\":\"evt-123\",\"details\":{\"title\":\"Updated Event Title\",\"date\":\"2023-10-15\"},\"registration_requirements\":{\"age_limit\":18}}",
+        "expected_return_json": "{\"status\": \"success\", \"message\": \"Event details and registration requirements updated successfully\"}",
+        "error_mode": "raise",
+        "failure_inputs_json": "{\"event_id\":\"\",\"details\":{},\"registration_requirements\":{}}",
+        "entity_identifier": "event_id"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "signature": "def prompt_user_to_log_in() -> None:",
+        "docstring": "System prompts the user to log in before proceeding with event registration.\n\nReturns:\n    System prompts the user to log in before proceeding with event registration\n\nRaises:\n    HTTPException: If the precondition is violated (User is not currently logged into the system).\n\nNotes:\n    Precondition: User is not currently logged into the system\n    Postcondition: The user is directed to the login interface and must successfully authenticate before continuing with the registration process",
+        "mvc_layer": "controller",
+        "file_path": "controllers/prompt_user_to_log_in.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-1",
+          "feature_id": "3.2",
+          "stimulus": "User attempts to register for an event without being authenticated",
+          "precondition": "User is not currently logged into the system",
+          "response": "System prompts the user to log in before proceeding with event registration",
+          "postcondition": "The user is directed to the login interface and must successfully authenticate before continuing with the registration process"
+        },
+        "example_inputs_json": "{}",
+        "expected_return_json": "null",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      }
+    ],
+    "notes": []
+  }
+}

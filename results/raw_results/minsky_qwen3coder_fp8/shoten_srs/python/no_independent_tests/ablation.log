@@ -1,0 +1,59 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=off certify=off recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+  [REUSE] stages ['spec', 'dependency', 'planning', 'proof', 'code'] taken from /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep1/Shoten_SRS_full_ir.json
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  [skip — resumed] Shoten_SRS: 17 feature(s), FR=54, stack=fastapi
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  [skip — resumed] dependency graph loaded from checkpoint.
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  [skip — resumed] planning loaded: 54 contract(s).
+
+======================================================================
+  [4a]  Dafny Proof Agent — [skip — resumed]
+======================================================================
+  proved 3, compiled 3; dafny project re-scaffolded at /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_independent_tests/generated/Shoten_SRS/dafny_proof
+
+======================================================================
+  [4]  Code Agent — [skip — resumed]
+======================================================================
+  loaded 49 generated file(s) from checkpoint (packaged app already on disk).
+
+======================================================================
+  [5]  Test Agent — SKIPPED (--no-test)
+======================================================================
+  Test agent OFF — no test modules written.  (no certification will run.)
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.1481
+  test_case_pass_ratio        :       0.0000
+  PassVer@1                   :       0.1481
+  avg_verification_iteration  :         5.52
+  avg_test_iteration          :         0.00
+  avg_input_token             :          0.0
+  avg_output_token            :          0.0
+  total_time                  :        0.00s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_independent_tests/Shoten_SRS_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_independent_tests/Shoten_SRS_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_independent_tests/runs/20261018-094036-shoten-srs.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_independent_tests/runs/20261018-094036-shoten-srs.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : 
+Time      : 0.00s   Tokens: 0   Cost: $0.0000

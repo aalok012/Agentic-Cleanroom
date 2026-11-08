@@ -1,0 +1,133 @@
+{
+  "run_id": "20261018-094858-shoten-srs",
+  "timestamp_utc": "2026-10-18T09:48:58.333952+00:00",
+  "status": "complete",
+  "srs": "Shoten_SRS.xml",
+  "stack": "fastapi",
+  "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+  "total_seconds": 499.202,
+  "tokens": {
+    "input": 115159,
+    "output": 44655,
+    "total": 159814,
+    "calls": 71
+  },
+  "cost_usd": 0.0,
+  "config": {
+    "language": "python",
+    "stack": "fastapi",
+    "models": {
+      "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+    },
+    "prompt_strategy": "baseline",
+    "agents": {
+      "spec": true,
+      "dependency": true,
+      "planning": true,
+      "proof": false,
+      "code": true,
+      "test": true,
+      "certify": true,
+      "recovery": false,
+      "compile_repair": false
+    },
+    "run_dependency": true,
+    "run_test": true,
+    "run_recovery": false,
+    "test_sees_code": false,
+    "raw_spec_only": false,
+    "certify": true,
+    "samples": 1,
+    "k_values": [
+      1
+    ],
+    "prove": false,
+    "prove_target": "py",
+    "max_cert_loops": 0,
+    "max_compile_repair_loops": 2,
+    "temperature": 0.0,
+    "cert_temperature": 0.4,
+    "case_timeout": 10.0,
+    "prove_rounds": 6,
+    "llm_deps": true,
+    "baseline": false,
+    "reuse_from": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep1/Shoten_SRS_full_ir.json",
+    "reuse_stages": [
+      "spec",
+      "dependency",
+      "planning"
+    ],
+    "oracle_tests": ""
+  },
+  "stages": [
+    {
+      "name": "code",
+      "seconds": 176.466,
+      "input_tokens": 70498,
+      "output_tokens": 20114,
+      "calls": 54
+    },
+    {
+      "name": "test",
+      "seconds": 214.581,
+      "input_tokens": 44661,
+      "output_tokens": 24541,
+      "calls": 17
+    },
+    {
+      "name": "certification",
+      "seconds": 108.155,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "calls": 0
+    }
+  ],
+  "code": {
+    "language": "Python",
+    "files": 54,
+    "lines_of_code": 2284,
+    "files_per_layer": {
+      "controller": 27,
+      "model": 8,
+      "view": 19
+    },
+    "imports": [
+      "app",
+      "datetime",
+      "fastapi",
+      "sqlalchemy"
+    ],
+    "third_party_libraries": [
+      "app",
+      "fastapi",
+      "sqlalchemy"
+    ],
+    "runnable_app": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_proof/generated/Shoten_SRS/app"
+  },
+  "tests": {
+    "features": 17,
+    "cases": 113
+  },
+  "dafny": null,
+  "compile": null,
+  "certification": {
+    "n": 1,
+    "k_values": [
+      1
+    ],
+    "aggregate_pass_at": {
+      "pass@1": 0.0
+    },
+    "aggregate_case_pass_rate": 0.0,
+    "n_tested_frs": 54,
+    "n_proved_features": 0,
+    "n_total_tested_features": 17,
+    "pass_at_1_fr_ids": []
+  }
+}

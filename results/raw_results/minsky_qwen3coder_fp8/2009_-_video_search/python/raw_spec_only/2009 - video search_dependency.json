@@ -1,0 +1,188 @@
+{
+  "project_name": "2009 - video search",
+  "source_file": "2009 - video search.xml",
+  "features": [
+    {
+      "id": "3.1.REQ-1",
+      "name": "Torrent Search: 3.1.REQ-1",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-1",
+          "text": "Torrent search will share the same search bar with the streaming search."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-2",
+      "name": "Torrent Search: 3.1.REQ-2",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-2",
+          "text": "Database of torrent sites can be updated via the internet."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-2"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-3",
+      "name": "Torrent Search: 3.1.REQ-3",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-3",
+          "text": "There will be a tick box to allow the user to choose to include torrent searching in the search."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-3"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-4",
+      "name": "Torrent Search: 3.1.REQ-4",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-4",
+          "text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-4"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-5",
+      "name": "Torrent Search: 3.1.REQ-5",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-5",
+          "text": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d"
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-5"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-6",
+      "name": "Torrent Search: 3.1.REQ-6",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-6",
+          "text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-6"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-7",
+      "name": "Torrent Search: 3.1.REQ-7",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-7",
+          "text": "There will be page button for the user to navigate the results."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-7"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.1.REQ-1",
+      "feature_id": "3.1.REQ-1",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Torrent search will share the same search bar with the streaming search.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-2",
+      "feature_id": "3.1.REQ-2",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Database of torrent sites can be updated via the internet.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-3",
+      "feature_id": "3.1.REQ-3",
+      "stimulus": "",
+      "precondition": "",
+      "response": "There will be a tick box to allow the user to choose to include torrent searching in the search.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-4",
+      "feature_id": "3.1.REQ-4",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-5",
+      "feature_id": "3.1.REQ-5",
+      "stimulus": "",
+      "precondition": "",
+      "response": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-6",
+      "feature_id": "3.1.REQ-6",
+      "stimulus": "",
+      "precondition": "",
+      "response": "Results will be arranged in size/date/alphabetical order by clicking on the column headers.",
+      "postcondition": ""
+    },
+    {
+      "fr_id": "3.1.REQ-7",
+      "feature_id": "3.1.REQ-7",
+      "stimulus": "",
+      "precondition": "",
+      "response": "There will be page button for the user to navigate the results.",
+      "postcondition": ""
+    }
+  ],
+  "stack": "fastapi",
+  "language": "python",
+  "dependency_graph": {
+    "nodes": [
+      "3.1"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.1"
+    ],
+    "cycles": []
+  }
+}

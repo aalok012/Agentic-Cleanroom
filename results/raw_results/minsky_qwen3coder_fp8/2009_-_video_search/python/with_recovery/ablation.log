@@ -1,0 +1,482 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=on certify=on recovery=on compile_repair=off
+  Prompt strategy: baseline
+
+  [REUSE] stages ['spec', 'dependency', 'planning', 'proof', 'code', 'test'] taken from /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep1/2009 - video search_full_ir.json
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  [skip — resumed] 2009 - video search: 7 feature(s), FR=7, stack=fastapi
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  [skip — resumed] dependency graph loaded from checkpoint.
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  [skip — resumed] planning loaded: 7 contract(s).
+
+======================================================================
+  [4a]  Dafny Proof Agent — [skip — resumed]
+======================================================================
+  proved 4, compiled 4; dafny project re-scaffolded at /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/with_recovery/generated/2009 - video search/dafny_proof
+
+======================================================================
+  [4]  Code Agent — [skip — resumed]
+======================================================================
+  loaded 7 generated file(s) from checkpoint (packaged app already on disk).
+
+======================================================================
+  [5]  Test Agent — [skip — resumed]
+======================================================================
+  loaded 7 tested feature(s) from checkpoint (test modules already on disk).
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples) · skipping 4 proved
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.1.REQ-1] Torrent Search: 3.1.REQ-1
+    FR  [3.1.REQ-1] Torrent search will share the same search bar with the streaming search.
+
+[3.1.REQ-2] Torrent Search: 3.1.REQ-2
+    FR  [3.1.REQ-2] Database of torrent sites can be updated via the internet.
+
+[3.1.REQ-3] Torrent Search: 3.1.REQ-3
+    FR  [3.1.REQ-3] There will be a tick box to allow the user to choose to include torrent searching in the search.
+
+[3.1.REQ-4] Torrent Search: 3.1.REQ-4
+    FR  [3.1.REQ-4] Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.
+
+[3.1.REQ-5] Torrent Search: 3.1.REQ-5
+    FR  [3.1.REQ-5] If no results are found on a search it will display a message “No results were found for this search.”
+
+[3.1.REQ-6] Torrent Search: 3.1.REQ-6
+    FR  [3.1.REQ-6] Results will be arranged in size/date/alphabetical order by clicking on the column headers.
+
+[3.1.REQ-7] Torrent Search: 3.1.REQ-7
+    FR  [3.1.REQ-7] There will be page button for the user to navigate the results.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.1.REQ-4    sample=0  Canonical case with valid query
+  [FAIL] 3.1.REQ-4    sample=0  Empty query string
+  [FAIL] 3.1.REQ-4    sample=0  Query with special characters
+  [FAIL] 3.1.REQ-4    sample=0  Non-existent query
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results by size in descending order
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results by date in ascending order
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results alphabetically by name
+  [FAIL] 3.1.REQ-6    sample=0  Attempt to sort with invalid sort_by parameter
+  [FAIL] 3.1.REQ-7    sample=0  Canonical case with page 1, page size 10, search query 'ubu…
+  [FAIL] 3.1.REQ-7    sample=0  Page number 2 with same search query and page size
+  [FAIL] 3.1.REQ-7    sample=0  Boundary case with page size 1
+  [FAIL] 3.1.REQ-7    sample=0  Invalid page number (negative)
+  [FAIL] 3.1.REQ-7    sample=0  Empty search query
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Canonical case with valid query
+  inputs:   Search query 'ubuntu 20.04'
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Empty query string
+  inputs:   Empty search query
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Query with special characters
+  inputs:   Search query with special characters 'ubuntu 20.04 & LTS'
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Non-existent query
+  inputs:   Search query 'nonexistentfile123'
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results by size in descending order
+  inputs:   Torrent results sorted by size in descending order
+  expected: Torrent results ordered by size from largest to smallest
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results by date in ascending order
+  inputs:   Torrent results sorted by date in ascending order
+  expected: Torrent results ordered by date from oldest to newest
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results alphabetically by name
+  inputs:   Torrent results sorted alphabetically by name
+  expected: Torrent results ordered alphabetically by name
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Attempt to sort with invalid sort_by parameter
+  inputs:   Torrent results with invalid sort_by parameter
+  expected: HTTP 4xx error due to invalid sort_by parameter
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Canonical case with page 1, page size 10, search query 'ubuntu'
+  inputs:   Page number 1, page size 10, search query 'ubuntu'
+  expected: Results for ubuntu search on page 1 with 10 items per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Page number 2 with same search query and page size
+  inputs:   Page number 2, page size 10, search query 'ubuntu'
+  expected: Results for ubuntu search on page 2 with 10 items per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Boundary case with page size 1
+  inputs:   Page number 1, page size 1, search query 'ubuntu'
+  expected: Single result for ubuntu search on page 1 with 1 item per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Invalid page number (negative)
+  inputs:   Negative page number, page size 10, search query 'ubuntu'
+  expected: HTTP 4xx error due to invalid page number
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Empty search query
+  inputs:   Page number 1, page size 10, empty search query
+  expected: Results for empty search query on page 1 with 10 items per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+======================================================================
+  SUMMARY: 0 passed / 13 failed / 13 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+  ⏱  done in 10.93s
+  pass@1: 0.000  (over 3 un-proved FR(s))
+
+======================================================================
+  [6b]  Recovery loop — re-prove + test-informed regen (≤ 2 passes)
+======================================================================
+
+  ── recovery loop 1/2 · targeting ['3.1.REQ-4', '3.1.REQ-6', '3.1.REQ-7'] · dafny rounds=6 · code temp=0.4 ──
+     regenerated 3 file(s) for ['3.1.REQ-4', '3.1.REQ-6', '3.1.REQ-7'] with test feedback
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.1.REQ-1] Torrent Search: 3.1.REQ-1
+    FR  [3.1.REQ-1] Torrent search will share the same search bar with the streaming search.
+
+[3.1.REQ-2] Torrent Search: 3.1.REQ-2
+    FR  [3.1.REQ-2] Database of torrent sites can be updated via the internet.
+
+[3.1.REQ-3] Torrent Search: 3.1.REQ-3
+    FR  [3.1.REQ-3] There will be a tick box to allow the user to choose to include torrent searching in the search.
+
+[3.1.REQ-4] Torrent Search: 3.1.REQ-4
+    FR  [3.1.REQ-4] Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.
+
+[3.1.REQ-5] Torrent Search: 3.1.REQ-5
+    FR  [3.1.REQ-5] If no results are found on a search it will display a message “No results were found for this search.”
+
+[3.1.REQ-6] Torrent Search: 3.1.REQ-6
+    FR  [3.1.REQ-6] Results will be arranged in size/date/alphabetical order by clicking on the column headers.
+
+[3.1.REQ-7] Torrent Search: 3.1.REQ-7
+    FR  [3.1.REQ-7] There will be page button for the user to navigate the results.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.1.REQ-4    sample=0  Canonical case with valid query
+  [FAIL] 3.1.REQ-4    sample=0  Empty query string
+  [FAIL] 3.1.REQ-4    sample=0  Query with special characters
+  [FAIL] 3.1.REQ-4    sample=0  Non-existent query
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results by size in descending order
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results by date in ascending order
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results alphabetically by name
+  [FAIL] 3.1.REQ-6    sample=0  Attempt to sort with invalid sort_by parameter
+  [FAIL] 3.1.REQ-7    sample=0  Canonical case with page 1, page size 10, search query 'ubu…
+  [FAIL] 3.1.REQ-7    sample=0  Page number 2 with same search query and page size
+  [FAIL] 3.1.REQ-7    sample=0  Boundary case with page size 1
+  [FAIL] 3.1.REQ-7    sample=0  Invalid page number (negative)
+  [FAIL] 3.1.REQ-7    sample=0  Empty search query
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Canonical case with valid query
+  inputs:   Search query 'ubuntu 20.04'
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Empty query string
+  inputs:   Empty search query
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Query with special characters
+  inputs:   Search query with special characters 'ubuntu 20.04 & LTS'
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Non-existent query
+  inputs:   Search query 'nonexistentfile123'
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results by size in descending order
+  inputs:   Torrent results sorted by size in descending order
+  expected: Torrent results ordered by size from largest to smallest
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results by date in ascending order
+  inputs:   Torrent results sorted by date in ascending order
+  expected: Torrent results ordered by date from oldest to newest
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results alphabetically by name
+  inputs:   Torrent results sorted alphabetically by name
+  expected: Torrent results ordered alphabetically by name
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Attempt to sort with invalid sort_by parameter
+  inputs:   Torrent results with invalid sort_by parameter
+  expected: HTTP 4xx error due to invalid sort_by parameter
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Canonical case with page 1, page size 10, search query 'ubuntu'
+  inputs:   Page number 1, page size 10, search query 'ubuntu'
+  expected: Results for ubuntu search on page 1 with 10 items per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Page number 2 with same search query and page size
+  inputs:   Page number 2, page size 10, search query 'ubuntu'
+  expected: Results for ubuntu search on page 2 with 10 items per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Boundary case with page size 1
+  inputs:   Page number 1, page size 1, search query 'ubuntu'
+  expected: Single result for ubuntu search on page 1 with 1 item per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Invalid page number (negative)
+  inputs:   Negative page number, page size 10, search query 'ubuntu'
+  expected: HTTP 4xx error due to invalid page number
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Empty search query
+  inputs:   Page number 1, page size 10, empty search query
+  expected: Results for empty search query on page 1 with 10 items per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+======================================================================
+  SUMMARY: 0 passed / 13 failed / 13 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+     iter 1 metrics: PassVer@1=0.571  pass@1=0.0  case_pass_rate=0.0  proved_frs=4/7  certified_frs=4/7
+
+  ── recovery loop 2/2 · targeting ['3.1.REQ-4', '3.1.REQ-6', '3.1.REQ-7'] · dafny rounds=8 · code temp=0.6 ──
+     regenerated 3 file(s) for ['3.1.REQ-4', '3.1.REQ-6', '3.1.REQ-7'] with test feedback
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.1.REQ-1] Torrent Search: 3.1.REQ-1
+    FR  [3.1.REQ-1] Torrent search will share the same search bar with the streaming search.
+
+[3.1.REQ-2] Torrent Search: 3.1.REQ-2
+    FR  [3.1.REQ-2] Database of torrent sites can be updated via the internet.
+
+[3.1.REQ-3] Torrent Search: 3.1.REQ-3
+    FR  [3.1.REQ-3] There will be a tick box to allow the user to choose to include torrent searching in the search.
+
+[3.1.REQ-4] Torrent Search: 3.1.REQ-4
+    FR  [3.1.REQ-4] Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.
+
+[3.1.REQ-5] Torrent Search: 3.1.REQ-5
+    FR  [3.1.REQ-5] If no results are found on a search it will display a message “No results were found for this search.”
+
+[3.1.REQ-6] Torrent Search: 3.1.REQ-6
+    FR  [3.1.REQ-6] Results will be arranged in size/date/alphabetical order by clicking on the column headers.
+
+[3.1.REQ-7] Torrent Search: 3.1.REQ-7
+    FR  [3.1.REQ-7] There will be page button for the user to navigate the results.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.1.REQ-4    sample=0  Canonical case with valid query
+  [FAIL] 3.1.REQ-4    sample=0  Empty query string
+  [FAIL] 3.1.REQ-4    sample=0  Query with special characters
+  [FAIL] 3.1.REQ-4    sample=0  Non-existent query
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results by size in descending order
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results by date in ascending order
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results alphabetically by name
+  [FAIL] 3.1.REQ-6    sample=0  Attempt to sort with invalid sort_by parameter
+  [FAIL] 3.1.REQ-7    sample=0  Canonical case with page 1, page size 10, search query 'ubu…
+  [FAIL] 3.1.REQ-7    sample=0  Page number 2 with same search query and page size
+  [FAIL] 3.1.REQ-7    sample=0  Boundary case with page size 1
+  [FAIL] 3.1.REQ-7    sample=0  Invalid page number (negative)
+  [FAIL] 3.1.REQ-7    sample=0  Empty search query
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Canonical case with valid query
+  inputs:   Search query 'ubuntu 20.04'
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Empty query string
+  inputs:   Empty search query
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Query with special characters
+  inputs:   Search query with special characters 'ubuntu 20.04 & LTS'
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Non-existent query
+  inputs:   Search query 'nonexistentfile123'
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results by size in descending order
+  inputs:   Torrent results sorted by size in descending order
+  expected: Torrent results ordered by size from largest to smallest
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results by date in ascending order
+  inputs:   Torrent results sorted by date in ascending order
+  expected: Torrent results ordered by date from oldest to newest
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results alphabetically by name
+  inputs:   Torrent results sorted alphabetically by name
+  expected: Torrent results ordered alphabetically by name
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Attempt to sort with invalid sort_by parameter
+  inputs:   Torrent results with invalid sort_by parameter
+  expected: HTTP 4xx error due to invalid sort_by parameter
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Canonical case with page 1, page size 10, search query 'ubuntu'
+  inputs:   Page number 1, page size 10, search query 'ubuntu'
+  expected: Results for ubuntu search on page 1 with 10 items per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Page number 2 with same search query and page size
+  inputs:   Page number 2, page size 10, search query 'ubuntu'
+  expected: Results for ubuntu search on page 2 with 10 items per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Boundary case with page size 1
+  inputs:   Page number 1, page size 1, search query 'ubuntu'
+  expected: Single result for ubuntu search on page 1 with 1 item per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Invalid page number (negative)
+  inputs:   Negative page number, page size 10, search query 'ubuntu'
+  expected: HTTP 4xx error due to invalid page number
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Empty search query
+  inputs:   Page number 1, page size 10, empty search query
+  expected: Results for empty search query on page 1 with 10 items per page
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_1_REQ-2_adapter.py, line 22)
+
+======================================================================
+  SUMMARY: 0 passed / 13 failed / 13 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+     iter 2 metrics: PassVer@1=0.571  pass@1=0.0  case_pass_rate=0.0  proved_frs=4/7  certified_frs=4/7
+  ⏱  done in 297.91s  ·  228,705 tokens, 48 call(s)
+  recovery: +0 re-proved, +0 repaired-with-tests, 3 uncertified  ·  pass@1 now 0.000
+    [3.1.REQ-1] PROVED
+    [3.1.REQ-2] PROVED
+    [3.1.REQ-3] PROVED
+    [3.1.REQ-4] UNCERTIFIED
+    [3.1.REQ-5] PROVED
+    [3.1.REQ-6] UNCERTIFIED
+    [3.1.REQ-7] UNCERTIFIED
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.5714
+  test_case_pass_ratio        :       0.0000
+  PassVer@1                   :       0.5714
+  avg_verification_iteration  :         3.57
+  avg_test_iteration          :         3.00
+  avg_input_token             :       4185.7
+  avg_output_token            :        579.0
+  total_time                  :      308.85s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/with_recovery/2009 - video search_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/with_recovery/2009 - video search_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/with_recovery/runs/20261018-091636-2009-video-search.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/with_recovery/runs/20261018-091636-2009-video-search.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : certification=10.9s   recovery=297.9s
+Time      : 308.85s   Tokens: 228,705   Cost: $0.0000

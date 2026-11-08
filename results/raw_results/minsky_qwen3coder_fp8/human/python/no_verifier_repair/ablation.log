@@ -1,0 +1,151 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=on certify=on recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+  [REUSE] stages ['spec', 'dependency', 'planning'] taken from /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep1/Human_full_ir.json
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  [skip — resumed] Human: 2 feature(s), FR=2, stack=fastapi
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  [skip — resumed] dependency graph loaded from checkpoint.
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  [skip — resumed] planning loaded: 2 contract(s).
+
+======================================================================
+  [4a]  Dafny Proof Agent — proving feature logic (formal verification)
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 6.39s  ·  5,207 tokens, 2 call(s)
+Proved    : 0/2 features  →  (none)
+  [3.1] unproved  F3_1  (1r)
+  [3.2] unproved  F3_2  (1r)
+  ⏱  done in 0.00s
+Compiled  : 0/0 proved features to py
+
+======================================================================
+  [4]  Code Agent — generating MVC code from the spec
+======================================================================
+  ⏱  done in 6.07s  ·  3,151 tokens, 2 call(s)
+2 file(s); 83 LOC (Python); layers={'controller': 2}
+Assembled runnable FastAPI app: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/no_verifier_repair/generated/Human/app  (cd "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/no_verifier_repair/generated/Human" && python -m app)
+
+======================================================================
+  [5]  Test Agent — deriving black-box tests from the spec
+======================================================================
+  ⏱  done in 15.04s  ·  5,946 tokens, 2 call(s)
+2 feature(s), 8 test case(s).
+Wrote 2 pytest module(s) to /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/no_verifier_repair/generated/Human/tests
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples)
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.1] Proposing an Event
+    FR  [3.1.REQ-1] While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]
+
+[3.2] Registering for Events
+    FR  [3.2.REQ-1] If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. …
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.1.REQ-1    sample=0  Anchor case: Edit event details and registration requiremen…
+  [FAIL] 3.1.REQ-1    sample=0  Edit event with empty details dictionary
+  [FAIL] 3.1.REQ-1    sample=0  Edit event with missing registration requirements
+  [PASS] 3.1.REQ-1    sample=0  Attempt to edit non-existent event
+  [FAIL] 3.2.REQ-1    sample=0  Anchor case: User attempts to register for an event without…
+  [FAIL] 3.2.REQ-1    sample=0  Independent case: User provides invalid input (non-empty JS…
+  [FAIL] 3.2.REQ-1    sample=0  Independent case: User tries to register for an event with …
+  [FAIL] 3.2.REQ-1    sample=0  Independent case: User attempts to register for an event bu…
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Anchor case: Edit event details and registration requirements with valid inputs
+  inputs:   Event ID, updated details, and registration requirements
+  expected: True indicating successful update
+  reason:   HTTP 400: {"detail":"404: Event not found"}
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Edit event with empty details dictionary
+  inputs:   Event ID with empty details and registration requirements
+  expected: True indicating successful update
+  reason:   HTTP 400: {"detail":"404: Event not found"}
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Edit event with missing registration requirements
+  inputs:   Event ID with details but no registration requirements
+  expected: True indicating successful update
+  reason:   HTTP 400: {"detail":"404: Event not found"}
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Anchor case: User attempts to register for an event without being authenticated
+  inputs:   User attempts to register for an event without being logged in
+  expected: System prompts the user to log in before proceeding with event registration
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Independent case: User provides invalid input (non-empty JSON body) while not logged in
+  inputs:   User sends a non-empty JSON body attempting to register for an event without authentication
+  expected: System still prompts the user to log in because the precondition of not being logged in is met
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Independent case: User tries to register for an event with malformed input (missing required fields)
+  inputs:   User sends a malformed request body without any relevant fields for event registration
+  expected: System prompts the user to log in regardless of malformed input since the user is not authenticated
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Independent case: User attempts to register for an event but is already logged in
+  inputs:   User is already logged in and attempts to register for an event
+  expected: System allows the registration process to proceed as the user is authenticated
+  reason:   setup step 0 (/controllers/prompt_user_to_log_in) failed: HTTP 404: {"detail":"Not Found"}
+
+======================================================================
+  SUMMARY: 1 passed / 7 failed / 8 total case executions
+  Case pass rate: 0.125
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+  ⏱  done in 6.91s
+  pass@1: 0.000  (over 2 un-proved FR(s))
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.0000
+  test_case_pass_ratio        :       0.1250
+  PassVer@1                   :       0.0000
+  avg_verification_iteration  :         1.00
+  avg_test_iteration          :         1.00
+  avg_input_token             :       1880.5
+  avg_output_token            :        503.5
+  total_time                  :       34.40s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/no_verifier_repair/Human_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/no_verifier_repair/Human_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/no_verifier_repair/runs/20261018-090245-human.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/no_verifier_repair/runs/20261018-090245-human.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : dafny=6.4s   code=6.1s   test=15.0s   certification=6.9s
+Time      : 34.40s   Tokens: 14,304   Cost: $0.0000

@@ -1,0 +1,195 @@
+{
+  "3.2.REQ-1": {
+    "sig": "383f116fce015fccfea2c7060c258e2337accec1769d07eca01cf4dbc8082145",
+    "data": {
+      "feature_id": "3.2.REQ-1",
+      "module": "F3_2_REQ_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_1Domain refines Domain {\n  type Model = bool\n\n  datatype Action = Access\n\n  ghost predicate Inv(m: Model) {\n    m\n  }\n\n  function Init(): Model {\n    false\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Access => true\n  }\n\n  function Normalize(m: Model): Model {\n    true\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma AccessEnsuresFeatureAccessible()\n    ensures Apply(false, Access) == true\n  {\n  }\n}\n\nmodule F3_2_REQ_1Kernel refines Kernel {\n  import D = F3_2_REQ_1Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 27,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 36,
+          "col": 17,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-10": {
+    "sig": "8176d3de1bd7485136c93a8714c318ffda6a8b24df0fbc8b0826816d4ad7ccf1",
+    "data": {
+      "feature_id": "3.2.REQ-10",
+      "module": "F3_2_REQ_10",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_10Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = AppendEvent(eventId: string, eventData: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case AppendEvent(id, data) => m[id := data]\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma AppendEventEnsures(m: Model, id: string, data: string)\n    ensures (Apply(m, AppendEvent(id, data)))[id] == data\n  {\n  }\n}\n\nmodule F3_2_REQ_10Kernel refines Kernel {\n  import D = F3_2_REQ_10Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-11": {
+    "sig": "c823ac35aea897b43bca0551328884e5d6313b198251bd5d6991b80f35bb28af",
+    "data": {
+      "feature_id": "3.2.REQ-11",
+      "module": "F3_2_REQ_11",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_11Domain refines Domain {\n  type Model = map<string, int>\n\n  datatype Action = GetEvents\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case GetEvents => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma GetEventsReturnsAllEvents(m: Model)\n    ensures (forall k | k in m :: k in (map k | k in m :: k))\n  {\n  }\n}\n\nmodule F3_2_REQ_11Kernel refines Kernel {\n  import D = F3_2_REQ_11Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-12": {
+    "sig": "35621977fccd5bb8c2a71e555b71527f34107d19dfc64997e7503aa006c9daab",
+    "data": {
+      "feature_id": "3.2.REQ-12",
+      "module": "F3_2_REQ_12",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_12Domain refines Domain {\n  type Model = bool\n\n  datatype Action = None\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    false\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case None => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma NoneActionDoesNotChangeState(m: Model)\n    ensures Apply(m, None) == m\n  {\n  }\n}\n\nmodule F3_2_REQ_12Kernel refines Kernel {\n  import D = F3_2_REQ_12Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-2": {
+    "sig": "40d13514d82e69f7e7bf4dfa471e96655164dd5039ce5413bd6eafc269efb4a0",
+    "data": {
+      "feature_id": "3.2.REQ-2",
+      "module": "F3_2_REQ_2",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_2Domain refines Domain {\n  type Model = map<string, set<string>>\n\n  datatype Action = Register(user: string, event: string)\n\n  ghost predicate Inv(m: Model) {\n    forall u | u in m :: \n      forall e | e in m[u] :: \n        e != \"\"\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Register(user, event) =>\n      if user in m && event !in m[user] then\n        m[user := m[user] + {event}]\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    map u | u in m :: \n      set e | e in m[u] :: e\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma RegisterRecordsRegistration(m: Model, user: string, event: string)\n    requires Inv(m)\n    requires user in m && event !in m[user]\n    ensures Inv(Apply(m, Register(user, event)))\n    ensures user in Apply(m, Register(user, event)) && event in Apply(m, Register(user, event))[user]\n  {\n    assert Inv(Apply(m, Register(user, event)));\n    assert user in Apply(m, Register(user, event));\n    assert event in Apply(m, Register(user, event))[user];\n  }\n}\n\nmodule F3_2_REQ_2Kernel refines Kernel {\n  import D = F3_2_REQ_2Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 39,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 48,
+          "col": 14,
+          "message": "assertion might not hold"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-3": {
+    "sig": "6102765928cd1952a5ccb389393e5692d41d1a83693a767b67f7d9d9076dad00",
+    "data": {
+      "feature_id": "3.2.REQ-3",
+      "module": "F3_2_REQ_3",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_3Domain refines Domain {\n  type Model = (string, bool)\n\n  datatype Action = Error\n\n  ghost predicate Inv(m: Model) {\n    m.1 == false || m.0 == \"\"\n  }\n\n  function Init(): Model {\n    (\"\", false)\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Error => (\"error occurred\", true)\n  }\n\n  function Normalize(m: Model): Model {\n    if m.1 then (\"\", false) else m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n    if a == Error {\n      assert Normalize(Apply(m, a)) == (\"\", false);\n      assert Inv((\"\", false));\n    }\n  }\n\n  lemma ErrorDisplaysMessage(m: Model)\n    requires m.1 == false\n    ensures (Normalize(Apply(m, Error))).0 != \"\"\n  {\n    assert Normalize(Apply(m, Error)) == (\"\", false);\n    assert (\"\", false).0 == \"\";\n    assert false;\n  }\n}\n\nmodule F3_2_REQ_3Kernel refines Kernel {\n  import D = F3_2_REQ_3Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 45,
+          "col": 4,
+          "message": "assertion might not hold"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-4": {
+    "sig": "6254c14f498e477b5cd31e2e8b181688540a7001a94fb9529828d336889225cf",
+    "data": {
+      "feature_id": "3.2.REQ-4",
+      "module": "F3_2_REQ_4",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_4Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = PostEvent(eventId: string, content: string)\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m :: k != \"\"\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case PostEvent(eventId, content) => m[eventId := content]\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n    assert forall k | k in Init() :: k != \"\";\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n    assert forall k | k in Apply(m, a) :: k != \"\";\n  }\n\n  lemma PostEventEnsuresStudentCanViewAndRegister(m: Model, eventId: string, content: string)\n    ensures (Apply(m, PostEvent(eventId, content)))[eventId] == content\n  {\n    assert eventId in Apply(m, PostEvent(eventId, content));\n    assert Apply(m, PostEvent(eventId, content))[eventId] == content;\n  }\n}\n\nmodule F3_2_REQ_4Kernel refines Kernel {\n  import D = F3_2_REQ_4Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 34,
+          "col": 4,
+          "message": "assertion might not hold"
+        },
+        {
+          "line": 38,
+          "col": 18,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 40,
+          "col": 27,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 41,
+          "col": 16,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-5": {
+    "sig": "58be5fbcd283f80a207d7374e32f143a25c02596347cbb5b802bfadb4dd62321",
+    "data": {
+      "feature_id": "3.2.REQ-5",
+      "module": "F3_2_REQ_5",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_5Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = GenerateList\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case GenerateList => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma GenerateListEnsures(m: Model)\n    ensures Apply(m, GenerateList) == m\n  {\n  }\n}\n\nmodule F3_2_REQ_5Kernel refines Kernel {\n  import D = F3_2_REQ_5Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-6": {
+    "sig": "743ea503e25213970af96014b3b04b1ae28772794f52765c317228af758a8bc5",
+    "data": {
+      "feature_id": "3.2.REQ-6",
+      "module": "F3_2_REQ_6",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_6Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = StoreCredential(username: string, password: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case StoreCredential(u, p) => m[u := p]\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma StoreCredentialEnsures(m: Model, u: string, p: string)\n    ensures Apply(m, StoreCredential(u, p)) == m[u := p]\n  {\n  }\n}\n\nmodule F3_2_REQ_6Kernel refines Kernel {\n  import D = F3_2_REQ_6Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-7": {
+    "sig": "183b440e1344e26a29d60e184775593a25b472924a60e36d0e3567bf9d6901a6",
+    "data": {
+      "feature_id": "3.2.REQ-7",
+      "module": "F3_2_REQ_7",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_7Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = DataEntry | DataOrganization | DataRetrieval | DataModification | DataDeletion\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case DataEntry => m\n    case DataOrganization => m\n    case DataRetrieval => m\n    case DataModification => m\n    case DataDeletion => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma ProgressMade(m: Model, a: Action)\n    ensures |Apply(m, a)| >= |m|\n  {\n  }\n}\n\nmodule F3_2_REQ_7Kernel refines Kernel {\n  import D = F3_2_REQ_7Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-8": {
+    "sig": "d175a7648aa6a6ddb357898a62905a7b0e0915dd113a081460aaa059d55e29e4",
+    "data": {
+      "feature_id": "3.2.REQ-8",
+      "module": "F3_2_REQ_8",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_8Domain refines Domain {\n  type Model = (string, bool, map<string, string>)\n\n  datatype Action = AccessClientData(adminId: string, clientId: string)\n\n  ghost predicate Inv(m: Model) {\n    var (adminId, hasAccess, clientData) := m;\n    true\n  }\n\n  function Init(): Model {\n    (\"\", false, map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case AccessClientData(adminId, clientId) =>\n      var (currentAdminId, currentHasAccess, clientData) := m;\n      if currentAdminId == adminId && currentHasAccess then\n        (adminId, true, clientData)\n      else\n        (adminId, false, clientData)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma AccessGrantedEnsuresViewAccess(adminId: string, clientId: string)\n    ensures var (actualAdminId, hasAccess, data) := Apply(Init(), AccessClientData(adminId, clientId));\n           hasAccess ==> actualAdminId == adminId\n  {\n  }\n}\n\nmodule F3_2_REQ_8Kernel refines Kernel {\n  import D = F3_2_REQ_8Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.2.REQ-9": {
+    "sig": "94d31841ec3c15e4a6c3941d07b3cbc4c1b5e41754a8f94a2805d40302d9d3dc",
+    "data": {
+      "feature_id": "3.2.REQ-9",
+      "module": "F3_2_REQ_9",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2_REQ_9Domain refines Domain {\n  type Model = map<string, bool>\n\n  datatype Action = AddClient(client: string) | RemoveClient(client: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case AddClient(client) => m[client := true]\n    case RemoveClient(client) => m - {client}\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma AddClientEnsures(m: Model, client: string)\n    ensures (Apply(m, AddClient(client)))[client] == true\n  {\n  }\n\n  lemma RemoveClientEnsures(m: Model, client: string)\n    ensures client !in Apply(m, RemoveClient(client))\n  {\n  }\n}\n\nmodule F3_2_REQ_9Kernel refines Kernel {\n  import D = F3_2_REQ_9Domain\n}",
+      "verified": true,
+      "rounds": 2,
+      "residual_errors": [],
+      "axioms": []
+    }
+  }
+}

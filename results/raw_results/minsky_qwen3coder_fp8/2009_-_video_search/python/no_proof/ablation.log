@@ -1,0 +1,228 @@
+  Agents: spec=on dependency=on planning=on proof=off code=on test=on certify=on recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+  [REUSE] stages ['spec', 'dependency', 'planning'] taken from /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep1/2009 - video search_full_ir.json
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  [skip — resumed] 2009 - video search: 7 feature(s), FR=7, stack=fastapi
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  [skip — resumed] dependency graph loaded from checkpoint.
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  [skip — resumed] planning loaded: 7 contract(s).
+
+======================================================================
+  [4]  Code Agent — generating MVC code from the spec
+======================================================================
+  ⏱  done in 22.85s  ·  10,956 tokens, 7 call(s)
+7 file(s); 290 LOC (Python); layers={'controller': 3, 'model': 1, 'view': 3}
+Assembled runnable FastAPI app: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/no_proof/generated/2009 - video search/app  (cd "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/no_proof/generated/2009 - video search" && python -m app)
+
+======================================================================
+  [5]  Test Agent — deriving black-box tests from the spec
+======================================================================
+  ⏱  done in 51.75s  ·  20,545 tokens, 7 call(s)
+7 feature(s), 27 test case(s).
+Wrote 7 pytest module(s) to /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/no_proof/generated/2009 - video search/tests
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples)
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.1.REQ-1] Torrent Search: 3.1.REQ-1
+    FR  [3.1.REQ-1] Torrent search will share the same search bar with the streaming search.
+
+[3.1.REQ-2] Torrent Search: 3.1.REQ-2
+    FR  [3.1.REQ-2] Database of torrent sites can be updated via the internet.
+
+[3.1.REQ-3] Torrent Search: 3.1.REQ-3
+    FR  [3.1.REQ-3] There will be a tick box to allow the user to choose to include torrent searching in the search.
+
+[3.1.REQ-4] Torrent Search: 3.1.REQ-4
+    FR  [3.1.REQ-4] Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.
+
+[3.1.REQ-5] Torrent Search: 3.1.REQ-5
+    FR  [3.1.REQ-5] If no results are found on a search it will display a message “No results were found for this search.”
+
+[3.1.REQ-6] Torrent Search: 3.1.REQ-6
+    FR  [3.1.REQ-6] Results will be arranged in size/date/alphabetical order by clicking on the column headers.
+
+[3.1.REQ-7] Torrent Search: 3.1.REQ-7
+    FR  [3.1.REQ-7] There will be page button for the user to navigate the results.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.1.REQ-1    sample=0  Canonical case with query 'pizza'
+  [FAIL] 3.1.REQ-1    sample=0  Search with empty query string
+  [FAIL] 3.1.REQ-1    sample=0  Search with special characters in query
+  [FAIL] 3.1.REQ-1    sample=0  Search with long query string
+  [FAIL] 3.1.REQ-2    sample=0  Canonical case: Update torrent sites database with internet…
+  [PASS] 3.1.REQ-2    sample=0  Failure case: No internet connection during update attempt
+  [PASS] 3.1.REQ-3    sample=0  Anchor case: User enables torrent search
+  [PASS] 3.1.REQ-3    sample=0  User disables torrent search
+  [PASS] 3.1.REQ-3    sample=0  Invalid input type for include_torrents
+  [PASS] 3.1.REQ-3    sample=0  Missing include_torrents field in request
+  [FAIL] 3.1.REQ-4    sample=0  Canonical case with valid query
+  [FAIL] 3.1.REQ-4    sample=0  Empty query string
+  [FAIL] 3.1.REQ-4    sample=0  Query with special characters
+  [FAIL] 3.1.REQ-4    sample=0  Non-existent query
+  [FAIL] 3.1.REQ-5    sample=0  Anchor case: No results found
+  [FAIL] 3.1.REQ-5    sample=0  Edge case: Results list is None
+  [FAIL] 3.1.REQ-5    sample=0  Independent case: Non-empty results list
+  [PASS] 3.1.REQ-5    sample=0  Failure case: Invalid input type for results
+  [PASS] 3.1.REQ-6    sample=0  Sort torrent results by size in descending order
+  [FAIL] 3.1.REQ-6    sample=0  Sort torrent results by date in ascending order
+  [PASS] 3.1.REQ-6    sample=0  Sort torrent results alphabetically by name
+  [PASS] 3.1.REQ-6    sample=0  Attempt to sort with invalid sort_by parameter
+  [FAIL] 3.1.REQ-7    sample=0  Canonical case for pagination with valid inputs
+  [PASS] 3.1.REQ-7    sample=0  Pagination with invalid page number (negative)
+  [PASS] 3.1.REQ-7    sample=0  Pagination with zero page size
+  [FAIL] 3.1.REQ-7    sample=0  Pagination with large page number beyond results
+  [FAIL] 3.1.REQ-7    sample=0  Pagination with empty search query
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Canonical case with query 'pizza'
+  inputs:   User searches for 'pizza'
+  expected: Empty lists for torrents and streaming results
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Search with empty query string
+  inputs:   User searches with empty string
+  expected: Empty lists for torrents and streaming results
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Search with special characters in query
+  inputs:   User searches with special characters
+  expected: Empty lists for torrents and streaming results
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-1  sample=0
+  test:     Search with long query string
+  inputs:   User searches with a long query string
+  expected: Empty lists for torrents and streaming results
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-2  sample=0
+  test:     Canonical case: Update torrent sites database with internet connection
+  inputs:   An internet connection is established and a request to update the database of torrent sites is made
+  expected: The database of torrent sites is updated with the latest information available from the internet
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Canonical case with valid query
+  inputs:   Search for 'ubuntu 20.04'
+  expected: List of torrent results with seeds, peers, size, date posted, and webpage link
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Empty query string
+  inputs:   Search with empty query
+  expected: Empty list of torrents
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Query with special characters
+  inputs:   Search for 'ubuntu 20.04 LTS release'
+  expected: List of torrent results matching the query
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-4  sample=0
+  test:     Non-existent query
+  inputs:   Search for a non-existent torrent
+  expected: Empty list of torrents
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-5  sample=0
+  test:     Anchor case: No results found
+  inputs:   Empty list of results
+  expected: Message indicating no results were found
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-5  sample=0
+  test:     Edge case: Results list is None
+  inputs:   Results parameter is None
+  expected: Message indicating no results were found
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-5  sample=0
+  test:     Independent case: Non-empty results list
+  inputs:   List of torrent results with data
+  expected: Should not return the no results message
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.1.REQ-6  sample=0
+  test:     Sort torrent results by date in ascending order
+  inputs:   Torrent results sorted by date in ascending order
+  expected: Torrent results ordered by date from oldest to newest
+  reason:   got [{'name': 'file2', 'size': '5MB', 'date': '2023-01-02'}, {'name': 'file1', 'size': '10MB', 'date': '2023-01-01'}], expected [{'name': 'file1', 'size': '10MB', 'date': '2023-01-01'}, {'name': 'fil…
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Canonical case for pagination with valid inputs
+  inputs:   Page 1 with page size 10 for search query 'ubuntu'
+  expected: Results for page 1 with 2 items
+  reason:   HTTP 400: {"detail":"404: No search results found for the given criteria"}
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Pagination with large page number beyond results
+  inputs:   Page 100 with page size 10 for search query 'ubuntu'
+  expected: Empty results list since page exceeds total available pages
+  reason:   HTTP 400: {"detail":"404: No search results found for the given criteria"}
+
+[FAIL] 3.1.REQ-7  sample=0
+  test:     Pagination with empty search query
+  inputs:   Page 1 with page size 10 for empty search query
+  expected: Results for page 1 with 2 items
+  reason:   HTTP 400: {"detail":"404: No search results found for the given criteria"}
+
+======================================================================
+  SUMMARY: 11 passed / 16 failed / 27 total case executions
+  Case pass rate: 0.407
+  Aggregate pass@1 (macro-avg over FRs): 0.143
+  Oracle: http
+======================================================================
+
+  ⏱  done in 23.91s
+  pass@1: 0.143  (over 7 un-proved FR(s))
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.0000
+  test_case_pass_ratio        :       0.4074
+  PassVer@1                   :       0.1429
+  avg_verification_iteration  :         0.00
+  avg_test_iteration          :         1.00
+  avg_input_token             :       1635.6
+  avg_output_token            :        614.4
+  total_time                  :       98.50s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/no_proof/2009 - video search_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/no_proof/2009 - video search_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/no_proof/runs/20261018-090559-2009-video-search.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/no_proof/runs/20261018-090559-2009-video-search.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : code=22.8s   test=51.7s   certification=23.9s
+Time      : 98.50s   Tokens: 31,501   Cost: $0.0000

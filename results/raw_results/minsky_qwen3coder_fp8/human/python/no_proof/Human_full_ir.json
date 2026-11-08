@@ -1,0 +1,558 @@
+{
+  "project_name": "Human",
+  "source_file": "Human.xml",
+  "features": [
+    {
+      "id": "3.1",
+      "name": "Proposing an Event",
+      "description": "To allow coordinators/heads of various clubs to propose the organization of events. [cite: 160] This is handled by Club Coordinators/Heads. [cite: 159]",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-1",
+          "text": "While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]"
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2",
+      "name": "Registering for Events",
+      "description": "To allow users to register for upcoming events. [cite: 114] This involves student actors. [cite: 112]",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-1",
+          "text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]"
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.1.REQ-1",
+      "feature_id": "3.1",
+      "stimulus": "The user attempts to edit event details and registration requirements while applying for an event",
+      "precondition": "none",
+      "response": "The system allows the user to modify the event details and registration requirements",
+      "postcondition": "The modified event details and registration requirements are updated in the system"
+    },
+    {
+      "fr_id": "3.2.REQ-1",
+      "feature_id": "3.2",
+      "stimulus": "User attempts to register for an event without being authenticated",
+      "precondition": "User is not currently logged into the system",
+      "response": "System prompts the user to log in before proceeding with event registration",
+      "postcondition": "The user is redirected to the login interface and must successfully authenticate before they can continue with the registration process"
+    }
+  ],
+  "stack": "fastapi",
+  "language": "python",
+  "dependency_graph": {
+    "nodes": [
+      "3.1",
+      "3.2"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.1",
+      "3.2"
+    ],
+    "cycles": []
+  },
+  "planning": {
+    "contracts": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "signature": "def edit_event_details_and_registration(event_id: str, details: dict, registration_requirements: dict) -> bool:",
+        "docstring": "The system allows the user to modify the event details and registration requirements.\n\nArgs:\n    event_id: Unique identifier for the event being edited\n    details: Dictionary containing updated event details such as title, description, date, etc.\n    registration_requirements: Dictionary containing updated registration requirements such as age limits, prerequisites, etc.\n\nReturns:\n    True if the update was successful, False otherwise\n\nNotes:\n    Postcondition: The modified event details and registration requirements are updated in the system",
+        "mvc_layer": "controller",
+        "file_path": "controllers/edit_event_details_and_registration.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-1",
+          "feature_id": "3.1",
+          "stimulus": "The user attempts to edit event details and registration requirements while applying for an event",
+          "precondition": "none",
+          "response": "The system allows the user to modify the event details and registration requirements",
+          "postcondition": "The modified event details and registration requirements are updated in the system"
+        },
+        "example_inputs_json": "{\"event_id\":\"evt-123\",\"details\":{\"title\":\"Updated Title\",\"description\":\"New Description\"},\"registration_requirements\":{\"age_limit\":18}}",
+        "expected_return_json": "true",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": "event_id"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "signature": "def prompt_user_to_log_in() -> dict[str, str]:",
+        "docstring": "System prompts the user to log in before proceeding with event registration.\n\nReturns:\n    A message prompting the user to log in\n\nRaises:\n    HTTPException: If the precondition is violated (User is not currently logged into the system).\n\nNotes:\n    Precondition: User is not currently logged into the system\n    Postcondition: The user is redirected to the login interface and must successfully authenticate before they can continue with the registration process",
+        "mvc_layer": "controller",
+        "file_path": "controllers/prompt_user_to_log_in.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-1",
+          "feature_id": "3.2",
+          "stimulus": "User attempts to register for an event without being authenticated",
+          "precondition": "User is not currently logged into the system",
+          "response": "System prompts the user to log in before proceeding with event registration",
+          "postcondition": "The user is redirected to the login interface and must successfully authenticate before they can continue with the registration process"
+        },
+        "example_inputs_json": "{}",
+        "expected_return_json": "{\"message\": \"Please log in to register for the event.\"}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      }
+    ],
+    "notes": []
+  },
+  "generated_code": {
+    "files": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "path": "controllers/edit_event_details_and_registration.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Text, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nclass Event(Base):\n    __tablename__ = \"events\"\n    \n    event_id = Column(String, primary_key=True)\n    title = Column(String)\n    description = Column(Text)\n    date = Column(String)\n    age_limit = Column(Integer)\n    prerequisites = Column(String)\n    \nrouter = APIRouter()\n\n@router.post(\"\")\ndef edit_event_details_and_registration(\n    event_id: str = Body(..., embed=True),\n    details: dict = Body(..., embed=True),\n    registration_requirements: dict = Body(..., embed=True)\n) -> bool:\n    db = SessionLocal()\n    try:\n        # Find the event by event_id\n        event = db.query(Event).filter(Event.event_id == event_id).first()\n        \n        # If event doesn't exist, raise 404\n        if not event:\n            raise HTTPException(status_code=404, detail=\"Event not found\")\n        \n        # Update event details\n        if \"title\" in details:\n            event.title = details[\"title\"]\n        if \"description\" in details:\n            event.description = details[\"description\"]\n        if \"date\" in details:\n            event.date = details[\"date\"]\n        \n        # Update registration requirements\n        if \"age_limit\" in registration_requirements:\n            event.age_limit = registration_requirements[\"age_limit\"]\n        if \"prerequisites\" in registration_requirements:\n            event.prerequisites = registration_requirements[\"prerequisites\"]\n        \n        # Commit changes to database\n        db.commit()\n        \n        # Return success status\n        return True\n    except Exception as e:\n        # Rollback in case of error\n        db.rollback()\n        raise HTTPException(status_code=400, detail=str(e))\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "path": "controllers/prompt_user_to_log_in.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nrouter = APIRouter()\n\nclass User(Base):\n    __tablename__ = \"users\"\n    id = Column(Integer, primary_key=True)\n    username = Column(String, nullable=False)\n    is_logged_in = Column(Boolean, default=False)\n\n@router.post(\"\")\ndef prompt_user_to_log_in() -> dict[str, str]:\n    \"\"\"System prompts the user to log in before proceeding with event registration.\"\"\"\n    db = SessionLocal()\n    try:\n        # Check if user is logged in\n        user = db.query(User).filter(User.is_logged_in == True).first()\n        if user is None:\n            # User is not logged in, prompt to log in\n            raise HTTPException(status_code=403, detail=\"Please log in to register for the event.\")\n        else:\n            # User is logged in, proceed normally\n            return {\"message\": \"Please log in to register for the event.\"}\n    finally:\n        db.close()"
+      }
+    ]
+  },
+  "generated_tests": {
+    "features": [
+      {
+        "feature_id": "3.1",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Anchor case: Edit event details and registration requirements with valid inputs",
+            "inputs": "Event ID, updated details, and registration requirements",
+            "expected": "True indicating successful update",
+            "inputs_json": "{\"event_id\":\"evt-123\",\"details\":{\"title\":\"Updated Title\",\"description\":\"New Description\"},\"registration_requirements\":{\"age_limit\":18}}",
+            "expected_json": "true",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Edit event with empty details dictionary",
+            "inputs": "Event ID with empty details and registration requirements",
+            "expected": "True indicating successful update",
+            "inputs_json": "{\"event_id\":\"evt-123\",\"details\":{},\"registration_requirements\":{\"age_limit\":18}}",
+            "expected_json": "true",
+            "oracle": "eq",
+            "setup_json": "[{\"inputs\": {\"event_id\":\"evt-123\",\"details\":{\"title\":\"Original Title\",\"description\":\"Original Description\"},\"registration_requirements\":{\"age_limit\":18}}}]"
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Edit event with missing registration requirements",
+            "inputs": "Event ID with details but no registration requirements",
+            "expected": "True indicating successful update",
+            "inputs_json": "{\"event_id\":\"evt-123\",\"details\":{\"title\":\"Updated Title\",\"description\":\"New Description\"},\"registration_requirements\":{}}",
+            "expected_json": "true",
+            "oracle": "eq",
+            "setup_json": "[{\"inputs\": {\"event_id\":\"evt-123\",\"details\":{\"title\":\"Original Title\",\"description\":\"Original Description\"},\"registration_requirements\":{\"age_limit\":18}}}]"
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Attempt to edit non-existent event",
+            "inputs": "Non-existent event ID",
+            "expected": "HTTP 4xx error due to not found",
+            "inputs_json": "{\"event_id\":\"evt-nonexistent\",\"details\":{\"title\":\"Updated Title\",\"description\":\"New Description\"},\"registration_requirements\":{\"age_limit\":18}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Edit event with invalid event ID type",
+            "inputs": "Event ID with incorrect type (number instead of string)",
+            "expected": "HTTP 4xx error due to validation failure",
+            "inputs_json": "{\"event_id\":123,\"details\":{\"title\":\"Updated Title\",\"description\":\"New Description\"},\"registration_requirements\":{\"age_limit\":18}}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_edit_event_details_and_registration_anchor_case():\n    # Setup\n    setup_data = {\n        \"event_id\": \"evt-123\",\n        \"details\": {\n            \"title\": \"Original Title\",\n            \"description\": \"Original Description\"\n        },\n        \"registration_requirements\": {\n            \"age_limit\": 18\n        }\n    }\n    client.post(\"/controllers/edit_event_details_and_registration\", json=setup_data)\n    \n    # Main test case\n    inputs = {\n        \"event_id\": \"evt-123\",\n        \"details\": {\n            \"title\": \"Updated Title\",\n            \"description\": \"New Description\"\n        },\n        \"registration_requirements\": {\n            \"age_limit\": 18\n        }\n    }\n    response = client.post(\"/controllers/edit_event_details_and_registration\", json=inputs)\n    assert response.status_code == 200\n    assert response.json() == True\n\ndef test_edit_event_details_and_registration_empty_details():\n    # Setup\n    setup_data = {\n        \"event_id\": \"evt-123\",\n        \"details\": {\n            \"title\": \"Original Title\",\n            \"description\": \"Original Description\"\n        },\n        \"registration_requirements\": {\n            \"age_limit\": 18\n        }\n    }\n    client.post(\"/controllers/edit_event_details_and_registration\", json=setup_data)\n    \n    # Main test case\n    inputs = {\n        \"event_id\": \"evt-123\",\n        \"details\": {},\n        \"registration_requirements\": {\n            \"age_limit\": 18\n        }\n    }\n    response = client.post(\"/controllers/edit_event_details_and_registration\", json=inputs)\n    assert response.status_code == 200\n    assert response.json() == True\n\ndef test_edit_event_details_and_registration_missing_registration_requirements():\n    # Setup\n    setup_data = {\n        \"event_id\": \"evt-123\",\n        \"details\": {\n            \"title\": \"Original Title\",\n            \"description\": \"Original Description\"\n        },\n        \"registration_requirements\": {\n            \"age_limit\": 18\n        }\n    }\n    client.post(\"/controllers/edit_event_details_and_registration\", json=setup_data)\n    \n    # Main test case\n    inputs = {\n        \"event_id\": \"evt-123\",\n        \"details\": {\n            \"title\": \"Updated Title\",\n            \"description\": \"New Description\"\n        },\n        \"registration_requirements\": {}\n    }\n    response = client.post(\"/controllers/edit_event_details_and_registration\", json=inputs)\n    assert response.status_code == 200\n    assert response.json() == True\n\ndef test_edit_event_details_and_registration_not_found():\n    # Main test case\n    inputs = {\n        \"event_id\": \"evt-nonexistent\",\n        \"details\": {\n            \"title\": \"Updated Title\",\n            \"description\": \"New Description\"\n        },\n        \"registration_requirements\": {\n            \"age_limit\": 18\n        }\n    }\n    response = client.post(\"/controllers/edit_event_details_and_registration\", json=inputs)\n    assert response.status_code >= 400\n\ndef test_edit_event_details_and_registration_invalid_event_id_type():\n    # Main test case\n    inputs = {\n        \"event_id\": 123,\n        \"details\": {\n            \"title\": \"Updated Title\",\n            \"description\": \"New Description\"\n        },\n        \"registration_requirements\": {\n            \"age_limit\": 18\n        }\n    }\n    response = client.post(\"/controllers/edit_event_details_and_registration\", json=inputs)\n    assert response.status_code >= 400"
+      },
+      {
+        "feature_id": "3.2",
+        "cases": [
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "Anchor case: User attempts to register for an event without being authenticated",
+            "inputs": "User attempts to register for an event without being logged in",
+            "expected": "System prompts the user to log in before proceeding with event registration",
+            "inputs_json": "{}",
+            "expected_json": "{\"message\": \"Please log in to register for the event.\"}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "Independent case: User tries to register for an event with invalid authentication token",
+            "inputs": "User provides an invalid authentication token when attempting to register for an event",
+            "expected": "System prompts the user to log in before proceeding with event registration",
+            "inputs_json": "{\"auth_token\": \"invalid_token\"}",
+            "expected_json": "{\"message\": \"Please log in to register for the event.\"}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "Independent case: User attempts to register for an event while already logged in",
+            "inputs": "User is already logged in and attempts to register for an event",
+            "expected": "System allows the user to proceed with event registration",
+            "inputs_json": "{\"auth_token\": \"valid_token\"}",
+            "expected_json": "{\"message\": \"Registration successful\"}",
+            "oracle": "eq",
+            "setup_json": "[{\"inputs\": {\"username\": \"student1\", \"password\": \"pass123\"}}]"
+          },
+          {
+            "requirement_id": "3.2.REQ-1",
+            "description": "Independent case: User tries to register for a non-existent event",
+            "inputs": "User attempts to register for an event that does not exist",
+            "expected": "System prompts the user to log in before proceeding with event registration",
+            "inputs_json": "{\"event_id\": \"nonexistent_event\"}",
+            "expected_json": "{\"message\": \"Please log in to register for the event.\"}",
+            "oracle": "eq",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_anchor_case():\n    resp = client.post(\"/controllers/prompt_user_to_log_in\", json={})\n    assert resp.status_code == 200\n    assert resp.json() == {\"message\": \"Please log in to register for the event.\"}\n\ndef test_invalid_auth_token():\n    resp = client.post(\"/controllers/prompt_user_to_log_in\", json={\"auth_token\": \"invalid_token\"})\n    assert resp.status_code == 200\n    assert resp.json() == {\"message\": \"Please log in to register for the event.\"}\n\ndef test_already_logged_in():\n    # First, simulate a login\n    client.post(\"/login\", json={\"username\": \"student1\", \"password\": \"pass123\"})\n    \n    # Then attempt registration\n    resp = client.post(\"/controllers/prompt_user_to_log_in\", json={\"auth_token\": \"valid_token\"})\n    assert resp.status_code == 200\n    assert resp.json() == {\"message\": \"Registration successful\"}\n\ndef test_nonexistent_event():\n    resp = client.post(\"/controllers/prompt_user_to_log_in\", json={\"event_id\": \"nonexistent_event\"})\n    assert resp.status_code == 200\n    assert resp.json() == {\"message\": \"Please log in to register for the event.\"}"
+      }
+    ]
+  },
+  "certification": {
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "oracle": "http",
+    "n": 1,
+    "k_values": [
+      1
+    ],
+    "frs": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "n_samples": 1,
+        "n_test_cases": 5,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 2,
+        "cases_total": 5,
+        "case_pass_rate": 0.4
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      }
+    ],
+    "features": [
+      {
+        "feature_id": "3.1",
+        "name": "Proposing an Event",
+        "n_samples": 1,
+        "n_test_cases": 5,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 2,
+        "cases_total": 5,
+        "case_pass_rate": 0.4
+      },
+      {
+        "feature_id": "3.2",
+        "name": "Registering for Events",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      }
+    ],
+    "aggregate_pass_at": {
+      "pass@1": 0.0
+    },
+    "aggregate_case_pass_rate": 0.2222222222222222,
+    "failures": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "feature_name": "Proposing an Event",
+        "requirement_id": "3.1.REQ-1",
+        "sample": 0,
+        "description": "Anchor case: Edit event details and registration requirements with valid inputs",
+        "inputs": "Event ID, updated details, and registration requirements",
+        "expected": "True indicating successful update",
+        "requirement_text": "While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]",
+        "verdict": "fail",
+        "reason": "HTTP 400: {\"detail\":\"404: Event not found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "feature_name": "Proposing an Event",
+        "requirement_id": "3.1.REQ-1",
+        "sample": 0,
+        "description": "Edit event with empty details dictionary",
+        "inputs": "Event ID with empty details and registration requirements",
+        "expected": "True indicating successful update",
+        "requirement_text": "While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]",
+        "verdict": "fail",
+        "reason": "setup step 0 (/controllers/edit_event_details_and_registration) failed: HTTP 400: {\"detail\":\"404: Event not found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1",
+        "feature_name": "Proposing an Event",
+        "requirement_id": "3.1.REQ-1",
+        "sample": 0,
+        "description": "Edit event with missing registration requirements",
+        "inputs": "Event ID with details but no registration requirements",
+        "expected": "True indicating successful update",
+        "requirement_text": "While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]",
+        "verdict": "fail",
+        "reason": "setup step 0 (/controllers/edit_event_details_and_registration) failed: HTTP 400: {\"detail\":\"404: Event not found\"}"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "feature_name": "Registering for Events",
+        "requirement_id": "3.2.REQ-1",
+        "sample": 0,
+        "description": "Anchor case: User attempts to register for an event without being authenticated",
+        "inputs": "User attempts to register for an event without being logged in",
+        "expected": "System prompts the user to log in before proceeding with event registration",
+        "requirement_text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]",
+        "verdict": "fail",
+        "reason": "HTTP 403: {\"detail\":\"Please log in to register for the event.\"}"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "feature_name": "Registering for Events",
+        "requirement_id": "3.2.REQ-1",
+        "sample": 0,
+        "description": "Independent case: User tries to register for an event with invalid authentication token",
+        "inputs": "User provides an invalid authentication token when attempting to register for an event",
+        "expected": "System prompts the user to log in before proceeding with event registration",
+        "requirement_text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]",
+        "verdict": "fail",
+        "reason": "HTTP 403: {\"detail\":\"Please log in to register for the event.\"}"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "feature_name": "Registering for Events",
+        "requirement_id": "3.2.REQ-1",
+        "sample": 0,
+        "description": "Independent case: User attempts to register for an event while already logged in",
+        "inputs": "User is already logged in and attempts to register for an event",
+        "expected": "System allows the user to proceed with event registration",
+        "requirement_text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]",
+        "verdict": "fail",
+        "reason": "setup step 0 (/controllers/prompt_user_to_log_in) failed: HTTP 403: {\"detail\":\"Please log in to register for the event.\"}"
+      },
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2",
+        "feature_name": "Registering for Events",
+        "requirement_id": "3.2.REQ-1",
+        "sample": 0,
+        "description": "Independent case: User tries to register for a non-existent event",
+        "inputs": "User attempts to register for an event that does not exist",
+        "expected": "System prompts the user to log in before proceeding with event registration",
+        "requirement_text": "If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. [cite: 18]",
+        "verdict": "fail",
+        "reason": "HTTP 403: {\"detail\":\"Please log in to register for the event.\"}"
+      }
+    ],
+    "notes": []
+  },
+  "metrics": {
+    "srs": "Human.xml",
+    "stack": "fastapi",
+    "language": "python",
+    "stages": [
+      {
+        "name": "code",
+        "seconds": 6.474,
+        "input_tokens": 2444,
+        "output_tokens": 737,
+        "calls": 2
+      },
+      {
+        "name": "test",
+        "seconds": 20.868,
+        "input_tokens": 4198,
+        "output_tokens": 2425,
+        "calls": 2
+      },
+      {
+        "name": "certification",
+        "seconds": 7.322,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      }
+    ],
+    "config": {
+      "language": "python",
+      "stack": "fastapi",
+      "models": {
+        "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+      },
+      "prompt_strategy": "baseline",
+      "agents": {
+        "spec": true,
+        "dependency": true,
+        "planning": true,
+        "proof": false,
+        "code": true,
+        "test": true,
+        "certify": true,
+        "recovery": false,
+        "compile_repair": false
+      },
+      "run_dependency": true,
+      "run_test": true,
+      "run_recovery": false,
+      "test_sees_code": false,
+      "raw_spec_only": false,
+      "certify": true,
+      "samples": 1,
+      "k_values": [
+        1
+      ],
+      "prove": false,
+      "prove_target": "py",
+      "max_cert_loops": 0,
+      "max_compile_repair_loops": 2,
+      "temperature": 0.0,
+      "cert_temperature": 0.4,
+      "case_timeout": 10.0,
+      "prove_rounds": 6,
+      "llm_deps": true,
+      "baseline": false,
+      "reuse_from": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep1/Human_full_ir.json",
+      "reuse_stages": [
+        "spec",
+        "dependency",
+        "planning"
+      ],
+      "oracle_tests": ""
+    },
+    "reused": {
+      "from": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep1/Human_full_ir.json",
+      "stages": [
+        "spec",
+        "dependency",
+        "planning"
+      ]
+    },
+    "code": {
+      "language": "Python",
+      "files": 2,
+      "lines_of_code": 85,
+      "files_per_layer": {
+        "controller": 2
+      },
+      "imports": [
+        "app",
+        "fastapi",
+        "sqlalchemy"
+      ],
+      "third_party_libraries": [
+        "app",
+        "fastapi",
+        "sqlalchemy"
+      ],
+      "runnable_app": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/no_proof/generated/Human/app"
+    },
+    "tests": {
+      "features": 2,
+      "cases": 9
+    },
+    "certification": {
+      "n": 1,
+      "k_values": [
+        1
+      ],
+      "aggregate_pass_at": {
+        "pass@1": 0.0
+      },
+      "aggregate_case_pass_rate": 0.2222222222222222,
+      "n_tested_frs": 2,
+      "n_proved_features": 0,
+      "n_total_tested_features": 2,
+      "pass_at_1_fr_ids": []
+    },
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "total_seconds": 34.664,
+    "tokens": {
+      "input": 6642,
+      "output": 3162,
+      "total": 9804,
+      "calls": 4
+    },
+    "cost_usd": 0.0,
+    "cost_by_model": {
+      "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8": {
+        "input": 6642,
+        "output": 3162,
+        "calls": 4,
+        "cost_usd": 0.0
+      }
+    },
+    "proved_feature_ids": [],
+    "summary": {
+      "verification_pass_ratio": 0.0,
+      "test_case_pass_ratio": 0.2222,
+      "PassVer@1": 0.0,
+      "avg_verification_iteration": 0.0,
+      "avg_test_iteration": 1,
+      "avg_input_token": 1660.5,
+      "avg_output_token": 790.5,
+      "total_time": 34.66
+    }
+  }
+}

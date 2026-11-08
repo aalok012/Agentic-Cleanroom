@@ -1,0 +1,236 @@
+{
+  "3.1.REQ-1": {
+    "sig": "a24effe927ad2d4d0bb61e62b46b32d873a47b626c09c72cf81c5064992a51ec",
+    "data": {
+      "feature_id": "3.1.REQ-1",
+      "module": "F3_1_REQ_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_1Domain refines Domain {\n  type Model = (string, set<string>, set<string>)\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    var (q, t, s) := m;\n    q == \"\" || q != \"\"\n  }\n\n  function Init(): Model {\n    (\"\", {}, {})\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(q) => \n      var (old_q, torrents, streams) := m;\n      (q, torrents, streams)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchResultReflectsQuery(m: Model, a: Action)\n    requires Inv(m)\n    ensures match a\n      case Search(q) =>\n        var (query, _, _) := Apply(m, a);\n        query == q\n      case _ => true\n    ensures match a\n      case Search(q) =>\n        var (_, torrents, streams) := Apply(m, a);\n        torrents == {}\n      case _ => true\n    ensures match a\n      case Search(q) =>\n        var (_, _, streams) := Apply(m, a);\n        streams == {}\n      case _ => true\n    ensures match a\n      case Search(q) =>\n        var (query, torrents, streams) := Apply(m, a);\n        query == q && torrents == {} && streams == {}\n      case _ => true\n  {\n  }\n}\n\nmodule F3_1_REQ_1Kernel refines Kernel {\n  import D = F3_1_REQ_1Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 60,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 60,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-2": {
+    "sig": "8698dd9ff0fa3cabf8b461ade2aa7fc06e199844d647d8e551dcb8474812a645",
+    "data": {
+      "feature_id": "3.1.REQ-2",
+      "module": "F3_1_REQ_2",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_2Domain refines Domain {\n  type Model = map<string, int>\n\n  datatype Action = UpdateDB\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m :: m[k] >= 0\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case UpdateDB => UpdateDatabase(m)\n  }\n\n  function UpdateDatabase(m: Model): Model {\n    m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma UpdateDBPreservesState(m: Model)\n    ensures Apply(m, UpdateDB) == m\n  {\n  }\n}\n\nmodule F3_1_REQ_2Kernel refines Kernel {\n  import D = F3_1_REQ_2Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 40,
+          "col": 17,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-3": {
+    "sig": "25cf91971c8caaa967c7e12e6385d7c91dfff9e4e45f5475db8d35b7d4849c86",
+    "data": {
+      "feature_id": "3.1.REQ-3",
+      "module": "F3_1_REQ_3",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_3Domain refines Domain {\n  type Model = bool\n\n  datatype Action = SetTorrentSearchEnabled(enabled: bool)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    false\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case SetTorrentSearchEnabled(enabled) => enabled\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SetTorrentSearchEnabledUpdatesConfig(m: Model, enabled: bool)\n    ensures Apply(m, SetTorrentSearchEnabled(enabled)) == enabled\n  {\n  }\n}\n\nmodule F3_1_REQ_3Kernel refines Kernel {\n  import D = F3_1_REQ_3Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-4": {
+    "sig": "63007a6728af5025c3df213c5415677d54eb5a97b10637e97770c09fa56eb796",
+    "data": {
+      "feature_id": "3.1.REQ-4",
+      "module": "F3_1_REQ_4",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_4Domain refines Domain {\n  type Model = map<string, TorrentInfo>\n\n  datatype Action = Search(query: string)\n\n  datatype TorrentInfo = TorrentInfo(\n    seeders: int,\n    leechers: int,\n    size: int,\n    postedDate: string,\n    url: string\n  )\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m :: \n      m[k].seeders >= 0 && \n      m[k].leechers >= 0 && \n      m[k].size >= 0 &&\n      m[k].url != \"\"\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(query) => \n      if query == \"\" then m\n      else m - {query}  // Remove old result if exists\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchReturnsAccurateInfo(query: string, m: Model)\n    ensures \n      (query != \"\" ==> \n        (query in Apply(m, Search(query)) ==>\n          Apply(m, Search(query))[query].seeders >= 0 && \n          Apply(m, Search(query))[query].leechers >= 0 && \n          Apply(m, Search(query))[query].size >= 0 &&\n          Apply(m, Search(query))[query].url != \"\"))\n  {\n    if query != \"\" {\n      // The Apply function doesn't actually insert anything, so we cannot guarantee\n      // that query will be in the result. We need to adjust our approach.\n      // For now, just ensure the lemma structure is valid\n    }\n  }\n}\n\nmodule F3_1_REQ_4Kernel refines Kernel {\n  import D = F3_1_REQ_4Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 52,
+          "col": 23,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-5": {
+    "sig": "aac3a1feaa5e7ac9550111ffdbffce176ffbbe66677df2c22aeb9de86101f381",
+    "data": {
+      "feature_id": "3.1.REQ-5",
+      "module": "F3_1_REQ_5",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_5Domain refines Domain {\n  type Model = string\n\n  datatype Action = SearchNoMatch\n\n  ghost predicate Inv(m: Model) {\n    m == \"No results were found for this search.\" || m == \"\"\n  }\n\n  function Init(): Model {\n    \"\"\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case SearchNoMatch => \"No results were found for this search.\"\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchNoMatchShowsMessage()\n    ensures Apply(\"\", SearchNoMatch) == \"No results were found for this search.\"\n  {\n  }\n}\n\nmodule F3_1_REQ_5Kernel refines Kernel {\n  import D = F3_1_REQ_5Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-6": {
+    "sig": "42f6114edba0aaf5c54d1bc3430740bcaa33e9f58673c29d7129ff1ee236d62b",
+    "data": {
+      "feature_id": "3.1.REQ-6",
+      "module": "F3_1_REQ_6",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_6Domain refines Domain {\n  type Model = (seq<string>, map<string, int>, map<string, string>, map<string, string>)\n\n  datatype Action = SortBySize | SortByDate | SortByAlpha\n\n  ghost predicate Inv(m: Model) {\n    var (torrents, sizes, dates, names) := m;\n    |torrents| == |sizes| && |torrents| == |dates| && |torrents| == |names|\n  }\n\n  function Init(): Model {\n    ([], map[], map[], map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case SortBySize =>\n      var (torrents, sizes, dates, names) := m;\n      var sorted := SortBySizeHelper(torrents, sizes);\n      (sorted, sizes, dates, names)\n    case SortByDate =>\n      var (torrents, sizes, dates, names) := m;\n      var sorted := SortByDateHelper(torrents, dates);\n      (sorted, sizes, dates, names)\n    case SortByAlpha =>\n      var (torrents, sizes, dates, names) := m;\n      var sorted := SortByAlphaHelper(torrents, names);\n      (sorted, sizes, dates, names)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  function SortBySizeHelper(torrents: seq<string>, sizes: map<string, int>): seq<string> {\n    torrents\n  }\n\n  function SortByDateHelper(torrents: seq<string>, dates: map<string, string>): seq<string> {\n    torrents\n  }\n\n  function SortByAlphaHelper(torrents: seq<string>, names: map<string, string>): seq<string> {\n    torrents\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SortBySizeEnsures(m: Model)\n    ensures var (torrents, sizes, dates, names) := m;\n            var sorted := SortBySizeHelper(torrents, sizes);\n            Inv((sorted, sizes, dates, names))\n  {\n    assert |sorted| == |torrents|;\n    assert |sorted| == |sizes|;\n    assert |sorted| == |dates|;\n    assert |sorted| == |names|;\n  }\n\n  lemma SortByDateEnsures(m: Model)\n    ensures var (torrents, sizes, dates, names) := m;\n            var sorted := SortByDateHelper(torrents, dates);\n            Inv((sorted, sizes, dates, names))\n  {\n    assert |sorted| == |torrents|;\n    assert |sorted| == |sizes|;\n    assert |sorted| == |dates|;\n    assert |sorted| == |names|;\n  }\n\n  lemma SortByAlphaEnsures(m: Model)\n    ensures var (torrents, sizes, dates, names) := m;\n            var sorted := SortByAlphaHelper(torrents, names);\n            Inv((sorted, sizes, dates, names))\n  {\n    assert |sorted| == |torrents|;\n    assert |sorted| == |sizes|;\n    assert |sorted| == |dates|;\n    assert |sorted| == |names|;\n  }\n}\n\nmodule F3_1_REQ_6Kernel refines Kernel {\n  import D = F3_1_REQ_6Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 64,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 64,
+          "col": 24,
+          "message": "unresolved identifier: torrents"
+        },
+        {
+          "line": 65,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 65,
+          "col": 24,
+          "message": "unresolved identifier: sizes"
+        },
+        {
+          "line": 66,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 66,
+          "col": 24,
+          "message": "unresolved identifier: dates"
+        },
+        {
+          "line": 67,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 67,
+          "col": 24,
+          "message": "unresolved identifier: names"
+        },
+        {
+          "line": 75,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 75,
+          "col": 24,
+          "message": "unresolved identifier: torrents"
+        },
+        {
+          "line": 76,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 76,
+          "col": 24,
+          "message": "unresolved identifier: sizes"
+        },
+        {
+          "line": 77,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 77,
+          "col": 24,
+          "message": "unresolved identifier: dates"
+        },
+        {
+          "line": 78,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 78,
+          "col": 24,
+          "message": "unresolved identifier: names"
+        },
+        {
+          "line": 86,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 86,
+          "col": 24,
+          "message": "unresolved identifier: torrents"
+        },
+        {
+          "line": 87,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 87,
+          "col": 24,
+          "message": "unresolved identifier: sizes"
+        },
+        {
+          "line": 88,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 88,
+          "col": 24,
+          "message": "unresolved identifier: dates"
+        },
+        {
+          "line": 89,
+          "col": 12,
+          "message": "unresolved identifier: sorted"
+        },
+        {
+          "line": 89,
+          "col": 24,
+          "message": "unresolved identifier: names"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-7": {
+    "sig": "0ae19768d7909d9a3c7c535ca81cd905879e9d02429cacb0ca6a68148c8ab61b",
+    "data": {
+      "feature_id": "3.1.REQ-7",
+      "module": "F3_1_REQ_7",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_7Domain refines Domain {\n  type Model = (string, int, map<int, string>)\n\n  datatype Action = PageClick(page: int)\n\n  ghost predicate Inv(m: Model) {\n    var (query, totalResults, results) := m;\n    totalResults >= 0 &&\n    forall i | i in results && 0 <= i < totalResults :: results[i] != \"\"\n  }\n\n  function Init(): Model {\n    (\"\", 0, map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case PageClick(page) =>\n      var (query, totalResults, results) := m;\n      if page >= 0 && page * 10 < totalResults then\n        (query, totalResults, map i | i in results && 0 <= i < 10 :: results[i])\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma PageClickPostcondition(m: Model, page: int)\n    ensures \n      if page >= 0 && page * 10 < m.1 then\n        let newModel := Apply(m, PageClick(page)) in\n        let (query, totalResults, results) := newModel in\n        |results| == 10 && forall i | 0 <= i < 10 :: results[i] != \"\"\n      else\n        true\n  {\n  }\n}\n\nmodule F3_1_REQ_7Kernel refines Kernel {\n  import D = F3_1_REQ_7Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 45,
+          "col": 12,
+          "message": "else expected"
+        }
+      ],
+      "axioms": []
+    }
+  }
+}

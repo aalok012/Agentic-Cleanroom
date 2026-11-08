@@ -1,0 +1,32 @@
+{
+  "3.1": {
+    "sig": "0aad319034c2318327086de8b050782aec842429da7f56a55ab53cd04f8b64a0",
+    "data": {
+      "feature_id": "3.1",
+      "module": "F3_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1Domain refines Domain {\n  type Model = (string, map<string, string>, map<string, string>)\n\n  datatype Action = EditEventDetails(details: map<string, string>, requirements: map<string, string>)\n\n  ghost predicate Inv(m: Model) {\n    var (event, details, requirements) := m;\n    true\n  }\n\n  function Init(): Model {\n    (\"\", map[], map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case EditEventDetails(newDetails, newRequirements) =>\n      var (event, details, requirements) := m;\n      (event, newDetails, newRequirements)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma EditEventDetailsUpdates(m: Model, newDetails: map<string, string>, newRequirements: map<string, string>)\n    ensures Apply(m, EditEventDetails(newDetails, newRequirements)) == (m.0, newDetails, newRequirements)\n  {\n  }\n}\n\nmodule F3_1Kernel refines Kernel {\n  import D = F3_1Domain\n}",
+      "verified": true,
+      "rounds": 6,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.2": {
+    "sig": "4c30acb81b24e03c71948615855695328621c40194711e8a52cb78d173b190a2",
+    "data": {
+      "feature_id": "3.2",
+      "module": "F3_2",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2Domain refines Domain {\n  type Model = (bool, set<string>)\n\n  datatype Action = Register(event: string)\n\n  ghost predicate Inv(m: Model) {\n    m.0 ==> m.1 == {}\n  }\n\n  function Init(): Model {\n    (false, {})\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Register(event) =>\n      if m.0 then\n        (true, m.1 + {event})\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    if m.0 then m else (false, {})\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n    assert (false ==> {} == {}) == true;\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n    assert (Normalize(Apply(m, a))).0 ==> (Normalize(Apply(m, a))).1 == {};\n  }\n\n  lemma RegisterRequiresAuth(m: Model, event: string)\n    requires m.0 == false\n    ensures Apply(m, Register(event)) == m\n  {\n    assert Apply(m, Register(event)) == m;\n  }\n}\n\nmodule F3_2Kernel refines Kernel {\n  import D = F3_2Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 32,
+          "col": 22,
+          "message": "the type of this expression is underspecified"
+        }
+      ],
+      "axioms": []
+    }
+  }
+}

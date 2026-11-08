@@ -1,0 +1,459 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=on certify=on recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+  [REUSE] stages ['spec', 'dependency', 'planning'] taken from /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep1/Shoten_SRS_full_ir.json
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  [skip — resumed] Shoten_SRS: 17 feature(s), FR=54, stack=fastapi
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  [skip — resumed] dependency graph loaded from checkpoint.
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  [skip — resumed] planning loaded: 54 contract(s).
+
+======================================================================
+  [4a]  Dafny Proof Agent — proving feature logic (formal verification)
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 85.55s  ·  50,221 tokens, 17 call(s)
+Proved    : 1/17 features  →  ['4.2']
+  [4.1] unproved  F4_1  (1r)
+  [4.10] unproved  F4_10  (1r)
+  [4.11] unproved  F4_11  (1r)
+  [4.12] unproved  F4_12  (1r)
+  [4.13] unproved  F4_13  (1r)
+  [4.14] unproved  F4_14  (1r)
+  [4.15] unproved  F4_15  (1r)
+  [4.2] PROVED   F4_2  (1r)
+  [4.3] unproved  F4_3  (1r)
+  [4.3.1] unproved  F4_3_1  (1r)
+  [4.3.2] unproved  F4_3_2  (1r)
+  [4.4] unproved  F4_4  (1r)
+  [4.5] unproved  F4_5  (1r)
+  [4.6] unproved  F4_6  (1r)
+  [4.7] unproved  F4_7  (1r)
+  [4.8] unproved  F4_8  (1r)
+  [4.9] unproved  F4_9  (1r)
+  ⏱  done in 0.73s
+Compiled  : 1/1 proved features to py
+
+======================================================================
+  [4]  Code Agent — generating MVC code from the spec
+======================================================================
+  ⏱  done in 6.44s  ·  2,533 tokens, 1 call(s)
+  ⏱  done in 168.23s  ·  85,903 tokens, 51 call(s)
+  1 proved feature(s) shipped as Dafny-core adapters; 51 file(s) generated for the rest.
+  Staged proved Dafny cores ['F4_2'] + shim into /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_verifier_repair/generated/Shoten_SRS/app/dafny_cores
+52 file(s); 2249 LOC (Python); layers={'controller': 26, 'model': 7, 'view': 19}
+Assembled runnable FastAPI app: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_verifier_repair/generated/Shoten_SRS/app  (cd "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_verifier_repair/generated/Shoten_SRS" && python -m app)
+
+======================================================================
+  [5]  Test Agent — deriving black-box tests from the spec
+======================================================================
+  ⏱  done in 215.43s  ·  69,182 tokens, 17 call(s)
+17 feature(s), 112 test case(s).
+Wrote 17 pytest module(s) to /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_verifier_repair/generated/Shoten_SRS/tests
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples) · skipping 1 proved
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[4.1] Account Registration
+    FR  [4.1.REQ-1] The system shall allow a non-registered user to create a secure account.
+    FR  [4.1.REQ-2] The system shall require the following information from the user: Name, Institute Roll Number (in case of Students only),Shop ID(In case of Bookstores) , Mobil…
+    FR  [4.1.REQ-3] The system shall assign the user a username and ask for a password.
+    FR  [4.1.REQ-4] The system shall conﬁrm the password is acceptable.
+    FR  [4.1.REQ-5] The system shall store the information in the database.
+
+[4.2] Account Login
+    FR  [4.2.REQ-1] The system shall allow a registered user to log-in to their account.
+    FR  [4.2.REQ-2] The system shall require a username and password from the user.
+    FR  [4.2.REQ-3] The system will verify the username and password, and the user will be considered “logged-in”.
+
+[4.3] Search
+    FR  [4.3.REQ-1] The users can search for the book of their choice as well as a print shop.
+
+[4.3.1] Search a Book Stimulus: Click "Search a Book" Button
+    FR  [4.3.1.REQ-1] The system shall allow a user to search for books by title, author or ISBN number.
+    FR  [4.3.1.REQ-2] The search results will include a list of matching books with picture of the front cover, along with the title, author, price, availability, and condition of t…
+
+[4.3.2] Search a Print Shop Stimulus: Click "Search a Print Shop" Button
+    FR  [4.3.2.REQ-1] The system shall allow a user to search for print shops.
+    FR  [4.3.2.REQ-2] The search results will include a list of available print shops with there opening time , closing time and rates.
+
+[4.4] Add to Shopping Cart
+    FR  [4.4.REQ-1] The system shall allow a registered and logged-in user to temporarily save books that are being considered for purchase into a list associated with their accou…
+    FR  [4.4.REQ-2] When viewing the shopping cart list, the system shall display the total price of the books in the cart.
+
+[4.5] Delete
+    FR  [4.5.REQ-1] The system shall allow a registered and logged-in user to remove any unwanted books from their shopping cart.
+    FR  [4.5.REQ-2] The system shall provide the user a way to select one of the books in his/ her cart for deletion.
+    FR  [4.5.REQ-3] After the user has indicated the particular book to be deleted from their shopping cart, the stored list representing the shopping cart should be updated by re…
+
+[4.6] Rent
+    FR  [4.6.REQ-1] The system shall allow a registered and logged-in user to rent-out books that are in their shopping cart.
+    FR  [4.6.REQ-2] The system shall prompt the user to enter time period for renting out the books in the cart.
+    FR  [4.6.REQ-3] The system shall display rent charged for the period of rental and individual rent of the books in the shopping cart.
+    FR  [4.6.REQ-4] The system shall allow the user to enter their delivery information.
+    FR  [4.6.REQ-5] After a successful transaction user system shall prompt the user to enter their payment information.
+    FR  [4.6.REQ-6] On a successful transaction the books (titles and prices and quantities) will be displayed to the screen.
+
+[4.7] Purchase
+    FR  [4.7.REQ-1] The system shall allow a registered and logged-in user to purchase books that are in their shopping cart.
+    FR  [4.7.REQ-2] The system shall display total cost of the books in the shopping cart.
+    FR  [4.7.REQ-3] The system shall allow the user to enter their delivery information.
+    FR  [4.7.REQ-4] After a successful transaction user system shall prompt the user to enter their payment information.
+    FR  [4.7.REQ-5] On a successful transaction the books (titles and prices and quantities) will be displayed to the screen.
+
+[4.8] Print
+    FR  [4.8.REQ-1] The system shall allow a registered and logged-in user to request a print from a chosen print shop.
+    FR  [4.8.REQ-2] The system shall prompt the user to enter the url of the google drive link of the soft copy to be printed.
+    FR  [4.8.REQ-3] The system shall display the total cost of printing the soft copy.
+    FR  [4.8.REQ-4] The system shall allow the user to enter their delivery information.
+    FR  [4.8.REQ-5] After a successful transaction user system shall prompt the user to enter their payment information.
+    FR  [4.8.REQ-6] On a successful transaction the delivery status will the displayed.
+
+[4.9] Add Book
+    FR  [4.9.REQ-1] The system shall allow a registered and logged-in user , bookstores and printing stores to add books they want to sell / print / rent-out.
+    FR  [4.9.REQ-2] The user shall be prompted to ﬁll in a form with all details associated with the class ‘Book’ : name , quantity , options for lending or selling , ISBN number …
+    FR  [4.9.REQ-3] The system shall allow the user to enter their payment acceptance details like bank account number , IFSC Code etc.
+
+[4.10] Request a Restock
+    FR  [4.10.REQ-1] The system shall allow a user to view various methods of contacting the sellers(bookstore ,printstore or the student sharing the book).
+    FR  [4.10.REQ-2] The system shall display the store address, telephone number, email address, and directions on how to get to the the sellers(bookstore ,printstore or the stude…
+    FR  [4.10.REQ-3] The system should also display a map showing the location of the bookstores and printing stores.
+
+[4.11] Update Account Information
+    FR  [4.11.REQ-1] The system shall allow a user to update the information in their account.
+    FR  [4.11.REQ-2] The user shall be allowed to view and change their name, mailing address, billing address, payment information.
+    FR  [4.11.REQ-3] The user shall be able to change their password by entering the old one once, and a new one twice.
+
+[4.12] View Delivery Status
+    FR  [4.12.REQ-1] The system shall allow a registered and logged-in user to view the shipping status of orders they have placed within the last 30 days.
+    FR  [4.12.REQ-2] The user must enter a conﬁrmation number to view the shipping status of their order.
+    FR  [4.12.REQ-3] The system shall then display the shipping date, mailing address, projected delivery date, and status (in transit, delivered, etc.)
+
+[4.13] View Account Purchase History
+    FR  [4.13.REQ-1] The system shall allow a registered and logged-in user to view purchases made with their account within the last two years.
+    FR  [4.13.REQ-2] The system shall display the date of purchase, payment mode.
+    FR  [4.13.REQ-3] The system shall display the title of the book, price, and quantity for each book purchased in a given order.
+
+[4.14] Account Logout
+    FR  [4.14.REQ-1] The system shall allow the registered and logged-in user to exit his/her account, so that access to operations requiring a user to be logged in are now disable…
+
+[4.15] Help
+    FR  [4.15.REQ-1] The system shall allow the user to view an overview of how to use the various operations deﬁned above.
+    FR  [4.15.REQ-2] The system must allow the user to select one of the operations by name.
+    FR  [4.15.REQ-3] The system shall then display information on how to use that operation.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 4.1.REQ-1    sample=0  Anchor case for initiating account creation
+  [FAIL] 4.1.REQ-2    sample=0  Anchor case for collecting user registration info
+  [FAIL] 4.1.REQ-3    sample=0  Anchor case for assigning username and requesting password
+  [FAIL] 4.1.REQ-4    sample=0  Anchor case for confirming password acceptability
+  [FAIL] 4.1.REQ-4    sample=0  Failure case for confirming password acceptability
+  [FAIL] 4.1.REQ-5    sample=0  Anchor case for storing user information
+  [FAIL] 4.10.REQ-1   sample=0  Anchor case for viewing seller contact methods
+  [FAIL] 4.10.REQ-2   sample=0  Anchor case for viewing seller details
+  [FAIL] 4.10.REQ-3   sample=0  Anchor case for viewing seller locations map
+  [FAIL] 4.11.REQ-1   sample=0  Anchor case for initiating account update with valid user I…
+  [FAIL] 4.11.REQ-1   sample=0  Update account information with missing update data fields
+  [FAIL] 4.11.REQ-2   sample=0  Anchor case for updating user details with all fields provi…
+  [FAIL] 4.11.REQ-2   sample=0  Update user details with empty name field
+  [FAIL] 4.11.REQ-3   sample=0  Anchor case for changing password with correct old password…
+  [FAIL] 4.11.REQ-3   sample=0  Change password with mismatched new passwords
+  [FAIL] 4.12.REQ-1   sample=0  Anchor case: User views orders placed within the last 30 da…
+  [FAIL] 4.12.REQ-1   sample=0  Independent case: User with no recent orders returns empty …
+  [FAIL] 4.12.REQ-1   sample=0  Failure case: Empty user ID
+  [FAIL] 4.12.REQ-2   sample=0  Anchor case: User views shipping status using confirmation …
+  [FAIL] 4.12.REQ-2   sample=0  Independent case: Invalid confirmation number raises error
+  [FAIL] 4.12.REQ-3   sample=0  Anchor case: System displays shipping details for an order
+  [FAIL] 4.12.REQ-3   sample=0  Independent case: Order with missing fields raises error
+  [FAIL] 4.13.REQ-1   sample=0  Anchor case: User views purchase history within last two ye…
+  [FAIL] 4.13.REQ-1   sample=0  Boundary case: User views purchase history for exactly two …
+  [FAIL] 4.13.REQ-1   sample=0  Failure case: User ID is empty
+  [FAIL] 4.13.REQ-2   sample=0  Anchor case: System formats purchase summary with date and …
+  [FAIL] 4.13.REQ-2   sample=0  Edge case: Purchase with minimal information
+  [FAIL] 4.13.REQ-2   sample=0  Failure case: Empty purchase dictionary
+  [FAIL] 4.13.REQ-3   sample=0  Anchor case: System formats order items with title, price, …
+  [FAIL] 4.13.REQ-3   sample=0  Edge case: Order with multiple items
+  [FAIL] 4.13.REQ-3   sample=0  Failure case: Empty items list
+  [FAIL] 4.14.REQ-1   sample=0  Canonical case for successful user logout
+  [FAIL] 4.14.REQ-1   sample=0  Logout without active session
+  [FAIL] 4.14.REQ-1   sample=0  Logout with invalid authentication token
+  [FAIL] 4.15.REQ-1   sample=0  Anchor case: Get help overview with empty input
+  [FAIL] 4.15.REQ-2   sample=0  Anchor case: Select a valid operation by name
+  [FAIL] 4.15.REQ-2   sample=0  Failure case: Attempt to select a nonexistent operation
+  [FAIL] 4.15.REQ-3   sample=0  Anchor case: View details for a valid operation
+  [FAIL] 4.15.REQ-3   sample=0  Failure case: Attempt to view details for a nonexistent ope…
+  [FAIL] 4.3.1.REQ-1  sample=0  Anchor case: Display search interface with title, author, a…
+  [FAIL] 4.3.1.REQ-1  sample=0  Independent case: Search interface should be displayed even…
+  [FAIL] 4.3.1.REQ-2  sample=0  Anchor case: Search for books by title 'Harry Potter'
+  [FAIL] 4.3.1.REQ-2  sample=0  Independent case: Search for books with empty query string
+  [FAIL] 4.3.1.REQ-2  sample=0  Independent case: Search for books with special characters …
+  [FAIL] 4.3.1.REQ-2  sample=0  Failure case: Search for books with invalid query type (non…
+  [FAIL] 4.3.2.REQ-1  sample=0  Anchor case: Initiate search for print shops with no inputs
+  [FAIL] 4.3.2.REQ-1  sample=0  Independent case: Search initiated successfully with empty …
+  [FAIL] 4.3.2.REQ-2  sample=0  Anchor case: Retrieve search results with default sample da…
+  [FAIL] 4.3.2.REQ-2  sample=0  Independent case: No search results returned when no print …
+  [FAIL] 4.3.REQ-1    sample=0  Search for books and print shops with a valid query
+  [FAIL] 4.3.REQ-1    sample=0  Search with an empty query string
+  [FAIL] 4.3.REQ-1    sample=0  Search for a non-existent term
+  [FAIL] 4.3.REQ-1    sample=0  Search with special characters in query
+  [FAIL] 4.4.REQ-1    sample=0  Add a book to the shopping cart with valid user and book IDs
+  [FAIL] 4.4.REQ-1    sample=0  Attempt to add a book to the shopping cart with an empty us…
+  [FAIL] 4.4.REQ-1    sample=0  Add multiple books to the shopping cart for the same user
+  [FAIL] 4.4.REQ-2    sample=0  View the total price of books in the shopping cart with val…
+  [FAIL] 4.4.REQ-2    sample=0  Attempt to view the total price of books in the shopping ca…
+  [FAIL] 4.5.REQ-1    sample=0  Anchor case: Remove a book from cart when user is registere…
+  [FAIL] 4.5.REQ-1    sample=0  Failure case: Attempt to remove a book with invalid user ID
+  [FAIL] 4.5.REQ-2    sample=0  Anchor case: Select a book for deletion when user is regist…
+  [FAIL] 4.5.REQ-2    sample=0  Failure case: Attempt to select a book for deletion with in…
+  [FAIL] 4.5.REQ-3    sample=0  Anchor case: Update cart after deletion when user is regist…
+  [FAIL] 4.5.REQ-3    sample=0  Failure case: Attempt to update cart after deletion with in…
+  [FAIL] 4.6.REQ-1    sample=0  Anchor case: User rents books in shopping cart
+  [FAIL] 4.6.REQ-1    sample=0  Failure case: Empty user ID or empty cart
+  [FAIL] 4.6.REQ-2    sample=0  Anchor case: System prompts user for rental period
+  [FAIL] 4.6.REQ-2    sample=0  Failure case: Empty user ID
+  [FAIL] 4.6.REQ-3    sample=0  Anchor case: Calculate and display rent for books
+  [FAIL] 4.6.REQ-3    sample=0  Failure case: Empty cart or invalid rental duration
+  [FAIL] 4.6.REQ-4    sample=0  Anchor case: Collect delivery information from user
+  [FAIL] 4.6.REQ-4    sample=0  Failure case: Empty user ID or empty delivery details
+  [FAIL] 4.6.REQ-5    sample=0  Anchor case: Prompt user for payment information
+  [FAIL] 4.6.REQ-5    sample=0  Failure case: Empty user ID
+  [FAIL] 4.6.REQ-6    sample=0  Anchor case: Display rented books after successful transact…
+  [FAIL] 4.6.REQ-6    sample=0  Failure case: Empty user ID
+  [FAIL] 4.7.REQ-1    sample=0  Anchor case: Successful purchase with valid user and cart i…
+  [FAIL] 4.7.REQ-1    sample=0  Independent case: Empty cart should fail purchase
+  [FAIL] 4.7.REQ-1    sample=0  Independent case: Invalid user ID should fail purchase
+  [FAIL] 4.7.REQ-2    sample=0  Anchor case: Calculate total cost for multiple items
+  [FAIL] 4.7.REQ-2    sample=0  Independent case: Empty cart returns zero total cost
+  [FAIL] 4.7.REQ-3    sample=0  Anchor case: Save delivery information for valid user
+  [FAIL] 4.7.REQ-3    sample=0  Independent case: Missing user ID should fail saving delive…
+  [FAIL] 4.7.REQ-4    sample=0  Anchor case: Prompt for payment information after successfu…
+  [FAIL] 4.7.REQ-5    sample=0  Anchor case: Display purchased books with titles, prices, a…
+  [FAIL] 4.7.REQ-5    sample=0  Independent case: Empty purchased items list should fail di…
+  [FAIL] 4.8.REQ-1    sample=0  Anchor case for initiating a print request
+  [FAIL] 4.8.REQ-1    sample=0  Failure case when user ID is missing
+  [FAIL] 4.8.REQ-2    sample=0  Anchor case for prompting Google Drive URL
+  [FAIL] 4.8.REQ-2    sample=0  Failure case when print job ID is missing
+  [FAIL] 4.8.REQ-3    sample=0  Anchor case for calculating print cost
+  [FAIL] 4.8.REQ-3    sample=0  Failure case when Google Drive URL is invalid
+  [FAIL] 4.8.REQ-4    sample=0  Anchor case for collecting delivery information
+  [FAIL] 4.8.REQ-4    sample=0  Failure case when delivery info is empty
+  [FAIL] 4.8.REQ-5    sample=0  Anchor case for prompting payment information
+  [FAIL] 4.8.REQ-5    sample=0  Failure case when print job ID is missing during payment pr…
+  [FAIL] 4.8.REQ-6    sample=0  Anchor case for displaying delivery status
+  [FAIL] 4.8.REQ-6    sample=0  Failure case when print job ID is missing during delivery s…
+  [FAIL] 4.9.REQ-1    sample=0  Anchor case: Registered and logged-in bookstore adds a book
+  [FAIL] 4.9.REQ-1    sample=0  Independent case: User type is invalid
+  [FAIL] 4.9.REQ-1    sample=0  Independent case: Empty user ID
+  [FAIL] 4.9.REQ-2    sample=0  Anchor case: Valid book details are entered
+  [FAIL] 4.9.REQ-2    sample=0  Independent case: Missing required fields in book data
+  [FAIL] 4.9.REQ-2    sample=0  Independent case: Invalid quantity value
+  [FAIL] 4.9.REQ-3    sample=0  Anchor case: Valid payment details are entered
+  [FAIL] 4.9.REQ-3    sample=0  Independent case: Empty payment details
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 4.1.REQ-1  sample=0
+  test:     Anchor case for initiating account creation
+  inputs:   A non-registered user attempts to create a secure account
+  expected: The system initiates the account creation process for the user
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.1.REQ-2  sample=0
+  test:     Anchor case for collecting user registration info
+  inputs:   User provides all required information during account creation
+  expected: The system collects the required information from the user
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.1.REQ-3  sample=0
+  test:     Anchor case for assigning username and requesting password
+  inputs:   User completes providing required information
+  expected: The system assigns a username to the user and requests a password
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.1.REQ-4  sample=0
+  test:     Anchor case for confirming password acceptability
+  inputs:   User provides a password that meets security requirements
+  expected: The system confirms that the password is acceptable
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.1.REQ-4  sample=0
+  test:     Failure case for confirming password acceptability
+  inputs:   User provides a weak password that does not meet security requirements
+  expected: The system raises an error indicating the password is unacceptable
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.1.REQ-5  sample=0
+  test:     Anchor case for storing user information
+  inputs:   User successfully provides all required information and an acceptable password
+  expected: The system stores the user's information in the database
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.10.REQ-1  sample=0
+  test:     Anchor case for viewing seller contact methods
+  inputs:   User requests to view contact methods for sellers
+  expected: System displays various methods of contacting the sellers including bookstore, printstore, or the student sharing the book
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.10.REQ-2  sample=0
+  test:     Anchor case for viewing seller details
+  inputs:   User requests to view seller details
+  expected: System displays the store address, telephone number, email address, and directions on how to get to the sellers
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.10.REQ-3  sample=0
+  test:     Anchor case for viewing seller locations map
+  inputs:   User requests to view a map showing locations of bookstores and printing stores
+  expected: System displays a map showing the location of the bookstores and printing stores
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.11.REQ-1  sample=0
+  test:     Anchor case for initiating account update with valid user ID and update data
+  inputs:   A user initiates an account update with valid user ID and update data
+  expected: System accepts the updated account information and begins processing the update
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.11.REQ-1  sample=0
+  test:     Update account information with missing update data fields
+  inputs:   User initiates an account update with minimal update data
+  expected: System accepts the updated account information and begins processing the update
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.11.REQ-2  sample=0
+  test:     Anchor case for updating user details with all fields provided
+  inputs:   User submits changes to name, mailing address, billing address, and payment info
+  expected: System validates and applies the changes successfully
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.11.REQ-2  sample=0
+  test:     Update user details with empty name field
+  inputs:   User submits changes with empty name field
+  expected: System validates and applies the changes successfully
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.11.REQ-3  sample=0
+  test:     Anchor case for changing password with correct old password and matching new passwords
+  inputs:   User provides correct old password and two matching new passwords
+  expected: System updates the user's password successfully
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.11.REQ-3  sample=0
+  test:     Change password with mismatched new passwords
+  inputs:   User provides old password and mismatched new passwords
+  expected: System raises an exception due to mismatched new passwords
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.12.REQ-1  sample=0
+  test:     Anchor case: User views orders placed within the last 30 days
+  inputs:   User with ID user123 views orders placed within the last 30 days
+  expected: List of orders placed by user123 within the last 30 days
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.12.REQ-1  sample=0
+  test:     Independent case: User with no recent orders returns empty list
+  inputs:   User with ID user123 views orders placed more than 30 days ago
+  expected: Empty list of orders
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.12.REQ-1  sample=0
+  test:     Failure case: Empty user ID
+  inputs:   User with empty ID attempts to view orders
+  expected: HTTP 4xx error due to invalid user ID
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.12.REQ-2  sample=0
+  test:     Anchor case: User views shipping status using confirmation number
+  inputs:   User enters valid confirmation number CONF123456 to view order status
+  expected: Order details including shipping date, delivery address, projected delivery date, and status
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.12.REQ-2  sample=0
+  test:     Independent case: Invalid confirmation number raises error
+  inputs:   User enters invalid confirmation number INVALID
+  expected: HTTP 4xx error due to invalid confirmation number
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.12.REQ-3  sample=0
+  test:     Anchor case: System displays shipping details for an order
+  inputs:   System displays shipping details for order with specific attributes
+  expected: Shipping date, delivery address, projected delivery date, and status
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.12.REQ-3  sample=0
+  test:     Independent case: Order with missing fields raises error
+  inputs:   System attempts to display shipping details for an order with missing fields
+  expected: HTTP 4xx error due to incomplete order data
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.13.REQ-1  sample=0
+  test:     Anchor case: User views purchase history within last two years
+  inputs:   User with ID user123 requests purchase history for last 730 days
+  expected: List of purchases made by user within the last 730 days
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.13.REQ-1  sample=0
+  test:     Boundary case: User views purchase history for exactly two years
+  inputs:   User with ID user123 requests purchase history for last 730 days
+  expected: List of purchases made by user within the last 730 days
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+[FAIL] 4.13.REQ-1  sample=0
+  test:     Failure case: User ID is empty
+  inputs:   User with empty ID requests purchase history
+  expected: HTTP 4xx error due to invalid user ID
+  reason:   app boot/request error: SyntaxError: expected 'except' or 'finally' block (remove_book_from_cart.py, line 14)
+
+  … and 81 more failures
+
+======================================================================
+  SUMMARY: 0 passed / 106 failed / 106 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+  ⏱  done in 101.60s
+  pass@1: 0.000  (over 51 un-proved FR(s))
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.0556
+  test_case_pass_ratio        :       0.0000
+  PassVer@1                   :       0.0556
+  avg_verification_iteration  :         1.00
+  avg_test_iteration          :         1.00
+  avg_input_token             :       1812.0
+  avg_output_token            :        604.7
+  total_time                  :      577.98s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_verifier_repair/Shoten_SRS_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_verifier_repair/Shoten_SRS_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_verifier_repair/runs/20261018-101340-shoten-srs.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/no_verifier_repair/runs/20261018-101340-shoten-srs.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : dafny=85.5s   compile=0.7s   adapter=6.4s   code=168.2s   test=215.4s   certification=101.6s
+Time      : 577.98s   Tokens: 207,839   Cost: $0.0000

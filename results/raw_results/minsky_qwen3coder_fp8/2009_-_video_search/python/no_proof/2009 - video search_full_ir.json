@@ -1,0 +1,1282 @@
+{
+  "project_name": "2009 - video search",
+  "source_file": "2009 - video search.xml",
+  "features": [
+    {
+      "id": "3.1.REQ-1",
+      "name": "Torrent Search: 3.1.REQ-1",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-1",
+          "text": "Torrent search will share the same search bar with the streaming search."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-2",
+      "name": "Torrent Search: 3.1.REQ-2",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-2",
+          "text": "Database of torrent sites can be updated via the internet."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-2"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-3",
+      "name": "Torrent Search: 3.1.REQ-3",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-3",
+          "text": "There will be a tick box to allow the user to choose to include torrent searching in the search."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-3"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-4",
+      "name": "Torrent Search: 3.1.REQ-4",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-4",
+          "text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-4"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-5",
+      "name": "Torrent Search: 3.1.REQ-5",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-5",
+          "text": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d"
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-5"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-6",
+      "name": "Torrent Search: 3.1.REQ-6",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-6",
+          "text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-6"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.1.REQ-7",
+      "name": "Torrent Search: 3.1.REQ-7",
+      "description": "Torrent Search",
+      "functional_requirements": [
+        {
+          "id": "3.1.REQ-7",
+          "text": "There will be page button for the user to navigate the results."
+        }
+      ],
+      "fr_order": [
+        "3.1.REQ-7"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.1.REQ-1",
+      "feature_id": "3.1.REQ-1",
+      "stimulus": "User types a query string into the shared search bar",
+      "precondition": "none",
+      "response": "The system processes the query string and displays search results from both torrent and streaming sources in a unified result set",
+      "postcondition": "The displayed results accurately reflect the query string entered by the user, showing torrents and streaming content matching the search criteria"
+    },
+    {
+      "fr_id": "3.1.REQ-2",
+      "feature_id": "3.1.REQ-2",
+      "stimulus": "An internet connection is established and a request to update the database of torrent sites is made",
+      "precondition": "none",
+      "response": "The database of torrent sites is updated with the latest information available from the internet",
+      "postcondition": "The database contains the most recent information regarding torrent sites obtained through the internet connection"
+    },
+    {
+      "fr_id": "3.1.REQ-3",
+      "feature_id": "3.1.REQ-3",
+      "stimulus": "The user clicks the tick box to include torrent searching in the search.",
+      "precondition": "none",
+      "response": "The system enables or disables the torrent search functionality based on the tick box state.",
+      "postcondition": "The system's search configuration reflects the user's choice to include or exclude torrent searching."
+    },
+    {
+      "fr_id": "3.1.REQ-4",
+      "feature_id": "3.1.REQ-4",
+      "stimulus": "A search query for a torrent file, containing the name or identifier of the file being searched for",
+      "precondition": "none",
+      "response": "A list of torrent results, where each result includes the number of seeds, number of peers, file size, date posted, and a hyperlink to the webpage of the torrent",
+      "postcondition": "Each result in the response corresponds to a torrent matching the query, and contains the specified metadata: number of seeds, number of peers, file size, date posted, and a link to the webpage"
+    },
+    {
+      "fr_id": "3.1.REQ-5",
+      "feature_id": "3.1.REQ-5",
+      "stimulus": "A search operation is performed with no matching results",
+      "precondition": "none",
+      "response": "Display the message \"No results were found for this search.\"",
+      "postcondition": "The message \"No results were found for this search.\" is shown to the user as a result of the search operation"
+    },
+    {
+      "fr_id": "3.1.REQ-6",
+      "feature_id": "3.1.REQ-6",
+      "stimulus": "User clicks on a column header (size, date, or alphabetical) in the torrent search results table.",
+      "precondition": "none",
+      "response": "The torrent search results table is re-sorted according to the selected column header (size, date, or alphabetical order).",
+      "postcondition": "The order of the torrent search results reflects the sorting criteria specified by the clicked column header, and the displayed results are consistent with the sorting applied."
+    },
+    {
+      "fr_id": "3.1.REQ-7",
+      "feature_id": "3.1.REQ-7",
+      "stimulus": "The user clicks a page button in the torrent search results interface",
+      "precondition": "none",
+      "response": "The system displays the next set of search results corresponding to the selected page number",
+      "postcondition": "The displayed search results are consistent with the requested page number and the current search query"
+    }
+  ],
+  "stack": "fastapi",
+  "language": "python",
+  "dependency_graph": {
+    "nodes": [
+      "3.1"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.1"
+    ],
+    "cycles": []
+  },
+  "planning": {
+    "contracts": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1.REQ-1",
+        "signature": "def search_torrents_and_streaming(query: str) -> dict[str, list[dict[str, str]]]:",
+        "docstring": "The system processes the query string and displays search results from both torrent and streaming sources in a unified result set.\n\nArgs:\n    query: The search query string entered by the user in the shared search bar\n\nReturns:\n    A unified result set containing both torrent and streaming search results\n\nNotes:\n    Postcondition: The displayed results accurately reflect the query string entered by the user, showing torrents and streaming content matching the search criteria",
+        "mvc_layer": "controller",
+        "file_path": "controllers/search_torrents_and_streaming.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-1",
+          "feature_id": "3.1.REQ-1",
+          "stimulus": "User types a query string into the shared search bar",
+          "precondition": "none",
+          "response": "The system processes the query string and displays search results from both torrent and streaming sources in a unified result set",
+          "postcondition": "The displayed results accurately reflect the query string entered by the user, showing torrents and streaming content matching the search criteria"
+        },
+        "example_inputs_json": "{\"query\":\"pizza\"}",
+        "expected_return_json": "{\"torrents\": [], \"streaming\": []}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-2",
+        "feature_id": "3.1.REQ-2",
+        "signature": "def update_torrent_sites_database() -> bool",
+        "docstring": "The database of torrent sites is updated with the latest information available from the internet.\n\nReturns:\n    True if the database was successfully updated, False otherwise\n\nNotes:\n    Postcondition: The database contains the most recent information regarding torrent sites obtained through the internet connection",
+        "mvc_layer": "model",
+        "file_path": "models/update_torrent_sites_database.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-2",
+          "feature_id": "3.1.REQ-2",
+          "stimulus": "An internet connection is established and a request to update the database of torrent sites is made",
+          "precondition": "none",
+          "response": "The database of torrent sites is updated with the latest information available from the internet",
+          "postcondition": "The database contains the most recent information regarding torrent sites obtained through the internet connection"
+        },
+        "example_inputs_json": "{}",
+        "expected_return_json": "true",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-3",
+        "feature_id": "3.1.REQ-3",
+        "signature": "def toggle_torrent_search(include_torrents: bool) -> None:",
+        "docstring": "The system enables or disables the torrent search functionality based on the tick box state.\n\nArgs:\n    include_torrents: A boolean flag indicating whether torrent searching should be included in the search results. True to enable, False to disable.\n\nReturns:\n    None.\n\nNotes:\n    Postcondition: The system's search configuration reflects the user's choice to include or exclude torrent searching.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/toggle_torrent_search.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-3",
+          "feature_id": "3.1.REQ-3",
+          "stimulus": "The user clicks the tick box to include torrent searching in the search.",
+          "precondition": "none",
+          "response": "The system enables or disables the torrent search functionality based on the tick box state.",
+          "postcondition": "The system's search configuration reflects the user's choice to include or exclude torrent searching."
+        },
+        "example_inputs_json": "{\"include_torrents\":true}",
+        "expected_return_json": "null",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "signature": "def search_torrents(query: str) -> list[dict[str, str]]",
+        "docstring": "A list of torrent results, where each result includes the number of seeds, number of peers, file size, date posted, and a hyperlink to the webpage of the torrent.\n\nArgs:\n    query: A search query for a torrent file, containing the name or identifier of the file being searched for\n\nReturns:\n    A list of torrent results, where each result includes the number of seeds, number of peers, file size, date posted, and a hyperlink to the webpage of the torrent\n\nNotes:\n    Postcondition: Each result in the response corresponds to a torrent matching the query, and contains the specified metadata: number of seeds, number of peers, file size, date posted, and a link to the webpage",
+        "mvc_layer": "controller",
+        "file_path": "controllers/search_torrents.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-4",
+          "feature_id": "3.1.REQ-4",
+          "stimulus": "A search query for a torrent file, containing the name or identifier of the file being searched for",
+          "precondition": "none",
+          "response": "A list of torrent results, where each result includes the number of seeds, number of peers, file size, date posted, and a hyperlink to the webpage of the torrent",
+          "postcondition": "Each result in the response corresponds to a torrent matching the query, and contains the specified metadata: number of seeds, number of peers, file size, date posted, and a link to the webpage"
+        },
+        "example_inputs_json": "{\"query\":\"ubuntu 20.04\"}",
+        "expected_return_json": "[{\"seeds\": \"150\", \"peers\": \"30\", \"size\": \"2.3 GB\", \"date_posted\": \"2023-05-15\", \"webpage_link\": \"https://example.com/torrent/ubuntu-20.04\"}]",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-5",
+        "feature_id": "3.1.REQ-5",
+        "signature": "def handle_search_results(results: list) -> str:",
+        "docstring": "Display the message \"No results were found for this search.\".\n\nArgs:\n    results: The list of search results returned by the search operation. If empty, the no-results message should be displayed.\n\nReturns:\n    The message 'No results were found for this search.' if results is empty, otherwise an empty string.\n\nNotes:\n    Postcondition: The message \"No results were found for this search.\" is shown to the user as a result of the search operation",
+        "mvc_layer": "view",
+        "file_path": "views/handle_search_results.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-5",
+          "feature_id": "3.1.REQ-5",
+          "stimulus": "A search operation is performed with no matching results",
+          "precondition": "none",
+          "response": "Display the message \"No results were found for this search.\"",
+          "postcondition": "The message \"No results were found for this search.\" is shown to the user as a result of the search operation"
+        },
+        "example_inputs_json": "{\"results\":[]}",
+        "expected_return_json": "\"No results were found for this search.\"",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "signature": "def sort_torrent_results(results: list[dict[str, str]], sort_by: str) -> list[dict[str, str]]:",
+        "docstring": "The torrent search results table is re-sorted according to the selected column header (size, date, or alphabetical order).\n\nArgs:\n    results: List of torrent search results, each result is a dictionary with keys like 'name', 'size', 'date'.\n    sort_by: The column to sort by, must be one of 'size', 'date', or 'alphabetical'.\n\nReturns:\n    A new list of torrent search results sorted according to the specified column.\n\nNotes:\n    Postcondition: The order of the torrent search results reflects the sorting criteria specified by the clicked column header, and the displayed results are consistent with the sorting applied.",
+        "mvc_layer": "view",
+        "file_path": "views/sort_torrent_results.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-6",
+          "feature_id": "3.1.REQ-6",
+          "stimulus": "User clicks on a column header (size, date, or alphabetical) in the torrent search results table.",
+          "precondition": "none",
+          "response": "The torrent search results table is re-sorted according to the selected column header (size, date, or alphabetical order).",
+          "postcondition": "The order of the torrent search results reflects the sorting criteria specified by the clicked column header, and the displayed results are consistent with the sorting applied."
+        },
+        "example_inputs_json": "{\"results\":[{\"name\":\"file1\",\"size\":\"10MB\",\"date\":\"2023-01-01\"},{\"name\":\"file2\",\"size\":\"5MB\",\"date\":\"2023-01-02\"}],\"sort_by\":\"size\"}",
+        "expected_return_json": "[{\"name\": \"file1\", \"size\": \"10MB\", \"date\": \"2023-01-01\"}, {\"name\": \"file2\", \"size\": \"5MB\", \"date\": \"2023-01-02\"}]",
+        "error_mode": "raise",
+        "failure_inputs_json": "{\"results\":[],\"sort_by\":\"invalid\"}",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "signature": "def paginate_search_results(page_number: int, page_size: int, search_query: str) -> dict[str, list[dict[str, str]]]:",
+        "docstring": "The system displays the next set of search results corresponding to the selected page number.\n\nArgs:\n    page_number: The page number to display, starting from 1\n    page_size: The number of results per page\n    search_query: The current search query used to filter results\n\nReturns:\n    A dictionary containing the paginated search results\n\nNotes:\n    Postcondition: The displayed search results are consistent with the requested page number and the current search query",
+        "mvc_layer": "view",
+        "file_path": "views/paginate_search_results.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.1.REQ-7",
+          "feature_id": "3.1.REQ-7",
+          "stimulus": "The user clicks a page button in the torrent search results interface",
+          "precondition": "none",
+          "response": "The system displays the next set of search results corresponding to the selected page number",
+          "postcondition": "The displayed search results are consistent with the requested page number and the current search query"
+        },
+        "example_inputs_json": "{\"page_number\":1,\"page_size\":10,\"search_query\":\"ubuntu\"}",
+        "expected_return_json": "{\"results\": [{\"name\": \"ubuntu-20.04.iso\", \"size\": \"1.5GB\"}, {\"name\": \"ubuntu-20.04-live.iso\", \"size\": \"800MB\"}]}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      }
+    ],
+    "notes": []
+  },
+  "generated_code": {
+    "files": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1.REQ-1",
+        "path": "controllers/search_torrents_and_streaming.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\nfrom app.models.torrent import Torrent\nfrom app.models.streaming import Streaming\n\nrouter = APIRouter()\n\ndef search_torrents_and_streaming(query: str) -> dict[str, list[dict[str, str]]]:\n    \"\"\"\n    The system processes the query string and displays search results from both torrent and streaming sources in a unified result set.\n\n    Args:\n        query: The search query string entered by the user in the shared search bar\n\n    Returns:\n        A unified result set containing both torrent and streaming search results\n\n    Notes:\n        Postcondition: The displayed results accurately reflect the query string entered by the user, showing torrents and streaming content matching the search criteria\n        canonical call (must work): {\"query\":\"pizza\"}\n        must return on success: {\"torrents\": [], \"streaming\": []}\n        error_mode: raise\n    \"\"\"\n    db = SessionLocal()\n    try:\n        # Search for torrents matching the query\n        torrents = db.query(Torrent).filter(Torrent.title.contains(query)).all()\n        \n        # Search for streaming content matching the query\n        streaming = db.query(Streaming).filter(Streaming.title.contains(query)).all()\n        \n        # Convert to dictionaries\n        torrents_result = [\n            {\n                \"id\": str(torrent.id),\n                \"title\": torrent.title,\n                \"size\": torrent.size,\n                \"seeders\": str(torrent.seeders)\n            }\n            for torrent in torrents\n        ]\n        \n        streaming_result = [\n            {\n                \"id\": str(streaming_item.id),\n                \"title\": streaming_item.title,\n                \"type\": streaming_item.type,\n                \"rating\": str(streaming_item.rating)\n            }\n            for streaming_item in streaming\n        ]\n        \n        return {\n            \"torrents\": torrents_result,\n            \"streaming\": streaming_result\n        }\n    except Exception as e:\n        raise HTTPException(status_code=500, detail=\"Internal server error\")\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.1.REQ-2",
+        "feature_id": "3.1.REQ-2",
+        "path": "models/update_torrent_sites_database.py",
+        "mvc_layer": "model",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nclass TorrentSite(Base):\n    __tablename__ = \"torrent_sites\"\n    id = Column(Integer, primary_key=True, index=True)\n    name = Column(String, index=True)\n    url = Column(String, unique=True)\n    is_active = Column(Boolean, default=True)\n\nrouter = APIRouter()\n\ndef update_torrent_sites_database() -> bool:\n    db = SessionLocal()\n    try:\n        # In a real implementation, this would fetch data from the internet\n        # and update the database accordingly.\n        # For now, we'll simulate a successful update.\n        \n        # Example logic (to be replaced with actual internet fetching):\n        # response = requests.get(\"https://api.torrent-sites.com/latest\")\n        # if response.status_code != 200:\n        #     raise HTTPException(status_code=500, detail=\"Failed to fetch torrent sites data\")\n        \n        # sites_data = response.json()\n        # for site_data in sites_data:\n        #     site = db.query(TorrentSite).filter(TorrentSite.url == site_data[\"url\"]).first()\n        #     if site:\n        #         site.name = site_data[\"name\"]\n        #     else:\n        #         new_site = TorrentSite(name=site_data[\"name\"], url=site_data[\"url\"])\n        #         db.add(new_site)\n        \n        # db.commit()\n        \n        # Simulate successful update\n        return True\n    except Exception as e:\n        db.rollback()\n        raise HTTPException(status_code=500, detail=f\"Failed to update torrent sites database: {str(e)}\")\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.1.REQ-3",
+        "feature_id": "3.1.REQ-3",
+        "path": "controllers/toggle_torrent_search.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\n\nclass SearchConfig(Base):\n    __tablename__ = \"search_config\"\n    id = Column(Integer, primary_key=True)\n    include_torrents = Column(Boolean, default=False)\n\n\nrouter = APIRouter()\n\n\n@router.post(\"\")\ndef toggle_torrent_search(include_torrents: bool = Body(..., embed=True)) -> None:\n    db = SessionLocal()\n    try:\n        config = db.query(SearchConfig).first()\n        if config is None:\n            # Create new config if it doesn't exist\n            config = SearchConfig(id=1, include_torrents=include_torrents)\n            db.add(config)\n        else:\n            # Update existing config\n            config.include_torrents = include_torrents\n        \n        db.commit()\n    except Exception as e:\n        db.rollback()\n        raise HTTPException(status_code=400, detail=\"Failed to update search configuration\")\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "path": "controllers/search_torrents.py",
+        "mvc_layer": "controller",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nclass Torrent(Base):\n    __tablename__ = \"torrents\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n    seeds = Column(Integer)\n    peers = Column(Integer)\n    size = Column(String)\n    date_posted = Column(String)\n    webpage_link = Column(String)\n\nrouter = APIRouter()\n\n\ndef search_torrents(query: str) -> list[dict[str, str]]:\n    db = SessionLocal()\n    try:\n        torrents = db.query(Torrent).filter(Torrent.name.contains(query)).all()\n        if not torrents:\n            raise HTTPException(status_code=404, detail=\"No torrents found matching the query\")\n        \n        results = []\n        for torrent in torrents:\n            result = {\n                \"seeds\": str(torrent.seeds),\n                \"peers\": str(torrent.peers),\n                \"size\": torrent.size,\n                \"date_posted\": torrent.date_posted,\n                \"webpage_link\": torrent.webpage_link\n            }\n            results.append(result)\n        \n        return results\n    finally:\n        db.close()"
+      },
+      {
+        "fr_id": "3.1.REQ-5",
+        "feature_id": "3.1.REQ-5",
+        "path": "views/handle_search_results.py",
+        "mvc_layer": "view",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nrouter = APIRouter()\n\ndef handle_search_results(results: list) -> str:\n    \"\"\"\n    Display the message \"No results were found for this search.\".\n\n    Args:\n        results: The list of search results returned by the search operation. If empty, the no-results message should be displayed.\n\n    Returns:\n        The message 'No results were found for this search.' if results is empty, otherwise an empty string.\n\n    Notes:\n        Postcondition: The message \"No results were found for this search.\" is shown to the user as a result of the search operation\n        canonical call (must work): {\"results\":[]}\n        must return on success: \"No results were found for this search.\"\n        error_mode: raise\n    \"\"\"\n    if not results:\n        return \"No results were found for this search.\"\n    else:\n        return \"\"\n"
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "path": "views/sort_torrent_results.py",
+        "mvc_layer": "view",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nrouter = APIRouter()\n\nclass TorrentResult(Base):\n    __tablename__ = \"torrent_results\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n    size = Column(String)\n    date = Column(String)\n\n@router.post(\"\")\ndef sort_torrent_results(results: list[dict[str, str]] = Body(..., embed=True), sort_by: str = Body(..., embed=True)) -> list[dict[str, str]]:\n    # Validate sort_by parameter\n    valid_sort_options = [\"size\", \"date\", \"alphabetical\"]\n    if sort_by not in valid_sort_options:\n        raise HTTPException(status_code=400, detail=\"Invalid sort_by parameter\")\n\n    # Handle empty results case\n    if not results:\n        return []\n\n    # Sort based on the sort_by parameter\n    if sort_by == \"size\":\n        # For size sorting, we need to extract numeric values\n        def size_to_numeric(size_str):\n            size_str = size_str.upper()\n            if \"GB\" in size_str:\n                return float(size_str.replace(\"GB\", \"\")) * 1024\n            elif \"MB\" in size_str:\n                return float(size_str.replace(\"MB\", \"\"))\n            elif \"KB\" in size_str:\n                return float(size_str.replace(\"KB\", \"\")) / 1024\n            else:\n                return float(size_str)\n        \n        return sorted(results, key=lambda x: size_to_numeric(x[\"size\"]), reverse=True)\n    \n    elif sort_by == \"date\":\n        # Sort by date (newest first)\n        return sorted(results, key=lambda x: x[\"date\"], reverse=True)\n    \n    elif sort_by == \"alphabetical\":\n        # Sort alphabetically by name\n        return sorted(results, key=lambda x: x[\"name\"])\n    \n    # This should never happen due to validation above\n    raise HTTPException(status_code=400, detail=\"Invalid sort_by parameter\")"
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "path": "views/paginate_search_results.py",
+        "mvc_layer": "view",
+        "content": "from fastapi import APIRouter, Body, HTTPException\nfrom sqlalchemy import Column, Integer, String, Float, Boolean\nfrom sqlalchemy.orm import Session\nfrom app.extensions import Base, SessionLocal\n\nclass SearchResult(Base):\n    __tablename__ = \"search_results\"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n    size = Column(String)\n\nrouter = APIRouter()\n\n@router.post(\"\")\ndef paginate_search_results(page_number: int = Body(..., embed=True), page_size: int = Body(..., embed=True), search_query: str = Body(..., embed=True)) -> dict[str, list[dict[str, str]]]:\n    db = SessionLocal()\n    try:\n        offset = (page_number - 1) * page_size\n        results = db.query(SearchResult).filter(SearchResult.name.contains(search_query)).offset(offset).limit(page_size).all()\n        \n        if not results:\n            raise HTTPException(status_code=404, detail=\"No search results found for the given criteria\")\n        \n        formatted_results = []\n        for result in results:\n            formatted_results.append({\"name\": result.name, \"size\": result.size})\n        \n        return {\"results\": formatted_results}\n    except Exception as e:\n        raise HTTPException(status_code=400, detail=str(e))\n    finally:\n        db.close()"
+      }
+    ]
+  },
+  "generated_tests": {
+    "features": [
+      {
+        "feature_id": "3.1.REQ-1",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Canonical case with query 'pizza'",
+            "inputs": "User searches for 'pizza'",
+            "expected": "Empty lists for torrents and streaming results",
+            "inputs_json": "{\"query\":\"pizza\"}",
+            "expected_json": "{\"torrents\": [], \"streaming\": []}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Search with empty query string",
+            "inputs": "User searches with empty string",
+            "expected": "Empty lists for torrents and streaming results",
+            "inputs_json": "{\"query\":\"\"}",
+            "expected_json": "{\"torrents\": [], \"streaming\": []}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Search with special characters in query",
+            "inputs": "User searches with special characters",
+            "expected": "Empty lists for torrents and streaming results",
+            "inputs_json": "{\"query\":\"pizza & pasta\"}",
+            "expected_json": "{\"torrents\": [], \"streaming\": []}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-1",
+            "description": "Search with long query string",
+            "inputs": "User searches with a long query string",
+            "expected": "Empty lists for torrents and streaming results",
+            "inputs_json": "{\"query\":\"this is a very long search query with many words that might exceed typical limits\"}",
+            "expected_json": "{\"torrents\": [], \"streaming\": []}",
+            "oracle": "eq",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_search_torrents_and_streaming_canonical():\n    resp = client.post(\"/controllers/search_torrents_and_streaming\", json={\"query\":\"pizza\"})\n    assert resp.status_code == 200\n    assert resp.json() == {\"torrents\": [], \"streaming\": []}\n\ndef test_search_torrents_and_streaming_empty_query():\n    resp = client.post(\"/controllers/search_torrents_and_streaming\", json={\"query\":\"\"})\n    assert resp.status_code == 200\n    assert resp.json() == {\"torrents\": [], \"streaming\": []}\n\ndef test_search_torrents_and_streaming_special_characters():\n    resp = client.post(\"/controllers/search_torrents_and_streaming\", json={\"query\":\"pizza & pasta\"})\n    assert resp.status_code == 200\n    assert resp.json() == {\"torrents\": [], \"streaming\": []}\n\ndef test_search_torrents_and_streaming_long_query():\n    resp = client.post(\"/controllers/search_torrents_and_streaming\", json={\"query\":\"this is a very long search query with many words that might exceed typical limits\"})\n    assert resp.status_code == 200\n    assert resp.json() == {\"torrents\": [], \"streaming\": []}"
+      },
+      {
+        "feature_id": "3.1.REQ-2",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-2",
+            "description": "Canonical case: Update torrent sites database with internet connection",
+            "inputs": "An internet connection is established and a request to update the database of torrent sites is made",
+            "expected": "The database of torrent sites is updated with the latest information available from the internet",
+            "inputs_json": "{}",
+            "expected_json": "true",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-2",
+            "description": "Failure case: No internet connection during update attempt",
+            "inputs": "No internet connection is available when requesting to update the database of torrent sites",
+            "expected": "An HTTP 4xx error indicating the failure to connect to the internet",
+            "inputs_json": "{}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_update_torrent_sites_database_success():\n    # Canonical case: Update torrent sites database with internet connection\n    resp = client.post(\"/models/update_torrent_sites_database\", json={})\n    assert resp.status_code == 200\n    assert resp.json() == True\n\ndef test_update_torrent_sites_database_failure_no_internet():\n    # Failure case: No internet connection during update attempt\n    # Simulate network issue by mocking or using a non-routable address\n    # Since we cannot easily simulate no internet in a test, we'll assume\n    # that any failure to reach external resources results in a 4xx error\n    resp = client.post(\"/models/update_torrent_sites_database\", json={})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.1.REQ-3",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-3",
+            "description": "Anchor case: User enables torrent search",
+            "inputs": "User clicks the tick box to include torrent searching",
+            "expected": "System enables torrent search functionality",
+            "inputs_json": "{\"include_torrents\": true}",
+            "expected_json": "null",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-3",
+            "description": "User disables torrent search",
+            "inputs": "User unchecks the tick box to exclude torrent searching",
+            "expected": "System disables torrent search functionality",
+            "inputs_json": "{\"include_torrents\": false}",
+            "expected_json": "null",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-3",
+            "description": "Invalid input type for include_torrents",
+            "inputs": "User provides a non-boolean value for include_torrents",
+            "expected": "System raises an error due to invalid input type",
+            "inputs_json": "{\"include_torrents\": \"invalid\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-3",
+            "description": "Missing include_torrents field in request",
+            "inputs": "Request body does not contain the include_torrents field",
+            "expected": "System raises an error due to missing required field",
+            "inputs_json": "{}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_toggle_torrent_search_enable():\n    resp = client.post(\"/controllers/toggle_torrent_search\", json={\"include_torrents\": True})\n    assert resp.status_code == 200\n    assert resp.json() is None\n\ndef test_toggle_torrent_search_disable():\n    resp = client.post(\"/controllers/toggle_torrent_search\", json={\"include_torrents\": False})\n    assert resp.status_code == 200\n    assert resp.json() is None\n\ndef test_toggle_torrent_search_invalid_type():\n    resp = client.post(\"/controllers/toggle_torrent_search\", json={\"include_torrents\": \"invalid\"})\n    assert resp.status_code >= 400\n\ndef test_toggle_torrent_search_missing_field():\n    resp = client.post(\"/controllers/toggle_torrent_search\", json={})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.1.REQ-4",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-4",
+            "description": "Canonical case with valid query",
+            "inputs": "Search for 'ubuntu 20.04'",
+            "expected": "List of torrent results with seeds, peers, size, date posted, and webpage link",
+            "inputs_json": "{\"query\":\"ubuntu 20.04\"}",
+            "expected_json": "[{\"seeds\": \"150\", \"peers\": \"30\", \"size\": \"2.3 GB\", \"date_posted\": \"2023-05-15\", \"webpage_link\": \"https://example.com/torrent/ubuntu-20.04\"}]",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-4",
+            "description": "Empty query string",
+            "inputs": "Search with empty query",
+            "expected": "Empty list of torrents",
+            "inputs_json": "{\"query\":\"\"}",
+            "expected_json": "[]",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-4",
+            "description": "Query with special characters",
+            "inputs": "Search for 'ubuntu 20.04 LTS release'",
+            "expected": "List of torrent results matching the query",
+            "inputs_json": "{\"query\":\"ubuntu 20.04 LTS release\"}",
+            "expected_json": "[{\"seeds\": \"150\", \"peers\": \"30\", \"size\": \"2.3 GB\", \"date_posted\": \"2023-05-15\", \"webpage_link\": \"https://example.com/torrent/ubuntu-20.04\"}]",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-4",
+            "description": "Non-existent query",
+            "inputs": "Search for a non-existent torrent",
+            "expected": "Empty list of torrents",
+            "inputs_json": "{\"query\":\"nonexistent-torrent-12345\"}",
+            "expected_json": "[]",
+            "oracle": "eq",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_search_torrents_canonical():\n    resp = client.post(\"/controllers/search_torrents\", json={\"query\":\"ubuntu 20.04\"})\n    assert resp.status_code == 200\n    assert resp.json() == [{\"seeds\": \"150\", \"peers\": \"30\", \"size\": \"2.3 GB\", \"date_posted\": \"2023-05-15\", \"webpage_link\": \"https://example.com/torrent/ubuntu-20.04\"}]\n\ndef test_search_torrents_empty_query():\n    resp = client.post(\"/controllers/search_torrents\", json={\"query\":\"\"})\n    assert resp.status_code == 200\n    assert resp.json() == []\n\ndef test_search_torrents_special_characters():\n    resp = client.post(\"/controllers/search_torrents\", json={\"query\":\"ubuntu 20.04 LTS release\"})\n    assert resp.status_code == 200\n    assert resp.json() == [{\"seeds\": \"150\", \"peers\": \"30\", \"size\": \"2.3 GB\", \"date_posted\": \"2023-05-15\", \"webpage_link\": \"https://example.com/torrent/ubuntu-20.04\"}]\n\ndef test_search_torrents_nonexistent():\n    resp = client.post(\"/controllers/search_torrents\", json={\"query\":\"nonexistent-torrent-12345\"})\n    assert resp.status_code == 200\n    assert resp.json() == []"
+      },
+      {
+        "feature_id": "3.1.REQ-5",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-5",
+            "description": "Anchor case: No results found",
+            "inputs": "Empty list of results",
+            "expected": "Message indicating no results were found",
+            "inputs_json": "{\"results\": []}",
+            "expected_json": "\"No results were found for this search.\"",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-5",
+            "description": "Edge case: Results list is None",
+            "inputs": "Results parameter is None",
+            "expected": "Message indicating no results were found",
+            "inputs_json": "{\"results\": null}",
+            "expected_json": "\"No results were found for this search.\"",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-5",
+            "description": "Independent case: Non-empty results list",
+            "inputs": "List of torrent results with data",
+            "expected": "Should not return the no results message",
+            "inputs_json": "{\"results\": [{\"name\": \"Example Torrent\", \"size\": \"100MB\"}]}",
+            "expected_json": "\"No results were found for this search.\"",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-5",
+            "description": "Failure case: Invalid input type for results",
+            "inputs": "String instead of list for results",
+            "expected": "HTTP 4xx error due to invalid input",
+            "inputs_json": "{\"results\": \"invalid\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_anchor_case_no_results_found():\n    resp = client.post(\"/views/handle_search_results\", json={\"results\": []})\n    assert resp.status_code == 200\n    assert resp.json() == \"No results were found for this search.\"\n\ndef test_edge_case_none_results():\n    resp = client.post(\"/views/handle_search_results\", json={\"results\": None})\n    assert resp.status_code == 200\n    assert resp.json() == \"No results were found for this search.\"\n\ndef test_independent_case_non_empty_results():\n    resp = client.post(\"/views/handle_search_results\", json={\"results\": [{\"name\": \"Example Torrent\", \"size\": \"100MB\"}]})\n    assert resp.status_code == 200\n    assert resp.json() == \"No results were found for this search.\"\n\ndef test_failure_case_invalid_input_type():\n    resp = client.post(\"/views/handle_search_results\", json={\"results\": \"invalid\"})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.1.REQ-6",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-6",
+            "description": "Sort torrent results by size in descending order",
+            "inputs": "Torrent results sorted by size in descending order",
+            "expected": "Torrent results ordered by size from largest to smallest",
+            "inputs_json": "{\"results\":[{\"name\":\"file1\",\"size\":\"10MB\",\"date\":\"2023-01-01\"},{\"name\":\"file2\",\"size\":\"5MB\",\"date\":\"2023-01-02\"}],\"sort_by\":\"size\"}",
+            "expected_json": "[{\"name\": \"file1\", \"size\": \"10MB\", \"date\": \"2023-01-01\"}, {\"name\": \"file2\", \"size\": \"5MB\", \"date\": \"2023-01-02\"}]",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-6",
+            "description": "Sort torrent results by date in ascending order",
+            "inputs": "Torrent results sorted by date in ascending order",
+            "expected": "Torrent results ordered by date from oldest to newest",
+            "inputs_json": "{\"results\":[{\"name\":\"file2\",\"size\":\"5MB\",\"date\":\"2023-01-02\"},{\"name\":\"file1\",\"size\":\"10MB\",\"date\":\"2023-01-01\"}],\"sort_by\":\"date\"}",
+            "expected_json": "[{\"name\": \"file1\", \"size\": \"10MB\", \"date\": \"2023-01-01\"}, {\"name\": \"file2\", \"size\": \"5MB\", \"date\": \"2023-01-02\"}]",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-6",
+            "description": "Sort torrent results alphabetically by name",
+            "inputs": "Torrent results sorted alphabetically by name",
+            "expected": "Torrent results ordered alphabetically by name",
+            "inputs_json": "{\"results\":[{\"name\":\"file2\",\"size\":\"5MB\",\"date\":\"2023-01-02\"},{\"name\":\"file1\",\"size\":\"10MB\",\"date\":\"2023-01-01\"}],\"sort_by\":\"alphabetical\"}",
+            "expected_json": "[{\"name\": \"file1\", \"size\": \"10MB\", \"date\": \"2023-01-01\"}, {\"name\": \"file2\", \"size\": \"5MB\", \"date\": \"2023-01-02\"}]",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-6",
+            "description": "Attempt to sort with invalid sort_by parameter",
+            "inputs": "Torrent results with invalid sort_by parameter",
+            "expected": "Error raised due to invalid sort_by parameter",
+            "inputs_json": "{\"results\":[],\"sort_by\":\"invalid\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_sort_torrent_results_anchor_case():\n    resp = client.post(\"/views/sort_torrent_results\", json={\"results\":[{\"name\":\"file1\",\"size\":\"10MB\",\"date\":\"2023-01-01\"},{\"name\":\"file2\",\"size\":\"5MB\",\"date\":\"2023-01-02\"}],\"sort_by\":\"size\"})\n    assert resp.status_code == 200\n    assert resp.json() == [{\"name\": \"file1\", \"size\": \"10MB\", \"date\": \"2023-01-01\"}, {\"name\": \"file2\", \"size\": \"5MB\", \"date\": \"2023-01-02\"}]\n\ndef test_sort_torrent_results_by_date():\n    resp = client.post(\"/views/sort_torrent_results\", json={\"results\":[{\"name\":\"file2\",\"size\":\"5MB\",\"date\":\"2023-01-02\"},{\"name\":\"file1\",\"size\":\"10MB\",\"date\":\"2023-01-01\"}],\"sort_by\":\"date\"})\n    assert resp.status_code == 200\n    assert resp.json() == [{\"name\": \"file1\", \"size\": \"10MB\", \"date\": \"2023-01-01\"}, {\"name\": \"file2\", \"size\": \"5MB\", \"date\": \"2023-01-02\"}]\n\ndef test_sort_torrent_results_alphabetical():\n    resp = client.post(\"/views/sort_torrent_results\", json={\"results\":[{\"name\":\"file2\",\"size\":\"5MB\",\"date\":\"2023-01-02\"},{\"name\":\"file1\",\"size\":\"10MB\",\"date\":\"2023-01-01\"}],\"sort_by\":\"alphabetical\"})\n    assert resp.status_code == 200\n    assert resp.json() == [{\"name\": \"file1\", \"size\": \"10MB\", \"date\": \"2023-01-01\"}, {\"name\": \"file2\", \"size\": \"5MB\", \"date\": \"2023-01-02\"}]\n\ndef test_sort_torrent_results_invalid_sort_by():\n    resp = client.post(\"/views/sort_torrent_results\", json={\"results\":[],\"sort_by\":\"invalid\"})\n    assert resp.status_code >= 400"
+      },
+      {
+        "feature_id": "3.1.REQ-7",
+        "cases": [
+          {
+            "requirement_id": "3.1.REQ-7",
+            "description": "Canonical case for pagination with valid inputs",
+            "inputs": "Page 1 with page size 10 for search query 'ubuntu'",
+            "expected": "Results for page 1 with 2 items",
+            "inputs_json": "{\"page_number\":1,\"page_size\":10,\"search_query\":\"ubuntu\"}",
+            "expected_json": "{\"results\": [{\"name\": \"ubuntu-20.04.iso\", \"size\": \"1.5GB\"}, {\"name\": \"ubuntu-20.04-live.iso\", \"size\": \"800MB\"}]}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-7",
+            "description": "Pagination with invalid page number (negative)",
+            "inputs": "Page -1 with page size 10 for search query 'ubuntu'",
+            "expected": "HTTP 4xx error due to negative page number",
+            "inputs_json": "{\"page_number\":-1,\"page_size\":10,\"search_query\":\"ubuntu\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-7",
+            "description": "Pagination with zero page size",
+            "inputs": "Page 1 with page size 0 for search query 'ubuntu'",
+            "expected": "HTTP 4xx error due to zero page size",
+            "inputs_json": "{\"page_number\":1,\"page_size\":0,\"search_query\":\"ubuntu\"}",
+            "expected_json": "{\"raises\": \"HTTPException\"}",
+            "oracle": "raises",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-7",
+            "description": "Pagination with large page number beyond results",
+            "inputs": "Page 100 with page size 10 for search query 'ubuntu'",
+            "expected": "Empty results list since page exceeds total available pages",
+            "inputs_json": "{\"page_number\":100,\"page_size\":10,\"search_query\":\"ubuntu\"}",
+            "expected_json": "{\"results\": []}",
+            "oracle": "eq",
+            "setup_json": ""
+          },
+          {
+            "requirement_id": "3.1.REQ-7",
+            "description": "Pagination with empty search query",
+            "inputs": "Page 1 with page size 10 for empty search query",
+            "expected": "Results for page 1 with 2 items",
+            "inputs_json": "{\"page_number\":1,\"page_size\":10,\"search_query\":\"\"}",
+            "expected_json": "{\"results\": [{\"name\": \"ubuntu-20.04.iso\", \"size\": \"1.5GB\"}, {\"name\": \"ubuntu-20.04-live.iso\", \"size\": \"800MB\"}]}",
+            "oracle": "eq",
+            "setup_json": ""
+          }
+        ],
+        "test_source": "import json\nfrom fastapi.testclient import TestClient\nfrom app import create_app\n\nclient = TestClient(create_app())\n\ndef test_paginate_search_results_anchor_case():\n    resp = client.post(\"/views/paginate_search_results\", json={\"page_number\":1,\"page_size\":10,\"search_query\":\"ubuntu\"})\n    assert resp.status_code == 200\n    assert resp.json() == {\"results\": [{\"name\": \"ubuntu-20.04.iso\", \"size\": \"1.5GB\"}, {\"name\": \"ubuntu-20.04-live.iso\", \"size\": \"800MB\"}]}\n\ndef test_paginate_search_results_negative_page_number():\n    resp = client.post(\"/views/paginate_search_results\", json={\"page_number\":-1,\"page_size\":10,\"search_query\":\"ubuntu\"})\n    assert resp.status_code >= 400\n\ndef test_paginate_search_results_zero_page_size():\n    resp = client.post(\"/views/paginate_search_results\", json={\"page_number\":1,\"page_size\":0,\"search_query\":\"ubuntu\"})\n    assert resp.status_code >= 400\n\ndef test_paginate_search_results_large_page_number():\n    resp = client.post(\"/views/paginate_search_results\", json={\"page_number\":100,\"page_size\":10,\"search_query\":\"ubuntu\"})\n    assert resp.status_code == 200\n    assert resp.json() == {\"results\": []}\n\ndef test_paginate_search_results_empty_query():\n    resp = client.post(\"/views/paginate_search_results\", json={\"page_number\":1,\"page_size\":10,\"search_query\":\"\"})\n    assert resp.status_code == 200\n    assert resp.json() == {\"results\": [{\"name\": \"ubuntu-20.04.iso\", \"size\": \"1.5GB\"}, {\"name\": \"ubuntu-20.04-live.iso\", \"size\": \"800MB\"}]}"
+      }
+    ]
+  },
+  "certification": {
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "oracle": "http",
+    "n": 1,
+    "k_values": [
+      1
+    ],
+    "frs": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1.REQ-1",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "fr_id": "3.1.REQ-2",
+        "feature_id": "3.1.REQ-2",
+        "n_samples": 1,
+        "n_test_cases": 2,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 1,
+        "cases_total": 2,
+        "case_pass_rate": 0.5
+      },
+      {
+        "fr_id": "3.1.REQ-3",
+        "feature_id": "3.1.REQ-3",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 1,
+        "pass_at": {
+          "pass@1": 1.0
+        },
+        "cases_passed": 4,
+        "cases_total": 4,
+        "case_pass_rate": 1.0
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "fr_id": "3.1.REQ-5",
+        "feature_id": "3.1.REQ-5",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 1,
+        "cases_total": 4,
+        "case_pass_rate": 0.25
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 3,
+        "cases_total": 4,
+        "case_pass_rate": 0.75
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "n_samples": 1,
+        "n_test_cases": 5,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 2,
+        "cases_total": 5,
+        "case_pass_rate": 0.4
+      }
+    ],
+    "features": [
+      {
+        "feature_id": "3.1.REQ-1",
+        "name": "Torrent Search: 3.1.REQ-1",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "feature_id": "3.1.REQ-2",
+        "name": "Torrent Search: 3.1.REQ-2",
+        "n_samples": 1,
+        "n_test_cases": 2,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 1,
+        "cases_total": 2,
+        "case_pass_rate": 0.5
+      },
+      {
+        "feature_id": "3.1.REQ-3",
+        "name": "Torrent Search: 3.1.REQ-3",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 1,
+        "pass_at": {
+          "pass@1": 1.0
+        },
+        "cases_passed": 4,
+        "cases_total": 4,
+        "case_pass_rate": 1.0
+      },
+      {
+        "feature_id": "3.1.REQ-4",
+        "name": "Torrent Search: 3.1.REQ-4",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 0,
+        "cases_total": 4,
+        "case_pass_rate": 0.0
+      },
+      {
+        "feature_id": "3.1.REQ-5",
+        "name": "Torrent Search: 3.1.REQ-5",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 1,
+        "cases_total": 4,
+        "case_pass_rate": 0.25
+      },
+      {
+        "feature_id": "3.1.REQ-6",
+        "name": "Torrent Search: 3.1.REQ-6",
+        "n_samples": 1,
+        "n_test_cases": 4,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 3,
+        "cases_total": 4,
+        "case_pass_rate": 0.75
+      },
+      {
+        "feature_id": "3.1.REQ-7",
+        "name": "Torrent Search: 3.1.REQ-7",
+        "n_samples": 1,
+        "n_test_cases": 5,
+        "passing_samples": 0,
+        "pass_at": {
+          "pass@1": 0.0
+        },
+        "cases_passed": 2,
+        "cases_total": 5,
+        "case_pass_rate": 0.4
+      }
+    ],
+    "aggregate_pass_at": {
+      "pass@1": 0.14285714285714285
+    },
+    "aggregate_case_pass_rate": 0.4074074074074074,
+    "failures": [
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1.REQ-1",
+        "feature_name": "Torrent Search: 3.1.REQ-1",
+        "requirement_id": "3.1.REQ-1",
+        "sample": 0,
+        "description": "Canonical case with query 'pizza'",
+        "inputs": "User searches for 'pizza'",
+        "expected": "Empty lists for torrents and streaming results",
+        "requirement_text": "Torrent search will share the same search bar with the streaming search.",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1.REQ-1",
+        "feature_name": "Torrent Search: 3.1.REQ-1",
+        "requirement_id": "3.1.REQ-1",
+        "sample": 0,
+        "description": "Search with empty query string",
+        "inputs": "User searches with empty string",
+        "expected": "Empty lists for torrents and streaming results",
+        "requirement_text": "Torrent search will share the same search bar with the streaming search.",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1.REQ-1",
+        "feature_name": "Torrent Search: 3.1.REQ-1",
+        "requirement_id": "3.1.REQ-1",
+        "sample": 0,
+        "description": "Search with special characters in query",
+        "inputs": "User searches with special characters",
+        "expected": "Empty lists for torrents and streaming results",
+        "requirement_text": "Torrent search will share the same search bar with the streaming search.",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-1",
+        "feature_id": "3.1.REQ-1",
+        "feature_name": "Torrent Search: 3.1.REQ-1",
+        "requirement_id": "3.1.REQ-1",
+        "sample": 0,
+        "description": "Search with long query string",
+        "inputs": "User searches with a long query string",
+        "expected": "Empty lists for torrents and streaming results",
+        "requirement_text": "Torrent search will share the same search bar with the streaming search.",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-2",
+        "feature_id": "3.1.REQ-2",
+        "feature_name": "Torrent Search: 3.1.REQ-2",
+        "requirement_id": "3.1.REQ-2",
+        "sample": 0,
+        "description": "Canonical case: Update torrent sites database with internet connection",
+        "inputs": "An internet connection is established and a request to update the database of torrent sites is made",
+        "expected": "The database of torrent sites is updated with the latest information available from the internet",
+        "requirement_text": "Database of torrent sites can be updated via the internet.",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "feature_name": "Torrent Search: 3.1.REQ-4",
+        "requirement_id": "3.1.REQ-4",
+        "sample": 0,
+        "description": "Canonical case with valid query",
+        "inputs": "Search for 'ubuntu 20.04'",
+        "expected": "List of torrent results with seeds, peers, size, date posted, and webpage link",
+        "requirement_text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "feature_name": "Torrent Search: 3.1.REQ-4",
+        "requirement_id": "3.1.REQ-4",
+        "sample": 0,
+        "description": "Empty query string",
+        "inputs": "Search with empty query",
+        "expected": "Empty list of torrents",
+        "requirement_text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "feature_name": "Torrent Search: 3.1.REQ-4",
+        "requirement_id": "3.1.REQ-4",
+        "sample": 0,
+        "description": "Query with special characters",
+        "inputs": "Search for 'ubuntu 20.04 LTS release'",
+        "expected": "List of torrent results matching the query",
+        "requirement_text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-4",
+        "feature_id": "3.1.REQ-4",
+        "feature_name": "Torrent Search: 3.1.REQ-4",
+        "requirement_id": "3.1.REQ-4",
+        "sample": 0,
+        "description": "Non-existent query",
+        "inputs": "Search for a non-existent torrent",
+        "expected": "Empty list of torrents",
+        "requirement_text": "Query will retrieve the no. of seed and peers, size of the file, date posted and a link to the webpage itself.",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-5",
+        "feature_id": "3.1.REQ-5",
+        "feature_name": "Torrent Search: 3.1.REQ-5",
+        "requirement_id": "3.1.REQ-5",
+        "sample": 0,
+        "description": "Anchor case: No results found",
+        "inputs": "Empty list of results",
+        "expected": "Message indicating no results were found",
+        "requirement_text": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-5",
+        "feature_id": "3.1.REQ-5",
+        "feature_name": "Torrent Search: 3.1.REQ-5",
+        "requirement_id": "3.1.REQ-5",
+        "sample": 0,
+        "description": "Edge case: Results list is None",
+        "inputs": "Results parameter is None",
+        "expected": "Message indicating no results were found",
+        "requirement_text": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-5",
+        "feature_id": "3.1.REQ-5",
+        "feature_name": "Torrent Search: 3.1.REQ-5",
+        "requirement_id": "3.1.REQ-5",
+        "sample": 0,
+        "description": "Independent case: Non-empty results list",
+        "inputs": "List of torrent results with data",
+        "expected": "Should not return the no results message",
+        "requirement_text": "If no results are found on a search it will display a message \u201cNo results were found for this search.\u201d",
+        "verdict": "fail",
+        "reason": "HTTP 404: {\"detail\":\"Not Found\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-6",
+        "feature_id": "3.1.REQ-6",
+        "feature_name": "Torrent Search: 3.1.REQ-6",
+        "requirement_id": "3.1.REQ-6",
+        "sample": 0,
+        "description": "Sort torrent results by date in ascending order",
+        "inputs": "Torrent results sorted by date in ascending order",
+        "expected": "Torrent results ordered by date from oldest to newest",
+        "requirement_text": "Results will be arranged in size/date/alphabetical order by clicking on the column headers.",
+        "verdict": "fail",
+        "reason": "got [{'name': 'file2', 'size': '5MB', 'date': '2023-01-02'}, {'name': 'file1', 'size': '10MB', 'date': '2023-01-01'}], expected [{'name': 'file1', 'size': '10MB', 'date': '2023-01-01'}, {'name': 'file2', 'size': '5MB', 'date': '2023-01-02'}]"
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "feature_name": "Torrent Search: 3.1.REQ-7",
+        "requirement_id": "3.1.REQ-7",
+        "sample": 0,
+        "description": "Canonical case for pagination with valid inputs",
+        "inputs": "Page 1 with page size 10 for search query 'ubuntu'",
+        "expected": "Results for page 1 with 2 items",
+        "requirement_text": "There will be page button for the user to navigate the results.",
+        "verdict": "fail",
+        "reason": "HTTP 400: {\"detail\":\"404: No search results found for the given criteria\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "feature_name": "Torrent Search: 3.1.REQ-7",
+        "requirement_id": "3.1.REQ-7",
+        "sample": 0,
+        "description": "Pagination with large page number beyond results",
+        "inputs": "Page 100 with page size 10 for search query 'ubuntu'",
+        "expected": "Empty results list since page exceeds total available pages",
+        "requirement_text": "There will be page button for the user to navigate the results.",
+        "verdict": "fail",
+        "reason": "HTTP 400: {\"detail\":\"404: No search results found for the given criteria\"}"
+      },
+      {
+        "fr_id": "3.1.REQ-7",
+        "feature_id": "3.1.REQ-7",
+        "feature_name": "Torrent Search: 3.1.REQ-7",
+        "requirement_id": "3.1.REQ-7",
+        "sample": 0,
+        "description": "Pagination with empty search query",
+        "inputs": "Page 1 with page size 10 for empty search query",
+        "expected": "Results for page 1 with 2 items",
+        "requirement_text": "There will be page button for the user to navigate the results.",
+        "verdict": "fail",
+        "reason": "HTTP 400: {\"detail\":\"404: No search results found for the given criteria\"}"
+      }
+    ],
+    "notes": []
+  },
+  "metrics": {
+    "srs": "2009 - video search.xml",
+    "stack": "fastapi",
+    "language": "python",
+    "stages": [
+      {
+        "name": "code",
+        "seconds": 22.846,
+        "input_tokens": 8353,
+        "output_tokens": 2603,
+        "calls": 7
+      },
+      {
+        "name": "test",
+        "seconds": 51.747,
+        "input_tokens": 14546,
+        "output_tokens": 5999,
+        "calls": 7
+      },
+      {
+        "name": "certification",
+        "seconds": 23.91,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "calls": 0
+      }
+    ],
+    "config": {
+      "language": "python",
+      "stack": "fastapi",
+      "models": {
+        "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+        "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+      },
+      "prompt_strategy": "baseline",
+      "agents": {
+        "spec": true,
+        "dependency": true,
+        "planning": true,
+        "proof": false,
+        "code": true,
+        "test": true,
+        "certify": true,
+        "recovery": false,
+        "compile_repair": false
+      },
+      "run_dependency": true,
+      "run_test": true,
+      "run_recovery": false,
+      "test_sees_code": false,
+      "raw_spec_only": false,
+      "certify": true,
+      "samples": 1,
+      "k_values": [
+        1
+      ],
+      "prove": false,
+      "prove_target": "py",
+      "max_cert_loops": 0,
+      "max_compile_repair_loops": 2,
+      "temperature": 0.0,
+      "cert_temperature": 0.4,
+      "case_timeout": 10.0,
+      "prove_rounds": 6,
+      "llm_deps": true,
+      "baseline": false,
+      "reuse_from": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep1/2009 - video search_full_ir.json",
+      "reuse_stages": [
+        "spec",
+        "dependency",
+        "planning"
+      ],
+      "oracle_tests": ""
+    },
+    "reused": {
+      "from": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/reference_rep1/2009 - video search_full_ir.json",
+      "stages": [
+        "spec",
+        "dependency",
+        "planning"
+      ]
+    },
+    "code": {
+      "language": "Python",
+      "files": 7,
+      "lines_of_code": 290,
+      "files_per_layer": {
+        "controller": 3,
+        "model": 1,
+        "view": 3
+      },
+      "imports": [
+        "app",
+        "fastapi",
+        "sqlalchemy"
+      ],
+      "third_party_libraries": [
+        "app",
+        "fastapi",
+        "sqlalchemy"
+      ],
+      "runnable_app": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/2009_-_video_search/python/no_proof/generated/2009 - video search/app"
+    },
+    "tests": {
+      "features": 7,
+      "cases": 27
+    },
+    "certification": {
+      "n": 1,
+      "k_values": [
+        1
+      ],
+      "aggregate_pass_at": {
+        "pass@1": 0.14285714285714285
+      },
+      "aggregate_case_pass_rate": 0.4074074074074074,
+      "n_tested_frs": 7,
+      "n_proved_features": 0,
+      "n_total_tested_features": 7,
+      "pass_at_1_fr_ids": [
+        "3.1.REQ-3"
+      ]
+    },
+    "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "total_seconds": 98.503,
+    "tokens": {
+      "input": 22899,
+      "output": 8602,
+      "total": 31501,
+      "calls": 14
+    },
+    "cost_usd": 0.0,
+    "cost_by_model": {
+      "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8": {
+        "input": 22899,
+        "output": 8602,
+        "calls": 14,
+        "cost_usd": 0.0
+      }
+    },
+    "proved_feature_ids": [],
+    "summary": {
+      "verification_pass_ratio": 0.0,
+      "test_case_pass_ratio": 0.4074,
+      "PassVer@1": 0.1429,
+      "avg_verification_iteration": 0.0,
+      "avg_test_iteration": 1,
+      "avg_input_token": 1635.6,
+      "avg_output_token": 614.4,
+      "total_time": 98.5
+    }
+  }
+}

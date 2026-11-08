@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/home/cfw36/cleanroom_ablation_20261018/.venv/bin/python",
+    "/home/cfw36/cleanroom_ablation_20261018/run_pipeline.py",
+    "/home/cfw36/cleanroom_ablation_20261018/data/srs/Event Management.xml",
+    "--model",
+    "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+    "--language",
+    "python",
+    "--stack",
+    "fastapi",
+    "--samples",
+    "1",
+    "--k",
+    "1",
+    "--output-dir",
+    "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/no_independent_tests",
+    "--prove",
+    "--no-test",
+    "--no-certify",
+    "--no-recovery",
+    "--reuse-from",
+    "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/reference_rep1/Event Management_full_ir.json",
+    "--reuse-stages",
+    "spec,dependency,planning,proof,code"
+  ],
+  "srs_sha256": "9ad75907a8bc26ca10d1f59d64164b539ceeca1a38786480eeabef6be5ef2c81"
+}

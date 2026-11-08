@@ -1,0 +1,636 @@
+subject,model,language,arm,rep,stage,seconds,input_tokens,output_tokens,llm_calls,reused
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,spec_contracts,3.343,1929,199,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,dependency,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,planning,3.485,4856,369,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,scaffold,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,dafny,51.536,40687,3434,12,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,compile,1.187,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,8.42,3111,939,1,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,code,1.81,1240,200,1,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,test,18.41,3315,2126,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,java_compile_repair,33.569,14702,2076,3,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,certification,4.38,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,spec_contracts,1.926,1929,211,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,dependency,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,planning,3.689,4868,411,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,scaffold,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,dafny,34.828,39322,3228,12,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,compile,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,code,5.443,2568,614,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,test,12.737,3349,1461,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,java_compile_repair,23.432,7680,1542,4,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,certification,7.143,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,spec_contracts,1.926,1929,211,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,dependency,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,planning,3.668,4868,411,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,scaffold,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,dafny,33.541,39192,3156,12,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,compile,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,code,4.945,2568,574,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,test,12.558,3349,1461,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,java_compile_repair,19.051,5321,967,3,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,certification,6.984,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,test,19.321,4387,2206,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,java_compile_repair,39.846,12139,2770,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,certification,4.617,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,proof,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,code,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,java_compile_repair,38.633,11993,2704,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,proof,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,code,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,code,6.413,2509,721,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,test,13.99,3315,1624,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,java_compile_repair,22.204,3688,1362,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,certification,6.717,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,dependency,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,planning,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,scaffold,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,dafny,51.613,41774,4184,12,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,compile,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,code,4.473,2376,506,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,test,13.41,3226,1542,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,java_compile_repair,24.059,7550,1610,4,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,certification,6.51,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,scaffold,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,dafny,6.385,4641,566,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,compile,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,code,5.651,2509,658,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,test,14.018,3315,1630,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,certification,6.909,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,spec_contracts,1.917,1929,211,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,dependency,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,planning,3.576,4868,399,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,scaffold,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,dafny,33.563,24571,2356,7,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,compile,1.11,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,code,3.522,2193,390,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,test,15.045,3520,1730,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,certification,0.175,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,spec_contracts,1.922,1929,211,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,dependency,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,planning,3.67,4868,411,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,scaffold,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,dafny,33.15,39192,3148,12,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,compile,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,code,3.149,2203,358,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,test,13.875,3533,1605,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,certification,0.371,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,spec_contracts,1.927,1929,211,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,dependency,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,planning,3.673,4868,411,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,scaffold,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,dafny,33.856,39192,3148,12,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,compile,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,code,3.253,2203,374,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,test,13.899,3533,1618,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,certification,0.368,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,test,13.312,3906,1517,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,certification,0.221,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,proof,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,code,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,proof,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,code,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,code,3.567,2193,384,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,test,13.074,3520,1515,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,certification,0.295,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,planning,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,spec_parse,0.001,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,dependency,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,planning,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,scaffold,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,dafny,63.782,44115,4935,12,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,compile,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,code,2.593,1936,287,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,test,14.322,3392,1646,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,certification,0.395,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,scaffold,0.0,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,dafny,8.017,4653,640,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,compile,1.151,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,code,3.577,2193,407,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,test,12.909,3520,1500,2,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,certification,0.187,0,0,0,0
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,spec,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,dependency,,,,,1
+Human.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,spec_contracts,6.693,6696,739,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,dependency,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,planning,12.645,16994,1408,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,scaffold,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,dafny,124.204,89248,10357,25,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,compile,4.605,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,4.771,2883,527,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,3.856,2547,428,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,3.514,2368,393,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,3.2,2457,355,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,code,12.493,4068,1429,3,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,test,58.343,11568,6726,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,java_compile_repair,48.043,40523,3498,8,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,certification,14.075,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,spec_contracts,6.711,6696,751,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,dependency,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,planning,12.733,16992,1425,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,scaffold,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,dafny,170.535,118960,13513,32,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,compile,2.181,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,2.646,2419,290,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,2.888,2448,318,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,code,20.403,6489,2335,5,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,test,58.331,11592,6729,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,java_compile_repair,32.807,16151,2099,5,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,certification,22.304,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,spec_contracts,6.704,6696,751,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,dependency,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,planning,12.611,16992,1416,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,scaffold,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,dafny,119.383,80512,8561,22,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,compile,4.023,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,6.461,2880,723,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,2.558,2388,280,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,2.942,2448,326,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,5.623,2909,626,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,code,14.151,3841,1636,3,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,test,58.737,11584,6818,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,java_compile_repair,57.036,29641,4582,6,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,certification,11.018,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,test,61.478,14491,7028,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,java_compile_repair,48.479,40547,3603,8,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,certification,13.995,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,proof,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,code,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,java_compile_repair,48.537,40547,3602,8,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,proof,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,code,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,code,23.669,8882,2687,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,test,63.571,11568,7387,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,java_compile_repair,24.288,14125,1441,3,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,certification,24.259,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,dependency,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,planning,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,scaffold,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,dafny,101.076,71397,6569,22,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,compile,4.58,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,4.13,2630,456,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,6.629,2520,750,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,3.228,2336,358,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,5.113,2795,569,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,code,8.002,3480,899,3,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,test,50.79,10886,5858,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,java_compile_repair,50.72,38770,3706,6,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,certification,13.94,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,scaffold,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,dafny,33.299,16470,2495,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,compile,2.73,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,4.966,2886,549,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,2.701,2370,297,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,3.061,2459,339,1,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,code,15.856,5241,1851,4,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,test,57.444,11568,6680,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,certification,12.764,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,spec_contracts,6.73,6696,751,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,dependency,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,planning,12.621,16992,1416,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,scaffold,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,dafny,119.916,79916,8499,22,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,compile,4.309,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,code,14.629,7627,1628,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,test,54.668,12157,6292,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,certification,0.58,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,spec_contracts,6.713,6696,751,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,dependency,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,planning,12.636,16992,1416,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,scaffold,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,dafny,118.997,79780,8355,22,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,compile,4.078,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,code,15.87,7627,1845,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,test,49.587,12157,5774,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,certification,0.505,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,spec_contracts,6.721,6696,751,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,dependency,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,planning,12.642,16992,1416,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,scaffold,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,dafny,118.076,79780,8355,22,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,compile,4.356,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,code,15.883,7627,1845,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,test,49.604,12157,5774,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,certification,0.48,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,test,57.35,13741,6570,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,certification,0.636,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,proof,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,code,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,proof,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,code,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,code,16.257,7627,1812,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,test,50.703,12157,5879,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,certification,1.127,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,planning,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,spec_parse,0.001,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,dependency,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,planning,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,scaffold,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,dafny,84.151,70643,6737,22,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,compile,3.699,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,code,10.428,6539,1141,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,test,40.622,11474,4664,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,certification,0.53,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,scaffold,0.0,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,dafny,29.924,16468,2366,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,compile,3.33,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,code,13.547,7627,1562,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,test,51.534,12157,5989,7,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,certification,0.858,0,0,0,0
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,spec,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,dependency,,,,,1
+2009 - video search.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,spec_contracts,9.443,11400,1030,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,planning,19.889,28895,2206,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,scaffold,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,dafny,141.659,103105,8941,33,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,compile,9.463,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,4.363,2702,484,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,3.813,2546,424,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,2.733,2336,302,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,3.856,2552,428,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,5.257,2660,588,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,6.838,2729,769,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,7.594,2925,853,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,4.361,2625,484,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,code,14.645,5024,1670,4,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,test,97.481,19433,11246,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,java_compile_repair,81.527,81654,6750,13,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,certification,18.636,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,spec_contracts,9.513,11400,1028,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,planning,19.369,28893,2128,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,scaffold,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,dafny,123.879,85320,7959,28,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,compile,10.448,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,2.592,2308,286,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,4.382,2699,486,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,3.902,2546,432,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,2.566,2336,282,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,4.113,2552,457,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,5.632,2660,632,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,8.269,2729,935,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,7.754,2913,871,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,4.848,2625,540,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,code,10.96,3840,1248,3,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,test,96.439,19392,11116,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,java_compile_repair,100.432,89633,8819,14,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,certification,12.457,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,spec_contracts,9.46,11400,1028,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,planning,19.351,28893,2128,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,scaffold,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,dafny,123.66,85320,7959,28,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,compile,10.361,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,2.465,2308,269,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,4.557,2699,508,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,4.838,2546,543,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,2.81,2336,310,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,3.876,2552,430,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,5.674,2660,636,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,7.851,2729,886,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,6.785,2913,759,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,4.844,2625,540,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,code,10.955,3840,1248,3,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,test,96.221,19392,11105,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,java_compile_repair,108.76,106465,9572,17,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,certification,14.72,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,test,114.501,24842,13103,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,java_compile_repair,77.493,76128,6365,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,certification,18.422,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,proof,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,code,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,java_compile_repair,79.216,75579,6543,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,proof,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,code,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,code,42.31,14984,4819,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,test,97.669,19433,11246,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,java_compile_repair,50.514,27088,4311,9,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,certification,44.604,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,dependency,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,planning,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,scaffold,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,dafny,185.621,153730,13326,47,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,compile,6.953,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,5.537,2678,617,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,6.727,2660,758,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,5.074,2522,569,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,7.228,2955,809,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,4.656,2572,518,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,5.507,2566,618,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,code,14.182,6908,1587,6,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,test,83.134,18477,9587,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,java_compile_repair,50.543,39383,3878,7,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,certification,29.501,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,scaffold,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,dafny,47.038,28059,3055,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,compile,9.19,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,5.878,2709,660,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,4.08,2548,454,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,2.458,2338,269,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,3.943,2558,441,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,8.695,2952,978,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,9.154,2731,1038,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,5.608,2712,628,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,adapter,4.599,2628,513,1,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,code,13.589,5024,1555,4,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,test,98.235,19433,11327,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,certification,18.853,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,spec_contracts,9.475,11400,1028,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,planning,19.338,28893,2128,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,scaffold,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,dafny,123.568,85320,7959,28,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,compile,10.129,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,code,23.76,12651,2641,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,test,91.929,20407,10586,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,certification,0.622,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,spec_contracts,10.054,11400,1111,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,planning,21.955,28922,2456,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,scaffold,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,dafny,155.168,113876,10946,36,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,compile,9.025,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,code,23.969,13123,2687,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,test,93.448,20632,10762,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,certification,0.945,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,spec_contracts,10.053,11400,1111,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,planning,22.261,28922,2497,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,scaffold,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,dafny,185.524,138320,12676,42,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,compile,6.661,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,code,25.288,13167,2861,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,test,93.371,20644,10797,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,certification,1.37,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,test,90.39,22933,10368,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,certification,0.625,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,proof,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,code,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,proof,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,code,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,code,22.332,12651,2463,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,test,88.878,20407,10323,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,certification,2.204,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,planning,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,spec_parse,0.005,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,dependency,0.001,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,planning,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,scaffold,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,dafny,181.69,150906,12117,47,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,compile,6.818,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,code,19.484,11116,2169,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,test,76.021,19488,8744,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,certification,1.072,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,scaffold,0.0,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,dafny,47.313,28057,3060,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,compile,9.957,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,code,24.259,12651,2814,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,test,88.545,20407,10310,12,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,certification,0.658,0,0,0,0
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,spec,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,dependency,,,,,1
+Event Management.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,spec_contracts,48.083,17281,5578,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,dependency,9.265,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,planning,95.519,45014,10866,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,dafny,499.083,367466,43322,92,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,compile,3.082,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,10.857,3692,1207,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,8.088,3433,898,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,adapter,4.079,3079,445,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,code,157.82,62529,17931,46,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,test,213.887,36214,24503,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,java_compile_repair,102.261,106881,8822,20,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,1,certification,220.023,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,spec_contracts,47.893,17281,5579,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,dependency,9.181,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,planning,102.803,45015,11697,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,dafny,500.166,367042,43644,92,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,compile,2.795,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,12.065,3701,1342,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,12.376,3430,1382,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,adapter,8.131,3079,908,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,code,165.188,63195,18768,46,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,test,234.007,36538,26756,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,java_compile_repair,96.932,58774,8489,9,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,2,certification,228.114,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,spec_contracts,47.937,17281,5579,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,dependency,9.187,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,planning,102.857,45015,11697,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,dafny,503.24,367042,43644,92,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,compile,3.256,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,11.396,3701,1266,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,11.123,3430,1243,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,adapter,6.818,3079,759,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,code,164.983,63195,18768,46,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,test,233.924,36538,26756,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,java_compile_repair,50.2,35332,3822,7,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,reference,3,certification,222.624,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,test,249.213,53933,27859,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,java_compile_repair,61.922,44701,4948,9,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,certification,228.627,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,proof,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,test_sees_code,,code,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,java_compile_repair,61.323,41965,4917,8,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,proof,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_independent_tests,,code,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,code,194.462,73034,22154,54,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,test,214.014,36214,24503,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,java_compile_repair,50.026,26988,4249,9,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,certification,224.386,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_proof,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,dependency,9.228,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,planning,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,dafny,445.173,315073,34804,86,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,compile,3.987,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,7.101,4003,773,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,3.476,2397,386,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,7.314,2779,821,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,adapter,16.002,4124,1771,1,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,code,120.614,47410,13642,41,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,test,157.101,30792,18077,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,java_compile_repair,107.013,67904,9448,10,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,raw_spec_only,,certification,201.137,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,dafny,84.139,42638,7879,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,compile,0.0,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,code,194.408,73034,22154,54,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,test,213.986,36214,24503,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,certification,199.87,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,java,no_verifier_repair,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,spec_contracts,47.894,17281,5579,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,dependency,9.186,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,planning,102.884,45015,11697,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,dafny,502.738,367042,43644,92,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,compile,2.532,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,code,110.753,64627,12280,54,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,test,236.627,38264,27014,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,1,certification,4.474,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,spec_contracts,48.16,17281,5579,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,dependency,9.218,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,planning,103.108,45015,11697,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,dafny,501.828,367042,43644,92,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,compile,2.711,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,code,112.414,64627,12471,54,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,test,237.105,38264,27014,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,2,certification,4.558,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,spec_contracts,48.142,17281,5579,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,dependency,9.223,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,planning,102.953,45015,11697,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,dafny,501.985,367042,43644,92,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,compile,3.077,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,code,112.281,64627,12471,54,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,test,236.631,38264,27014,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,reference,3,certification,4.556,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,test,228.101,49396,25717,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,certification,4.911,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,proof,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,test_sees_code,,code,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,proof,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_independent_tests,,code,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,code,112.777,64627,12513,54,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,test,246.061,38264,28270,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,certification,5.684,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_proof,,planning,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,spec_parse,0.004,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,spec_contracts,0.0,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,dependency,9.259,12685,970,15,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,planning,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,dafny,447.164,315073,34804,86,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,compile,4.097,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,code,109.423,50619,12199,54,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,test,181.843,32412,20908,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,raw_spec_only,,certification,3.998,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,scaffold,0.001,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,dafny,91.232,42639,7937,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,compile,2.455,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,code,113.796,64627,12655,54,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,test,238.745,38264,27257,17,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,certification,4.879,0,0,0,0
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,spec,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,dependency,,,,,1
+Shoten_SRS.xml,Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8,javascript,no_verifier_repair,,planning,,,,,1

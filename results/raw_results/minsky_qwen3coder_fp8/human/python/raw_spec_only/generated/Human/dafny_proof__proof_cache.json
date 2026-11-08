@@ -1,0 +1,43 @@
+{
+  "3.1": {
+    "sig": "38b89934125af672e9981f174edd9041826d7fd604cb9d2a7630d137c2e8e047",
+    "data": {
+      "feature_id": "3.1",
+      "module": "F3_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = EditEventDetails(eventId: string, newDetails: string)\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m :: k != \"\"\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case EditEventDetails(eventId, newDetails) =>\n      m[eventId := newDetails]\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n    assert forall k | k in Init() :: k != \"\";\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n    var result := Apply(m, a);\n    assert forall k | k in result :: k != \"\";\n  }\n\n  lemma EditEventDetailsPreservesInv(m: Model, eventId: string, newDetails: string)\n    ensures Inv(m[eventId := newDetails])\n  {\n    assert forall k | k in m[eventId := newDetails] :: k != \"\";\n  }\n}\n\nmodule F3_1Kernel refines Kernel {\n  import D = F3_1Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 36,
+          "col": 4,
+          "message": "assertion might not hold"
+        },
+        {
+          "line": 42,
+          "col": 4,
+          "message": "assertion might not hold"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.2": {
+    "sig": "37d43253f461ce6bd0fb2f0389a3c31318e8d2e070682fe41c487cf0447e9e9f",
+    "data": {
+      "feature_id": "3.2",
+      "module": "F3_2",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2Domain refines Domain {\n  type Model = (bool, map<string, string>, map<string, set<string>>)\n\n  datatype Action = Login(username: string) | Register(eventId: string) | Approve(eventId: string)\n\n  ghost predicate Inv(m: Model) {\n    var (loggedIn, users, events) := m;\n    loggedIn ==> users != map[]\n  }\n\n  function Init(): Model {\n    (false, map[], map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    var (loggedIn, users, events) := m;\n    match a\n    case Login(username) =>\n      (true, users + [username := \"student\"], events)\n    case Register(eventId) =>\n      if loggedIn then\n        (loggedIn, users, events + [eventId := users.Keys()])\n      else\n        m\n    case Approve(eventId) =>\n      if loggedIn && eventId in events then\n        (loggedIn, users, events - {eventId})\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma LoginEnsuresLoggedIn(m: Model, username: string)\n    ensures (Apply(m, Login(username)).0)\n  {\n  }\n\n  lemma RegisterEnsuresEventAdded(m: Model, eventId: string)\n    ensures (if Apply(m, Register(eventId)).0 then eventId in Apply(m, Register(eventId)).2 else true)\n  {\n  }\n\n  lemma ApproveEnsuresEventRemoved(m: Model, eventId: string)\n    ensures (if Apply(m, Approve(eventId)).0 then eventId !in Apply(m, Approve(eventId)).2 else true)\n  {\n  }\n}\n\nmodule F3_2Kernel refines Kernel {\n  import D = F3_2Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 21,
+          "col": 31,
+          "message": "rbracket expected"
+        }
+      ],
+      "axioms": []
+    }
+  }
+}

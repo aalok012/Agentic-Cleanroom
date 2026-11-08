@@ -1,0 +1,335 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=on certify=on recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 0.00s
+Project   : Event Management
+Features  : 12  (FR=12)
+Contracts : 12
+Stack     : fastapi  (pinned via --stack)
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  ⏱  done in 0.00s
+Outer nodes : 1  edges: 0
+Build order : 3.2
+Cycles      : none
+Inner (FR)  : 0 edge(s), 0 cycle(s) across features
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  ⏱  done in 0.00s
+Contracts   : 12  (in dependency order)
+  [3.2.REQ-1] (controller) def fr_3_2_REQ_1(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_1.py   prereqs=[]
+  [3.2.REQ-2] (controller) def fr_3_2_REQ_2(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_2.py   prereqs=[]
+  [3.2.REQ-3] (controller) def fr_3_2_REQ_3(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_3.py   prereqs=[]
+  [3.2.REQ-4] (controller) def fr_3_2_REQ_4(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_4.py   prereqs=[]
+  [3.2.REQ-5] (controller) def fr_3_2_REQ_5(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_5.py   prereqs=[]
+  [3.2.REQ-6] (controller) def fr_3_2_REQ_6(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_6.py   prereqs=[]
+  [3.2.REQ-7] (controller) def fr_3_2_REQ_7(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_7.py   prereqs=[]
+  [3.2.REQ-8] (controller) def fr_3_2_REQ_8(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_8.py   prereqs=[]
+  [3.2.REQ-9] (controller) def fr_3_2_REQ_9(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_9.py   prereqs=[]
+  [3.2.REQ-10] (controller) def fr_3_2_REQ_10(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_10.py   prereqs=[]
+  [3.2.REQ-11] (controller) def fr_3_2_REQ_11(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_11.py   prereqs=[]
+  [3.2.REQ-12] (controller) def fr_3_2_REQ_12(request: dict) -> dict
+        -> controllers/fr_3_2_REQ_12.py   prereqs=[]
+
+======================================================================
+  [4a]  Dafny Proof Agent — proving feature logic (formal verification)
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 183.75s  ·  167,056 tokens, 47 call(s)
+Proved    : 6/12 features  →  ['3.2.REQ-10', '3.2.REQ-4', '3.2.REQ-5', '3.2.REQ-7', '3.2.REQ-8', '3.2.REQ-9']
+  [3.2.REQ-1] unproved  F3_2_REQ_1  (6r)
+  [3.2.REQ-10] PROVED   F3_2_REQ_10  (1r)
+  [3.2.REQ-11] unproved  F3_2_REQ_11  (6r)
+  [3.2.REQ-12] unproved  F3_2_REQ_12  (6r)
+  [3.2.REQ-2] unproved  F3_2_REQ_2  (6r)
+  [3.2.REQ-3] unproved  F3_2_REQ_3  (6r)
+  [3.2.REQ-4] PROVED   F3_2_REQ_4  (1r)
+  [3.2.REQ-5] PROVED   F3_2_REQ_5  (1r)
+  [3.2.REQ-6] unproved  F3_2_REQ_6  (6r)
+  [3.2.REQ-7] PROVED   F3_2_REQ_7  (1r)
+  [3.2.REQ-8] PROVED   F3_2_REQ_8  (6r)
+  [3.2.REQ-9] PROVED   F3_2_REQ_9  (1r)
+  ⏱  done in 6.45s
+Compiled  : 6/6 proved features to py
+
+======================================================================
+  [4]  Code Agent — generating MVC code from the spec
+======================================================================
+  ⏱  done in 5.77s  ·  2,173 tokens, 1 call(s)
+  ⏱  done in 5.69s  ·  2,175 tokens, 1 call(s)
+  ⏱  done in 4.96s  ·  2,059 tokens, 1 call(s)
+  ⏱  done in 6.33s  ·  2,434 tokens, 1 call(s)
+  ⏱  done in 5.18s  ·  2,099 tokens, 1 call(s)
+  ⏱  done in 5.69s  ·  2,164 tokens, 1 call(s)
+  ⏱  done in 15.93s  ·  8,188 tokens, 6 call(s)
+  6 proved feature(s) shipped as Dafny-core adapters; 6 file(s) generated for the rest.
+  Staged proved Dafny cores ['F3_2_REQ_10', 'F3_2_REQ_4', 'F3_2_REQ_5', 'F3_2_REQ_7', 'F3_2_REQ_8', 'F3_2_REQ_9'] + shim into /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/app/dafny_cores
+12 file(s); 637 LOC (Python); layers={'controller': 12}
+Assembled runnable FastAPI app: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/app  (cd "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management" && python -m app)
+
+======================================================================
+  [5]  Test Agent — deriving black-box tests from the spec
+======================================================================
+  ⏱  done in 74.91s  ·  32,226 tokens, 12 call(s)
+12 feature(s), 47 test case(s).
+Wrote 12 pytest module(s) to /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/generated/Event Management/tests
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples) · skipping 6 proved
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.2.REQ-1] 3.2.REQ-1
+    FR  [3.2.REQ-1] Can only be accessed with the provision of the internet.
+
+[3.2.REQ-2] 3.2.REQ-2
+    FR  [3.2.REQ-2] Only authenticated users i.e., enrolled students in the institution can register and participate in the events.
+
+[3.2.REQ-3] 3.2.REQ-3
+    FR  [3.2.REQ-3] The user interface provides appropriate error messages in case the user does an error.
+
+[3.2.REQ-4] 3.2.REQ-4
+    FR  [3.2.REQ-4] The EOCR can post the events on the website and the students can register accordingly.
+
+[3.2.REQ-5] 3.2.REQ-5
+    FR  [3.2.REQ-5] The EOCR can generate the list of registrants at any point of time.
+
+[3.2.REQ-6] 3.2.REQ-6
+    FR  [3.2.REQ-6] Provides a secure database of stakeholders containing the login credentials and personal information.
+
+[3.2.REQ-7] 3.2.REQ-7
+    FR  [3.2.REQ-7] Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data.
+
+[3.2.REQ-8] 3.2.REQ-8
+    FR  [3.2.REQ-8] Provide administrative access to the clients.
+
+[3.2.REQ-9] 3.2.REQ-9
+    FR  [3.2.REQ-9] Add and delete client access easily.
+
+[3.2.REQ-10] 3.2.REQ-10
+    FR  [3.2.REQ-10] Easily append an event to the database.
+
+[3.2.REQ-11] 3.2.REQ-11
+    FR  [3.2.REQ-11] Provide an ordered list of events added to the database for easy understandability.
+
+[3.2.REQ-12] 3.2.REQ-12
+    FR  [3.2.REQ-12] Simple Interface for easy and reliable interactivity.
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.2.REQ-1    sample=0  Canonical case: Access the feature with internet provision
+  [FAIL] 3.2.REQ-1    sample=0  Failure case: Access the feature without internet provision
+  [FAIL] 3.2.REQ-11   sample=0  Anchor case: empty request returns empty response
+  [FAIL] 3.2.REQ-11   sample=0  Request with event data should return ordered list of events
+  [FAIL] 3.2.REQ-11   sample=0  Request with malformed event data should raise an error
+  [FAIL] 3.2.REQ-11   sample=0  Request without events key should raise an error
+  [FAIL] 3.2.REQ-12   sample=0  Anchor case: Simple Interface for easy and reliable interac…
+  [FAIL] 3.2.REQ-12   sample=0  Variant type: Request with additional keys should still wor…
+  [FAIL] 3.2.REQ-12   sample=0  Boundary value: Request with nested empty object
+  [FAIL] 3.2.REQ-12   sample=0  Failure case: Invalid input type for request field
+  [FAIL] 3.2.REQ-2    sample=0  Anchor case: authenticated user registers for event
+  [FAIL] 3.2.REQ-2    sample=0  Unauthorized user attempts to register for event
+  [FAIL] 3.2.REQ-2    sample=0  Authenticated but unenrolled user attempts to register for …
+  [FAIL] 3.2.REQ-2    sample=0  Malformed request body
+  [FAIL] 3.2.REQ-3    sample=0  Canonical case with empty request
+  [FAIL] 3.2.REQ-3    sample=0  Request with invalid key type
+  [FAIL] 3.2.REQ-3    sample=0  Request with malformed JSON
+  [FAIL] 3.2.REQ-3    sample=0  Request with unexpected nested structure
+  [FAIL] 3.2.REQ-6    sample=0  Canonical case with empty request
+  [FAIL] 3.2.REQ-6    sample=0  Request with additional fields should be ignored
+  [FAIL] 3.2.REQ-6    sample=0  Request with nested object should be ignored
+  [FAIL] 3.2.REQ-6    sample=0  Malformed request body - not a dictionary
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Canonical case: Access the feature with internet provision
+  inputs:   Request with internet provision
+  expected: Empty response
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Failure case: Access the feature without internet provision
+  inputs:   Request without internet provision
+  expected: HTTP 4xx error due to missing internet access
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-11  sample=0
+  test:     Anchor case: empty request returns empty response
+  inputs:   Empty request body
+  expected: Empty response
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-11  sample=0
+  test:     Request with event data should return ordered list of events
+  inputs:   Request containing event data
+  expected: Ordered list of events
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-11  sample=0
+  test:     Request with malformed event data should raise an error
+  inputs:   Request with invalid event data structure
+  expected: HTTP 4xx error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-11  sample=0
+  test:     Request without events key should raise an error
+  inputs:   Request missing events key
+  expected: HTTP 4xx error due to missing required field
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-12  sample=0
+  test:     Anchor case: Simple Interface for easy and reliable interactivity with empty request
+  inputs:   Empty request dictionary
+  expected: Empty response dictionary
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-12  sample=0
+  test:     Variant type: Request with additional keys should still work as long as they don't break the interface
+  inputs:   Request with extra fields
+  expected: Empty response dictionary
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-12  sample=0
+  test:     Boundary value: Request with nested empty object
+  inputs:   Request containing an empty nested object
+  expected: Empty response dictionary
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-12  sample=0
+  test:     Failure case: Invalid input type for request field
+  inputs:   Request field is not a dictionary
+  expected: HTTP 4xx error due to invalid input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Anchor case: authenticated user registers for event
+  inputs:   User is authenticated and enrolled student
+  expected: Event registration successful
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Unauthorized user attempts to register for event
+  inputs:   User is not authenticated
+  expected: Precondition failure due to lack of authentication
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Authenticated but unenrolled user attempts to register for event
+  inputs:   User is authenticated but not enrolled in institution
+  expected: Precondition failure due to lack of enrollment
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-2  sample=0
+  test:     Malformed request body
+  inputs:   Request body does not conform to expected structure
+  expected: Precondition failure due to malformed input
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Canonical case with empty request
+  inputs:   Empty request dictionary
+  expected: Empty response dictionary
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Request with invalid key type
+  inputs:   Request with integer key instead of string
+  expected: HTTP 4xx error due to invalid input structure
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Request with malformed JSON
+  inputs:   Malformed JSON input
+  expected: HTTP 4xx error due to parsing failure
+  reason:   invalid test JSON: Expecting property name enclosed in double quotes: line 1 column 13 (char 12)
+
+[FAIL] 3.2.REQ-3  sample=0
+  test:     Request with unexpected nested structure
+  inputs:   Request containing nested object instead of simple key-value pairs
+  expected: HTTP 4xx error due to unexpected structure
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Canonical case with empty request
+  inputs:   Empty request body
+  expected: Empty response
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Request with additional fields should be ignored
+  inputs:   Request with extra fields
+  expected: Empty response
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Request with nested object should be ignored
+  inputs:   Request with nested object
+  expected: Empty response
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+[FAIL] 3.2.REQ-6  sample=0
+  test:     Malformed request body - not a dictionary
+  inputs:   Request body is a list instead of a dictionary
+  expected: HTTP 4xx error due to invalid request structure
+  reason:   app boot/request error: SyntaxError: invalid decimal literal (f3_2_REQ-4_adapter.py, line 20)
+
+======================================================================
+  SUMMARY: 0 passed / 22 failed / 22 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+  ⏱  done in 18.02s
+  pass@1: 0.000  (over 6 un-proved FR(s))
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.5000
+  test_case_pass_ratio        :       0.0000
+  PassVer@1                   :       0.5000
+  avg_verification_iteration  :         3.92
+  avg_test_iteration          :         1.00
+  avg_input_token             :       2718.1
+  avg_output_token            :        388.6
+  total_time                  :      332.69s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/Event Management_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/Event Management_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/runs/20261018-092706-event-management.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/event_management/python/raw_spec_only/runs/20261018-092706-event-management.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : dafny=183.8s   compile=6.5s   adapter=5.8s   adapter=5.7s   adapter=5.0s   adapter=6.3s   adapter=5.2s   adapter=5.7s   code=15.9s   test=74.9s   certification=18.0s
+Time      : 332.69s   Tokens: 220,574   Cost: $0.0000

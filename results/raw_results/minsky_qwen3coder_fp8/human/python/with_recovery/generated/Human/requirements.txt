@@ -1,0 +1,6 @@
+F3__1Domain
+F3__2Domain
+dafny_marshal
+fastapi
+sqlalchemy
+uvicorn

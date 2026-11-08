@@ -1,0 +1,579 @@
+{
+  "project_name": "Event Management",
+  "source_file": "Event Management.xml",
+  "features": [
+    {
+      "id": "3.2.REQ-1",
+      "name": "3.2.REQ-1",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-1",
+          "text": "Can only be accessed with the provision of the internet."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-1"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-2",
+      "name": "3.2.REQ-2",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-2",
+          "text": "Only authenticated users i.e., enrolled students in the institution can register and participate in the events."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-2"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-3",
+      "name": "3.2.REQ-3",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-3",
+          "text": "The user interface provides appropriate error messages in case the user does an error."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-3"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-4",
+      "name": "3.2.REQ-4",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-4",
+          "text": "The EOCR can post the events on the website and the students can register accordingly."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-4"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-5",
+      "name": "3.2.REQ-5",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-5",
+          "text": "The EOCR can generate the list of registrants at any point of time."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-5"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-6",
+      "name": "3.2.REQ-6",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-6",
+          "text": "Provides a secure database of stakeholders containing the login credentials and personal information."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-6"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-7",
+      "name": "3.2.REQ-7",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-7",
+          "text": "Facilitates a step-by-step process of entering, organizing, retrieving, modifying and deleting the data."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-7"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-8",
+      "name": "3.2.REQ-8",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-8",
+          "text": "Provide administrative access to the clients."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-8"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-9",
+      "name": "3.2.REQ-9",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-9",
+          "text": "Add and delete client access easily."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-9"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-10",
+      "name": "3.2.REQ-10",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-10",
+          "text": "Easily append an event to the database."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-10"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-11",
+      "name": "3.2.REQ-11",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-11",
+          "text": "Provide an ordered list of events added to the database for easy understandability."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-11"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    },
+    {
+      "id": "3.2.REQ-12",
+      "name": "3.2.REQ-12",
+      "description": "",
+      "functional_requirements": [
+        {
+          "id": "3.2.REQ-12",
+          "text": "Simple Interface for easy and reliable interactivity."
+        }
+      ],
+      "fr_order": [
+        "3.2.REQ-12"
+      ],
+      "fr_edges": [],
+      "fr_cycles": []
+    }
+  ],
+  "contracts": [
+    {
+      "fr_id": "3.2.REQ-1",
+      "feature_id": "3.2.REQ-1",
+      "stimulus": "Attempt to access the feature",
+      "precondition": "The system has internet connectivity",
+      "response": "The feature is accessible",
+      "postcondition": "If the system has internet connectivity, then the feature is accessible; otherwise, access is denied or unavailable."
+    },
+    {
+      "fr_id": "3.2.REQ-2",
+      "feature_id": "3.2.REQ-2",
+      "stimulus": "A user attempts to register for an event",
+      "precondition": "The user is authenticated and enrolled as a student in the institution",
+      "response": "The system allows the user to register for the event",
+      "postcondition": "The user's registration is recorded in the system, and the user is confirmed as participating in the event"
+    },
+    {
+      "fr_id": "3.2.REQ-3",
+      "feature_id": "3.2.REQ-3",
+      "stimulus": "The user performs an action that results in an error within the user interface",
+      "precondition": "none",
+      "response": "The user interface displays an appropriate error message to the user",
+      "postcondition": "The error message accurately reflects the nature of the user's error and is presented in a manner consistent with the user interface's design and accessibility standards"
+    },
+    {
+      "fr_id": "3.2.REQ-4",
+      "feature_id": "3.2.REQ-4",
+      "stimulus": "The EOCR posts an event on the website",
+      "precondition": "none",
+      "response": "The event is published on the website for student access",
+      "postcondition": "Students can view the posted event and register for it accordingly"
+    },
+    {
+      "fr_id": "3.2.REQ-5",
+      "feature_id": "3.2.REQ-5",
+      "stimulus": "The event 'generate registrant list' is triggered by a user or system process",
+      "precondition": "none",
+      "response": "The system returns a list of all registrants at the current point in time",
+      "postcondition": "The returned list contains all registrants that were registered up until the moment the request was made, and the system state remains unchanged"
+    },
+    {
+      "fr_id": "3.2.REQ-6",
+      "feature_id": "3.2.REQ-6",
+      "stimulus": "The system is requested to retrieve stakeholder information from the secure database.",
+      "precondition": "none",
+      "response": "The system returns the requested stakeholder information, including login credentials and personal details, encrypted or in a secure format.",
+      "postcondition": "The retrieved stakeholder information is accurately provided without exposing sensitive data in plaintext."
+    },
+    {
+      "fr_id": "3.2.REQ-7",
+      "feature_id": "3.2.REQ-7",
+      "stimulus": "User initiates a step in the data entry, organization, retrieval, modification, or deletion process",
+      "precondition": "none",
+      "response": "System provides the next step in the process as defined by the step-by-step workflow",
+      "postcondition": "The system state reflects the progress made in the step-by-step process, ensuring that the user can continue to the subsequent step in the workflow"
+    },
+    {
+      "fr_id": "3.2.REQ-8",
+      "feature_id": "3.2.REQ-8",
+      "stimulus": "An administrative user attempts to access client data or perform client-related actions",
+      "precondition": "none",
+      "response": "The system grants or denies access based on the administrative user's permissions",
+      "postcondition": "If access is granted, the administrative user can view or modify client information; if denied, the user receives an appropriate error message"
+    },
+    {
+      "fr_id": "3.2.REQ-9",
+      "feature_id": "3.2.REQ-9",
+      "stimulus": "A request to add a client access, containing the client identifier and access permissions.",
+      "precondition": "none",
+      "response": "The system confirms the addition of the client access with a success message or error if the client already has access.",
+      "postcondition": "The client access is recorded in the system, allowing the client to perform actions based on the assigned permissions."
+    },
+    {
+      "fr_id": "3.2.REQ-10",
+      "feature_id": "3.2.REQ-10",
+      "stimulus": "A request to append an event to the database, including the event data to be added",
+      "precondition": "none",
+      "response": "The event is successfully added to the database",
+      "postcondition": "The database now contains the new event, and the event's data is stored persistently"
+    },
+    {
+      "fr_id": "3.2.REQ-11",
+      "feature_id": "3.2.REQ-11",
+      "stimulus": "A request to retrieve an ordered list of events added to the database",
+      "precondition": "none",
+      "response": "An ordered list of events added to the database, sorted in ascending order by the time they were added",
+      "postcondition": "The response contains all events stored in the database, and the ordering is consistent with the chronological sequence of their addition"
+    },
+    {
+      "fr_id": "3.2.REQ-12",
+      "feature_id": "3.2.REQ-12",
+      "stimulus": "none (no implementable behavior)",
+      "precondition": "none",
+      "response": "none",
+      "postcondition": "none (stateless)"
+    }
+  ],
+  "stack": "fastapi",
+  "language": "python",
+  "dependency_graph": {
+    "nodes": [
+      "3.2"
+    ],
+    "edges": [],
+    "build_order": [
+      "3.2"
+    ],
+    "cycles": []
+  },
+  "planning": {
+    "contracts": [
+      {
+        "fr_id": "3.2.REQ-1",
+        "feature_id": "3.2.REQ-1",
+        "signature": "def check_feature_accessibility() -> bool:",
+        "docstring": "The feature is accessible.\n\nReturns:\n    True if feature is accessible, False otherwise\n\nRaises:\n    HTTPException: If the precondition is violated (The system has internet connectivity).\n\nNotes:\n    Precondition: The system has internet connectivity\n    Postcondition: If the system has internet connectivity, then the feature is accessible; otherwise, access is denied or unavailable.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/check_feature_accessibility.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-1",
+          "feature_id": "3.2.REQ-1",
+          "stimulus": "Attempt to access the feature",
+          "precondition": "The system has internet connectivity",
+          "response": "The feature is accessible",
+          "postcondition": "If the system has internet connectivity, then the feature is accessible; otherwise, access is denied or unavailable."
+        },
+        "example_inputs_json": "{}",
+        "expected_return_json": "true",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-2",
+        "feature_id": "3.2.REQ-2",
+        "signature": "def register_for_event(user_id: str, event_id: str) -> dict[str, str]:",
+        "docstring": "The system allows the user to register for the event.\n\nArgs:\n    user_id: Unique identifier of the user attempting to register, must correspond to an authenticated and enrolled student\n    event_id: Unique identifier of the event the user wants to register for\n\nReturns:\n    Confirmation message indicating successful registration\n\nRaises:\n    HTTPException: If the precondition is violated (The user is authenticated and enrolled as a student in the institution).\n\nNotes:\n    Precondition: The user is authenticated and enrolled as a student in the institution\n    Postcondition: The user's registration is recorded in the system, and the user is confirmed as participating in the event",
+        "mvc_layer": "controller",
+        "file_path": "controllers/register_for_event.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-2",
+          "feature_id": "3.2.REQ-2",
+          "stimulus": "A user attempts to register for an event",
+          "precondition": "The user is authenticated and enrolled as a student in the institution",
+          "response": "The system allows the user to register for the event",
+          "postcondition": "The user's registration is recorded in the system, and the user is confirmed as participating in the event"
+        },
+        "example_inputs_json": "{\"user_id\":\"student123\",\"event_id\":\"event456\"}",
+        "expected_return_json": "{\"status\": \"registered\", \"user_id\": \"student123\", \"event_id\": \"event456\"}",
+        "error_mode": "raise",
+        "failure_inputs_json": "{\"user_id\":\"\",\"event_id\":\"event456\"}",
+        "entity_identifier": "user_id"
+      },
+      {
+        "fr_id": "3.2.REQ-3",
+        "feature_id": "3.2.REQ-3",
+        "signature": "def display_error_message(error_type: str, details: str) -> None:",
+        "docstring": "The user interface displays an appropriate error message to the user.\n\nArgs:\n    error_type: Type of error that occurred, e.g., 'validation', 'permission', 'not_found'\n    details: Specific details about the error to be displayed to the user\n\nReturns:\n    None.\n\nNotes:\n    Postcondition: The error message accurately reflects the nature of the user's error and is presented in a manner consistent with the user interface's design and accessibility standards",
+        "mvc_layer": "view",
+        "file_path": "views/display_error_message.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-3",
+          "feature_id": "3.2.REQ-3",
+          "stimulus": "The user performs an action that results in an error within the user interface",
+          "precondition": "none",
+          "response": "The user interface displays an appropriate error message to the user",
+          "postcondition": "The error message accurately reflects the nature of the user's error and is presented in a manner consistent with the user interface's design and accessibility standards"
+        },
+        "example_inputs_json": "{\"error_type\":\"validation\",\"details\":\"Invalid email format\"}",
+        "expected_return_json": "null",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-4",
+        "feature_id": "3.2.REQ-4",
+        "signature": "def post_event_on_website(event_data: dict[str, str | int | list]) -> dict[str, str | int]:",
+        "docstring": "The event is published on the website for student access.\n\nArgs:\n    event_data: Data describing the event to be posted, including title, description, date, time, location, and registration details.\n\nReturns:\n    Event ID and status of the posting operation\n\nNotes:\n    Postcondition: Students can view the posted event and register for it accordingly",
+        "mvc_layer": "model",
+        "file_path": "models/post_event_on_website.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-4",
+          "feature_id": "3.2.REQ-4",
+          "stimulus": "The EOCR posts an event on the website",
+          "precondition": "none",
+          "response": "The event is published on the website for student access",
+          "postcondition": "Students can view the posted event and register for it accordingly"
+        },
+        "example_inputs_json": "{\"event_data\":{\"title\":\"Workshop on AI\",\"description\":\"A workshop on artificial intelligence\",\"date\":\"2023-10-15\",\"time\":\"10:00\",\"location\":\"Online\",\"registration_details\":\"Register at the link below\"}}",
+        "expected_return_json": "{\"event_id\": 123, \"status\": \"published\"}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": "event_id"
+      },
+      {
+        "fr_id": "3.2.REQ-5",
+        "feature_id": "3.2.REQ-5",
+        "signature": "def generate_registrant_list() -> list[dict[str, str]]",
+        "docstring": "The system returns a list of all registrants at the current point in time.\n\nReturns:\n    A list of all registrants at the current point in time\n\nNotes:\n    Postcondition: The returned list contains all registrants that were registered up until the moment the request was made, and the system state remains unchanged",
+        "mvc_layer": "model",
+        "file_path": "models/generate_registrant_list.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-5",
+          "feature_id": "3.2.REQ-5",
+          "stimulus": "The event 'generate registrant list' is triggered by a user or system process",
+          "precondition": "none",
+          "response": "The system returns a list of all registrants at the current point in time",
+          "postcondition": "The returned list contains all registrants that were registered up until the moment the request was made, and the system state remains unchanged"
+        },
+        "example_inputs_json": "{}",
+        "expected_return_json": "[{\"name\": \"John Doe\", \"email\": \"john@example.com\"}, {\"name\": \"Jane Smith\", \"email\": \"jane@example.com\"}]",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-6",
+        "feature_id": "3.2.REQ-6",
+        "signature": "def get_stakeholder_info(stakeholder_id: str) -> dict[str, str]:",
+        "docstring": "The system returns the requested stakeholder information, including login credentials and personal details, encrypted or in a secure format.\n\nArgs:\n    stakeholder_id: Unique identifier for the stakeholder whose information is being retrieved. Must be a non-empty string.\n\nReturns:\n    Securely formatted stakeholder information including encrypted credentials and personal details.\n\nNotes:\n    Postcondition: The retrieved stakeholder information is accurately provided without exposing sensitive data in plaintext.",
+        "mvc_layer": "model",
+        "file_path": "models/get_stakeholder_info.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-6",
+          "feature_id": "3.2.REQ-6",
+          "stimulus": "The system is requested to retrieve stakeholder information from the secure database.",
+          "precondition": "none",
+          "response": "The system returns the requested stakeholder information, including login credentials and personal details, encrypted or in a secure format.",
+          "postcondition": "The retrieved stakeholder information is accurately provided without exposing sensitive data in plaintext."
+        },
+        "example_inputs_json": "{\"stakeholder_id\":\"stakeholder_123\"}",
+        "expected_return_json": "{\"id\": \"stakeholder_123\", \"name\": \"John Doe\", \"email\": \"johndoe@example.com\", \"credentials\": \"encrypted_credentials_here\"}",
+        "error_mode": "raise",
+        "failure_inputs_json": "{\"stakeholder_id\":\"\"}",
+        "entity_identifier": "stakeholder_id"
+      },
+      {
+        "fr_id": "3.2.REQ-7",
+        "feature_id": "3.2.REQ-7",
+        "signature": "def manage_data_workflow_step(action: str, data: dict) -> dict:",
+        "docstring": "System provides the next step in the process as defined by the step-by-step workflow.\n\nArgs:\n    action: The step in the workflow to execute: 'enter', 'organize', 'retrieve', 'modify', or 'delete'\n    data: The data involved in the current step, including any identifiers needed for retrieve, modify, or delete actions\n\nReturns:\n    The next step in the workflow along with any relevant data or status information\n\nNotes:\n    Postcondition: The system state reflects the progress made in the step-by-step process, ensuring that the user can continue to the subsequent step in the workflow",
+        "mvc_layer": "controller",
+        "file_path": "controllers/manage_data_workflow_step.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-7",
+          "feature_id": "3.2.REQ-7",
+          "stimulus": "User initiates a step in the data entry, organization, retrieval, modification, or deletion process",
+          "precondition": "none",
+          "response": "System provides the next step in the process as defined by the step-by-step workflow",
+          "postcondition": "The system state reflects the progress made in the step-by-step process, ensuring that the user can continue to the subsequent step in the workflow"
+        },
+        "example_inputs_json": "{\"action\":\"enter\",\"data\":{\"title\":\"Sample Entry\",\"content\":\"This is sample content.\"}}",
+        "expected_return_json": "{\"next_step\": \"organize\", \"message\": \"Data entered successfully. Proceed to organize the data.\"}",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-8",
+        "feature_id": "3.2.REQ-8",
+        "signature": "def manage_admin_client_access(admin_user_id: str, action: str, client_data: dict) -> dict:",
+        "docstring": "The system grants or denies access based on the administrative user's permissions.\n\nArgs:\n    admin_user_id: Unique identifier for the administrative user attempting the action\n    action: The action to perform on client data, such as 'view', 'edit', or 'delete'\n    client_data: Data related to the client, including client ID and other relevant fields\n\nReturns:\n    Access status and client information or an error message\n\nNotes:\n    Postcondition: If access is granted, the administrative user can view or modify client information; if denied, the user receives an appropriate error message",
+        "mvc_layer": "controller",
+        "file_path": "controllers/manage_admin_client_access.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-8",
+          "feature_id": "3.2.REQ-8",
+          "stimulus": "An administrative user attempts to access client data or perform client-related actions",
+          "precondition": "none",
+          "response": "The system grants or denies access based on the administrative user's permissions",
+          "postcondition": "If access is granted, the administrative user can view or modify client information; if denied, the user receives an appropriate error message"
+        },
+        "example_inputs_json": "{\"admin_user_id\":\"admin123\",\"action\":\"view\",\"client_data\":{\"client_id\":\"client456\"}}",
+        "expected_return_json": "{\"status\": \"granted\", \"client_info\": {\"id\": \"client456\", \"name\": \"John Doe\", \"email\": \"john@example.com\"}}",
+        "error_mode": "raise",
+        "failure_inputs_json": "{\"admin_user_id\":\"\",\"action\":\"view\",\"client_data\":{\"client_id\":\"client456\"}}",
+        "entity_identifier": "client_id"
+      },
+      {
+        "fr_id": "3.2.REQ-9",
+        "feature_id": "3.2.REQ-9",
+        "signature": "def manage_client_access(client_id: str, permissions: list[str], action: str) -> dict[str, str]:",
+        "docstring": "The system confirms the addition of the client access with a success message or error if the client already has access.\n\nArgs:\n    client_id: Unique identifier for the client, must be a non-empty string.\n    permissions: List of permission strings to assign to the client, must be non-empty.\n    action: Action to perform, either 'add' or 'delete' client access.\n\nReturns:\n    A confirmation message indicating success or failure of the operation.\n\nNotes:\n    Postcondition: The client access is recorded in the system, allowing the client to perform actions based on the assigned permissions.",
+        "mvc_layer": "controller",
+        "file_path": "controllers/manage_client_access.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-9",
+          "feature_id": "3.2.REQ-9",
+          "stimulus": "A request to add a client access, containing the client identifier and access permissions.",
+          "precondition": "none",
+          "response": "The system confirms the addition of the client access with a success message or error if the client already has access.",
+          "postcondition": "The client access is recorded in the system, allowing the client to perform actions based on the assigned permissions."
+        },
+        "example_inputs_json": "{\"client_id\":\"client_123\",\"permissions\":[\"read\",\"write\"],\"action\":\"add\"}",
+        "expected_return_json": "{\"status\": \"success\", \"message\": \"Client access added successfully.\"}",
+        "error_mode": "raise",
+        "failure_inputs_json": "{\"client_id\":\"\",\"permissions\":[\"read\"],\"action\":\"add\"}",
+        "entity_identifier": "client_id"
+      },
+      {
+        "fr_id": "3.2.REQ-10",
+        "feature_id": "3.2.REQ-10",
+        "signature": "def append_event(event_data: dict[str, str]) -> None:",
+        "docstring": "The event is successfully added to the database.\n\nArgs:\n    event_data: A dictionary containing the event details to be added to the database. Keys and values are strings.\n\nReturns:\n    None.\n\nNotes:\n    Postcondition: The database now contains the new event, and the event's data is stored persistently",
+        "mvc_layer": "model",
+        "file_path": "models/append_event.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-10",
+          "feature_id": "3.2.REQ-10",
+          "stimulus": "A request to append an event to the database, including the event data to be added",
+          "precondition": "none",
+          "response": "The event is successfully added to the database",
+          "postcondition": "The database now contains the new event, and the event's data is stored persistently"
+        },
+        "example_inputs_json": "{\"event_data\":{\"title\":\"Team Meeting\",\"description\":\"Weekly team sync\",\"date\":\"2023-05-15\"}}",
+        "expected_return_json": "null",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-11",
+        "feature_id": "3.2.REQ-11",
+        "signature": "def get_ordered_events() -> list[dict[str, str]]",
+        "docstring": "An ordered list of events added to the database, sorted in ascending order by the time they were added.\n\nReturns:\n    An ordered list of events added to the database, sorted in ascending order by the time they were added\n\nNotes:\n    Postcondition: The response contains all events stored in the database, and the ordering is consistent with the chronological sequence of their addition",
+        "mvc_layer": "view",
+        "file_path": "views/get_ordered_events.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-11",
+          "feature_id": "3.2.REQ-11",
+          "stimulus": "A request to retrieve an ordered list of events added to the database",
+          "precondition": "none",
+          "response": "An ordered list of events added to the database, sorted in ascending order by the time they were added",
+          "postcondition": "The response contains all events stored in the database, and the ordering is consistent with the chronological sequence of their addition"
+        },
+        "example_inputs_json": "{}",
+        "expected_return_json": "[{\"id\": \"1\", \"name\": \"Event A\", \"timestamp\": \"2023-01-01T00:00:00Z\"}, {\"id\": \"2\", \"name\": \"Event B\", \"timestamp\": \"2023-01-02T00:00:00Z\"}]",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      },
+      {
+        "fr_id": "3.2.REQ-12",
+        "feature_id": "3.2.REQ-12",
+        "signature": "def fr_3_2_REQ_12() -> None:",
+        "docstring": "Handle none (no implementable behavior).\n\nReturns:\n    None.\n\nNotes:\n    Postcondition: none (stateless)",
+        "mvc_layer": "controller",
+        "file_path": "controllers/fr_3_2_REQ_12.py",
+        "prerequisite_fr_ids": [],
+        "contract": {
+          "fr_id": "3.2.REQ-12",
+          "feature_id": "3.2.REQ-12",
+          "stimulus": "none (no implementable behavior)",
+          "precondition": "none",
+          "response": "none",
+          "postcondition": "none (stateless)"
+        },
+        "example_inputs_json": "{}",
+        "expected_return_json": "null",
+        "error_mode": "raise",
+        "failure_inputs_json": "",
+        "entity_identifier": ""
+      }
+    ],
+    "notes": [
+      "FR 3.2.REQ-12: no LLM design returned; used a default contract."
+    ]
+  }
+}

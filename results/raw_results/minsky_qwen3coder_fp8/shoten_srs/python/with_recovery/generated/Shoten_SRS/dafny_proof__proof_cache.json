@@ -1,0 +1,420 @@
+{
+  "4.1": {
+    "sig": "316e568c4af9813392d9011a14d08fa0357d9d64c7e317f2d02ecdcb258d4617",
+    "data": {
+      "feature_id": "4.1",
+      "module": "F4_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_1Domain refines Domain {\n  type Model = (string, string, string, string, string, string, string, bool)\n\n  datatype Action = \n    InitiateRegistration |\n    ProvideInfo(name: string, rollNumber: string, shopId: string, mobile: string, email: string) |\n    AssignUsername(username: string) |\n    ConfirmPassword(password: string) |\n    StoreAccount\n\n  ghost predicate Inv(m: Model) {\n    var (name, rollNumber, shopId, mobile, email, username, password, stored) := m;\n    name != \"\" && \n    mobile != \"\" && \n    email != \"\" &&\n    (rollNumber == \"\" || rollNumber != \"\") &&\n    (shopId == \"\" || shopId != \"\") &&\n    (username == \"\" || username != \"\") &&\n    (password == \"\" || password != \"\") &&\n    stored == false\n  }\n\n  function Init(): Model {\n    (\"\", \"\", \"\", \"\", \"\", \"\", \"\", false)\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case InitiateRegistration => m\n    case ProvideInfo(name, rollNumber, shopId, mobile, email) =>\n      var (n, r, s, mob, e, u, p, st) := m;\n      (name, rollNumber, shopId, mobile, email, u, p, st)\n    case AssignUsername(username) =>\n      var (n, r, s, mob, e, u, p, st) := m;\n      (n, r, s, mob, e, username, p, st)\n    case ConfirmPassword(password) =>\n      var (n, r, s, mob, e, u, p, st) := m;\n      (n, r, s, mob, e, u, password, st)\n    case StoreAccount =>\n      var (n, r, s, mob, e, u, p, st) := m;\n      (n, r, s, mob, e, u, p, true)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma InfoProvidedEnsures(m: Model, name: string, rollNumber: string, shopId: string, mobile: string, email: string)\n    ensures Apply(m, ProvideInfo(name, rollNumber, shopId, mobile, email)) == (name, rollNumber, shopId, mobile, email, \"\", \"\", false)\n  {\n  }\n}\n\nmodule F4_1Kernel refines Kernel {\n  import D = F4_1Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 52,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 57,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 57,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 57,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 57,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 61,
+          "col": 17,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 62,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.10": {
+    "sig": "af01c5dca55be6fcc822d5c342c1287a1fcc9e1818499e35112da6880f3d6a72",
+    "data": {
+      "feature_id": "4.10",
+      "module": "F4_10",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_10Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = ViewContactMethods | ViewSellerDetails | ViewMap\n\n  ghost predicate Inv(m: Model) {\n    m != map[]\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case ViewContactMethods => m + [\"contact_methods\" := \"bookstore, printstore, student\"]\n    case ViewSellerDetails => m + [\"seller_details\" := \"address, phone, email, directions\"]\n    case ViewMap => m + [\"map\" := \"locations of bookstores and printing stores\"]\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma ContactMethodsAccurate(m: Model)\n    ensures m[\"contact_methods\"] == \"bookstore, printstore, student\" ==> Inv(m)\n  {\n  }\n}\n\nmodule F4_10Kernel refines Kernel {\n  import D = F4_10Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 18,
+          "col": 54,
+          "message": "rbracket expected"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.11": {
+    "sig": "6c90af903d53f8b9856cd4ee87150e9ae8ba8df44ac6a7600c955e734f1138b8",
+    "data": {
+      "feature_id": "4.11",
+      "module": "F4_11",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_11Domain refines Domain {\n  type Model = (string, string, string, string, string, string)\n\n  datatype Action =\n    | UpdateAccountInfo(name: string, mailingAddr: string, billingAddr: string, paymentInfo: string)\n    | ChangePassword(oldPass: string, newPass1: string, newPass2: string)\n\n  ghost predicate Inv(m: Model) {\n    var (name, mailAddr, billAddr, payInfo, oldPass, newPass) := m;\n    true  // No additional constraints specified\n  }\n\n  function Init(): Model {\n    (\"\", \"\", \"\", \"\", \"\", \"\")\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case UpdateAccountInfo(name, mailingAddr, billingAddr, paymentInfo) =>\n      var (oldName, oldMailAddr, oldBillAddr, oldPayInfo, oldPass, newPass) := m;\n      (name, mailingAddr, billingAddr, paymentInfo, oldPass, newPass)\n    case ChangePassword(oldPass, newPass1, newPass2) =>\n      var (name, mailAddr, billAddr, payInfo, oldPassStored, newPassStored) := m;\n      if oldPass == oldPassStored && newPass1 == newPass2 then\n        (name, mailAddr, billAddr, payInfo, oldPass, newPass1)\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma UpdateAccountInfoEnsures(m: Model, name: string, mailingAddr: string, billingAddr: string, paymentInfo: string)\n    ensures Apply(m, UpdateAccountInfo(name, mailingAddr, billingAddr, paymentInfo)) == (name, mailingAddr, billingAddr, paymentInfo, m.4, m.5)\n  {\n  }\n\n  lemma ChangePasswordEnsures(m: Model, oldPass: string, newPass1: string, newPass2: string)\n    requires oldPass == m.4 && newPass1 == newPass2\n    ensures Apply(m, ChangePassword(oldPass, newPass1, newPass2)) == (m.0, m.1, m.2, m.3, oldPass, newPass1)\n  {\n  }\n}\n\nmodule F4_11Kernel refines Kernel {\n  import D = F4_11Domain\n}",
+      "verified": true,
+      "rounds": 3,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "4.12": {
+    "sig": "713d607c65d033d90251493198729d56f1cfbe82e421e7562ec6770e3919acd6",
+    "data": {
+      "feature_id": "4.12",
+      "module": "F4_12",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_12Domain refines Domain {\n  type Model = (map<string, Order>, string)\n\n  datatype Action = ViewOrders | ViewByConfirmation(conf: string) | ViewOrderDetails(orderId: string)\n\n  datatype OrderStatus = InTransit | Delivered\n\n  datatype Order = Order(\n    id: string,\n    userId: string,\n    shippingDate: int,\n    mailingAddress: string,\n    projectedDeliveryDate: int,\n    status: OrderStatus\n  )\n\n  ghost predicate Inv(m: Model) {\n    var (orders, user) := m;\n    forall id | id in orders :: \n      orders[id].userId == user &&\n      orders[id].shippingDate >= 0 &&\n      orders[id].projectedDeliveryDate >= orders[id].shippingDate\n  }\n\n  function Init(): Model {\n    (map[], \"\")\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case ViewOrders => m\n    case ViewByConfirmation(conf) => m\n    case ViewOrderDetails(orderId) => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma ViewOrdersEnsures(m: Model)\n    ensures forall id | id in m.0 && m.0[id].userId == m.1 ::\n      m.0[id].shippingDate >= 0 &&\n      m.0[id].projectedDeliveryDate >= m.0[id].shippingDate\n  {\n    // The invariant already establishes this property\n    assert forall id | id in m.0 && m.0[id].userId == m.1 ::\n      m.0[id].shippingDate >= 0 &&\n      m.0[id].projectedDeliveryDate >= m.0[id].shippingDate;\n  }\n}\n\nmodule F4_12Kernel refines Kernel {\n  import D = F4_12Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 58,
+          "col": 4,
+          "message": "assertion might not hold"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.13": {
+    "sig": "bffb03b409961467e06cde3c5ad9fc99527887947613d28dbac44d6bf379af36",
+    "data": {
+      "feature_id": "4.13",
+      "module": "F4_13",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_13Domain refines Domain {\n  datatype Purchase = Purchase(date: int, paymentMode: string)\n  datatype Order = Order(items: map<string, (int, int)>) // title -> (price, quantity)\n\n  type Model = (map<int, Purchase>, map<int, Order>)\n\n  datatype Action = ViewPurchaseHistory | ViewOrderDetails(orderId: int)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    (map[], map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case ViewPurchaseHistory => m\n    case ViewOrderDetails(orderId) => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma ViewPurchaseHistoryEnsures(m: Model)\n    ensures |m.0| == 0 ==> m.0 == map[]\n  {\n  }\n}\n\nmodule F4_13Kernel refines Kernel {\n  import D = F4_13Domain\n}",
+      "verified": true,
+      "rounds": 3,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "4.14": {
+    "sig": "f4db0f9b57c6d0ec9c6a4fffad2650f4c5ec9c0ecae13ca220521e716f9a19db",
+    "data": {
+      "feature_id": "4.14",
+      "module": "F4_14",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_14Domain refines Domain {\n  type Model = (bool, map<string, string>)\n\n  datatype Action = Logout\n\n  ghost predicate Inv(m: Model) {\n    var (logged_in, tokens) := m;\n    logged_in ==> tokens != map[]\n  }\n\n  function Init(): Model {\n    (false, map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Logout => (false, map[])\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma LogoutInvalidatesToken(m: Model)\n    ensures (match Apply(m, Logout) {\n      case (false, _) => true\n      case _ => false\n    })\n  {\n  }\n}\n\nmodule F4_14Kernel refines Kernel {\n  import D = F4_14Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 37,
+          "col": 24,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.15": {
+    "sig": "c247518e89c30c75eb42e0c153502970c39a436360a0d2d49e6f5155b0547269",
+    "data": {
+      "feature_id": "4.15",
+      "module": "F4_15",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_15Domain refines Domain {\n  type Model = (set<string>, string, string)\n\n  datatype Action = ViewOverview | SelectOp(opname: string) | ShowDetails\n\n  ghost predicate Inv(m: Model) {\n    m.1 == \"\" || m.1 in m.0\n  }\n\n  function Init(): Model {\n    (set[], \"\", \"\")\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case ViewOverview => \n      (m.0, m.1, \"Overview of operations\")\n    case SelectOp(opname) =>\n      if opname in m.0 then (m.0, opname, m.2)\n      else (m.0, m.1, m.2)\n    case ShowDetails =>\n      if m.1 != \"\" then (m.0, m.1, \"Details for \" + m.1)\n      else (m.0, m.1, m.2)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma ViewOverviewEnsures(m: Model)\n    ensures Apply(m, ViewOverview) == (m.0, m.1, \"Overview of operations\")\n  {\n  }\n\n  lemma SelectOpEnsures(m: Model, opname: string)\n    ensures Apply(m, SelectOp(opname)) == (m.0, if opname in m.0 then opname else m.1, m.2)\n  {\n  }\n\n  lemma ShowDetailsEnsures(m: Model)\n    ensures Apply(m, ShowDetails) == (m.0, m.1, if m.1 != \"\" then \"Details for \" + m.1 else m.2)\n  {\n  }\n}\n\nmodule F4_15Kernel refines Kernel {\n  import D = F4_15Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 13,
+          "col": 8,
+          "message": "invalid Ident"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.2": {
+    "sig": "83064ed5cdea6ee8ab146e330eda039a51469278921b189ea87c64cdc675c40c",
+    "data": {
+      "feature_id": "4.2",
+      "module": "F4_2",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_2Domain refines Domain {\n  type Model = (bool, map<string, string>)\n\n  datatype Action = Login(username: string, password: string)\n\n  ghost predicate Inv(m: Model) {\n    m.0 ==> |m.1| > 0\n  }\n\n  function Init(): Model {\n    (false, map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Login(username, password) =>\n      let (authenticated, credentials) = m;\n      if authenticated then m\n      else if username in credentials && credentials[username] == password then (true, credentials)\n      else m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma LoginSucceeds(m: Model, a: Action)\n    requires a == Login(\"alice\", \"secret\")\n    ensures (Apply(m, a)).0\n  {\n  }\n}\n\nmodule F4_2Kernel refines Kernel {\n  import D = F4_2Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 19,
+          "col": 39,
+          "message": "rbrace expected"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.3": {
+    "sig": "c87227e6fb9c70a16627e26cb075880dbf544563c57df09aea19557d89711123",
+    "data": {
+      "feature_id": "4.3",
+      "module": "F4_3",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_3Domain refines Domain {\n  type Model = map<string, set<string>>\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m :: k != \"\"\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(q) => \n      m - {q}\n  }\n\n  function Normalize(m: Model): Model {\n    map k | k in m && m[k] != {} :: m[k]\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchResultMatch(m: Model, q: string)\n    ensures (forall k | k in Apply(m, Search(q)) :: k != q)\n  {\n    assert true;\n  }\n}\n\nmodule F4_3Kernel refines Kernel {\n  import D = F4_3Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 37,
+          "col": 34,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.3.1": {
+    "sig": "b63b073f644bd30bbc5fbf0f8c876d0c34c1446b5a54f4fe9f0b81621320bf83",
+    "data": {
+      "feature_id": "4.3.1",
+      "module": "F4_3_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_3_1Domain refines Domain {\n  datatype Book = Book(\n    title: string,\n    author: string,\n    isbn: string,\n    price: int,\n    availability: bool,\n    condition: string,\n    coverImage: string\n  )\n\n  type Model = (bool, map<string, Book>)\n\n  datatype Action = SearchBook\n\n  ghost predicate Inv(m: Model) {\n    var (_, books) := m;\n    true\n  }\n\n  function Init(): Model {\n    (false, map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case SearchBook => \n      var (_, books) := m;\n      (true, books)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchBookDisplaysInterface(m: Model)\n    requires m == Init()\n    ensures var (searching, _) := Apply(m, SearchBook);\n           searching == true\n  {\n  }\n}\n\nmodule F4_3_1Kernel refines Kernel {\n  import D = F4_3_1Domain\n}",
+      "verified": true,
+      "rounds": 2,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "4.3.2": {
+    "sig": "0ccc57931ea91f6032df1d5903dc9899a99467f6166c6142a09aeaa4086bf405",
+    "data": {
+      "feature_id": "4.3.2",
+      "module": "F4_3_2",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_3_2Domain refines Domain {\n  type Model = (bool, map<string, PrintShop>)\n\n  datatype Action = SearchButtonClicked | ResultsDisplayed\n\n  datatype PrintShop = PrintShop(\n    name: string,\n    openTime: int,\n    closeTime: int,\n    rate: int\n  )\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m.1 :: \n      0 <= m.1[k].openTime <= m.1[k].closeTime <= 24 &&\n      m.1[k].rate >= 0\n  }\n\n  function Init(): Model {\n    (false, map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case SearchButtonClicked => \n      (true, m.1)\n    case ResultsDisplayed => \n      (false, m.1)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchButtonClickedEnsuresSearching(m: Model)\n    ensures Apply(m, SearchButtonClicked) == (true, m.1)\n  {\n  }\n\n  lemma ResultsDisplayedEnsuresNotSearching(m: Model)\n    ensures Apply(m, ResultsDisplayed) == (false, m.1)\n  {\n  }\n}\n\nmodule F4_3_2Kernel refines Kernel {\n  import D = F4_3_2Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 48,
+          "col": 17,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 53,
+          "col": 17,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.4": {
+    "sig": "b40353ebf125c6886bcdde66d9c67c629765bf57c2dc6e0ff68c8494609dd28a",
+    "data": {
+      "feature_id": "4.4",
+      "module": "F4_4",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_4Domain refines Domain {\n  type Model = (string, map<string, int>)\n\n  datatype Action = AddToCart(bookId: string) | ViewCart\n\n  ghost predicate Inv(m: Model) {\n    var (user, cart) := m;\n    user != \"\"\n  }\n\n  function Init(): Model {\n    (\"\", map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    var (user, cart) := m;\n    match a\n    case AddToCart(bookId) =>\n      if bookId in cart then\n        (user, cart[bookId := cart[bookId] + 1])\n      else\n        (user, cart[bookId := 1])\n    case ViewCart =>\n      (user, cart)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma AddToCartEnsures(m: Model, bookId: string)\n    ensures var (user, cart) := Apply(m, AddToCart(bookId)); Inv((user, cart)) && bookId in cart && cart[bookId] == 1\n  {\n    assert Inv(Apply(m, AddToCart(bookId)));\n    var result := Apply(m, AddToCart(bookId));\n    assert result.1[bookId] == 1;\n  }\n}\n\nmodule F4_4Kernel refines Kernel {\n  import D = F4_4Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 35,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        },
+        {
+          "line": 44,
+          "col": 37,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 46,
+          "col": 14,
+          "message": "assertion might not hold"
+        },
+        {
+          "line": 46,
+          "col": 20,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 48,
+          "col": 4,
+          "message": "assertion might not hold"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.5": {
+    "sig": "ee3d7d77e0eb0a9071fbd0424dd11e4b7ad15e12cff423f69eecde3a1366b8d0",
+    "data": {
+      "feature_id": "4.5",
+      "module": "F4_5",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_5Domain refines Domain {\n  type Model = map<string, int>\n\n  datatype Action = RemoveBook(bookId: string)\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m :: m[k] > 0\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case RemoveBook(bookId) => m - {bookId}\n    }\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma RemoveBookEnsures(m: Model, bookId: string)\n    requires Inv(m)\n    requires bookId in m\n    ensures bookId !in Apply(m, RemoveBook(bookId))\n  {\n  }\n}\n\nmodule F4_5Kernel refines Kernel {\n  import D = F4_5Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 42,
+          "col": 0,
+          "message": "this symbol not expected in Dafny"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.6": {
+    "sig": "acf84e080333411490be09d78d2ed7facf0d21ac143ac448a3834bbe426456ae",
+    "data": {
+      "feature_id": "4.6",
+      "module": "F4_6",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_6Domain refines Domain {\n  datatype Action =\n    | InitiateRent\n    | EnterRentalPeriod(period: int)\n    | ConfirmRentalPeriod\n    | EnterDeliveryInfo(address: string, contact: string)\n    | EnterPaymentInfo(payment: string)\n    | CompleteTransaction\n\n  datatype RentalState = \n    | NotStarted\n    | CartSelected\n    | PeriodEntered\n    | DeliveryInfoEntered\n    | PaymentInfoEntered\n    | TransactionComplete\n\n  datatype BookInfo = \n    | Book(title: string, price: int, quantity: int)\n\n  datatype Cart = \n    | Cart(items: map<string, BookInfo>)\n\n  datatype RentalDetailsInfo = \n    | RentalDetails(period: int, totalAmount: int, individualAmounts: map<string, int>)\n\n  datatype UserInfo = \n    | User(id: string, name: string, isLoggedIn: bool)\n\n  datatype DeliveryInfoData = \n    | DeliveryInfo(address: string, contact: string)\n\n  datatype PaymentInfoData = \n    | PaymentInfo(method: string)\n\n  datatype TransactionInfo = \n    | Transaction(rentedBooks: map<string, BookInfo>, deliveryInfo: DeliveryInfoData, paymentInfo: PaymentInfoData)\n\n  datatype AppState = \n    | AppState(\n        user: UserInfo,\n        cart: Cart,\n        rentalState: RentalState,\n        rentalDetails: RentalDetailsInfo,\n        deliveryInfo: DeliveryInfoData,\n        paymentInfo: PaymentInfoData,\n        transaction: TransactionInfo\n      )\n\n  type Model = AppState\n\n  ghost predicate Inv(m: AppState) {\n    m.rentalState == NotStarted || \n    m.rentalState == CartSelected || \n    m.rentalState == PeriodEntered || \n    m.rentalState == DeliveryInfoEntered || \n    m.rentalState == PaymentInfoEntered || \n    m.rentalState == TransactionComplete\n  }\n\n  function Init(): AppState {\n    AppState(\n      User(\"user1\", \"John Doe\", true),\n      Cart(map[]),\n      NotStarted,\n      RentalDetails(0, 0, map[]),\n      DeliveryInfo(\"\", \"\"),\n      PaymentInfo(\"\"),\n      Transaction(map[], DeliveryInfo(\"\", \"\"), PaymentInfo(\"\"))\n    )\n  }\n\n  function Apply(m: AppState, a: Action): AppState {\n    match a\n    case InitiateRent =>\n      if m.user.isLoggedIn && |m.cart.items| > 0 then\n        AppState(m.user, m.cart, CartSelected, m.rentalDetails, m.deliveryInfo, m.paymentInfo, m.transaction)\n      else\n        m\n    case EnterRentalPeriod(period) =>\n      if m.rentalState == CartSelected && period > 0 then\n        AppState(m.user, m.cart, PeriodEntered, RentalDetails(period, 0, map[]), m.deliveryInfo, m.paymentInfo, m.transaction)\n      else\n        m\n    case ConfirmRentalPeriod =>\n      if m.rentalState == PeriodEntered then\n        AppState(m.user, m.cart, DeliveryInfoEntered, RentalDetails(m.rentalDetails.period, 0, map[]), m.deliveryInfo, m.paymentInfo, m.transaction)\n      else\n        m\n    case EnterDeliveryInfo(address, contact) =>\n      if m.rentalState == DeliveryInfoEntered then\n        AppState(m.user, m.cart, PaymentInfoEntered, m.rentalDetails, DeliveryInfo(address, contact), m.paymentInfo, m.transaction)\n      else\n        m\n    case EnterPaymentInfo(payment) =>\n      if m.rentalState == PaymentInfoEntered then\n        AppState(m.user, m.cart, TransactionComplete, m.rentalDetails, m.deliveryInfo, PaymentInfo(payment), m.transaction)\n      else\n        m\n    case CompleteTransaction =>\n      if m.rentalState == TransactionComplete then\n        AppState(m.user, m.cart, TransactionComplete, m.rentalDetails, m.deliveryInfo, m.paymentInfo, Transaction(m.cart.items, m.deliveryInfo, m.paymentInfo))\n      else\n        m\n  }\n\n  function Normalize(m: AppState): AppState {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: AppState, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma RentInitiated(m: AppState)\n    requires m.user.isLoggedIn && |m.cart.items| > 0\n    ensures m.rentalState == NotStarted ==> Apply(m, InitiateRent).rentalState == CartSelected\n  {\n  }\n}\n\nmodule F4_6Kernel refines Kernel {\n  import D = F4_6Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 36,
+          "col": 18,
+          "message": "closeparen expected"
+        },
+        {
+          "line": 36,
+          "col": 24,
+          "message": "a method must be given a name (expecting identifier)"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.7": {
+    "sig": "fe08701918d9058fff16dcac4ddc82f4ed8f7d7c44242edb29093c18f6ddbbed",
+    "data": {
+      "feature_id": "4.7",
+      "module": "F4_7",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_7Domain refines Domain {\n  type Model = (map<string, int>, map<string, int>, string, bool, map<string, (int, int)>, bool)\n\n  datatype Action = ViewTotalCost | Purchase | EnterDeliveryInfo(address: string) | CompleteCheckout | CompleteTransaction\n\n  ghost predicate Inv(m: Model) {\n    var (cart, user, deliveryInfo, loggedIn, purchasedBooks, paymentEntered) := m;\n    loggedIn ==> user != \"\"\n  }\n\n  function Init(): Model {\n    (map[], \"\", \"\", false, map[], false)\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    var (cart, user, deliveryInfo, loggedIn, purchasedBooks, paymentEntered) := m;\n    match a\n    case ViewTotalCost =>\n      m\n    case Purchase =>\n      if loggedIn && cart != map[] then\n        (map[], user, deliveryInfo, loggedIn, cart, paymentEntered)\n      else\n        m\n    case EnterDeliveryInfo(addr) =>\n      (cart, user, addr, loggedIn, purchasedBooks, paymentEntered)\n    case CompleteCheckout =>\n      if deliveryInfo != \"\" then\n        (cart, user, deliveryInfo, loggedIn, purchasedBooks, true)\n      else\n        m\n    case CompleteTransaction =>\n      if paymentEntered then\n        (map[], user, deliveryInfo, loggedIn, purchasedBooks, paymentEntered)\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma ViewTotalCostCorrect(m: Model)\n    ensures var cart := Apply(m, ViewTotalCost).0;\n      var totalCost := 0;\n      forall k | k in cart :: totalCost := totalCost + cart[k];\n      true\n  {\n  }\n}\n\nmodule F4_7Kernel refines Kernel {\n  import D = F4_7Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 58,
+          "col": 40,
+          "message": "rbrace expected"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.8": {
+    "sig": "93fa1db3a694228bb256bbb186a153225f776e4b31c3f88b99cae8a02109d1b4",
+    "data": {
+      "feature_id": "4.8",
+      "module": "F4_8",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_8Domain refines Domain {\n  type Model = (string, int, string, string, string, string, string, string, string, string)\n\n  datatype Action =\n    | ReqPrint\n    | EnterDriveUrl\n    | ShowCost\n    | EnterDeliveryInfo\n    | EnterPaymentInfo\n    | ShowDeliveryStatus\n\n  ghost predicate Inv(m: Model) {\n    var (user, step, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, _, _, _) := m;\n    step >= 0 && step <= 6\n  }\n\n  function Init(): Model {\n    (\"\", 0, \"\", \"\", \"\", \"\", \"\", \"\", \"\", \"\")\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    var (user, step, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, _, _, _) := m;\n    match a\n    case ReqPrint =>\n      (user, 1, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, \"\", \"\", \"\")\n    case EnterDriveUrl =>\n      (user, 2, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, \"\", \"\", \"\")\n    case ShowCost =>\n      (user, 3, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, \"\", \"\", \"\")\n    case EnterDeliveryInfo =>\n      (user, 4, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, \"\", \"\", \"\")\n    case EnterPaymentInfo =>\n      (user, 5, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, \"\", \"\", \"\")\n    case ShowDeliveryStatus =>\n      (user, 6, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, \"\", \"\", \"\")\n  }\n\n  function Normalize(m: Model): Model {\n    var (user, step, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, _, _, _) := m;\n    if step < 0 then (user, 0, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, \"\", \"\", \"\")\n    else if step > 6 then (user, 6, driveUrl, cost, deliveryInfo, paymentInfo, deliveryStatus, \"\", \"\", \"\")\n    else m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma ReqPrintEnsures(m: Model)\n    ensures match Apply(m, ReqPrint)\n      case (user, 1, _, _, _, _, _, _, _, _) => true\n      case _ => false\n    ensures Inv(Normalize(Apply(m, ReqPrint)))\n  {\n  }\n\n  lemma EnterDriveUrlEnsures(m: Model)\n    ensures match Apply(m, EnterDriveUrl)\n      case (user, 2, _, _, _, _, _, _, _, _) => true\n      case _ => false\n    ensures Inv(Normalize(Apply(m, EnterDriveUrl)))\n  {\n  }\n\n  lemma ShowCostEnsures(m: Model)\n    ensures match Apply(m, ShowCost)\n      case (user, 3, _, _, _, _, _, _, _, _) => true\n      case _ => false\n    ensures Inv(Normalize(Apply(m, ShowCost)))\n  {\n  }\n\n  lemma EnterDeliveryInfoEnsures(m: Model)\n    ensures match Apply(m, EnterDeliveryInfo)\n      case (user, 4, _, _, _, _, _, _, _, _) => true\n      case _ => false\n    ensures Inv(Normalize(Apply(m, EnterDeliveryInfo)))\n  {\n  }\n\n  lemma EnterPaymentInfoEnsures(m: Model)\n    ensures match Apply(m, EnterPaymentInfo)\n      case (user, 5, _, _, _, _, _, _, _, _) => true\n      case _ => false\n    ensures Inv(Normalize(Apply(m, EnterPaymentInfo)))\n  {\n  }\n\n  lemma ShowDeliveryStatusEnsures(m: Model)\n    ensures match Apply(m, ShowDeliveryStatus)\n      case (user, 6, _, _, _, _, _, _, _, _) => true\n      case _ => false\n    ensures Inv(Normalize(Apply(m, ShowDeliveryStatus)))\n  {\n  }\n}\n\nmodule F4_8Kernel refines Kernel {\n  import D = F4_8Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 58,
+          "col": 23,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 66,
+          "col": 23,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 74,
+          "col": 23,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 82,
+          "col": 23,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 90,
+          "col": 23,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 98,
+          "col": 23,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "4.9": {
+    "sig": "a8939ff57bf50143755099569e1c0437f7e41b2d0733cbab50e80f968245f9bb",
+    "data": {
+      "feature_id": "4.9",
+      "module": "F4_9",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F4_9Domain refines Domain {\n  datatype Action =\n    StartAddBook |\n    EnterBookDetails(name: string, quantity: int, lend: bool, sell: bool, isbn: string, author: string, rentPrice: int, sellPrice: int) |\n    EnterPaymentDetails(bankAccount: string, ifscCode: string)\n\n  datatype Book = Book(\n    name: string,\n    quantity: int,\n    lend: bool,\n    sell: bool,\n    isbn: string,\n    author: string,\n    rentPrice: int,\n    sellPrice: int,\n    paymentInfo: PaymentInfo\n  )\n\n  datatype PaymentInfo = PaymentInfo(\n    bankAccount: string,\n    ifscCode: string\n  )\n\n  type Model = (bool, Book, PaymentInfo) \n\n  ghost predicate Inv(m: Model) {\n    var (loggedIn, book, payment) := m;\n    loggedIn &&\n    book.name != \"\" && \n    book.quantity >= 0 && \n    book.isbn != \"\" && \n    book.author != \"\" &&\n    book.rentPrice >= 0 &&\n    book.sellPrice >= 0 &&\n    payment.bankAccount != \"\" && \n    payment.ifscCode != \"\"\n  }\n\n  function Init(): Model {\n    (false, Book(\"\", 0, false, false, \"\", \"\", 0, 0, PaymentInfo(\"\", \"\")), PaymentInfo(\"\", \"\"))\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case StartAddBook =>\n      var (loggedIn, book, payment) := m;\n      (loggedIn, Book(\"\", 0, false, false, \"\", \"\", 0, 0, PaymentInfo(\"\", \"\")), payment)\n    case EnterBookDetails(name, quantity, lend, sell, isbn, author, rentPrice, sellPrice) =>\n      var (loggedIn, book, payment) := m;\n      if book.name == \"\" && loggedIn then\n        (loggedIn, Book(name, quantity, lend, sell, isbn, author, rentPrice, sellPrice, PaymentInfo(\"\", \"\")), payment)\n      else\n        m\n    case EnterPaymentDetails(bankAccount, ifscCode) =>\n      var (loggedIn, book, payment) := m;\n      if book.name != \"\" && payment.bankAccount == \"\" && loggedIn then\n        (loggedIn, book, PaymentInfo(bankAccount, ifscCode))\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma BookDetailsEnteredSuccessfully(m: Model, name: string, quantity: int, lend: bool, sell: bool, isbn: string, author: string, rentPrice: int, sellPrice: int)\n    requires Inv(m) && m.0 == true\n    ensures var (loggedIn, book, payment) := Apply(m, EnterBookDetails(name, quantity, lend, sell, isbn, author, rentPrice, sellPrice));\n            loggedIn == m.0 && book.name == name && book.quantity == quantity && book.lend == lend && book.sell == sell && book.isbn == isbn && book.author == author && book.rentPrice == rentPrice && book.sellPrice == sellPrice\n  {\n    assert book.name == name;\n    assert book.quantity == quantity;\n    assert book.lend == lend;\n    assert book.sell == sell;\n    assert book.isbn == isbn;\n    assert book.author == author;\n    assert book.rentPrice == rentPrice;\n    assert book.sellPrice == sellPrice;\n  }\n\n  lemma PaymentDetailsEnteredSuccessfully(m: Model, bankAccount: string, ifscCode: string)\n    requires Inv(m) && m.0 == true && m.1.name != \"\"\n    ensures var (loggedIn, book, payment) := Apply(m, EnterPaymentDetails(bankAccount, ifscCode));\n            loggedIn == m.0 && book == m.1 && payment.bankAccount == bankAccount && payment.ifscCode == ifscCode\n  {\n    assert payment.bankAccount == bankAccount;\n    assert payment.ifscCode == ifscCode;\n  }\n}\n\nmodule F4_9Kernel refines Kernel {\n  import D = F4_9Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 83,
+          "col": 11,
+          "message": "unresolved identifier: book"
+        },
+        {
+          "line": 84,
+          "col": 11,
+          "message": "unresolved identifier: book"
+        },
+        {
+          "line": 85,
+          "col": 11,
+          "message": "unresolved identifier: book"
+        },
+        {
+          "line": 86,
+          "col": 11,
+          "message": "unresolved identifier: book"
+        },
+        {
+          "line": 87,
+          "col": 11,
+          "message": "unresolved identifier: book"
+        },
+        {
+          "line": 88,
+          "col": 11,
+          "message": "unresolved identifier: book"
+        },
+        {
+          "line": 89,
+          "col": 11,
+          "message": "unresolved identifier: book"
+        },
+        {
+          "line": 90,
+          "col": 11,
+          "message": "unresolved identifier: book"
+        },
+        {
+          "line": 98,
+          "col": 11,
+          "message": "unresolved identifier: payment"
+        },
+        {
+          "line": 99,
+          "col": 11,
+          "message": "unresolved identifier: payment"
+        }
+      ],
+      "axioms": []
+    }
+  }
+}

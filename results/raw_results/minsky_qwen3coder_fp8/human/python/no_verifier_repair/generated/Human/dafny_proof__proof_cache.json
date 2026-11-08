@@ -1,0 +1,43 @@
+{
+  "3.1": {
+    "sig": "2bab6048245471b5aa8f14b208dcea764af409e07f14a3ad0b4c7f02bae9bb4e",
+    "data": {
+      "feature_id": "3.1",
+      "module": "F3_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1Domain refines Domain {\n  type Model = (string, map<string, string>, map<string, string>)\n\n  datatype Action = EditEventDetails(details: map<string, string>, requirements: map<string, string>)\n\n  ghost predicate Inv(m: Model) {\n    var (event, details, requirements) := m;\n    details != null && requirements != null\n  }\n\n  function Init(): Model {\n    (\"\", map[], map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case EditEventDetails(details, requirements) =>\n      var (event, _, _) := m;\n      (event, details, requirements)\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma EditEventDetailsUpdates(m: Model, details: map<string, string>, requirements: map<string, string>)\n    ensures Apply(m, EditEventDetails(details, requirements)) == (m.0, details, requirements)\n  {\n  }\n}\n\nmodule F3_1Kernel refines Kernel {\n  import D = F3_1Domain\n}",
+      "verified": false,
+      "rounds": 1,
+      "residual_errors": [
+        {
+          "line": 10,
+          "col": 15,
+          "message": "type of 'null' is a reference type, but it is used as map<string, string>"
+        },
+        {
+          "line": 10,
+          "col": 39,
+          "message": "type of 'null' is a reference type, but it is used as map<string, string>"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.2": {
+    "sig": "e320468f532053a046f57cf79f4dd1cc0b32e33bd74862e4a2fa52f0c8d619f5",
+    "data": {
+      "feature_id": "3.2",
+      "module": "F3_2",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_2Domain refines Domain {\n  type Model = (bool, map<string, string>)\n\n  datatype Action = Login(username: string) | Register(event: string)\n\n  ghost predicate Inv(m: Model) {\n    let (authenticated, _) = m;\n    authenticated ==> |m.1| > 0\n  }\n\n  function Init(): Model {\n    (false, map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Login(username) => (true, m.1 + [username := \"authenticated\"])\n    case Register(event) =>\n      if m.0 then\n        (true, m.1)\n      else\n        m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma RegisterWithoutAuthRedirectsToLogin(m: Model, event: string)\n    requires !m.0\n    ensures Apply(m, Register(event)) == m\n  {\n  }\n}\n\nmodule F3_2Kernel refines Kernel {\n  import D = F3_2Domain\n}",
+      "verified": false,
+      "rounds": 1,
+      "residual_errors": [
+        {
+          "line": 9,
+          "col": 27,
+          "message": "rbrace expected"
+        }
+      ],
+      "axioms": []
+    }
+  }
+}

@@ -1,0 +1,33 @@
+from fastapi import APIRouter, Body, HTTPException
+from sqlalchemy import Column, Integer, String, Float, Boolean
+from sqlalchemy.orm import Session
+from results.ablation.minsky_qwen3coder_fp8.shoten_srs.python.no_proof.generated.Shoten_SRS.app.extensions import Base, SessionLocal
+
+class BookAdditionRecord(Base):
+    __tablename__ = "book_addition_records"
+    __table_args__ = {"extend_existing": True}
+    user_id = Column(String, primary_key=True)
+    user_type = Column(String)
+    book_details_completed = Column(Boolean, default=False)
+
+router = APIRouter()
+
+@router.post("")
+def store_payment_details(payment_info: dict = Body(..., embed=True)) -> dict:
+    db = SessionLocal()
+    try:
+        # Check if the user has completed book details entry
+        user_record = db.query(BookAdditionRecord).filter(BookAdditionRecord.user_id == payment_info.get("user_id")).first()
+        if not user_record or not user_record.book_details_completed:
+            raise HTTPException(status_code=400, detail="Precondition violated: User has not completed book details entry")
+        
+        # Validate payment info
+        if not payment_info.get("bank_account_number") or not payment_info.get("ifsc_code"):
+            raise HTTPException(status_code=400, detail="Invalid payment information: Bank account number and IFSC code are required")
+        
+        # In a real implementation, we would store the payment details securely here
+        # For now, we'll just simulate storing the data
+        
+        return {"status": "success", "message": "Payment details stored successfully"}
+    finally:
+        db.close()

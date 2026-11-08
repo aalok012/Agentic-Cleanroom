@@ -1,0 +1,119 @@
+{
+  "3.1.REQ-1": {
+    "sig": "8cbc60503405948e15799942cd48394dcdb8c0b3c4886b797c91da13db46183a",
+    "data": {
+      "feature_id": "3.1.REQ-1",
+      "module": "F3_1_REQ_1",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_1Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(query) => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchDoesNotChangeModel(m: Model, a: Action)\n    requires a == Search(\"\")\n    ensures Apply(m, a) == m\n  {\n  }\n}\n\nmodule F3_1_REQ_1Kernel refines Kernel {\n  import D = F3_1_REQ_1Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-2": {
+    "sig": "4f3c01ddf30a3cfc32321aae1f119744b5c4b207e3c90bb3e936ac535df2f412",
+    "data": {
+      "feature_id": "3.1.REQ-2",
+      "module": "F3_1_REQ_2",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_2Domain refines Domain {\n  type Model = map<string, string>\n\n  datatype Action = UpdateSites\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case UpdateSites => m\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma UpdateSitesPreservesState(m: Model)\n    ensures Apply(m, UpdateSites) == m\n  {\n  }\n}\n\nmodule F3_1_REQ_2Kernel refines Kernel {\n  import D = F3_1_REQ_2Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-3": {
+    "sig": "d6b43188ecbb9bcf93a888e819c435769120c3421751237edd2ced5ade56d6dd",
+    "data": {
+      "feature_id": "3.1.REQ-3",
+      "module": "F3_1_REQ_3",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_3Domain refines Domain {\n  type Model = bool\n\n  datatype Action = IncludeSearch\n\n  ghost predicate Inv(m: Model) {\n    true\n  }\n\n  function Init(): Model {\n    false\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case IncludeSearch => true\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma IncludeSearchEnsures(m: Model)\n    ensures Apply(m, IncludeSearch) == true\n  {\n  }\n}\n\nmodule F3_1_REQ_3Kernel refines Kernel {\n  import D = F3_1_REQ_3Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-4": {
+    "sig": "4dc021e473316b354e45f610183747adb149d45b608a3b82ec5fcd96c48072d5",
+    "data": {
+      "feature_id": "3.1.REQ-4",
+      "module": "F3_1_REQ_4",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_4Domain refines Domain {\n  type Model = map<string, FileInfo>\n\n  datatype FileInfo = FileInfo(size: nat, seeds: nat, peers: nat, datePosted: string, link: string)\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    forall k | k in m :: m[k].size > 0\n  }\n\n  function Init(): Model {\n    map[]\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(q) =>\n      if q == \"\" then m else m - {q}\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchReturnsFileInfo(q: string, m: Model)\n    requires q != \"\"\n    ensures |Apply(m, Search(q))| == |m| + 1\n    ensures forall k | k in Apply(m, Search(q)) && k != q :: k in m\n    ensures Apply(m, Search(q))[q].size > 0\n  {\n  }\n}\n\nmodule F3_1_REQ_4Kernel refines Kernel {\n  import D = F3_1_REQ_4Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 40,
+          "col": 18,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 43,
+          "col": 2,
+          "message": "a postcondition could not be proved on this return path"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-5": {
+    "sig": "8cc36969fd2c58ee0c9a02015ca61419f0852d5abc3ef11fc59193d932d05cd6",
+    "data": {
+      "feature_id": "3.1.REQ-5",
+      "module": "F3_1_REQ_5",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_5Domain refines Domain {\n  type Model = (string, map<string, string>)\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    var (_, results) := m;\n    true\n  }\n\n  function Init(): Model {\n    (\"\", map[])\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(query) =>\n      if query == \"\" then\n        (\"No results were found for this search.\", map[])\n      else\n        (query, map[])\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchEmptyQueryEnsuresNoResultsMessage(m: Model)\n    ensures Apply(m, Search(\"\")) == (\"No results were found for this search.\", map[])\n  {\n  }\n}\n\nmodule F3_1_REQ_5Kernel refines Kernel {\n  import D = F3_1_REQ_5Domain\n}",
+      "verified": true,
+      "rounds": 1,
+      "residual_errors": [],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-6": {
+    "sig": "5ed8b489ab267f54b83aea28c1d2a5b381afb44dd637e20e995ddfec29203561",
+    "data": {
+      "feature_id": "3.1.REQ-6",
+      "module": "F3_1_REQ_6",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_6Domain refines Domain {\n  type Model = (map<string, int>, string)\n\n  datatype Action = SortBySize | SortByDate | SortByAlphabetical\n\n  ghost predicate Inv(m: Model) {\n    var (results, sort) := m;\n    sort == \"size\" || sort == \"date\" || sort == \"alphabetical\"\n  }\n\n  function Init(): Model {\n    (map[], \"size\")\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    var (results, sort) := m;\n    match a\n    case SortBySize => (results, \"size\")\n    case SortByDate => (results, \"date\")\n    case SortByAlphabetical => (results, \"alphabetical\")\n  }\n\n  function Normalize(m: Model): Model {\n    m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SortBySizeEnsures(m: Model)\n    ensures (match Apply(m, SortBySize) {\n      case (results, sort) => sort == \"size\"\n    })\n  {\n  }\n}\n\nmodule F3_1_REQ_6Kernel refines Kernel {\n  import D = F3_1_REQ_6Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 40,
+          "col": 24,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  },
+  "3.1.REQ-7": {
+    "sig": "d2116299eb3027daa75284c8979da11d69c8c200006d5357bd8ecab2cdbdf89b",
+    "data": {
+      "feature_id": "3.1.REQ-7",
+      "module": "F3_1_REQ_7",
+      "dafny_source": "include \"Replay.dfy\"\n\nmodule F3_1_REQ_7Domain refines Domain {\n  type Model = (string, int, bool)\n\n  datatype Action = Search(query: string)\n\n  ghost predicate Inv(m: Model) {\n    var (q, p, b) := m;\n    b ==> p >= 0\n  }\n\n  function Init(): Model {\n    (\"\", 0, false)\n  }\n\n  function Apply(m: Model, a: Action): Model {\n    match a\n    case Search(q) =>\n      (q, 0, q != \"\")\n  }\n\n  function Normalize(m: Model): Model {\n    var (q, p, b) := m;\n    if b && p < 0 then (q, 0, b) else m\n  }\n\n  lemma InitSatisfiesInv()\n    ensures Inv(Init())\n  {\n  }\n\n  lemma StepPreservesInv(m: Model, a: Action)\n    ensures Inv(Normalize(Apply(m, a)))\n  {\n  }\n\n  lemma SearchEnsuresPageButton(m: Model, a: Action)\n    requires a == Search(\"\")\n    ensures var (q, p, b) := Apply(m, a); b == true\n  {\n    assert Apply(m, a) == (\"\", 0, true);\n    assert true == true;\n  }\n}\n\nmodule F3_1_REQ_7Kernel refines Kernel {\n  import D = F3_1_REQ_7Domain\n}",
+      "verified": false,
+      "rounds": 6,
+      "residual_errors": [
+        {
+          "line": 40,
+          "col": 34,
+          "message": "function precondition could not be proved"
+        },
+        {
+          "line": 42,
+          "col": 4,
+          "message": "assertion might not hold"
+        },
+        {
+          "line": 42,
+          "col": 16,
+          "message": "function precondition could not be proved"
+        }
+      ],
+      "axioms": []
+    }
+  }
+}

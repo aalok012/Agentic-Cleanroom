@@ -1,0 +1,77 @@
+{
+  "run_id": "20261018-104310-shoten-srs",
+  "timestamp_utc": "2026-10-18T10:43:10.237176+00:00",
+  "status": "failed",
+  "srs": "Shoten_SRS.xml",
+  "stack": "fastapi",
+  "model": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+  "total_seconds": 0,
+  "tokens": {
+    "input": 830008,
+    "output": 97750,
+    "total": 927758,
+    "calls": 226
+  },
+  "cost_usd": 0.0,
+  "config": {
+    "language": "python",
+    "stack": "fastapi",
+    "models": {
+      "spec": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "dependency": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "planning": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "code": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "test": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "proof": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8",
+      "cert": "Qwen/Qwen3-Coder-30B-A3B-Instruct-FP8"
+    },
+    "prompt_strategy": "baseline",
+    "agents": {
+      "spec": true,
+      "dependency": true,
+      "planning": true,
+      "proof": true,
+      "code": true,
+      "test": true,
+      "certify": true,
+      "recovery": true,
+      "compile_repair": false
+    },
+    "run_dependency": true,
+    "run_test": true,
+    "run_recovery": true,
+    "test_sees_code": false,
+    "raw_spec_only": false,
+    "certify": true,
+    "samples": 1,
+    "k_values": [
+      1
+    ],
+    "prove": true,
+    "prove_target": "py",
+    "max_cert_loops": 2,
+    "max_compile_repair_loops": 2,
+    "temperature": 0.0,
+    "cert_temperature": 0.4,
+    "case_timeout": 10.0,
+    "prove_rounds": 6,
+    "llm_deps": true,
+    "baseline": false,
+    "reuse_from": "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/shoten_srs/python/reference_rep1/Shoten_SRS_full_ir.json",
+    "reuse_stages": [
+      "spec",
+      "dependency",
+      "planning",
+      "proof",
+      "code",
+      "test"
+    ],
+    "oracle_tests": ""
+  },
+  "stages": [],
+  "code": null,
+  "tests": null,
+  "dafny": null,
+  "compile": null,
+  "certification": null
+}

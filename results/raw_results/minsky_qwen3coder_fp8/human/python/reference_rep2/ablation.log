@@ -1,0 +1,144 @@
+  Agents: spec=on dependency=on planning=on proof=on code=on test=on certify=on recovery=off compile_repair=off
+  Prompt strategy: baseline
+
+======================================================================
+  [1]  Spec Agent — parsing the SRS (FR-only) and writing behavioral contracts
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 3.29s  ·  2,128 tokens, 2 call(s)
+Project   : Human
+Features  : 2  (FR=2)
+Contracts : 2
+Stack     : fastapi  (pinned via --stack)
+
+======================================================================
+  [2]  Dependency Agent — building the nested dependency graph
+======================================================================
+  ⏱  done in 0.00s
+Outer nodes : 2  edges: 0
+Build order : 3.1 -> 3.2
+Cycles      : none
+Inner (FR)  : 0 edge(s), 0 cycle(s) across features
+
+======================================================================
+  [3]  Planning Agent — generating per-FR contracts (signature + docstring + path)
+======================================================================
+  ⏱  done in 3.56s  ·  5,307 tokens, 2 call(s)
+Contracts   : 2  (in dependency order)
+  [3.1.REQ-1] (controller) def edit_event_details_and_registration(event_id: str, details: dict, registration_requirements: dict) -> bool:
+        -> controllers/edit_event_details_and_registration.py   prereqs=[]
+  [3.2.REQ-1] (controller) def prompt_user_to_log_in() -> dict[str, str]:
+        -> controllers/prompt_user_to_log_in.py   prereqs=[]
+
+======================================================================
+  [4a]  Dafny Proof Agent — proving feature logic (formal verification)
+======================================================================
+  ⏱  done in 0.00s
+  ⏱  done in 50.66s  ·  44,121 tokens, 12 call(s)
+Proved    : 1/2 features  →  ['3.1']
+  [3.1] PROVED   F3_1  (6r)
+  [3.2] unproved  F3_2  (6r)
+  ⏱  done in 0.88s
+Compiled  : 1/1 proved features to py
+
+======================================================================
+  [4]  Code Agent — generating MVC code from the spec
+======================================================================
+  ⏱  done in 5.45s  ·  2,233 tokens, 1 call(s)
+  ⏱  done in 2.28s  ·  1,423 tokens, 1 call(s)
+  1 proved feature(s) shipped as Dafny-core adapters; 1 file(s) generated for the rest.
+  Staged proved Dafny cores ['F3_1'] + shim into /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep2/generated/Human/app/dafny_cores
+2 file(s); 91 LOC (Python); layers={'controller': 2}
+Assembled runnable FastAPI app: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep2/generated/Human/app  (cd "/home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep2/generated/Human" && python -m app)
+
+======================================================================
+  [5]  Test Agent — deriving black-box tests from the spec
+======================================================================
+  ⏱  done in 18.21s  ·  6,292 tokens, 2 call(s)
+2 feature(s), 9 test case(s).
+Wrote 2 pytest module(s) to /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep2/generated/Human/tests
+
+======================================================================
+  [6]  Certification Agent — pass@k (n=1 samples) · skipping 1 proved
+======================================================================
+
+======================================================================
+  FUNCTIONAL REQUIREMENTS  (spec coverage)
+======================================================================
+
+[3.1] Proposing an Event
+    FR  [3.1.REQ-1] While applying for the same, they should be permitted to edit the event details and registration requirements. [cite: 12]
+
+[3.2] Registering for Events
+    FR  [3.2.REQ-1] If not logged in, user is prompted to log in. [cite: 127] After the event's approval, it should be added to the platform for registration by the student body. …
+
+======================================================================
+  TEST RESULTS  (executable oracle per spec-derived test case)
+======================================================================
+  [FAIL] 3.2.REQ-1    sample=0  Anchor case: User attempts to register for an event without…
+  [FAIL] 3.2.REQ-1    sample=0  Independent case: User provides invalid input (non-empty JS…
+  [FAIL] 3.2.REQ-1    sample=0  Independent case: User tries to register for an event with …
+  [FAIL] 3.2.REQ-1    sample=0  Independent case: User attempts to register for an event wi…
+
+======================================================================
+  === FAILURES ===
+======================================================================
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Anchor case: User attempts to register for an event without being authenticated
+  inputs:   User attempts to register for an event without being logged in
+  expected: System prompts the user to log in before proceeding with event registration
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Independent case: User provides invalid input (non-empty JSON body) while not logged in
+  inputs:   User sends a non-empty JSON body attempting to register for an event without authentication
+  expected: System still prompts the user to log in before proceeding with event registration
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Independent case: User tries to register for an event with malformed input (missing required fields)
+  inputs:   User sends a malformed request body without proper structure for event registration
+  expected: System prompts the user to log in before proceeding with event registration
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+[FAIL] 3.2.REQ-1  sample=0
+  test:     Independent case: User attempts to register for an event with incorrect credentials (simulated)
+  inputs:   User attempts to register for an event but is not authenticated due to incorrect session
+  expected: System prompts the user to log in before proceeding with event registration
+  reason:   HTTP 404: {"detail":"Not Found"}
+
+======================================================================
+  SUMMARY: 0 passed / 4 failed / 4 total case executions
+  Case pass rate: 0.000
+  Aggregate pass@1 (macro-avg over FRs): 0.000
+  Oracle: http
+======================================================================
+
+  ⏱  done in 3.48s
+  pass@1: 0.000  (over 1 un-proved FR(s))
+
+======================================================================
+  RUN METRICS
+======================================================================
+  verification_pass_ratio     :       0.5000
+  test_case_pass_ratio        :       0.0000
+  PassVer@1                   :       0.5000
+  avg_verification_iteration  :         6.00
+  avg_test_iteration          :         1.00
+  avg_input_token             :       2726.0
+  avg_output_token            :        349.2
+  total_time                  :       87.83s
+======================================================================
+
+======================================================================
+  DONE  Run complete
+======================================================================
+IR        : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep2/Human_full_ir.json
+Report    : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep2/Human_run_report.md
+Run record: /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep2/runs/20261018-072816-human.md
+Run JSON  : /home/cfw36/cleanroom_ablation_20261018/outputs/ablations/minsky_qwen3coder_fp8/human/python/reference_rep2/runs/20261018-072816-human.json
+Run index : RUN_RESULTS.md
+Usage log : API_USAGE.md
+Per stage : spec_contracts=3.3s   planning=3.6s   dafny=50.7s   compile=0.9s   adapter=5.5s   code=2.3s   test=18.2s   certification=3.5s
+Time      : 87.83s   Tokens: 61,504   Cost: $0.0000
